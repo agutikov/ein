@@ -47,7 +47,7 @@
   :assert (total-owed meal is-a)
   :why    "{?k} serves, so every guest owes a meal")
 
-(hrule open-kitchen () :match (is-a ?k Kitchen) :assert (opens ?k) :why "guess that kitchen {?k} is open")
-(hrule dine () :match (and (is-a ?g Guest) (is-a ?f Food)) :assert (meal ?g ?f) :why "guess that {?g} is served {?f}")
+(rule open-kitchen () :match (is-a ?k Kitchen) :assert (open (opens ?k)) :why "guess that kitchen {?k} is open")
+(rule dine () :match (and (is-a ?g Guest) (is-a ?f Food)) :assert (open (meal ?g ?f)) :why "guess that {?g} is served {?f}")
 
 (query :goal (meal ?g ?f))

@@ -12,8 +12,8 @@
 ;;;   0 + 1 + 0: digit 1, carry 0        1 + 1 + 0: digit 0, carry 1
 ;;;   0 + 1 + 1: digit 0, carry 1        1 + 1 + 1: digit 1, carry 1
 ;;;
-;;; The candidates come from the obligations rung alone: the program has no
-;;; hrule and no `(solve …)` form. The plan page tried an hrule and
+;;; The candidates come from the obligations alone: the program has no
+;;; hypothesis rule and no `(solve …)` form. The plan page tried a hypothesis rule and
 ;;; `:hypothesis-relations` too; the three give one answer at one cost.
 ;;;
 ;;; The cost is the reason this table has three inputs. A node of the search

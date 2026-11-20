@@ -121,7 +121,6 @@ fn refused_places() -> Vec<(&'static str, String)> {
             "a solve's :no-hypothesis",
             "(solve :no-hypothesis (open))\n".into(),
         ),
-        ("a solve's :hrules", "(solve :hrules (open))\n".into()),
         ("an import's module", "(import open)\n".into()),
         (
             "an import's :symbols",
@@ -315,7 +314,7 @@ fn open_is_refused_where_a_program_would_make_it_more_than_the_kernels() {
             bad.push(format!("{place}: {b}"));
         }
     }
-    assert_eq!(places.len(), 22, "every place the census wrote");
+    assert_eq!(places.len(), 21, "every place the census wrote");
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
@@ -370,7 +369,7 @@ fn the_registers_witnesses_are_refused_or_load() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// **The verdict loads where a rule's or an hrule's `:assert` states it**,
+/// **The verdict loads where a rule's `:assert` states it**,
 /// `(open ?R)` with `?R` a parameter and `(open likes)` naming a relation, and
 /// so does a hypothesis a rule concludes, `(open (likes ?x ?x))`, and every
 /// command answers each, its container too.
@@ -391,10 +390,6 @@ fn the_verdict_loads_where_a_rule_concludes_it() {
             "(open ?R)",
             "(rule r (?R) :match (and (a ?x) (absent (?R ?x ?y))) :assert (open ?R) :why \"r\")\n\
              (r likes)\n",
-        ),
-        (
-            "(open likes), an hrule's",
-            "(hrule r () :match (and (a ?x) (absent (likes ?x ?y))) :assert (open likes) :why \"r\")\n",
         ),
     ] {
         let file = scratch.path().join("verdict.ein");

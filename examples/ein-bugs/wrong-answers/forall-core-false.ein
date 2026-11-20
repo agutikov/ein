@@ -36,7 +36,7 @@
 
 (item a) (slot s1) (slot s2)
 
-(hrule g () :match (slot ?s) :assert (tag ?s) :why "guess that the slot {?s} is tagged")
+(rule g () :match (slot ?s) :assert (open (tag ?s)) :why "guess that the slot {?s} is tagged")
 
 (rule ex () :match (and (item ?x) (tag ?s)) :assert (not (in ?x ?s)) :why "{?s} is tagged, so the item {?x} is not in it")
 

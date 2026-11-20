@@ -392,7 +392,7 @@ fn hypotheses(path: &Path) -> (String, Vec<String>) {
     let rung = space
         .lines()
         .find(|l| l.starts_with("H "))
-        .and_then(|l| l.split("built by the rung `").nth(1))
+        .and_then(|l| l.split("from `").nth(1))
         .and_then(|r| r.split('`').next())
         .unwrap_or_else(|| panic!("{}: no rung on the H row:\n{space}", path.display()))
         .to_string();

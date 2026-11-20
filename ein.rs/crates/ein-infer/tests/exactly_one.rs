@@ -12,7 +12,7 @@
 //!    owed group: five bijections;
 //! 2. **one relation, both orientations, no grid**: `zebra.ein` states the
 //!    same puzzle over one relation through `std.slots`, and its `H` holds
-//!    each placement in both orientations, the hrule's and the mirror that
+//!    each placement in both orientations, the hypothesis rule's and the mirror that
 //!    pays what a house owes. Every instance root owes is licensed and owes
 //!    a group, the rows in one orientation and the columns in the other; but
 //!    a candidate and its mirror exclude nothing between them, so a member
@@ -214,9 +214,9 @@ fn mirror(text: &str) -> String {
 
 /// **One relation, both orientations, no grid.** `zebra.ein` proposes the
 /// same 56 placements over one relation, each in both orientations: the
-/// hrule writes `(co-located v House-n)`, and `slot-owed-fill`, *a house has
+/// hypothesis rule writes `(co-located v House-n)`, and `slot-owed-fill`, *a house has
 /// no attribute of a kind yet*, writes what pays it, the mirror
-/// `(co-located House-n v)`, which joins `H` beside the hrule's
+/// `(co-located House-n v)`, which joins `H` beside the hypothesis rule's
 /// (Q-M1f.570): 112 candidates, the 36 of them dead alone at root 18
 /// placements twice. `symmetric` brings each of a candidate and its mirror
 /// from the other, so the two exclude nothing between them, and each
@@ -225,7 +225,7 @@ fn mirror(text: &str) -> String {
 /// Root owes 36 instances and **every one is licensed and owes a group**:
 /// every fact that can witness one is a candidate or denied at root. The 18
 /// of `slot-owed-room`, *an attribute is in no house yet*, each owe an
-/// attribute's houses written the hrule's way; the 18 of `slot-owed-fill`
+/// attribute's houses written the hypothesis rule's way; the 18 of `slot-owed-fill`
 /// each owe a house's attributes of one kind written the mirror's way.
 /// Folded onto their placements the 36 owed groups are `zebra2.ein`'s 36,
 /// each once, found though one relation holds them all and no candidate's
@@ -239,7 +239,7 @@ fn mirror(text: &str) -> String {
 /// by four and 8 where it is three by three.
 ///
 /// **What is true of the mirrors that pay a house**: one witness of
-/// `slot-owed-fill` the mirror of each of the hrule's 56 candidates, and
+/// `slot-owed-fill` the mirror of each of the hypothesis rule's 56 candidates, and
 /// each a candidate. By the theory alone each is brought by its own node
 /// and its mirror's, and by no other. At root the 38 alive alone are in
 /// both closures, and the 18 dead alone are held by no single's node.
@@ -402,14 +402,14 @@ fn one_relation_owes_a_group_in_each_orientation_and_holds_no_grid() {
             }
         }
     }
-    let hrules: BTreeSet<String> = texts
+    let guessed: BTreeSet<String> = texts
         .iter()
         .filter(|t| !parts(t)[1].starts_with("House-"))
         .map(|t| t.to_string())
         .collect();
     assert_eq!(
-        mirrored, hrules,
-        "one witness the mirror of each of the hrule's"
+        mirrored, guessed,
+        "one witness the mirror of each of the hypothesis rule's"
     );
     assert_eq!((brought, by_nothing), (38, 18));
 }
@@ -501,9 +501,9 @@ fn a_program_with_no_table_owes_no_group() {
 /// two friends at one table ties a friend's seats to another's, so a
 /// candidate is in nine groups, eleven or thirteen: one component, and no
 /// grid. The program owes every friend a seat, and `H` holds every seat of
-/// every friend, 25: the hrule proposes the seats at a table the friend's
+/// every friend, 25: the hypothesis rule proposes the seats at a table the friend's
 /// group fits, and the obligation every seat that would pay the friend's
-/// debt, which joins `H` beside the hrule's (Q-M1f.570). So each of the
+/// debt, which joins `H` beside the hypothesis rule's (Q-M1f.570). So each of the
 /// five instances is licensed, every seat that can witness it a candidate,
 /// and owes a group, the friend's five seats.
 #[test]

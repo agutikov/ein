@@ -51,7 +51,7 @@ pub fn repo_root() -> PathBuf {
 /// the modules declare is the first one's.
 ///
 /// `module` is a `std.*` name, read from the checkout's `stdlib/`; a
-/// declaration is a line that starts `(relation`, `(rule`, `(hrule` or
+/// declaration is a line that starts `(relation`, `(rule` or
 /// `(macro`, which is how every stdlib module writes one.
 pub fn import_lines(modules: &[(&str, &[&str])], body: &str) -> String {
     let declared: Vec<std::collections::BTreeSet<String>> = modules
@@ -66,7 +66,7 @@ pub fn import_lines(modules: &[(&str, &[&str])], body: &str) -> String {
                     .unwrap_or_else(|e| panic!("{m}: {e}"));
             text.lines()
                 .filter_map(|l| {
-                    let rest = ["(relation ", "(rule ", "(hrule ", "(macro "]
+                    let rest = ["(relation ", "(rule ", "(macro "]
                         .iter()
                         .find_map(|d| l.strip_prefix(d))?;
                     rest.split_whitespace().next().map(str::to_string)

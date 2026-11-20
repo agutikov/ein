@@ -4,7 +4,7 @@
 //! | name | where a program may write it | what holds it |
 //! |---|---|---|
 //! | `<forced-positive>`, `<monotonic-unconditional>`, `<lookahead-dies-immediately>` | nowhere: they are the rule names the engine writes for a conclusion no rule drew, with no meaning a program can give them | the grammar's `WRITEBACK` token, which no production takes |
-//! | `__closed__` | wherever a name is **used**, as a relation or as a value (`(imply1 functional __closed__)`), and nowhere a name is **bound**: a declared relation, a rule's, an hrule's or a macro's name, an import's `:as` | `ein_core::RESERVED`, the loader's *shadows a reserved kernel name* |
+//! | `__closed__` | wherever a name is **used**, as a relation or as a value (`(imply1 functional __closed__)`), and nowhere a name is **bound**: a declared relation, a rule's, a hypothesis rule's or a macro's name, an import's `:as` | `ein_core::RESERVED`, the loader's *shadows a reserved kernel name* |
 //!
 //! ```text
 //! cargo test -p ein-ir --test engine_names
@@ -69,8 +69,8 @@ fn a_writeback_name_is_refused_wherever_a_program_writes_it() {
             "(relation p T)\n(relation q T)\n(rule W () :match (p ?x) :assert (q ?x))",
         ),
         (
-            "an hrule's name",
-            "(relation p T)\n(relation q T)\n(hrule W () :match (p ?x) :assert (q ?x))",
+            "a hypothesis rule's name",
+            "(relation p T)\n(relation q T)\n(rule W () :match (p ?x) :assert (open (q ?x)))",
         ),
         ("a macro's name", "(relation p T)\n(macro W (?x) (p ?x))"),
         (
@@ -186,7 +186,7 @@ fn a_probe_is_refused_at_its_three_writeback_names() {
 }
 
 /// **A dunder is refused wherever a program binds it** (Q-M1f.7): a
-/// declared relation, a rule's, an hrule's or a macro's name, and an import's
+/// declared relation, a rule's, a hypothesis rule's or a macro's name, and an import's
 /// `:as`, each dunder in each, with the loader's line.
 #[test]
 fn a_dunder_is_refused_wherever_a_program_binds_it() {
@@ -202,9 +202,9 @@ fn a_dunder_is_refused_wherever_a_program_binds_it() {
             "rule 'D' shadows a reserved kernel name",
         ),
         (
-            "hrule",
-            "(relation p T :why \"p holds of {?3}\")\n(relation q T :why \"q holds of {?3}\")\n(hrule D () :match (p ?x) :assert (q ?x) :why \"p holds of {?x}: guess that q holds of {?x}\")",
-            "hrule 'D' shadows a reserved kernel name",
+            "hypothesis rule",
+            "(relation p T :why \"p holds of {?3}\")\n(relation q T :why \"q holds of {?3}\")\n(rule D () :match (p ?x) :assert (open (q ?x)) :why \"p holds of {?x}: guess that q holds of {?x}\")",
+            "rule 'D' shadows a reserved kernel name",
         ),
         (
             "macro",

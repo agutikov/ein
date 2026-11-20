@@ -31,7 +31,7 @@
 
 (need K1 A) (need K2 Z)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))

@@ -50,8 +50,8 @@
 //!
 //! **What is the baseline?** The *names the loaded program reaches*, not the
 //! interner's length. Those are different sets: `Ann` in
-//! `examples/ein-bugs/mixed-type-hypothesis.ein` appears in an `hrule`'s
-//! `:assert` and in no fact, so `ein_ir::from_ir::intern_program_names`
+//! `examples/ein-bugs/mixed-type-hypothesis.ein` appears in a hypothesis a
+//! rule's `:assert` concludes and in no fact, so `ein_ir::from_ir::intern_program_names`
 //! interns it at **load** — the interner never grows afterwards
 //! (`ein-infer/tests/interning.rs`). So the baseline is [`Universe::of`]:
 //! every symbol the loaded facts mention, at any depth, every constant a
@@ -159,7 +159,7 @@ fn walk_value(terms: &Terms, v: Value, out: &mut impl FnMut(Symbol)) {
 pub struct RuleConstant {
     /// The declarator's name.
     pub rule: Symbol,
-    /// `rule` / `hrule` / `obligation` — which registry it came from.
+    /// `rule` / `obligation` — which pass walks it.
     pub which: &'static str,
     /// `:match` or `:assert` — the clause it is written in, the first one
     /// when both name it.
@@ -190,8 +190,9 @@ impl RuleConstant {
 ///
 /// Free, and **total**: it reads the registered rules once, over the program,
 /// so it answers for every run the program could have rather than for the one
-/// that happened. All three registries, because an `hrule` is a rule by shape
-/// and its constants are names of the program as a rule's are.
+/// that happened. Every registry, because a rule that concludes a hypothesis
+/// or an obligation is a rule by shape and its constants are names of the
+/// program as a rule's are.
 ///
 /// A **variable** leaf contributes nothing: a variable is bound by the match,
 /// or by the activator, so it can only carry a value a fact already holds.
@@ -203,39 +204,39 @@ impl RuleConstant {
 /// atom the program writes first in a tuple (Q-M1f.522).
 pub fn rule_constants(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<RuleConstant> {
     let mut out = Vec::new();
-    for (which, reg) in [
-        ("rule", &kb.program().rules),
-        ("hrule", &kb.program().hrules),
-        ("obligation", &kb.program().obligations),
-    ] {
-        for (name, rule) in reg.iter() {
-            let mut seen: Vec<Symbol> = Vec::new();
-            for (part, pattern) in [(":match", &rule.match_), (":assert", &rule.assert_)] {
-                let Some(p) = pattern.as_ref() else {
-                    continue;
+    let program = kb.program();
+    for (name, rule) in program.every_rule() {
+        let which = if program.obligations.contains(name) {
+            "obligation"
+        } else {
+            "rule"
+        };
+        let mut seen: Vec<Symbol> = Vec::new();
+        for (part, pattern) in [(":match", &rule.match_), (":assert", &rule.assert_)] {
+            let Some(p) = pattern.as_ref() else {
+                continue;
+            };
+            walk_constants(ast, NodeId(p.expr.0), true, &mut |text, head| {
+                if head {
+                    return;
+                }
+                // Every leaf of a registered rule is interned at load
+                // (`from_ir::intern_program_names`), so a miss names
+                // nothing.
+                let Some(sym) = terms.syms.get(text) else {
+                    return;
                 };
-                walk_constants(ast, NodeId(p.expr.0), true, &mut |text, head| {
-                    if head {
-                        return;
-                    }
-                    // Every leaf of a registered rule is interned at load
-                    // (`from_ir::intern_program_names`), so a miss names
-                    // nothing.
-                    let Some(sym) = terms.syms.get(text) else {
-                        return;
-                    };
-                    if seen.contains(&sym) {
-                        return;
-                    }
-                    seen.push(sym);
-                    out.push(RuleConstant {
-                        rule: name,
-                        which,
-                        part,
-                        name: sym,
-                    });
+                if seen.contains(&sym) {
+                    return;
+                }
+                seen.push(sym);
+                out.push(RuleConstant {
+                    rule: name,
+                    which,
+                    part,
+                    name: sym,
                 });
-            }
+            });
         }
     }
     out

@@ -10,7 +10,7 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; No declaration, fact, rule or hrule of the program names `payed`, so no state
+;;; No declaration, fact, rule or hypothesis rule of the program names `payed`, so no state
 ;;; holds a fact of it and the goal can have no row: refused at load, at the
 ;;; pattern, one line, on every command (exit 1, `ein test`: 2).
 ;;;

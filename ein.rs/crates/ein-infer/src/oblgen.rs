@@ -8,7 +8,7 @@
 //! ### The writers
 //!
 //! H is the union of the hypotheses root holds (Q-M1f.570): what a rule that
-//! concludes `(open F)` writes, an hrule among them, what the program writes,
+//! concludes `(open F)` writes, what the program writes,
 //! and, where an obligation is activated, **what this module writes**: the
 //! facts that would pay what the state owes. The blind combinatorial
 //! enumerator writes only where none of them does (Q-M1f.576).
@@ -128,10 +128,10 @@ pub enum Mode {
     /// No obligation is activated at the state — the blind enumerator.
     #[default]
     Blind,
-    /// Rules that conclude a hypothesis, an hrule among them, or the
-    /// program's `open` facts wrote, and no obligation is activated. Never
-    /// narrated: no `rung` line.
-    Hrules,
+    /// Rules that conclude a hypothesis, or the program's `open` facts,
+    /// wrote, and no obligation is activated. Never narrated: no `rung`
+    /// line.
+    HypothesisRules,
     /// The obligations wrote: every owed obligation's candidates, deduped.
     Obligations,
     /// Owed, and nothing may be branched on: every candidate refuted.
@@ -153,7 +153,7 @@ impl Mode {
     pub fn as_str(self) -> &'static str {
         match self {
             Mode::Blind => "blind",
-            Mode::Hrules => "hrules",
+            Mode::HypothesisRules => "hypothesis-rules",
             Mode::Obligations => "obligations",
             Mode::Stuck => "stuck",
             Mode::Declined => "declined",
@@ -380,7 +380,7 @@ fn scan(s: &mut Session<'_>, p: &Proj, matcher: &mut Matcher, guards: &mut Match
             continue;
         };
         // Two passes, because the walk borrows the tables the intern
-        // writes to — the shape `hrule::candidates` takes for the same
+        // writes to — the shape `HypothesisRules::candidates` takes for the same
         // reason.
         let mut rows: Vec<Box<[Value]>> = Vec::new();
         matcher.scan_without(
@@ -983,7 +983,7 @@ pub(crate) fn alternatives(
     }
     let plans = crate::obligations::plans_for(kb, terms, ast, memo)?;
     let terms: &ein_core::Terms = terms;
-    let unwritten = crate::unheld::Unwritten::of(kb, terms, memo);
+    let unwritten = crate::unheld::Unwritten::of(terms, memo);
     let pairs = crate::contradiction::Pairs::of(
         crate::monotone::plans_of(memo).iter().map(|p| &**p),
         terms,

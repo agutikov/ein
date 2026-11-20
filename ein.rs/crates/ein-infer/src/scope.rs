@@ -22,8 +22,8 @@
 //!    `:hypothesis-relations` list without it, or `:no-hypothesis` naming it.
 //!    That scope is the program's own statement, and the read-out does not
 //!    repeat it (`arity3.ein` scopes `is-a` out, and only `r3` is named);
-//! 3. **the rung that built H proposes none of its facts**, at relation
-//!    grain: the hrules assert no fact of it, no obligation owes it (one root
+//! 3. **the writers that built H propose none of its facts**, at relation
+//!    grain: no rule that concludes a hypothesis proposes a fact of it, no obligation owes it (one root
 //!    owes, or one a commitment can bring, which the rung reads too:
 //!    [`crate::oblgen`]), or, for the blind enumerator, its arity is 3 or
 //!    more (`hypgen`'s `fill_slot` enumerates arity 1 and 2).
@@ -50,14 +50,15 @@ use crate::oblgen::Mode;
 use crate::plan::Plan;
 use crate::saturator::Session;
 
-/// Why the rung that built H proposes no fact of a relation.
+/// Why the writers that built H propose no fact of a relation.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Why {
     /// The obligations rung built H (or was stuck), and no obligation owes
     /// the relation.
     NotOwed,
-    /// The hrules built H, and none asserts a fact of the relation.
-    NoHrule,
+    /// The rules that conclude a hypothesis built H, and none proposes a
+    /// fact of the relation.
+    NotProposed,
     /// The blind enumerator built H, which proposes arity 1 and 2 only.
     Arity,
 }
@@ -67,7 +68,7 @@ impl Why {
     pub fn key(self) -> &'static str {
         match self {
             Why::NotOwed => "not-owed",
-            Why::NoHrule => "no-hrule",
+            Why::NotProposed => "not-proposed",
             Why::Arity => "arity",
         }
     }
@@ -117,7 +118,9 @@ pub(crate) fn outside(
         .collect();
     // Clause 3: what the rung proposes facts of.
     let proposed: FxHashSet<Symbol> = match mode {
-        Mode::Hrules => crate::hrule::Hrules::new(s)?.asserted_relations(s.terms),
+        Mode::HypothesisRules => {
+            crate::hypothesis_rules::HypothesisRules::new(s)?.asserted_relations(s.terms)
+        }
         Mode::Obligations | Mode::Stuck | Mode::Union => {
             let memo = s.memo.clone();
             let mut owed: FxHashSet<Symbol> =
@@ -129,7 +132,9 @@ pub(crate) fn outside(
             // The union's other half: what the rules that conclude a
             // hypothesis, and the program's `open` facts, propose.
             if mode == Mode::Union {
-                owed.extend(crate::hrule::Hrules::new(s)?.asserted_relations(s.terms));
+                owed.extend(
+                    crate::hypothesis_rules::HypothesisRules::new(s)?.asserted_relations(s.terms),
+                );
                 for o in crate::open::written_by_program(s.kb, s.terms) {
                     if let Some(f) = s.terms.facts.args(o).first().and_then(|v| v.as_fact()) {
                         owed.insert(s.terms.facts.rel(f));
@@ -158,7 +163,7 @@ pub(crate) fn outside(
         }
     }
     let why = match mode {
-        Mode::Hrules => Why::NoHrule,
+        Mode::HypothesisRules => Why::NotProposed,
         Mode::Obligations | Mode::Stuck | Mode::Union => Why::NotOwed,
         Mode::Blind | Mode::Declined | Mode::NoSearch => Why::Arity,
     };
@@ -253,14 +258,14 @@ mod tests {
         );
     }
 
-    /// The hrules: a relation a rule concludes from what they propose is
-    /// outside, though R's states differ in it.
+    /// The rules that conclude a hypothesis: a relation a rule concludes
+    /// from what they propose is outside, though R's states differ in it.
     #[test]
-    fn a_concluded_relation_no_hrule_proposes_is_outside() {
+    fn a_concluded_relation_no_hypothesis_rule_proposes_is_outside() {
         let src = "(relation thing T :why \"{?3} is a thing\")\n(relation a T :why \"a holds of {?3}\")\n(relation p T :why \"p holds of {?3}\")\n(thing one)\n\
-                   (hrule guess-a () :match (thing ?x) :assert (a ?x) :why \"guess that a holds of the thing {?x}\")\n\
+                   (rule guess-a () :match (thing ?x) :assert (open (a ?x)) :why \"guess that a holds of the thing {?x}\")\n\
                    (rule from-a () :match (a ?x) :assert (p ?x) :why \"a holds of {?x}, so p holds of {?x}\")\n\
                    (query :goal (a ?x))";
-        assert_eq!(named(src), [("p".to_string(), Why::NoHrule)]);
+        assert_eq!(named(src), [("p".to_string(), Why::NotProposed)]);
     }
 }

@@ -85,12 +85,12 @@
 //! order (C4); the read-out's `route` row says in words what order a run
 //! took (`crate::explore::TreeOrder`).
 //!
-//! **The hrule rung.** L5's premise is about `H` as a set, not about the rung
+//! **The hypothesis rules.** L5's premise is about `H` as a set, not about the rung
 //! that proposed it, so it is checked the same way whatever the program
 //! declares. On `zebra.ein` the instances `slot-owed-room` owes are licensed —
-//! each attribute value's houses are hrule candidates — and those
+//! each attribute value's houses are the hypothesis rule's candidates — and those
 //! `slot-owed-fill` owes are not: their witnesses are the symmetric
-//! `(co-located House-n v)`, which the hrule never proposes. A state there
+//! `(co-located House-n v)`, which the rule never proposes. A state there
 //! that owes only the second kind branches on every extension.
 //!
 //! **L9, a witness no node can hold.** An instance L5 refuses only because

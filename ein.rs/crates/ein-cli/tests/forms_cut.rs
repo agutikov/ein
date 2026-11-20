@@ -252,13 +252,13 @@ fn the_oracle_points_at_solve_and_a_second_dump_leaves_no_stale_form() {
 /// **The fact dumps' headers say what they print**, in `factdump.rs`.
 ///
 /// `-f`'s header names the candidates' relations as Ein spells names, not
-/// `:hrules ['co-located', 'is-a']` in a Python list's spelling, on
-/// `branching/02`, which declares no `:hrules`. `-p`'s and `-P`'s do not
+/// in a Python list's spelling, `['co-located', 'is-a']`, on `branching/02`,
+/// which has no hypothesis rule. `-p`'s and `-P`'s do not
 /// call a state's facts *derived*: on `lattice/02` state 2's facts are its
 /// commitment and its `open` facts, which `-P` leaves out (Q-M1f.577), its
 /// commitment its one fact there. They are the facts beyond the program as loaded, and
 /// not *beyond root*: on `branching/02` ∅'s block lists root's derivations,
-/// and ∅ has no fact beyond root. So no header says *derived*, `:hrules` or
+/// and ∅ has no fact beyond root. So no header says *derived*, a keyword or
 /// *beyond root*, and each names the set it prints.
 #[test]
 fn the_fact_dumps_headers_say_what_they_print() {
@@ -273,7 +273,7 @@ fn the_fact_dumps_headers_say_what_they_print() {
             .unwrap_or_else(|| panic!("no `── {state} ──`:\n{}", r.out));
         r.out[at..].lines().nth(1).unwrap_or_default().to_string()
     };
-    // A program that declares no `:hrules`, as the witness,
+    // A program with no hypothesis rule, as the witness,
     // `zebra2-obligations.ein`, does not: naming a zebra puzzle here would
     // make this file one of `world_anchors.rs`' list.
     let f = ein(&["solve", BRANCHING_02, "-f"]);
@@ -291,7 +291,7 @@ fn the_fact_dumps_headers_say_what_they_print() {
         p.out.contains(&format!(
             "{h}\n  (a-prop X)\n  (open (a-prop X))\n  (open (b-prop X))\n  (open (c-prop X))\n"
         )),
-        "state 2's facts are its commitment, (a-prop X), and the hrule's three hypotheses:\n{}",
+        "state 2's facts are its commitment, (a-prop X), and the hypothesis rule's three hypotheses:\n{}",
         p.out
     );
     let pp = ein(&["solve", THREE, "-P"]);

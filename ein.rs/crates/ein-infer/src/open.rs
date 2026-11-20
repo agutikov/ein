@@ -12,7 +12,7 @@
 //!   ([`crate::obligations::tally`]), which counts each instance as before;
 //!   a state that owes nothing holds none, a state of $R$ among them.
 //! - **`(open F)`, a hypothesis** (Q-M1f.573), by three writers: every match
-//!   of a rule that concludes one, an hrule among them, whether or not the
+//!   of a rule that concludes one, whether or not the
 //!   state holds or denies `F`, since a rule concludes what its match gives;
 //!   the facts that would pay what the state owes, read off each activated
 //!   obligation's guard (`crate::oblgen::payments`), those the state
@@ -53,16 +53,16 @@ use ein_core::{FactId, Kb, Prov, Symbol, Terms, Value};
 use rustc_hash::FxHashSet;
 
 use crate::compile::CompileError;
-use crate::hrule::Hrules;
+use crate::hypothesis_rules::HypothesisRules;
 use crate::hypgen::{HypGenStats, Written};
 use crate::obligations::Owes;
 use crate::saturator::{Saturator, Session};
 
 /// What the pass writes at every state, read once, at root.
 pub struct Writers {
-    /// The plans of the rules that conclude a hypothesis, hrules among them,
-    /// compiled at root ([`Hrules::new`]).
-    pub(crate) rules: Hrules,
+    /// The plans of the rules that conclude a hypothesis,
+    /// compiled at root ([`HypothesisRules::new`]).
+    pub(crate) rules: HypothesisRules,
     /// The blind enumerator's raw list at root, where it writes: root held no
     /// `open` fact and activated no obligation. `None` where it does not.
     pub(crate) blind: Option<Box<[FactId]>>,
@@ -240,7 +240,7 @@ fn writers_at_root(
     blind: Option<Box<[FactId]>>,
     later: Box<[FactId]>,
 ) -> Result<Writers, CompileError> {
-    let rules = Hrules::new(s)?;
+    let rules = HypothesisRules::new(s)?;
     let plans = crate::monotone::plans_of(&s.memo);
     let pairs = crate::contradiction::Pairs::of(plans.iter().map(|p| &**p), s.terms);
     let open = s.terms.kernel.open;
@@ -250,7 +250,6 @@ fn writers_at_root(
         .values()
         .chain(program.obligations.values())
         .chain(program.hypotheses.values())
-        .chain(program.hrules.values())
         .any(|r| {
             r.match_
                 .as_ref()

@@ -29,9 +29,9 @@
 (person Ann)
 (person Bob)
 
-(hrule crown ()
+(rule crown ()
   :match  (person ?p)
-  :assert (king ?p)
+  :assert (open (king ?p))
   :why    "suppose {?p} is the king")
 
 (rule one-king ()
@@ -40,7 +40,6 @@
   :why   "{?a} and {?b} are both the king, and there is one king")
 
 (solve
-  :hrules (crown)
   :expect (region
             (model)
             (model (king Ann))

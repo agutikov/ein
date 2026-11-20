@@ -42,21 +42,20 @@
   :assert (fed Ann Soup)
   :why    "Bob cooks what Cat bought, so Ann is fed soup")
 
-(hrule order ()
+(rule order ()
   :match  (is-a ?g Guest)
-  :assert (orders ?g)
+  :assert (open (orders ?g))
   :why    "suppose {?g} orders a takeaway")
-(hrule cook ()
+(rule cook ()
   :match  (is-a ?c Cook)
-  :assert (cooks ?c)
+  :assert (open (cooks ?c))
   :why    "suppose {?c} cooks")
-(hrule shop ()
+(rule shop ()
   :match  (is-a ?s Shopper)
-  :assert (shops ?s)
+  :assert (open (shops ?s))
   :why    "suppose {?s} does the shopping")
 
 (solve
-  :hrules (order cook shop)
   :expect (region
             (model (fed Ann Soup))
             (model (cooks Bob) (fed Ann Soup))

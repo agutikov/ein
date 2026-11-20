@@ -1,6 +1,6 @@
 ;;; An equation solved by search: which x of three digits makes x times 7 = 861?
 ;;;
-;;; x's digits are unknown, and each is a hypothesis: the hrule proposes every
+;;; x's digits are unknown, and each is a hypothesis: the hypothesis rule proposes every
 ;;; digit at every place, 30 candidates; `total-owed` says a state with a
 ;;; place unset is no answer, and `functional` that a place has one digit.
 ;;; The constraint is the digit multiplier's table, a column at a time: a
@@ -21,12 +21,11 @@
 (total-owed dig is-a)   ; every place owes a digit: a state with a place unset is no answer
 (functional dig)        ; and none has two
 
-(hrule guess-digit ()
+(rule guess-digit ()
   :match  (and (is-a ?p Place) (is-a ?d Digit))
-  :assert (dig ?p ?d)
+  :assert (open (dig ?p ?d))
   :why    "suppose the digit of x at {?p} is {?d}")
 
-(solve :hrules (guess-digit))
 (is-a p0 Place) (is-a p1 Place) (is-a p2 Place)
 (relation above Place Place :why "{?4} is the place above {?3}")
 (relation want Place Digit :why "the product's digit at {?3} is {?4}")

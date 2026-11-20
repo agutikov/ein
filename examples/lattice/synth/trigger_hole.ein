@@ -4,7 +4,7 @@
 ;;;
 ;;; ── Frozen, and not monotone ──────────────────────────────────────────
 ;;; `dead-1` and `dead-2` conclude (false) from an (absent (h …)) over h, which the
-;;; hrule proposes, so the static check flags the program: it loads, and
+;;; hypothesis rule proposes, so the static check flags the program: it loads, and
 ;;; nothing is claimed of its answer (Q-M1f.564). Regenerated, it would
 ;;; differ: the synthesizer writes a dead node with a non-dead superset as
 ;;; owing, so it writes the same region with its dead holes owing, and the
@@ -39,7 +39,7 @@
 
 (need K1 A) (need K2 C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h D) (absent (h B)) (absent (h E)))

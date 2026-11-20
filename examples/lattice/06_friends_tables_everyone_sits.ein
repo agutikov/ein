@@ -10,7 +10,7 @@
 ;;; together. Seat B1 faces the air-conditioner, and Eve will not sit there.
 ;;;
 ;;; A group is proposed seats only at a table it fits, (fits G T), so the
-;;; hrule proposes 3×3 (trio at the big table) + 2×2 (pair at the small one)
+;;; hypothesis rule proposes 3×3 (trio at the big table) + 2×2 (pair at the small one)
 ;;; + 2×3 (pair at the big one) = 19 seats. Ein has no arithmetic, so "fits"
 ;;; is data. The obligation proposes beside them every seat that pays a
 ;;; friend's debt, the trio's six at the small table among them (Q-M1f.570):
@@ -77,9 +77,9 @@
   :assert (false)
   :why    "{?p} will not sit facing the air-conditioner at {?s}")
 
-(hrule seat ()
+(rule seat ()
   :match  (and (member ?p ?g) (fits ?g ?t) (at ?s ?t))
-  :assert (sits ?p ?s)
+  :assert (open (sits ?p ?s))
   :why    "guess that {?p} sits in seat {?s}, at table {?t}, which {?p}'s group {?g} fits")
 
 (query :goal (sits ?p ?s))

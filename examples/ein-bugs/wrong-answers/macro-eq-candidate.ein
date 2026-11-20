@@ -1,16 +1,16 @@
-;;; A macro whose body writes `eq` with one argument, called as an hrule's
+;;; A macro whose body writes `eq` with one argument, called as a hypothesis rule's
 ;;; conclusion: the hypothesis layer proposes `(eq k)`, and a state holds it —
 ;;; regression `macro-eq-candidate`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; `h`'s `:assert` expands to `(eq ?x)`, as `macro-eq-conclusion.ein`'s rule's
-;;; does. An hrule's conclusion is what the hypothesis layer proposes, so `(eq k)`
-;;; is a candidate, H.
+;;; `h`'s `:assert` expands to `(open (eq ?x))`, the `(eq ?x)` that
+;;; `macro-eq-conclusion.ein`'s rule's does, as a hypothesis: what the hypothesis
+;;; layer proposed, so `(eq k)` was a candidate, H.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; The expansion writes a malformed `eq`, so `h` is refused at load: every
+;;; The expansion writes `eq` where a value goes, so `h` is refused at load: every
 ;;; command exits 1 (`ein test`: 2) (Q-M1f.67, Q-M1f.80).
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
@@ -28,8 +28,7 @@
 (is-a k Thing)
 (a k)
 (macro one (?a) (eq ?a) :why "{?a} equals")
-(hrule h ()
+(rule h ()
   :match  (a ?x)
-  :assert (one ?x)
+  :assert (open (one ?x))
   :why "{?x} is an a, so guess it equals")
-(solve :hrules (h))

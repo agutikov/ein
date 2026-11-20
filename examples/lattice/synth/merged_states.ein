@@ -30,7 +30,7 @@
 
 (need K1 A) (need K1 C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-A-B ()
   :match  (h A)

@@ -350,22 +350,22 @@
 ;; `(bijective …)` declarations + the two `*-hierarchy` knobs drive them.
 
 ;; ──── Hypothesis generation: THERE IS NONE (generated) ──────
-;; The canonical zebra2.ein declares an `(hrule guess (?R ?T1 ?T2))` here
-;; and lists its activators in the `(solve … :hrules …)` form below.
-;; This variant deletes both, and nothing else — which is a claim this
-;; generator makes rather than a reader.
+;; The canonical zebra2.ein declares a rule `guess (?R ?T1 ?T2)` here,
+;; which concludes a hypothesis, and writes its activators after the
+;; conditions. This variant deletes both, and nothing else — which is a
+;; claim this generator makes rather than a reader.
 ;;
 ;; What proposes the (?R ?v ?h) candidates instead is the theory the file
 ;; already states. `(bijective color-loc)` and its four siblings fan out
 ;; into std.algebra's `total-owed` / `surjective-owed`, each of which
-;; reports an unwitnessed slot as `(open ?R)`; the obligations
-;; rung branches on exactly the facts that would discharge one. The hrule
-;; said "guess a (value, house) pair"; the bijection declaration had
-;; already said it, and now the engine hears it.
+;; reports an unwitnessed slot as `(open ?R)`; the obligations write
+;; exactly the facts that would discharge one. The rule said "guess a
+;; (value, house) pair"; the bijection declaration had already said it,
+;; and now the engine hears it.
 ;;
-;; This file solving is the fixture for it: no hrule is needed where the
-;; theory (rules + ontology) already says what to guess. Generated from
-;; zebra2.ein, not edited by hand.
+;; This file solving is the fixture for it: no hypothesis rule is needed
+;; where the theory (rules + ontology) already says what to guess.
+;; Generated from zebra2.ein, not edited by hand.
 
 ;; ──── Relation signatures ──────────────────────────────────
 ;; Every relation carries a `:why`, which reads its own declaration: `{?3}`
@@ -503,7 +503,7 @@
 ;; (15) The Norwegian lives next to the blue house.
 (adjacent-via next-to  nation-loc Norwegian   color-loc Blue    :source "condition (15)")
 
-;; No (solve … :hrules …) (generated) — the five `(bijective *-loc)`
+;; No `(guess …)` activator (generated) — the five `(bijective *-loc)`
 ;; declarations are the hypothesis-generator activators now: one obligation
 ;; per unlocated value and one per unfilled house, and the branch is that
 ;; obligation's own domain scan.

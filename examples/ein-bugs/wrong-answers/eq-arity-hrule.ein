@@ -1,12 +1,12 @@
-;;; An hrule's parameter its `(solve :hrules …)` activator binds to `eq` heads
-;;; a premise of one argument, so `ein saturate` answered where `ein solve`
+;;; A hypothesis rule's parameter its activator binds to `eq` heads a premise
+;;; of one argument, so `ein saturate` answered where `ein solve`
 ;;; stopped — regression `eq-arity-hrule`
 ;;; (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; An hrule `h` whose parameter `?R` heads `(?R ?x)`, and the solve form's
-;;; activator for it, `(h (eq))`, which binds `?R` to `eq`.
+;;; A rule `h` that concludes a hypothesis, whose parameter `?R` heads `(?R ?x)`,
+;;; and its activator, the fact `(h eq)`, which binds `?R` to `eq`.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
@@ -17,24 +17,24 @@
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; `ein saturate FILE --dump` answered, exit 0, the hrule playing no part in
+;;; `ein saturate FILE --dump` answered, exit 0, the hypothesis rule playing no part in
 ;;; a saturation; `ein solve`, `solve --minimal` and `ein oracle` stopped where
-;;; the hrule's plan is compiled, before any state is read, exit 1, with the
+;;; the rule's plan is compiled, before any state is read, exit 1, with the
 ;;; compiler's *`(eq …)` takes exactly 2 arguments and was given 1* (at
 ;;; `ee3da657`, release and debug alike).
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;
 ;;; The loader refuses the program: every command that loads it exits 1 with
-;;; one line, naming `h`, `?R`, the form and the solve form (`ein test`: 2),
+;;; one line, naming `h`, `?R`, the form and the activator (`ein test`: 2),
 ;;; in either build. The regression's `now` is that refusal; the section above
 ;;; is the record of the answer it replaced.
 
 (relation p Node :why "{?3} is a p")
 (relation q Node :why "{?3} is a q")
 (p a)
-(hrule h (?R)
+(rule h (?R)
   :match (?R ?x)
-  :assert (q ?x)
+  :assert (open (q ?x))
   :why "{?x} stands in {?R}, so it may be a q")
-(solve :hrules (h (eq)))
+(h eq)

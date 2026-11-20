@@ -5,7 +5,7 @@
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────
 ;;;
-;;; Two facts, `(p a)` and `(neqw a)`; an hrule, `h`, proposing `(tag ?x)` for
+;;; Two facts, `(p a)` and `(neqw a)`; a hypothesis rule, `h`, proposing `(tag ?x)` for
 ;;; each `(p ?x)`; and a query, `(neqw ?y)`.
 ;;;
 ;;; ── The answer, by hand ───────────────────────────────────────────────
@@ -13,7 +13,7 @@
 ;;; A keyword is a whole word: `01-grammar.md` § 1, fact 1, excludes a reserved
 ;;; word from `SYMBOL` only where a word boundary follows it (`neq` is not a
 ;;; `SYMBOL`; `neq_test` is), so `neqw` is a name like any other. R is ∅ and
-;;; {(tag a)}, and the query asks about `neqw`, which no hrule proposes: the
+;;; {(tag a)}, and the query asks about `neqw`, which no hypothesis rule proposes: the
 ;;; read-out names it `outside` the universe, and the query's one class is `?y
 ;;; = a`. It is the answer of `kw-neq-in-goal-twin.ein`.
 ;;;
@@ -30,5 +30,5 @@
 
 (relation p Node :why "p holds of {?3}") (relation neqw Node :why "neqw holds of {?3}") (relation tag Node :why "{?3} is tagged")
 (p a) (neqw a)
-(hrule h () :match (p ?x) :assert (tag ?x) :why "p holds of {?x}; guess that {?x} is tagged")
+(rule h () :match (p ?x) :assert (open (tag ?x)) :why "p holds of {?x}; guess that {?x} is tagged")
 (query :goal (neqw ?y))

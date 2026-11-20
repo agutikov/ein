@@ -1,11 +1,11 @@
-//! **An hrule that reads `not` gets one answer from both builds**
+//! **A hypothesis rule that reads `not` gets one answer from both builds**
 //! (Q-M1f.129).
 //!
-//! `Hrules::candidates` holds no `debug_assert!` that no hrule's `:match`
+//! `Hrules::candidates` holds no `debug_assert!` that no hypothesis rule's `:match`
 //! reads `not`: nothing writes a `not` mid-enumeration, so such an assertion
 //! would guard a write no path makes and stop a debug build, exit 101, on a
 //! program a release build answers as `ein oracle` does. Nothing is written
-//! between two candidates, so every hrule reads the state it was asked about.
+//! between two candidates, so every hypothesis rule reads the state it was asked about.
 //!
 //! `cargo test` builds with debug assertions, so this file is the debug
 //! build's run of the three shapes: a stored negation read under `(absent
@@ -95,7 +95,7 @@ fn an_hrule_that_reads_not_is_answered_as_the_oracle_answers() {
             }
         }
     }
-    // The fuzzer's finding: its hrule matches nothing, and the run answers.
+    // The fuzzer's finding: its hypothesis rule matches nothing, and the run answers.
     let fuzz = ein(&["solve", "corpus/fuzz_findings/hrule-reads-not.ein"]);
     if fuzz.code != 0 {
         bad.push(format!(
@@ -107,7 +107,7 @@ fn an_hrule_that_reads_not_is_answered_as_the_oracle_answers() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// Two hrules, of which the second reads the negation the first could be
+/// Two hypothesis rules, of which the second reads the negation the first could be
 /// asked about: both are matched against the state as it was asked, so the
 /// second proposes of Bob alone, and `ein solve` counts what `ein oracle`
 /// counts. The program imports the contradiction, so the candidate root
@@ -123,10 +123,10 @@ fn every_hrule_reads_the_state_it_was_asked_about() {
          (relation owes Guest :why \"{?3} owes\")\n\
          (is-a Ann Guest) (is-a Bob Guest)\n\
          (not (paid Bob))\n\
-         (hrule suppose () :match (and (is-a ?g Guest) (absent (not (paid ?g)))) \
-         :assert (paid ?g) :why \"suppose {?g} has paid\")\n\
-         (hrule charge () :match (and (is-a ?g Guest) (not (paid ?g))) \
-         :assert (owes ?g) :why \"suppose {?g} owes\")\n\
+         (rule suppose () :match (and (is-a ?g Guest) (absent (not (paid ?g)))) \
+         :assert (open (paid ?g)) :why \"suppose {?g} has paid\")\n\
+         (rule charge () :match (and (is-a ?g Guest) (not (paid ?g))) \
+         :assert (open (owes ?g)) :why \"suppose {?g} owes\")\n\
          (query :goal (owes ?g))\n",
     )
     .expect("written");

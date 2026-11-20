@@ -18,7 +18,7 @@
 //! | `discharged` | a plan is compiled and root owes nothing ([`ein_infer::obligations::tally`]) | second | second | **third** |
 //! | `owing` | root owes | second | second | second |
 //!
-//! An hrule and `(solve :no-search)` come before the second rung under every
+//! A hypothesis rule and `(solve :no-search)` come before the second rung under every
 //! option, so a program that declares either keeps its rung; a program whose
 //! second rung declines is on the third already. The columns `rung-b` and
 //! `rung-c` say where each option puts the program, and `moves` which of
@@ -313,7 +313,7 @@ struct Row {
     n: usize,
     rules: usize,
     plans: usize,
-    hrules: usize,
+    hypothesis_rules: usize,
     no_search: bool,
     root_dead: bool,
     root_owes: usize,
@@ -334,7 +334,7 @@ impl Row {
     /// puts the program on.
     fn rung_under(&self, from: Class) -> &'static str {
         match self.rung {
-            Mode::Hrules | Mode::NoSearch | Mode::Blind | Mode::Declined | Mode::Union => {
+            Mode::HypothesisRules | Mode::NoSearch | Mode::Blind | Mode::Declined | Mode::Union => {
                 self.rung.as_str()
             }
             Mode::Obligations | Mode::Stuck if self.class < from => "blind",
@@ -395,7 +395,7 @@ fn read(path: &Path, limit: u32, check: bool) -> Result<Row, &'static str> {
         n: p.h.len(),
         rules,
         plans,
-        hrules: program.hrules.len(),
+        hypothesis_rules: program.hypotheses.len(),
         no_search: declares_no_search(&program, &ast),
         root_dead,
         root_owes,
@@ -551,7 +551,7 @@ fn main() {
         "n",
         "rules",
         "plans",
-        "hrules",
+        "hypothesis-rules",
         "no-search",
         "root",
         "root-owes",
@@ -637,7 +637,7 @@ fn main() {
             row.n.to_string(),
             row.rules.to_string(),
             row.plans.to_string(),
-            row.hrules.to_string(),
+            row.hypothesis_rules.to_string(),
             if row.no_search { "yes" } else { "-" }.to_string(),
             if row.root_dead { "dead" } else { "alive" }.to_string(),
             row.root_owes.to_string(),

@@ -24,12 +24,12 @@
 (total-owed dig is-a)   ; every place owes a digit: a state with a place unset is no answer
 (functional dig)        ; and none has two
 
-(hrule guess-digit ()
+(rule guess-digit ()
   :match  (and (is-a ?p Place) (is-a ?d Digit))
-  :assert (dig ?p ?d)
+  :assert (open (dig ?p ?d))
   :why    "suppose the digit of x at {?p} is {?d}")
 
-(solve :hrules (guess-digit)
+(solve
        :expect (region (owing (model (dig p0 6))
                               (model (dig p1 0))
                               (model (dig p1 1))

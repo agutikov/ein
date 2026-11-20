@@ -49,7 +49,7 @@
 
 ;; One candidate per object — reads only `is-a`, so no negative of `p` is
 ;; a fact this generator conditions on.
-(hrule guess () :match (is-a ?x T) :assert (p ?x) :why "guess that p holds of {?x}")
+(rule guess () :match (is-a ?x T) :assert (open (p ?x)) :why "guess that p holds of {?x}")
 
 ;; One step from any (p ?x), so a one-step lookahead kills every candidate;
 ;; a kill cache would write (not (p A)) / (not (p B)) into root.

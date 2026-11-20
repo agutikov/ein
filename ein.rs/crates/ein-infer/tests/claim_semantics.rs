@@ -20,11 +20,11 @@ use ein_ir::{Ast, load, parse};
 /// three pairs, seven states, each reached by one commitment.
 const TRIPLE: &str = "
 (rule three-conflict () :match (and (a-prop ?x) (b-prop ?y) (c-prop ?z)) :assert (false) :why \"a-prop holds of {?x}, b-prop of {?y} and c-prop of {?z}, which cannot all be\")
-(hrule guess (?R ?T) :match (is-a ?x ?T) :assert (?R ?x) :why \"guess that {?R} holds of {?x}, a {?T}\")
+(rule guess (?R ?T) :match (is-a ?x ?T) :assert (open (?R ?x)) :why \"guess that {?R} holds of {?x}, a {?T}\")
 (relation is-a T T :why \"{?3} is a {?4}\") (relation a-prop T :why \"a-prop holds of {?3}\") (relation b-prop T :why \"b-prop holds of {?3}\") (relation c-prop T :why \"c-prop holds of {?3}\")
 (is-a Item T) (is-a X Item)
+(guess a-prop Item) (guess b-prop Item) (guess c-prop Item)
 ";
-const TRIPLE_HRULES: &str = ":hrules (guess (a-prop Item) guess (b-prop Item) guess (c-prop Item))";
 const TRIPLE_R: &str = "(model) (model (a-prop X)) (model (b-prop X)) (model (c-prop X)) \
      (model (a-prop X) (b-prop X)) (model (a-prop X) (c-prop X)) (model (b-prop X) (c-prop X))";
 
@@ -71,7 +71,7 @@ const DEAD: &str = "
 const NEGATIVE: &str = "
 (relation is-a T T :why \"{?3} is a {?4}\") (relation p T :why \"p holds of {?3}\") (relation q T :why \"q holds of {?3}\")
 (is-a A T)
-(hrule guess () :match (is-a ?x T) :assert (p ?x) :why \"guess that p holds of {?x}\")
+(rule guess () :match (is-a ?x T) :assert (open (p ?x)) :why \"guess that p holds of {?x}\")
 (rule writes-a-negative () :match (p ?x) :assert (not (q ?x)) :why \"p holds of {?x}, so q does not hold of {?x}\")
 ";
 
@@ -83,8 +83,8 @@ const FLAGGED: &str = "
 (is-a Ann Guest) (is-a C1 Chair) (is-a Soup Food)
 (rule seated-dines () :match (seats ?g ?c) :assert (is-a ?g Diner) :why \"{?g} is seated on {?c}, so {?g} is a Diner\")
 (total-owed meal is-a)
-(hrule seat () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (seats ?g ?c) :why \"guess that guest {?g} is seated on chair {?c}\")
-(hrule dine () :match (and (is-a ?g Guest) (is-a ?f Food)) :assert (meal ?g ?f) :why \"guess that guest {?g} has {?f} for a meal\")
+(rule seat () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (open (seats ?g ?c)) :why \"guess that guest {?g} is seated on chair {?c}\")
+(rule dine () :match (and (is-a ?g Guest) (is-a ?f Food)) :assert (open (meal ?g ?f)) :why \"guess that guest {?g} has {?f} for a meal\")
 ";
 
 fn loaded(src: &str) -> Result<(Kb, Terms, Ast), String> {
@@ -138,11 +138,11 @@ fn refused(src: &str, says: &str) {
 
 #[test]
 fn every_state_listed_holds_in_any_order() {
-    holds(TRIPLE, TRIPLE_HRULES, &format!("(region {TRIPLE_R})"));
+    holds(TRIPLE, "", &format!("(region {TRIPLE_R})"));
     let reversed = "(model (b-prop X) (c-prop X)) (model (a-prop X) (c-prop X)) \
          (model (a-prop X) (b-prop X)) (model (c-prop X)) (model (b-prop X)) \
          (model (a-prop X)) (model)";
-    holds(TRIPLE, TRIPLE_HRULES, &format!("(region {reversed})"));
+    holds(TRIPLE, "", &format!("(region {reversed})"));
 }
 
 #[test]
@@ -150,13 +150,13 @@ fn a_missing_state_fails_and_is_named() {
     let six = TRIPLE_R.replace("(model (b-prop X) (c-prop X))", "");
     fails(
         TRIPLE,
-        TRIPLE_HRULES,
+        "",
         &format!("(region {six})"),
         "the claim lists 6 states and R has 7",
     );
     fails(
         TRIPLE,
-        TRIPLE_HRULES,
+        "",
         &format!("(region {six})"),
         "a state of R no model lists: (model (b-prop X) (c-prop X))",
     );
@@ -170,7 +170,7 @@ fn a_state_that_is_not_in_r_fails() {
     );
     fails(
         TRIPLE,
-        TRIPLE_HRULES,
+        "",
         &format!("(region {wrong})"),
         "a listed model no state of R is",
     );
@@ -183,7 +183,7 @@ fn the_empty_model_is_root_and_not_a_wildcard() {
     let no_root = TRIPLE_R.replacen("(model) ", "", 1);
     fails(
         TRIPLE,
-        TRIPLE_HRULES,
+        "",
         &format!("(region {no_root})"),
         "a state of R no model lists: (model)",
     );
@@ -199,7 +199,7 @@ fn naming_a_relation_closes_it_in_every_model() {
     // matching cannot be one to one.
     let blind_to_c = "(model) (model (a-prop X)) (model (b-prop X)) (model) \
          (model (a-prop X) (b-prop X)) (model (a-prop X)) (model (b-prop X))";
-    holds(TRIPLE, TRIPLE_HRULES, &format!("(region {blind_to_c})"));
+    holds(TRIPLE, "", &format!("(region {blind_to_c})"));
 }
 
 /// A listed `(not …)` is checked for presence, and closes nothing.
@@ -274,7 +274,7 @@ fn merged_needs_a_state_several_commitments_reach() {
     let src = "
 (relation h T :why \"h holds of {?3}\") (relation slot T :why \"{?3} is a slot\")
 (slot A) (slot C)
-(hrule guess () :match (slot ?x) :assert (h ?x) :why \"guess that h holds of slot {?x}\")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why \"guess that h holds of slot {?x}\")
 (rule imp-A () :match (h A) :assert (h B) :why \"h holds of A, so h holds of B\")
 (rule imp-C () :match (h C) :assert (h D) :why \"h holds of C, so h holds of D\")
 ";
@@ -306,7 +306,7 @@ fn merged_is_all_or_nothing() {
     let src = "
 (relation h T :why \"h holds of {?3}\") (relation slot T :why \"{?3} is a slot\")
 (slot A) (slot B) (slot C)
-(hrule guess () :match (slot ?x) :assert (h ?x) :why \"guess that h holds of slot {?x}\")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why \"guess that h holds of slot {?x}\")
 (rule imp-A-B () :match (h A) :assert (h B) :why \"h holds of A, so h holds of B\")
 ";
     // {A,B} is reached by {A} and {A,B}, and {A,B,C} by {A,C} and {A,B,C}.
@@ -329,7 +329,7 @@ fn merged_with_the_wrong_generator_fails() {
     let src = "
 (relation h T :why \"h holds of {?3}\") (relation slot T :why \"{?3} is a slot\")
 (slot A) (slot B)
-(hrule guess () :match (slot ?x) :assert (h ?x) :why \"guess that h holds of slot {?x}\")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why \"guess that h holds of slot {?x}\")
 (rule imp-A-B () :match (h A) :assert (h B) :why \"h holds of A, so h holds of B\")
 ";
     // R: ∅, {B}, and {A,B} reached by {A} and {A,B}.
@@ -377,13 +377,13 @@ fn false_is_every_node_dead() {
     );
     fails(
         TRIPLE,
-        TRIPLE_HRULES,
+        "",
         "(false)",
         "(false) says every node is dead, and R has 7 states",
     );
     fails(
         TRIPLE,
-        TRIPLE_HRULES,
+        "",
         "(region)",
         "the claim says R is empty, and R has 7 states",
     );
@@ -412,7 +412,7 @@ fn a_flagged_program_is_checked_against_the_cube() {
 fn a_route_that_stops_leaves_the_claim_unchecked() {
     let (o, lines) = check_with(
         TRIPLE,
-        TRIPLE_HRULES,
+        "",
         &format!("(region {TRIPLE_R})"),
         &Options {
             budget: 1,

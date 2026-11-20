@@ -44,7 +44,7 @@ fn ein(args: &[&str]) -> Run {
 }
 
 /// Two guests, of whom Ann has paid; `admitted` is named only by a rule's
-/// `:assert`, `seen` only by an hrule's, which no activator reaches, `near`
+/// `:assert`, `seen` only by a hypothesis rule's, which no activator reaches, `near`
 /// only by being passed to
 /// `functional`, and `(says (paid Bob))` holds a statement. No candidate
 /// unless a program's `(solve …)` says otherwise.
@@ -58,9 +58,9 @@ const HEAD: &str = "(relation paid Guest :why \"{?3} has paid\")\n\
      :why \"{?R} is not functional: {?a} has both {?b} and {?c}\")\n\
      (rule welcome ()\n  :match (paid ?g)\n  :assert (admitted ?g)\n  \
      :why \"{?g} has paid, so {?g} is admitted\")\n\
-     (hrule notice (?T)\n  :match (is-a ?g ?T)\n  :assert (seen ?g)\n  \
+     (rule notice (?T)\n  :match (is-a ?g ?T)\n  :assert (open (seen ?g))\n  \
      :why \"guess that {?g} is seen\")\n\
-     (hrule guess (?R ?T)\n  :match (is-a ?a ?T)\n  :assert (?R ?a)\n  \
+     (rule guess (?R ?T)\n  :match (is-a ?a ?T)\n  :assert (open (?R ?a))\n  \
      :why \"guess that {?R} holds of {?a}\")\n\
      (functional near)\n\
      (is-a Ann Guest) (is-a Bob Guest)\n(paid Ann)\n(says (paid Bob))\n";
@@ -118,8 +118,8 @@ const REFUSED: [(&str, &str, &str); 19] = [
         "goal-relation",
         "(query :goal (payed ?g))",
         "query: its :goal writes (payed ?g), and the program names no relation payed — a \
-         relation of the program is one it declares, states a fact of, or writes in a rule or \
-         an hrule, so no state holds a fact of payed",
+         relation of the program is one it declares, states a fact of, or writes in a rule, so \
+         no state holds a fact of payed",
     ),
     (
         "goal-relation-under-absent",
@@ -155,7 +155,7 @@ const REFUSED: [(&str, &str, &str); 19] = [
         "claim-relation",
         "(solve :expect (region (model (payed Ann))))",
         "(solve … :expect …) names payed, and the program names no relation payed — a relation \
-         of the program is one it declares, states a fact of, or writes in a rule or an hrule",
+         of the program is one it declares, states a fact of, or writes in a rule",
     ),
     // A relation written as a variable, at any depth.
     (
@@ -451,13 +451,13 @@ const ANSWERED: [(&str, &str, i32, &[&str]); 11] = [
     ),
     (
         "a-goal-over-what-an-activator-proposes",
-        "(solve :hrules (guess (wanted Guest)))\n(query :goal (wanted ?g))",
+        "(guess wanted Guest)\n(query :goal (wanted ?g))",
         0,
         &["  query             (wanted ?g)", "?g = Ann", "?g = Bob"],
     ),
     (
         "a-claim-over-what-an-activator-proposes",
-        "(solve :hrules (guess (wanted Guest))\n       :expect (region (model) \
+        "(guess wanted Guest) (solve\n       :expect (region (model) \
          (model (wanted Ann)) (model (wanted Bob)) (model (wanted Ann) (wanted Bob))))\n\
          (query :goal (wanted ?g))",
         0,
@@ -508,7 +508,7 @@ fn a_goal_over_a_relation_of_the_program_loads() {
     let goals: [(&str, &str); 14] = [
         ("declared", "(query :goal (paid ?g))"),
         ("a-rules-conclusion", "(query :goal (admitted ?g))"),
-        ("an-hrules-conclusion", "(query :goal (seen ?g))"),
+        ("a-hypothesis-rules-conclusion", "(query :goal (seen ?g))"),
         ("passed-to-a-rule", "(query :goal (near ?a ?b))"),
         ("a-facts-own", "(query :goal (functional ?R))"),
         ("is-a", "(query :goal (is-a ?g Guest))"),

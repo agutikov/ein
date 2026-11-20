@@ -9,7 +9,7 @@
 //! |---|---|
 //! | the corpus-wide accept/reject surface | `corpus_shapes.md5`'s 111 `ir[parse]` lines, which carry the *message* of a refusal as well as the dump of an acceptance |
 //! | the thirty `examples/broken/*.ein` reports | `.expected` files beside them — see [`the_parse_negative_fixtures_reproduce_their_message`] |
-//! | the 78 ambiguity cases | a checked-in decision table |
+//! | the 77 ambiguity cases | a checked-in decision table |
 //!
 //! The `.expected` files carry machine paths replaced by `{FILE}`, the way
 //! `examples/broken/load/` already does it.
@@ -54,8 +54,8 @@ fn the_parse_negative_fixtures_reproduce_their_message() {
     fixtures.sort();
     assert_eq!(
         fixtures.len(),
-        28,
-        "the parse-negative group is twenty-eight fixtures"
+        27,
+        "the parse-negative group is twenty-seven fixtures"
     );
 
     let mut bad = Vec::new();
@@ -90,7 +90,7 @@ fn the_parse_negative_fixtures_reproduce_their_message() {
     );
 }
 
-/// **The 78 cases where the parser's reading is not obvious**, each held to
+/// **The 77 cases where the parser's reading is not obvious**, each held to
 /// the generated parser's answer (`ir_semantics`'
 /// `the_documented_ambiguities_resolve_as_recorded` says what each reads as,
 /// and why).
@@ -108,7 +108,7 @@ fn the_parse_negative_fixtures_reproduce_their_message() {
 /// case that started parsing differently rather than merely failing shows up.
 /// The structure of an accepted parse is pinned wherever the corpus reaches
 /// it, through `corpus_shapes.md5`'s `ir[parse]` (which digests
-/// `dump_canonical`), and these seventy-eight one-liners are not in the
+/// `dump_canonical`), and these seventy-seven one-liners are not in the
 /// corpus.
 #[test]
 fn the_documented_ambiguities_keep_their_decisions() {
@@ -118,7 +118,6 @@ fn the_documented_ambiguities_keep_their_decisions() {
         // parse error, a trace holding only events, never the event `x`.
         "(rulex (?a) :match X :assert Y)",
         "(rulex A)",
-        "(hrulex (?a) :match X :assert Y)",
         "(macrox (?a) B)",
         "(importx :as m)",
         "(importfoo.bar :as m)",
@@ -201,7 +200,7 @@ fn the_documented_ambiguities_keep_their_decisions() {
         "(a))",
         "(a",
     ];
-    assert_eq!(cases.len(), 78, "the decision table lost a case");
+    assert_eq!(cases.len(), 77, "the decision table lost a case");
     let mut out = String::new();
     for case in cases {
         out.push_str(&format!("=== {case:?}\n"));
@@ -220,7 +219,7 @@ fn the_documented_ambiguities_keep_their_decisions() {
 /// Every word of `LITERALS` below, the language's literal words, and as
 /// controls the kernel's eight other heads, each followed by a name
 /// character and an argument shape, written in each of the twenty places the
-/// parser reads a keyword: 53 460 parses. None splits the name into the
+/// parser reads a keyword: 51 480 parses. None splits the name into the
 /// keyword and the rest of it, `(neqw ?x)` as `(neq w ?x)`:
 ///
 /// - a word followed by a name character is never split: the whole name
@@ -271,10 +270,10 @@ fn a_keyword_is_a_whole_word_in_every_place() {
         ("assert-not", "(rule r () :match (p ?x) :assert (not (S)))"),
         ("nested", "(rule r () :match (p ?x) :assert (q (S)))"),
         (
-            "hrule-match",
-            "(hrule h () :match (and (p ?x) (S)) :assert (q ?x))",
+            "hypothesis-match",
+            "(rule h () :match (and (p ?x) (S)) :assert (open (q ?x)))",
         ),
-        ("hrule-assert", "(hrule h () :match (p ?x) :assert (S))"),
+        ("hypothesis", "(rule h () :match (p ?x) :assert (open (S)))"),
         (
             "obligation",
             "(rule o (?R) :match (and (relation ?R ?A) (?A ?a) (absent (S))) :assert (open ?R))",
@@ -308,10 +307,9 @@ fn a_keyword_is_a_whole_word_in_every_place() {
         })
     };
     // The language's literal words.
-    const LITERALS: [&str; 19] = [
+    const LITERALS: [&str; 18] = [
         "relation",
         "rule",
-        "hrule",
         "query",
         "solve",
         "config",
@@ -330,8 +328,8 @@ fn a_keyword_is_a_whole_word_in_every_place() {
         "symmetry-class",
     ];
     let words: Vec<&str> = LITERALS.iter().copied().chain(CONTROLS).collect();
-    assert_eq!(words.len(), 27);
-    // The 540 cells, a place and a word each, on a worker per core:
+    assert_eq!(words.len(), 26);
+    // The 520 cells, a place and a word each, on a worker per core:
     // most of these parses are refused, and a refusal runs
     // recovery, whose report this test does not read. The counts and the split
     // parses are summed in the order one loop over the places and the words
@@ -409,7 +407,7 @@ fn a_keyword_is_a_whole_word_in_every_place() {
         split.extend(sp);
         named_dash += nd;
     }
-    assert_eq!(parses, 53_460);
+    assert_eq!(parses, 51_480);
     assert!(
         split.is_empty(),
         "{} parses split a name after a keyword:\n{}",

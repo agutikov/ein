@@ -365,8 +365,8 @@ impl Plan {
         &self.guard_keys[span.range()]
     }
 
-    /// The first conclusion template — the back-compat reader for the single-assert consumers (closure/NAF
-    /// analysis, hrule).
+    /// The first conclusion template — the reader for the single-assert
+    /// consumers (the closure and NAF analysis).
     pub fn assert_template(&self) -> Option<Slot> {
         self.asserts.first().copied()
     }

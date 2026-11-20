@@ -130,8 +130,8 @@ fn places() -> Vec<(&'static str, String)> {
             rule("(and (a ?x) (neq ?x jX))", "(q ?x)"),
         ),
         (
-            "an hrule's conclusion",
-            "(hrule h () :match (a ?x) :assert (p ?xX) :why \"h\")\n".into(),
+            "a hypothesis",
+            "(rule h () :match (a ?x) :assert (open (p ?xX)) :why \"h\")\n".into(),
         ),
         (
             "a macro's name",

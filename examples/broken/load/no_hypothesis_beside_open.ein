@@ -22,7 +22,7 @@
 ;; node is in R — three states — and `--single` says `Ambiguity`.
 (total-owed likes is-a)
 
-(hrule pick () :match (is-a ?p Person) :assert (choice ?p) :why "suppose {?p} is the one chosen")
+(rule pick () :match (is-a ?p Person) :assert (open (choice ?p)) :why "suppose {?p} is the one chosen")
 
 (rule feeds ()
   :match  (choice Ann)

@@ -13,7 +13,7 @@
 //!
 //! | pair | the relations printed |
 //! |---|---|
-//! | H + O | owable relations an active hrule proposes, and those it does not |
+//! | H + O | owable relations an active hypothesis rule proposes, and those it does not |
 //! | H + HR | proposed relations the list leaves out |
 //! | H + NH | proposed relations the list names |
 //! | H + C | proposed relations that are closed |
@@ -59,31 +59,31 @@ fn pairs(m: &Mechanisms, terms: &Terms) -> BTreeMap<&'static str, Vec<String>> {
     let listed = m.listed.clone();
     let left_out = |r: &Symbol| listed.as_ref().is_some_and(|l| !l.contains(r));
     let mut out = BTreeMap::new();
-    if !m.hrules.is_empty() && !m.obligation_rules.is_empty() {
+    if !m.hypothesis_rules.is_empty() && !m.obligation_rules.is_empty() {
         out.insert(
             "H+O",
             names(terms, owable.iter().copied())
                 .into_iter()
                 .map(|r| {
                     let p = proposed.iter().any(|&s| terms.sym(s) == r);
-                    format!("{r}{}", if p { "" } else { " (no hrule proposes it)" })
+                    format!("{r}{}", if p { "" } else { " (no hypothesis rule proposes it)" })
                 })
                 .collect(),
         );
     }
-    if !m.hrules.is_empty() && listed.is_some() {
+    if !m.hypothesis_rules.is_empty() && listed.is_some() {
         out.insert(
             "H+HR",
             names(terms, proposed.iter().copied().filter(|r| left_out(r))),
         );
     }
-    if !m.hrules.is_empty() && !m.excluded.is_empty() {
+    if !m.hypothesis_rules.is_empty() && !m.excluded.is_empty() {
         out.insert(
             "H+NH",
             names(terms, proposed.intersection(&m.excluded).copied()),
         );
     }
-    if !m.hrules.is_empty() && !m.closed.is_empty() {
+    if !m.hypothesis_rules.is_empty() && !m.closed.is_empty() {
         out.insert(
             "H+C",
             names(terms, proposed.intersection(&m.closed).copied()),
@@ -172,7 +172,7 @@ fn main() {
         swept += 1;
         let ps = pairs(&m, &terms);
         let mut present = Vec::new();
-        if !m.hrules.is_empty() {
+        if !m.hypothesis_rules.is_empty() {
             present.push(if m.proposals.is_empty() {
                 "H(inactive)"
             } else {

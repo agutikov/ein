@@ -12,7 +12,7 @@
 
 (need K1 E) (need K2 C) (need K3 D) (need K4 A) (need K5 A) (need K5 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -49,7 +49,7 @@
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-D-C ()
   :match  (h D)
@@ -86,7 +86,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -105,7 +105,7 @@
 
 (need K1 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h C))
@@ -132,7 +132,7 @@
 (world W)
 (slot A) (slot B) (slot C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -151,7 +151,7 @@
 
 (need K1 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-B-A ()
   :match  (h B)
@@ -173,7 +173,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (h A) (absent (and (need K1 ?x) (h ?x))))
@@ -192,7 +192,7 @@
 
 (need K1 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -211,7 +211,7 @@
 
 (need K1 B) (need K1 C) (need K2 A) (need K2 C) (need K3 A) (need K3 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h B) (h C))
@@ -245,7 +245,7 @@
 
 (need K1 B) (need K2 C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h E))
@@ -279,7 +279,7 @@
 
 (need K1 F) (need K2 E) (need K3 D) (need K4 C) (need K5 B) (need K6 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -321,7 +321,7 @@
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-B ()
   :match  (h C)
@@ -348,7 +348,7 @@
 (world W)
 (slot A) (slot B) (slot C) (slot D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-A-D ()
   :match  (h A)
@@ -387,7 +387,7 @@
 
 (need K1 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-B ()
   :match  (h C)
@@ -419,7 +419,7 @@
 (world W)
 (slot A) (slot B) (slot C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-B ()
   :match  (h C)
@@ -458,7 +458,7 @@
 
 (need K1 C) (need K2 B) (need K3 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -487,7 +487,7 @@
 
 (need K1 B) (need K1 C) (need K2 A) (need K2 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-D-A ()
   :match  (h D)
@@ -519,7 +519,7 @@
 (world W)
 (slot A) (slot B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -546,7 +546,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -565,7 +565,7 @@
 
 (need K1 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-B-A ()
   :match  (h B)
@@ -594,7 +594,7 @@
 
 (need K1 B) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -616,7 +616,7 @@
 (world W)
 (slot A) (slot B) (slot C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (h B) (h C) (absent (and (need K1 ?x) (h ?x))))
@@ -635,7 +635,7 @@
 
 (need K1 C) (need K1 D) (need K2 A) (need K3 D) (need K4 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -669,7 +669,7 @@
 
 (need K1 B) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -693,7 +693,7 @@
 
 (need K1 C) (need K2 B) (need K3 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -722,7 +722,7 @@
 
 (need K1 A) (need K2 C) (need K3 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -751,7 +751,7 @@
 
 (need K1 B) (need K3 A) (need K3 C) (need K4 A) (need K4 D) (need K4 E) (need K5 A) (need K6 A) (need K6 F) (need K7 A) (need K7 D) (need K8 A) (need K8 D) (need K9 A) (need K9 C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (h A) (absent (and (need K1 ?x) (h ?x))))
@@ -808,7 +808,7 @@
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h B) (h C))
@@ -832,7 +832,7 @@
 
 (need K1 D) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-D ()
   :match  (h C)
@@ -876,7 +876,7 @@
 
 (need K1 E) (need K2 D) (need K3 B) (need K4 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -915,7 +915,7 @@
 
 (need K1 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -932,7 +932,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -951,7 +951,7 @@
 
 (need K1 E) (need K2 D) (need K3 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h E))
@@ -988,7 +988,7 @@
 (world W)
 (slot A) (slot B) (slot C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-B-A ()
   :match  (h B)
@@ -1022,7 +1022,7 @@
 
 (need K1 E) (need K2 B) (need K2 D) (need K3 A) (need K4 B) (need K4 C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h B) (h D))
@@ -1061,7 +1061,7 @@
 
 (need K1 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -1085,7 +1085,7 @@
 
 (need K1 D) (need K2 C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h B))
@@ -1117,7 +1117,7 @@
 (world W)
 (slot A) (slot B) (slot C) (slot D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-B-D ()
   :match  (h B)
@@ -1151,7 +1151,7 @@
 
 (need K1 A) (need K1 B) (need K1 E) (need K2 A) (need K2 D) (need K2 E) (need K3 A) (need K3 F) (need K4 B) (need K4 F) (need K5 D) (need K5 F) (need K6 E) (need K6 F)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-B-C ()
   :match  (h B)
@@ -1208,7 +1208,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (h A) (absent (and (need K1 ?x) (h ?x))))
@@ -1225,7 +1225,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (h A) (absent (and (need K1 ?x) (h ?x))))
@@ -1244,7 +1244,7 @@
 
 (need K1 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -1263,7 +1263,7 @@
 
 (need K1 B) (need K2 A) (need K3 C) (need K4 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (h A) (absent (and (need K1 ?x) (h ?x))))
@@ -1297,7 +1297,7 @@
 
 (need K1 B) (need K2 C) (need K3 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -1326,7 +1326,7 @@
 
 (need K1 F) (need K2 C) (need K3 B) (need K4 A) (need K5 E)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -1363,7 +1363,7 @@
 (world W)
 (slot A) (slot B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-A-B ()
   :match  (h A)
@@ -1385,7 +1385,7 @@
 (world W)
 (slot A) (slot B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-B-A ()
   :match  (h B)
@@ -1419,7 +1419,7 @@
 
 (need K1 C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h C) (h F))
@@ -1451,7 +1451,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -1470,7 +1470,7 @@
 
 (need K1 D) (need K1 E) (need K2 B) (need K3 A) (need K4 B) (need K5 C) (need K5 E)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -1509,7 +1509,7 @@
 
 (need K1 B) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-A-C ()
   :match  (h A)
@@ -1548,7 +1548,7 @@
 
 (need K1 C) (need K2 B) (need K3 A) (need K3 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (h B) (absent (and (need K1 ?x) (h ?x))))
@@ -1577,7 +1577,7 @@
 
 (need K1 C) (need K2 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-D-A ()
   :match  (h D)
@@ -1619,7 +1619,7 @@
 (world W)
 (slot A) (slot B) (slot C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h B)
@@ -1643,7 +1643,7 @@
 
 (need K1 B) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-A ()
   :match  (h C)
@@ -1672,7 +1672,7 @@
 
 (need K1 C) (need K2 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-D-C ()
   :match  (h D)
@@ -1706,7 +1706,7 @@
 
 (need K1 B) (need K2 A) (need K2 D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h C))
@@ -1745,7 +1745,7 @@
 
 (need K1 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-B-C ()
   :match  (h B)
@@ -1774,7 +1774,7 @@
 
 (need K1 D) (need K2 C) (need K3 B) (need K4 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h E)
@@ -1813,7 +1813,7 @@
 
 (need K1 A) (need K3 C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -1842,7 +1842,7 @@
 
 (need K1 B) (need K1 D) (need K2 C) (need K4 C) (need K4 E) (need K5 A) (need K5 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h C) (h E))
@@ -1891,7 +1891,7 @@
 
 (need K1 E) (need K2 A) (need K2 C) (need K2 F) (need K3 B) (need K3 D) (need K4 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-D-F ()
   :match  (h D)
@@ -1935,7 +1935,7 @@
 
 (need K1 F) (need K2 B) (need K3 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -1964,7 +1964,7 @@
 
 (need K1 F) (need K2 C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-E ()
   :match  (h C)
@@ -2003,7 +2003,7 @@
 
 (need K1 E) (need K2 D) (need K3 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-F-A ()
   :match  (h F)
@@ -2045,7 +2045,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (query :goal (h ?x))
 ;;; program random_66
@@ -2059,7 +2059,7 @@
 
 (need K1 F) (need K2 E) (need K3 C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-A-D ()
   :match  (h A)
@@ -2106,7 +2106,7 @@
 (world W)
 (slot A) (slot B) (slot C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-A ()
   :match  (h C)
@@ -2143,7 +2143,7 @@
 (world W)
 (slot A) (slot B) (slot C) (slot D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -2180,7 +2180,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -2199,7 +2199,7 @@
 
 (need K1 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-A-B ()
   :match  (h A)
@@ -2228,7 +2228,7 @@
 
 (need K1 D) (need K2 B) (need K3 E) (need K4 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-E-D ()
   :match  (h E)
@@ -2277,7 +2277,7 @@
 
 (need K1 B) (need K1 D) (need K2 A) (need K3 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -2306,7 +2306,7 @@
 
 (need K1 C) (need K2 A) (need K2 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -2333,7 +2333,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -2355,7 +2355,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (query :goal (h ?x))
 ;;; program random_76
@@ -2367,7 +2367,7 @@
 (world W)
 (slot A) (slot B) (slot C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-A ()
   :match  (h C)
@@ -2396,7 +2396,7 @@
 
 (need K1 B) (need K2 A) (need K2 C) (need K2 E) (need K3 A) (need K3 B) (need K4 A) (need K4 C) (need K4 D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h C) (h E))
@@ -2435,7 +2435,7 @@
 
 (need K1 D) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-D-B ()
   :match  (h D)
@@ -2469,7 +2469,7 @@
 
 (need K1 E) (need K2 C) (need K3 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -2496,7 +2496,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -2513,7 +2513,7 @@
 (world W)
 (slot A) (slot B) (slot C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-A ()
   :match  (h C)
@@ -2550,7 +2550,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -2567,7 +2567,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (query :goal (h ?x))
 ;;; program random_84
@@ -2581,7 +2581,7 @@
 
 (need K1 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -2605,7 +2605,7 @@
 
 (need K1 B) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h C) (h D))
@@ -2639,7 +2639,7 @@
 
 (need K1 D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-B-A ()
   :match  (h B)
@@ -2676,7 +2676,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -2695,7 +2695,7 @@
 
 (need K1 B) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h C) (h D))
@@ -2729,7 +2729,7 @@
 
 (need K1 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-E-A ()
   :match  (h E)
@@ -2768,7 +2768,7 @@
 
 (need K1 C) (need K2 B) (need K2 D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-A ()
   :match  (h C)
@@ -2812,7 +2812,7 @@
 
 (need K1 C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-B-A ()
   :match  (h B)
@@ -2834,7 +2834,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -2853,7 +2853,7 @@
 
 (need K1 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-A ()
   :match  (h C)
@@ -2882,7 +2882,7 @@
 
 (need K1 B) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h C)
@@ -2911,7 +2911,7 @@
 
 (need K1 E) (need K2 D) (need K3 C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-B-A ()
   :match  (h B)
@@ -2948,7 +2948,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -2972,7 +2972,7 @@
 
 (need K1 D) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h B) (h D))
@@ -3004,7 +3004,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -3023,7 +3023,7 @@
 
 (need K1 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-B-A ()
   :match  (h B)
@@ -3052,7 +3052,7 @@
 
 (need K1 C) (need K1 F) (need K2 B) (need K3 D) (need K4 C) (need K5 E) (need K6 F) (need K7 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-E-A ()
   :match  (h E)
@@ -3104,7 +3104,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -3128,7 +3128,7 @@
 
 (need K1 C) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (h A) (absent (and (need K1 ?x) (h ?x))))
@@ -3150,7 +3150,7 @@
 (world W)
 (slot A) (slot B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-B-A ()
   :match  (h B)
@@ -3174,7 +3174,7 @@
 
 (need K1 A) (need K2 D) (need K3 F) (need K4 C) (need K5 E)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-F-C ()
   :match  (h F)
@@ -3218,7 +3218,7 @@
 
 (need K1 E) (need K2 D) (need K3 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -3247,7 +3247,7 @@
 
 (need K1 D) (need K1 F) (need K2 C) (need K3 A) (need K3 D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-A-B ()
   :match  (h A)
@@ -3291,7 +3291,7 @@
 
 (need K1 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h B)
@@ -3315,7 +3315,7 @@
 
 (need K1 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-A-B ()
   :match  (h A)
@@ -3349,7 +3349,7 @@
 
 (need K1 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-A-D ()
   :match  (h A)
@@ -3378,7 +3378,7 @@
 
 (need K1 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -3397,7 +3397,7 @@
 
 (need K1 E) (need K2 D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-E-A ()
   :match  (h E)
@@ -3434,7 +3434,7 @@
 (world W)
 (slot A) (slot B) (slot C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-A-B ()
   :match  (h A)
@@ -3458,7 +3458,7 @@
 
 (need K1 F) (need K2 A) (need K2 B) (need K3 C) (need K4 B) (need K5 D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -3497,7 +3497,7 @@
 
 (need K1 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -3516,7 +3516,7 @@
 
 (need K1 B) (need K1 F) (need K2 B) (need K3 D) (need K3 E) (need K4 C) (need K4 D) (need K5 F)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h E))
@@ -3575,7 +3575,7 @@
 
 (need K1 D) (need K2 B) (need K3 E) (need K4 A) (need K4 C) (need K5 A) (need K5 F)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h C) (h E))
@@ -3624,7 +3624,7 @@
 
 (need K1 E) (need K2 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-A-D ()
   :match  (h A)
@@ -3666,7 +3666,7 @@
 (world W)
 (slot A) (slot B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-B-A ()
   :match  (h B)
@@ -3690,7 +3690,7 @@
 
 (need K1 E) (need K2 D) (need K3 B) (need K4 A) (need K4 C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-B ()
   :match  (h C)
@@ -3727,7 +3727,7 @@
 (world W)
 (slot A) (slot B) (slot C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-B-A ()
   :match  (h B)
@@ -3746,7 +3746,7 @@
 
 (need K1 C) (need K1 D) (need K2 A) (need K2 B) (need K2 F) (need K3 B) (need K3 C) (need K3 F) (need K4 D) (need K4 F) (need K5 B) (need K5 E) (need K5 F)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h B) (h D))
@@ -3795,7 +3795,7 @@
 
 (need K1 D) (need K2 B) (need K2 E) (need K3 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-E ()
   :match  (h C)
@@ -3834,7 +3834,7 @@
 
 (need K1 F) (need K2 E) (need K3 B) (need K4 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h C)
@@ -3878,7 +3878,7 @@
 
 (need K1 B) (need K2 F) (need K3 F) (need K4 A) (need K4 E) (need K5 E) (need K6 A) (need K6 C) (need K6 D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -3922,7 +3922,7 @@
 
 (need K1 A) (need K1 D) (need K2 C) (need K3 A) (need K3 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -3951,7 +3951,7 @@
 
 (need K1 B) (need K1 E) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-A-C ()
   :match  (h A)
@@ -3990,7 +3990,7 @@
 
 (need K1 C) (need K1 D) (need K2 B) (need K3 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -4019,7 +4019,7 @@
 
 (need K1 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -4043,7 +4043,7 @@
 
 (need K1 A) (need K1 D) (need K2 C) (need K2 D) (need K3 C) (need K3 E) (need K4 D) (need K4 E) (need K5 E) (need K5 F)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-F-B ()
   :match  (h F)
@@ -4095,7 +4095,7 @@
 (world W)
 (slot A) (slot B) (slot C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-A-C ()
   :match  (h A)
@@ -4117,7 +4117,7 @@
 (world W)
 (slot A) (slot B) (slot C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-A-B ()
   :match  (h A)
@@ -4149,7 +4149,7 @@
 (world W)
 (slot A) (slot B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-B-A ()
   :match  (h B)
@@ -4178,7 +4178,7 @@
 
 (need K1 E) (need K2 D) (need K3 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -4212,7 +4212,7 @@
 
 (need K1 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -4229,7 +4229,7 @@
 (world W)
 (slot A) (slot B) (slot C) (slot D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-A-C ()
   :match  (h A)
@@ -4266,7 +4266,7 @@
 (world W)
 (slot A) (slot B) (slot C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-B-C ()
   :match  (h B)
@@ -4290,7 +4290,7 @@
 
 (need K1 E) (need K2 F) (need K3 B) (need K3 D) (need K4 A) (need K4 B) (need K5 F)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h B) (h C))
@@ -4339,7 +4339,7 @@
 
 (need K1 E) (need K1 F) (need K2 D) (need K2 F) (need K3 C) (need K4 A) (need K4 F)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h B))
@@ -4383,7 +4383,7 @@
 
 (need K1 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-B-A ()
   :match  (h B)
@@ -4412,7 +4412,7 @@
 
 (need K1 A) (need K2 B) (need K2 F) (need K3 F)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -4439,7 +4439,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -4456,7 +4456,7 @@
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (query :goal (h ?x))
 ;;; program random_143
@@ -4468,7 +4468,7 @@
 (world W)
 (slot A) (slot B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-B-A ()
   :match  (h B)
@@ -4490,7 +4490,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -4514,7 +4514,7 @@
 
 (need K1 B) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-A-C ()
   :match  (h A)
@@ -4548,7 +4548,7 @@
 
 (need K1 A) (need K1 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -4570,7 +4570,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -4587,7 +4587,7 @@
 (world W)
 (slot A) (slot B) (slot C) (slot D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -4604,7 +4604,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -4628,7 +4628,7 @@
 
 (need K1 C) (need K2 B) (need K3 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h B) (h E))
@@ -4667,7 +4667,7 @@
 
 (need K1 B) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -4691,7 +4691,7 @@
 
 (need K1 D) (need K2 C) (need K3 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -4725,7 +4725,7 @@
 
 (need K1 C) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-D ()
   :match  (h C)
@@ -4764,7 +4764,7 @@
 
 (need K1 E) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-E ()
   :match  (h C)
@@ -4808,7 +4808,7 @@
 
 (need K1 C) (need K2 A) (need K3 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h D))
@@ -4847,7 +4847,7 @@
 
 (need K1 F) (need K2 E) (need K3 C) (need K4 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -4891,7 +4891,7 @@
 
 (need K1 C) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-B ()
   :match  (h C)
@@ -4920,7 +4920,7 @@
 
 (need K1 A) (need K2 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -4944,7 +4944,7 @@
 
 (need K1 C) (need K2 A) (need K2 B) (need K3 A) (need K3 D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h B))
@@ -4978,7 +4978,7 @@
 
 (need K1 A) (need K2 B) (need K2 C) (need K3 D) (need K4 F) (need K5 A) (need K5 D) (need K6 C) (need K7 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h B) (h E))
@@ -5037,7 +5037,7 @@
 
 (need K1 B) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -5061,7 +5061,7 @@
 
 (need K1 F) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h B)
@@ -5100,7 +5100,7 @@
 
 (need K1 C) (need K1 D) (need K2 B) (need K2 D) (need K3 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -5129,7 +5129,7 @@
 
 (need K1 C) (need K2 D) (need K3 A) (need K4 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-D-C ()
   :match  (h D)
@@ -5168,7 +5168,7 @@
 
 (need K1 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -5187,7 +5187,7 @@
 
 (need K1 B) (need K2 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h C))
@@ -5214,7 +5214,7 @@
 (world W)
 (slot A) (slot B) (slot C) (slot D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-B ()
   :match  (h C)
@@ -5241,7 +5241,7 @@
 (world W)
 (slot A) (slot B) (slot C) (slot D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -5275,7 +5275,7 @@
 
 (need K1 D) (need K1 F) (need K2 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-A-D ()
   :match  (h A)
@@ -5314,7 +5314,7 @@
 
 (need K1 E) (need K2 B) (need K2 D) (need K3 C) (need K3 D) (need K4 A) (need K4 D) (need K5 D) (need K5 F)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h B) (h C) (h D))
@@ -5358,7 +5358,7 @@
 
 (need K1 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -5382,7 +5382,7 @@
 
 (need K1 D) (need K2 A) (need K2 C) (need K3 C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-E-B ()
   :match  (h E)
@@ -5426,7 +5426,7 @@
 
 (need K1 B) (need K1 D) (need K1 F) (need K2 C) (need K2 D) (need K2 F) (need K3 D) (need K3 E) (need K3 F)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h D))
@@ -5475,7 +5475,7 @@
 
 (need K1 A) (need K1 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -5494,7 +5494,7 @@
 
 (need K1 D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-A ()
   :match  (h C)
@@ -5526,7 +5526,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -5545,7 +5545,7 @@
 
 (need K1 E) (need K2 C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -5584,7 +5584,7 @@
 
 (need K1 F) (need K2 E) (need K3 D) (need K4 C) (need K5 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -5621,7 +5621,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -5645,7 +5645,7 @@
 
 (need K1 E) (need K2 C) (need K3 D) (need K4 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-B ()
   :match  (h C)
@@ -5692,7 +5692,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -5709,7 +5709,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -5731,7 +5731,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (query :goal (h ?x))
 ;;; program random_184
@@ -5743,7 +5743,7 @@
 (world W)
 (slot A) (slot B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-A-B ()
   :match  (h A)
@@ -5767,7 +5767,7 @@
 
 (need K1 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -5789,7 +5789,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -5806,7 +5806,7 @@
 (world W)
 (slot A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h A)
@@ -5830,7 +5830,7 @@
 
 (need K1 C) (need K1 D) (need K2 B) (need K3 A) (need K4 A) (need K4 C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h C) (h D))
@@ -5874,7 +5874,7 @@
 
 (need K1 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-A-B ()
   :match  (h A)
@@ -5903,7 +5903,7 @@
 
 (need K1 C) (need K2 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -5932,7 +5932,7 @@
 
 (need K1 C) (need K2 A) (need K2 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -5961,7 +5961,7 @@
 
 (need K1 D) (need K2 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-E-D ()
   :match  (h E)
@@ -6008,7 +6008,7 @@
 (world W)
 (slot A) (slot B) (slot C) (slot D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-B-D ()
   :match  (h B)
@@ -6040,7 +6040,7 @@
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-D-A ()
   :match  (h D)
@@ -6069,7 +6069,7 @@
 
 (need K1 A)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (h B)
@@ -6093,7 +6093,7 @@
 
 (need K1 E) (need K1 F) (need K2 D) (need K3 A) (need K3 B) (need K3 E)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-F-C ()
   :match  (h F)
@@ -6137,7 +6137,7 @@
 
 (need K1 B) (need K2 A) (need K2 C)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule owe-1 ()
   :match  (and (world ?w) (absent (and (need K1 ?x) (h ?x))))
@@ -6161,7 +6161,7 @@
 
 (need K1 E) (need K2 B)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h C))
@@ -6203,7 +6203,7 @@
 (world W)
 (slot A) (slot B) (slot C) (slot D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule imp-C-B ()
   :match  (h C)

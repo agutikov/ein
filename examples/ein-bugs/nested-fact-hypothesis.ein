@@ -8,18 +8,18 @@
 ;;; arguments), so the pair sorts like any other, and R is four states, every
 ;;; commitment of the two (`ein solve FILE`).
 ;;;
-;;; **It needs no mixed slot types.** One hrule whose `:assert` head is a
-;;; `(not …)` is enough — the hypothesis's argument is then a nested fact,
+;;; **It needs no mixed slot types.** One rule whose hypothesis is a stored
+;;; negation, `(open (not …))`, is enough — its argument is then a nested fact,
 ;;; and two of them are candidates. That is an ordinary puzzle idiom, so the
 ;;; case is wider than its first fixture suggested. Blind generation cannot
 ;;; get here: its candidates' arguments are the program's names, never a
-;;; fact, so an `(hrule …)` is necessary.
+;;; fact, so a rule that concludes `(open F)` is necessary.
 ;;;
 ;;;
 
 (is-a o1 T)
 (is-a o2 T)
 
-(hrule hyp-0 ()
+(rule hyp-0 ()
   :match  (is-a ?v0 T)
-  :assert (not (r0 ?v0 o2)) :why "guess that r0 does not hold of {?v0} and o2")
+  :assert (open (not (r0 ?v0 o2))) :why "guess that r0 does not hold of {?v0} and o2")

@@ -1,8 +1,8 @@
 //! Hypothesis generation — what a state's `open` facts propose, and $H$.
 //!
 //! **Three writers** of a hypothesis `(open F)` (Q-M1f.566, Q-M1f.570): a
-//! rule that concludes one, an `(hrule …)` among them ([`crate::hrule`]),
-//! with the `(open F)` the program writes; an obligation **activated** at the
+//! rule that concludes one ([`crate::hypothesis_rules`]), with the `(open F)`
+//! the program writes; an obligation **activated** at the
 //! state, a plan its activators compile ([`crate::oblgen`], which proposes
 //! what would pay the debts the state owes, and for a debt a rule can bring a
 //! commitment to owe as well), so that under an activated obligation a state
@@ -63,7 +63,7 @@ use ein_ir::Ast;
 use rustc_hash::FxHashSet;
 
 use crate::compile::CompileError;
-use crate::hrule::Hrules;
+use crate::hypothesis_rules::HypothesisRules;
 use crate::saturator::Session;
 
 /// The `(query …)` keyword restricting which relations the blind enumerator
@@ -271,7 +271,7 @@ pub(crate) struct Written {
 /// place for the filter order to drift.
 ///
 /// In order (Q-M1f.570, Q-M1f.576): the rules that conclude a hypothesis,
-/// hrules among them, every match; the `(open F)` the state holds that the
+/// every match; the `(open F)` the state holds that the
 /// program wrote; the obligations activated at the state; and the blind
 /// enumerator, where none of those wrote and no obligation is activated. Each
 /// candidate goes through the one filter pipeline, so $H$ is their union,
@@ -306,7 +306,7 @@ fn generate_with(
     if rungs == Rungs::Ladder {
         // The rules that conclude a hypothesis, the program's own
         // generator: every match is written, and goes through the filters.
-        let rules = Hrules::new(s)?;
+        let rules = HypothesisRules::new(s)?;
         let mut wrote = false;
         let mut broke = false;
         if !rules.is_empty() {
@@ -362,7 +362,7 @@ fn generate_with(
             return Ok(());
         }
         if wrote {
-            stats.rung.mode = crate::oblgen::Mode::Hrules;
+            stats.rung.mode = crate::oblgen::Mode::HypothesisRules;
             return Ok(());
         }
     }
@@ -583,7 +583,8 @@ fn relation_plan(
 ///
 /// No symmetric mirror: the enumerator never consults `is_symmetric`
 /// to emit `(R b a)`. Both orderings already arise via different focal
-/// objects; a puzzle wanting canonical pairs only declares an hrule.
+/// objects; a puzzle wanting canonical pairs only writes a rule that
+/// concludes them as hypotheses.
 ///
 /// A filter on "slot already used" is intentionally absent; its
 /// narrower replacement is `fact_already_exists` downstream.
@@ -736,7 +737,7 @@ pub fn candidate_objects(kb: &Kb, terms: &Terms, ast: &Ast) -> Vec<Symbol> {
     // — and on a blind-mode puzzle most of the list is relations, rules and
     // type roles that the filter removes. `candidate_objects` is **10.7 %** of
     // `solve examples/features/05_stdlib_domain_elim.ein -e`, which is what
-    // the search costs when there is no `(hrule …)` to narrow it.
+    // the search costs when no rule that concludes a hypothesis narrows it.
     names.retain(|&n| {
         !type_nodes.contains(n.0)
             && !reserved.contains(&n)
@@ -828,8 +829,7 @@ pub(crate) fn scoping(
 /// It reads every writer, because the hazard is *the search can still add a
 /// fact of R*, and which writer would add it does not matter (Q-M1f.570):
 ///
-/// - the **rules that conclude a hypothesis**, an hrule among them, and the
-///   `open` facts the state holds: what they conclude, unscoped, since the
+/// - the **rules that conclude a hypothesis**, and the `open` facts the state holds: what they conclude, unscoped, since the
 ///   two lists and a closure configure the blind enumerator alone
 ///   (Q-M1f.578);
 /// - beside them, the **obligations** activated at the state, which propose
@@ -868,16 +868,16 @@ pub fn eligible_relations(s: &mut Session<'_>) -> Result<FxHashSet<Symbol>, Comp
     // The writers, as the generator reads them: the rules that conclude a
     // hypothesis and the `open` facts the state holds, with the obligations
     // activated there; else the blind enumerator.
-    let hrules = Hrules::new(s)?;
+    let rules = HypothesisRules::new(s)?;
     let mut matched = false;
-    let _ = hrules.candidates(s, &mut |_, _| {
+    let _ = rules.candidates(s, &mut |_, _| {
         matched = true;
         ControlFlow::Break(())
     });
     let mut out: FxHashSet<Symbol> = FxHashSet::default();
     let written = crate::open::written_by_program(s.kb, s.terms);
     if matched || !written.is_empty() {
-        out.extend(hrules.asserted_relations(s.terms));
+        out.extend(rules.asserted_relations(s.terms));
         for &o in &written {
             if let Some(fact) = s.terms.facts.args(o).first().and_then(|v| v.as_fact()) {
                 out.insert(s.terms.facts.rel(fact));
@@ -914,8 +914,8 @@ pub fn eligible_relations(s: &mut Session<'_>) -> Result<FxHashSet<Symbol>, Comp
 ///
 /// Every name a list holds is a relation the program
 /// writes outside it, or the loader refuses the program
-/// (`ein_ir::from_ir`'s `refuse_solve_names`), so a misspelt name reaches
-/// neither this nor [`crate::hrule`]'s activators.
+/// (`ein_ir::from_ir`'s `refuse_solve_names`), so a misspelt name never
+/// reaches this.
 fn query_relations(s: &Session<'_>, keyword: &str) -> Option<FxHashSet<Symbol>> {
     // On `(solve …)`: the candidate list is the lattice's,
     // stated once for every query.

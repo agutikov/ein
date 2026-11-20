@@ -15,9 +15,9 @@
 ;;; (`docs/ein/reasoning/01-static-ir/01-knowledge-base.md` § Order, a total
 ;;; order), so any such pair sorts like any other.
 ;;;
-;;; Why it uses an hrule. An `hrule`'s `:assert` args come from *bindings*:
+;;; Why it uses a hypothesis rule. The hypothesis's args come from *bindings*:
 ;;; a variable that matched a fact's argument carries that value through,
-;;; whatever its kind. Hence the shape below — one `hrule`, one variable, two
+;;; whatever its kind. Hence the shape below — one such rule, one variable, two
 ;;; facts that bind it to `1` and to `left`.
 ;;;
 ;;; `ein solve FILE` lists the four states: ∅, `{(seat Ann 1)}`,
@@ -39,13 +39,11 @@
 (slotval x 1)
 (slotval y left)
 
-(hrule guess ()
+(rule guess ()
   :match  (slotval ?k ?v)
-  :assert (seat Ann ?v)
+  :assert (open (seat Ann ?v))
   :why    "guess that Ann sits at {?v}")
 
-(solve
-  :hrules (guess))
 
 (query
   :goal   (seat Ann ?s)

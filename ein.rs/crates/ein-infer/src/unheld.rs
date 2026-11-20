@@ -34,8 +34,9 @@
 //! 3. *No plan a node runs writes `R`.* On a monotone program no rule's
 //!    activator relation is one a commitment can change (an activator site
 //!    flags the program), so the plans a node runs are plans root compiled,
-//!    and `Unwritten::of` reads every one of them but an hrule's, which
-//!    proposes and runs at no node: none writes `R`.
+//!    and `Unwritten::of` reads every one of them: none writes `R`. A rule
+//!    that concludes a hypothesis writes `open` facts, which are the
+//!    candidates'.
 //!
 //! So `w` is in no fixpoint, alive or dead. In L5's argument a member `D`
 //! of `R` above a state owing `I` holds a witness of `I` in its fixpoint;
@@ -146,8 +147,8 @@ fn with_flag<T>(flag: &'static std::thread::LocalKey<Cell<bool>>, f: impl FnOnce
 }
 
 /// **The relations a node can hold a fact of that neither root nor its
-/// commitment holds**: those a plan root compiled writes, an hrule's apart,
-/// `(false)` among them where a rule concludes it, and the kernel's own,
+/// commitment holds**: those a plan root compiled writes, `(false)` among
+/// them where a rule concludes it, and the kernel's own,
 /// `not`, `open` and the closure marker. Every other relation
 /// is *unwritten*: a fact of it that root does not hold and that is no
 /// candidate is in no node's fixpoint, on a monotone program (the module's
@@ -158,18 +159,13 @@ pub(crate) struct Unwritten {
 }
 
 impl Unwritten {
-    /// From root's fixpoint `kb`, on which the static check ran, and `memo`,
-    /// which holds every plan root compiled.
-    pub(crate) fn of(kb: &Kb, terms: &Terms, memo: &SharedMemo) -> Unwritten {
-        let program = kb.program();
+    /// From `memo`, which holds every plan root's fixpoint compiled, on which
+    /// the static check ran.
+    pub(crate) fn of(terms: &Terms, memo: &SharedMemo) -> Unwritten {
         let k = &terms.kernel;
         // determinism-ok: a set asked for membership alone.
         let mut written: FxHashSet<Symbol> = [k.open, k.closed].into_iter().collect();
         for plan in crate::monotone::plans_of(memo) {
-            // An hrule proposes candidates and runs at no node.
-            if program.hrules.contains(plan.rule) && !program.rules.contains(plan.rule) {
-                continue;
-            }
             // A stored negation is a fact of `not`, which is written; the
             // relation it denies is not.
             for w in crate::monotone::writes_of(&plan, terms) {

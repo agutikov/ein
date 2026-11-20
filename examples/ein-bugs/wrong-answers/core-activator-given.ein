@@ -16,7 +16,7 @@
 (seed a)
 (r2 a)
 
-(hrule g  () :match (seed ?x) :assert (p ?x) :why "guess that p holds of the seed {?x}")
-(hrule g2 () :match (seed ?x) :assert (p2 ?x) :why "guess that p2 holds of the seed {?x}")
+(rule g  () :match (seed ?x) :assert (open (p ?x)) :why "guess that p holds of the seed {?x}")
+(rule g2 () :match (seed ?x) :assert (open (p2 ?x)) :why "guess that p2 holds of the seed {?x}")
 
 (rule r2 (?k) :match (p ?k) :assert (false) :why "rule r2 is activated for {?k} and p holds of it, which cannot be")

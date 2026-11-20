@@ -3,7 +3,7 @@
 //! Q-M1f.242;
 //! [`07-diagnostics.md` § 2.26](../../../../docs/ein/user/04-reference/07-diagnostics.md#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)).
 //!
-//! An hrule (H) and an activated obligation (O) write `open` facts at root;
+//! A hypothesis rule (H) and an activated obligation (O) write `open` facts at root;
 //! `:hypothesis-relations` (HR), `:no-hypothesis` (NH) and a closure
 //! `(__closed__ R)` (C) configure the blind enumerator, which does not run
 //! beside them. Read on root's fixpoint, since a closure and an obligation's
@@ -42,9 +42,9 @@ fn ein(args: &[&str]) -> Run {
 const DECL: &str = "(relation at Color House :why \"{?3} is at {?4}\")\n\
      (is-a Red Color) (is-a Blue Color) (is-a H1 House) (is-a H2 House)\n\
      (near H1 H2)\n";
-/// The hrule `solve_lists.rs` uses, whose `?R` names the relation it proposes.
-const GUESS: &str = "(hrule guess (?R ?T1 ?T2)\n  :match (and (is-a ?a ?T1) (is-a ?b ?T2))\n  \
-     :assert (?R ?a ?b)\n  :why \"guess that {?R} holds of {?a} and {?b}\")\n";
+/// The hypothesis rule `solve_lists.rs` uses, whose `?R` names the relation it proposes.
+const GUESS: &str = "(rule guess (?R ?T1 ?T2)\n  :match (and (is-a ?a ?T1) (is-a ?b ?T2))\n  \
+     :assert (open (?R ?a ?b))\n  :why \"guess that {?R} holds of {?a} and {?b}\")\n";
 /// `std.algebra`'s `total-owed`, imported and activated on `at`.
 const OWED: &str = "(import std.algebra :symbols (total-owed))\n";
 const OWE_AT: &str = "(total-owed at is-a)\n";
@@ -62,7 +62,7 @@ fn program(parts: &[&str]) -> String {
 
 /// `(shape, the program, what the first line says after its position)`.
 fn refused() -> Vec<(&'static str, String, &'static str)> {
-    let h = "(solve :hrules (guess (at Color House))";
+    let h = "(guess at Color House) (solve";
     vec![
         (
             "h-hr",
@@ -82,7 +82,7 @@ fn refused() -> Vec<(&'static str, String, &'static str)> {
         (
             "h-c-derived",
             program(&[DECL, GUESS, CLOSE_AT, h, ")\n"]),
-            "which hrule 'guess' writes, and (__closed__ at), which rule 'close-at' derives, says \
+            "which rule 'guess' writes, and (__closed__ at), which rule 'close-at' derives, says \
              at is closed",
         ),
         (
@@ -113,26 +113,26 @@ fn refused() -> Vec<(&'static str, String, &'static str)> {
              written at ",
         ),
         (
-            "o-c-derived-beside-an-hrule",
+            "o-c-derived-beside-a-hypothesis-rule",
             program(&[
                 OWED,
                 DECL,
                 GUESS,
                 OWE_AT,
                 CLOSE_AT,
-                "(solve :hrules (guess (near House House)))\n",
+                "(guess near House House)\n",
             ]),
             "root holds (open at), which obligation 'total-owed' writes, and (__closed__ at), \
              which rule 'close-at' derives, says at is closed",
         ),
         (
-            "o-nh-beside-an-hrule",
+            "o-nh-beside-a-hypothesis-rule",
             program(&[
                 OWED,
                 DECL,
                 GUESS,
                 OWE_AT,
-                "(solve :hrules (guess (near House House)) :no-hypothesis (at))\n",
+                "(guess near House House) (solve :no-hypothesis (at))\n",
             ]),
             "solve: its :no-hypothesis names at, and root holds (open at), which obligation \
              'total-owed' writes",
@@ -164,11 +164,11 @@ fn refused() -> Vec<(&'static str, String, &'static str)> {
 /// `(shape, the program, the one note it prints, after its position)`; an
 /// empty note is a program that prints none.
 fn accepted() -> Vec<(&'static str, String, String)> {
-    let h = "(solve :hrules (guess (at Color House))";
+    let h = "(guess at Color House) (solve";
     vec![
         // H + O, the zebra form: silent.
         ("h-o", program(&[OWED, DECL, GUESS, OWE_AT, h, ")\n"]), ""),
-        // C's other role: an hrule beside the closure of another relation.
+        // C's other role: a hypothesis rule beside the closure of another relation.
         (
             "h-c-other",
             program(&[DECL, GUESS, "(__closed__ near)\n", h, ")\n"]),
@@ -208,7 +208,7 @@ fn accepted() -> Vec<(&'static str, String, String)> {
             program(&[DECL, GUESS, h, " :no-hypothesis (near))\n"]),
             "",
         ),
-        // An hrule no clause activates writes nothing: the list is the blind
+        // A hypothesis rule no clause activates writes nothing: the list is the blind
         // enumerator's.
         (
             "h-inactive-nh",
@@ -398,9 +398,9 @@ fn a_dead_or_redundant_list_is_a_note_and_a_silent_pair_says_nothing() {
 }
 
 /// **A word problem that writes two conflicts**: *what is not listed is
-/// zero* adopted for `has`, an hrule supposing Alice has an apple, and `(solve
-/// :hrules (maybe-apples) :no-hypothesis (has))`, a list that does nothing
-/// beside an hrule. It is refused for what it says: two conflicts,
+/// zero* adopted for `has`, a hypothesis rule supposing Alice has an apple,
+/// and `(solve :no-hypothesis (has))`, a list that does nothing beside a
+/// hypothesis rule. It is refused for what it says: two conflicts,
 /// `maybe-apples` proposing `has` against the list that names it and against
 /// the closure `words` derives, and no other line. Its twin without
 /// `listed_is_all` is refused for the same two.
@@ -417,9 +417,9 @@ fn a_word_problem_is_refused_for_its_two_conflicts() {
     let facts = "(has Bob apples (n z 5) now    :source \"Bob has 5 apples,\")\n\
          (has Alice pears (n z 3) now   :source \"Alice has 3 pears.\")\n\
          (asked (together Bob Alice apples now) :source \"How many apples do they have together?\")\n\
-         (hrule maybe-apples () :match (has ?p pears ?v ?t) :assert (has ?p apples (n z 1) ?t) \
+         (rule maybe-apples () :match (has ?p pears ?v ?t) :assert (open (has ?p apples (n z 1) ?t)) \
          :why \"suppose {?p} has 1 apple as well\")\n\
-         (solve :hrules (maybe-apples) :no-hypothesis (has))\n\
+         (solve :no-hypothesis (has))\n\
          (query :goal (and (asked ?q) (value ?q ?n)) :goal-text \"{?q}: {?n}\"\n\
          :expect (model (asked (together Bob Alice apples now))\n\
          (value (together Bob Alice apples now) (n z 5))))\n";
@@ -445,7 +445,7 @@ fn a_word_problem_is_refused_for_its_two_conflicts() {
             scratch.path(),
         );
         bad.extend(b.into_iter().map(|b| format!("{stem}: {b}")));
-        let second = "which hrule 'maybe-apples' writes, and (__closed__ has), which rule 'words' \
+        let second = "which rule 'maybe-apples' writes, and (__closed__ has), which rule 'words' \
                       derives, says has is closed";
         if lines.len() != 2 || !lines[1].contains(second) {
             bad.push(format!(
@@ -504,7 +504,7 @@ fn with_no_search(text: &str) -> String {
 
 /// **`:no-search` relaxes no conflict** (Q-M1f.254): every shape the check
 /// refuses is refused beside it with the same line, the
-/// hrule read as declared as an obligation is.
+/// hypothesis rule read as declared as an obligation is.
 #[test]
 fn no_search_relaxes_no_conflict() {
     let scratch = Scratch::new("ein-mechanism-no-search-conflicts");
@@ -536,14 +536,14 @@ fn bare(parts: &[&str]) -> String {
 }
 
 /// **What `:no-search` makes dead is one note each, and beside an obligation
-/// or a closure it is silent**: an hrule *proposes no candidate*, a list
+/// or a closure it is silent**: a hypothesis rule *proposes no candidate*, a list
 /// *filters no candidate*.
 /// Each answers R as root alone: {∅}, or empty where root owes.
 #[test]
 fn no_search_is_silent_beside_an_obligation_and_a_note_beside_what_it_makes_dead() {
     let scratch = Scratch::new("ein-mechanism-no-search-notes");
-    let h = "(solve :hrules (guess (at Color House)) :no-search)\n";
-    let hrule = "its :no-search states the lattice is root alone, so hrule 'guess' proposes no \
+    let h = "(guess at Color House) (solve :no-search)\n";
+    let rule = "its :no-search states the lattice is root alone, so rule 'guess' proposes no \
                  candidate";
     let list = |key: &str| {
         format!(
@@ -584,13 +584,13 @@ fn no_search_is_silent_beside_an_obligation_and_a_note_beside_what_it_makes_dead
         (
             "h",
             bare(&[DECL, GUESS, h]),
-            vec![hrule.to_string()],
+            vec![rule.to_string()],
             "in R",
         ),
         (
             "h-o",
             bare(&[OWED, DECL, GUESS, OWE_AT, h]),
-            vec![hrule.to_string()],
+            vec![rule.to_string()],
             "owes",
         ),
         (
@@ -610,9 +610,9 @@ fn no_search_is_silent_beside_an_obligation_and_a_note_beside_what_it_makes_dead
             bare(&[
                 DECL,
                 GUESS,
-                "(solve :hrules (guess (at Color House)) :no-hypothesis (near) :no-search)\n",
+                "(guess at Color House) (solve :no-hypothesis (near) :no-search)\n",
             ]),
-            vec![hrule.to_string(), list("no-hypothesis")],
+            vec![rule.to_string(), list("no-hypothesis")],
             "in R",
         ),
     ];

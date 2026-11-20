@@ -40,8 +40,8 @@
 
 (total-owed meal is-a)
 
-(hrule seat    () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (seats ?g ?c) :why "guess that {?g} is seated at {?c}")
-(hrule allergy () :match (is-a ?g Guest) :assert (allergic ?g) :why "guess that {?g} is allergic")
-(hrule bread   () :match (is-a ?g Guest) :assert (meal ?g Bread) :why "guess that {?g} is served the bread")
+(rule seat    () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (open (seats ?g ?c)) :why "guess that {?g} is seated at {?c}")
+(rule allergy () :match (is-a ?g Guest) :assert (open (allergic ?g)) :why "guess that {?g} is allergic")
+(rule bread   () :match (is-a ?g Guest) :assert (open (meal ?g Bread)) :why "guess that {?g} is served the bread")
 
 (query :goal (meal ?g ?f))

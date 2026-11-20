@@ -254,10 +254,9 @@ fn substitute(ast: &mut Ast, template: NodeId, subst: &BTreeMap<&str, NodeId>) -
     }
 }
 
-/// Expand the `:match` and `:assert` clauses of every `(rule …)` / `(hrule …)`
-/// in `forms`, leaving everything else alone — the same clauses
-/// [`crate::from_ir`] expands, one rule at a time, through the same
-/// [`expand_macros`].
+/// Expand the `:match` and `:assert` clauses of every `(rule …)` in `forms`,
+/// leaving everything else alone — the same clauses [`crate::from_ir`]
+/// expands, one rule at a time, through the same [`expand_macros`].
 ///
 /// Note what is *not* expanded: a `(forall …)` appearing as a **fact** stays
 /// as it is, because the loader only ever runs the expander over rule clauses
@@ -274,7 +273,7 @@ pub fn expand_rule_clauses(
     }
     let mut out = Vec::with_capacity(forms.len());
     for &form in forms {
-        if !matches!(ast.head_name(form), Some("rule") | Some("hrule")) {
+        if ast.head_name(form) != Some("rule") {
             out.push(form);
             continue;
         }

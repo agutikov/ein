@@ -35,8 +35,8 @@ const SEATS: &str = r#"
 (rule one-per-seat (?R) :match (and (?R ?a ?c) (?R ?b ?c) (neq ?a ?b))
       :assert (false) :why "{?R} gives {?c} to both {?a} and {?b}, and {?c} may go to only one")
 (one-per-person seat) (one-per-seat seat)
-(hrule guess (?p ?s) :match (instance ?p Person) :assert (seat ?p ?s) :why "guess that {?p} sits in {?s}")
-(solve :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)))
+(rule guess (?p ?s) :match (instance ?p Person) :assert (open (seat ?p ?s)) :why "guess that {?p} sits in {?s}")
+(guess Ann S1) (guess Ann S2) (guess Bob S1) (guess Bob S2)
 "#;
 
 /// A program whose root is dead: R is empty, every node dead.
@@ -290,8 +290,8 @@ fn a_decided_single_decides_a_claim_over_all_of_r() {
 (relation seat Person Slot :why "{?3} sits in {?4}")
 (is-a Ann Person) (is-a S1 Slot)
 (total-owed seat is-a)
-(hrule guess (?p ?s) :match (is-a ?p Person) :assert (seat ?p ?s) :why "guess that {?p} sits in {?s}")
-(solve :hrules (guess (Ann S1)))
+(rule guess (?p ?s) :match (is-a ?p Person) :assert (open (seat ?p ?s)) :why "guess that {?p} sits in {?s}")
+(guess Ann S1)
 "#;
     let single = Mode {
         which: Which::All,

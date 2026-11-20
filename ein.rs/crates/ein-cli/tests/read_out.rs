@@ -146,7 +146,7 @@ fn the_word_is_printed_once_and_is_the_summarys() {
 /// `examples/features/13_mixed_solution_and_open.ein` has owing nodes beside
 /// discharged ones, and the count is the states' and not the nodes'. ∅ and
 /// `{(choice Bob)}` owe, so neither is a state of R: R is three states, the
-/// hrule's `(choice Ann)` and what the obligation proposes beside it
+/// hypothesis rule's `(choice Ann)` and what the obligation proposes beside it
 /// (Q-M1f.570), `∅ not in R` says why root is not, and `--single` answers
 /// `Ambiguity`.
 #[test]
@@ -213,7 +213,7 @@ fn an_owing_empty_r_reports_zero_states_and_what_is_owed() {
 ///
 /// R, the claim and the exit code are what they were: the query's one class
 /// is every mark, on the one state. The obligation's witness has no guard, so
-/// it proposes no payment at root, and H is the hrule's one candidate
+/// it proposes no payment at root, and H is the hypothesis rule's one candidate
 /// (Q-M1f.570).
 #[test]
 fn the_read_out_names_what_root_owes() {
@@ -228,7 +228,7 @@ fn the_read_out_names_what_root_owes() {
              (relation ink T :why \"{{?3}} is an ink\")\n\
              (relation mark T T :why \"{{?3}} is marked in {{?4}}\")\n\
              {}\n(ink red)\n\
-             (hrule guess () :match () :assert (go) :why \"suppose every thing is marked\")\n\
+             (rule guess () :match () :assert (open (go)) :why \"suppose every thing is marked\")\n\
              (rule mark-all () :match (and (go) (thing ?x)) :assert (mark ?x red) \
              :why \"{{?x}} is marked, every thing being so\")\n\
              (rule owe-mark () :match (and (thing ?x) (absent (mark ?x ?c))) \
@@ -744,7 +744,7 @@ fn the_oracles_read_out_names_the_command_that_writes_its_rest() {
 /// `--monotone` too. One witness per rung: `uncovered.ein`'s obligations,
 /// `arity3.ein`'s blind enumerator (whose `is-a`, scoped out by
 /// `:no-hypothesis`, is not named), `examples/lattice/15_union_label_dead.ein`'s
-/// hrules, which states a claim; and a program that leaves nothing out prints no row and an
+/// hypothesis rules, which states a claim; and a program that leaves nothing out prints no row and an
 /// empty list.
 #[test]
 fn the_universes_scope_is_one_sentence_on_every_surface() {
@@ -766,7 +766,7 @@ fn the_universes_scope_is_one_sentence_on_every_surface() {
         (
             "examples/lattice/15_union_label_dead.ein",
             &["flag"],
-            format!("flag — no candidate: no hrule proposes it. {TAIL}"),
+            format!("flag — no candidate: no hypothesis rule proposes it. {TAIL}"),
         ),
         ("tests/region/01_states.ein", &[], String::new()),
     ];

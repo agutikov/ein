@@ -1,26 +1,26 @@
-;;; An hrule whose `:match` is `()` proposed nothing —
+;;; A hypothesis rule whose `:match` is `()` proposed nothing —
 ;;; regression `empty-match-hrule` (`corpus/regressions.toml`).
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; One fact `(p a)`, an hrule with no premise proposing `(q b)`, and a solve
-;;; form naming it as the hypothesis rung.
+;;; One fact `(p a)`, and a rule with no premise and no parameter that concludes
+;;; the hypothesis `(q b)`, which needs no activator.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; An hrule's empty `:match` fires as a rule's does (Q-M1e2.36), so it
+;;; A hypothesis rule's empty `:match` fires as a rule's does (Q-M1e2.36), so it
 ;;; proposes `(q b)`, as `:match (p ?x)` would: H is one candidate, nothing
 ;;; refutes it, and R is ∅ and `{(q b)}`.
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
-;;; The hrule proposed nothing: *no candidate: R is {∅} or empty, decided by
+;;; The hypothesis rule proposed nothing: *no candidate: R is {∅} or empty, decided by
 ;;; root alone*, and R was {∅}, exit 0 (`ein solve FILE` and `ein oracle FILE`
 ;;; at `ec004a48`, the engine `916d97ac`'s, release and debug alike).
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;
-;;; An hrule's `:match ()` matches once, so `h` proposes `(q b)`: H is one
+;;; A hypothesis rule's `:match ()` matches once, so `h` proposes `(q b)`: H is one
 ;;; candidate and R is ∅ and `{(q b)}`, the answer above by hand. The
 ;;; regression's `now` is that answer; the section above is the record of the
 ;;; one it replaced.
@@ -29,5 +29,4 @@
 
 (relation q Node :why "q holds of {?3}") (relation p Node :why "p holds of {?3}")
 (p a)
-(hrule h () :match () :assert (q b) :why "guess, with no premise, that q holds of b")
-(solve :hrules (h))
+(rule h () :match () :assert (open (q b)) :why "guess, with no premise, that q holds of b")

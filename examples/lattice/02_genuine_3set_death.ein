@@ -56,9 +56,9 @@
   :assert (false)
   :why    "{?x} a-prop AND {?y} b-prop AND {?z} c-prop — jointly forbidden")
 
-(hrule guess (?R ?T)
+(rule guess (?R ?T)
   :match  (is-a ?x ?T)
-  :assert (?R ?x)
+  :assert (open (?R ?x))
   :why    "guess: is {?x} {?R}?")
 
 (relation is-a   T T :why "{?3} is a {?4}")
@@ -69,11 +69,9 @@
 (is-a Item T)
 (is-a X    Item)
 
-(solve
-  :hrules (
-    guess (a-prop Item)
-    guess (b-prop Item)
-    guess (c-prop Item)))
+(guess a-prop Item)
+(guess b-prop Item)
+(guess c-prop Item)
 
 (query
   :goal (a-prop ?x))

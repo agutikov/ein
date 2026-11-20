@@ -1,6 +1,6 @@
 //! **A macro's call is no fact** (Q-M1f.130 to .133).
 //!
-//! The loader expands a macro's call in a rule's or an hrule's `:match` and
+//! The loader expands a macro's call in a rule's or a hypothesis rule's `:match` and
 //! `:assert` and in a query's `:goal`, and nowhere else. Stored, a fact
 //! headed by a macro's name, `(settled Ann)` beside `(macro settled (?g)
 //! (paid ?g))`, would be a fact of a relation `settled`: the fact the body
@@ -13,7 +13,7 @@
 //! `refuse_macro_claims`), one line at the call, the same on every command.
 //!
 //! What must keep loading is held beside it: a call in a `:match`, inside a
-//! pattern, in a rule's and an hrule's `:assert` (expanded: Q-M1f.130) and
+//! pattern, in a rule's and a hypothesis rule's `:assert` (expanded: Q-M1f.130) and
 //! in a goal, a macro's name written as a value, and a
 //! macro nothing calls.
 
@@ -368,9 +368,9 @@ fn a_macro_called_where_it_is_expanded_loads() {
             "(says (paid Ann) :rule tell)",
         ),
         (
-            "a-call-in-an-hrules-assert-and-a-goal",
-            "(hrule guess () :match (is-a ?g Guest) :assert (settled ?g) :why \"guess {?g} \
-             paid\")\n(solve :hrules (guess))\n(query :goal (settled ?g))\n"
+            "a-call-in-a-hypothesis-and-a-goal",
+            "(rule guess () :match (is-a ?g Guest) :assert (open (settled ?g)) :why \"guess {?g} \
+             paid\")\n\n(query :goal (settled ?g))\n"
                 .to_string(),
             "(is-a Ann Guest)",
         ),

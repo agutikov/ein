@@ -16,8 +16,8 @@
   :assert (is-a ?g Diner)
   :why    "{?g} is seated on {?c}, so {?g} is a diner")
 (total-owed meal is-a)
-(hrule seat () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (seats ?g ?c) :why "guess that the guest {?g} is seated on the chair {?c}")
-(hrule dine () :match (and (is-a ?g Guest) (is-a ?f Food))  :assert (meal ?g ?f) :why "guess that the guest {?g}'s meal is {?f}")
+(rule seat () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (open (seats ?g ?c)) :why "guess that the guest {?g} is seated on the chair {?c}")
+(rule dine () :match (and (is-a ?g Guest) (is-a ?f Food))  :assert (open (meal ?g ?f)) :why "guess that the guest {?g}'s meal is {?f}")
 
 (solve
   :expect (region

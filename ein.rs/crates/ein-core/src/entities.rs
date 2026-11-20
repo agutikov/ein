@@ -190,8 +190,9 @@ pub struct Query {
 }
 
 /// The `(solve …)` block: the problem's lattice, stated once.
-/// It holds the keywords that choose the candidate list (`:hrules`,
-/// `:hypothesis-relations`, `:no-hypothesis`), and no `(query …)` does, so
+/// It holds the keywords that configure the blind enumerator
+/// (`:hypothesis-relations`, `:no-hypothesis`, `:no-search`), and no
+/// `(query …)` does, so
 /// that one program has one lattice and one R. Raw kw-pairs, as
 /// [`Query`] keeps them.
 #[derive(Clone, Debug, Default)]
@@ -223,7 +224,7 @@ impl<V> Registry<V> {
     }
 
     /// Insert under a name that is not taken; `false` (and no change) when it
-    /// is — the first declaration wins, as `add_rule` / `add_hrule` do.
+    /// is — the first declaration wins, as `add_rule` does.
     pub fn insert_new(&mut self, name: Symbol, value: V) -> bool {
         if self.index.contains_key(&name) {
             return false;

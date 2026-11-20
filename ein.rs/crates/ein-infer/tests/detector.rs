@@ -37,8 +37,8 @@ const STRATIFIED_STALE: &str = "(relation thing T :why \"{?3} is a thing\") (rel
 const FIFO_GAP_WRITTEN: &str = "(relation thing T :why \"{?3} is a thing\") (relation a T :why \"a holds of {?3}\") (relation b T :why \"b holds of {?3}\")
      (relation p T :why \"p holds of {?3}\") (relation q T :why \"q holds of {?3}\") (relation z T :why \"z holds of {?3}\")
      (thing one)
-     (hrule guess-a () :match (thing ?x) :assert (a ?x) :why \"guess that a holds of {?x}, a thing\")
-     (hrule guess-b () :match (thing ?x) :assert (b ?x) :why \"guess that b holds of {?x}, a thing\")
+     (rule guess-a () :match (thing ?x) :assert (open (a ?x)) :why \"guess that a holds of {?x}, a thing\")
+     (rule guess-b () :match (thing ?x) :assert (open (b ?x)) :why \"guess that b holds of {?x}, a thing\")
      (rule r2 () :match (and (a ?x) (b ?x) (absent (q ?x))) :assert (p ?x) :why \"a and b hold of {?x} and q does not, so p holds of {?x}\")
      (rule r1 () :match (and (a ?x) (absent (z ?x))) :assert (q ?x) :why \"a holds of {?x} and z does not, so q holds of {?x}\")
      (query :goal (p ?x))";
@@ -208,7 +208,7 @@ fn the_order_check_finds_every_fifo_race() {
 
 /// What each kind of site concludes and puts at stake, one fixture per cause
 /// (`08-monotonicity.md` § 9's c2, c4, c5, c6), each read at the one site of
-/// its kind the fixture has: an hrule that reads what a commitment can change
+/// its kind the fixture has: a hypothesis rule that reads what a commitment can change
 /// is a site of its own, `hypothesis` (Q-M1f.574), and so is an obligation's
 /// guard that does (Q-M1f.579), both on the trigger's fixture.
 #[test]
@@ -283,7 +283,7 @@ fn each_site_names_what_it_concludes_and_puts_at_stake() {
         }
         assert_eq!(stake.at_stake, *at_stake, "{rel}");
     }
-    // The hrules of the trigger's fixture read `is-a`, which a commitment
+    // The hypothesis rules of the trigger's fixture read `is-a`, which a commitment
     // can change: two `hypothesis` sites, each at stake the hypotheses.
     let (m, t) = file("examples/lattice/04_obligation_trigger_hole.ein");
     let hyps: Vec<String> = (0..m.sites.len())

@@ -15,8 +15,8 @@
 pub const ACTIVATOR_REFUTES: &str =
     "(relation p T :why \"p holds of {?3}\") (relation q T :why \"q holds of {?3}\") (relation r T :why \"r holds of {?3}\") (relation watch T :why \"rule watch is switched on for relation {?3}\")
      (r A)
-     (hrule g1 () :match (r ?x) :assert (p ?x) :why \"r holds of {?x}, so guess that p holds of {?x}\")
-     (hrule g2 () :match (r ?x) :assert (q ?x) :why \"r holds of {?x}, so guess that q holds of {?x}\")
+     (rule g1 () :match (r ?x) :assert (open (p ?x)) :why \"r holds of {?x}, so guess that p holds of {?x}\")
+     (rule g2 () :match (r ?x) :assert (open (q ?x)) :why \"r holds of {?x}, so guess that q holds of {?x}\")
      (rule watch (?R) :match (and (r ?x) (absent (?R ?x))) :assert (false) :why \"r holds of {?x} and {?R} does not, which cannot be\")
      (rule act () :match (p ?x) :assert (watch q) :why \"p holds of {?x}, so rule watch is switched on for q\")";
 
@@ -30,9 +30,9 @@ pub const ACTIVATOR_REFUTES: &str =
 pub const ACTIVATOR_UNDER_ABSENT: &str =
     "(relation thing T :why \"{?3} is a thing\") (relation p T :why \"p holds of {?3}\") (relation q T :why \"q holds of {?3}\") (relation r T :why \"r holds of {?3}\") (relation watch T :why \"rule watch is switched on for relation {?3}\")
      (thing A)
-     (hrule g1 () :match (thing ?x) :assert (p ?x) :why \"{?x} is a thing, so guess that p holds of {?x}\")
-     (hrule g2 () :match (thing ?x) :assert (q ?x) :why \"{?x} is a thing, so guess that q holds of {?x}\")
-     (hrule g3 () :match (thing ?x) :assert (r ?x) :why \"{?x} is a thing, so guess that r holds of {?x}\")
+     (rule g1 () :match (thing ?x) :assert (open (p ?x)) :why \"{?x} is a thing, so guess that p holds of {?x}\")
+     (rule g2 () :match (thing ?x) :assert (open (q ?x)) :why \"{?x} is a thing, so guess that q holds of {?x}\")
+     (rule g3 () :match (thing ?x) :assert (open (r ?x)) :why \"{?x} is a thing, so guess that r holds of {?x}\")
      (rule act () :match (and (p ?x) (absent (q ?x))) :assert (watch r) :why \"p holds of {?x} and q does not, so rule watch is switched on for r\")
      (rule watch (?R) :match (?R ?x) :assert (false) :why \"{?R} holds of {?x}, which cannot be\")";
 

@@ -1,16 +1,16 @@
-;;; `open` written as an hrule's conclusion argument loads, and the hrule
-;;; proposes a fact about it — regression `hrule-value`.
+;;; `open` written as an argument of a hypothesis a rule concludes loads, and the
+;;; rule proposes a fact about it — regression `hrule-value`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; `h` is an hrule whose conclusion is `(p open)`.
+;;; `h` is a rule whose conclusion is the hypothesis `(open (p open))`.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; `open` is a name wherever the kernel does not read it, at the head of a
 ;;; written fact, a premise or a conclusion, and under an ordinary relation the
 ;;; head of a fact the kernel does not read (Q-M1f.66, Q-M1f.571): here it is
-;;; written as an hrule's conclusion argument, so the program loads, and every
+;;; written as the argument of the fact `(p open)`, so the program loads, and every
 ;;; command answers.
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
@@ -25,7 +25,7 @@
 (relation q Thing :why "{?3} is a q")
 (is-a k Thing)
 (a k)
-(hrule h ()
+(rule h ()
   :match  (a ?x)
-  :assert (p open)
+  :assert (open (p open))
   :why "{?x} is an a, so open may be a p")

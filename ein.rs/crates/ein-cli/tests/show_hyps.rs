@@ -92,7 +92,7 @@ fn stdout_is_the_facts_and_stderr_one_note() {
         assert_eq!(
             r.err,
             format!(
-                "note: {file}: H, built by the rung `{rung}`: {} candidates\n",
+                "note: {file}: H, from `{rung}`: {} candidates\n",
                 lines.len()
             )
         );
@@ -129,7 +129,7 @@ fn an_empty_h_prints_nothing_and_says_why() {
         assert_eq!(universe_row(file), why, "{file}: the read-out's words");
         assert_eq!(
             r.err,
-            format!("note: {file}: H, built by the rung `{rung}`: {why}\n")
+            format!("note: {file}: H, from `{rung}`: {why}\n")
         );
     }
 }

@@ -2,7 +2,7 @@
 ;;; owed (Q-M1f.332: a reading is always chosen, never left unchosen). The
 ;;; theory
 ;;; holds the readings of *need* as facts; which one a problem means is a fact
-;;; the search commits to, `(reads-as need R)`, proposed by the hrule
+;;; the search commits to, `(reads-as need R)`, proposed by the hypothesis rule
 ;;; `read-need` for every question of how many containers are needed, and each
 ;;; reading is a rule that answers under it. A state that asks such a question
 ;;; and reads *need* no way OWES a reading, so root is not in R and every state
@@ -10,7 +10,7 @@
 ;;; apples in boxes of 3, R is two states and one answer: two solutions, of
 ;;; which one may be the wrong reasoning with the right number.
 ;;; A problem imports it beside `words`, `(import readings :symbols
-;;; (readings))`, and names the hrule, `(solve :hrules (read-need))`.
+;;; (readings))`; `read-need` has no parameter, so it needs no activator.
 (import words :symbols (wanted value left-over needed over))
 (import std.math.decimal-arith :symbols (add sum-of))
 (import std.math.decimal :symbols (n))
@@ -36,9 +36,9 @@
   :assert (open reads-as)
   :why    "a reading of need is owed: the question asks how many {?c} are needed for [{?q}], and the problem does not say what need means")
 
-(hrule read-need ()
+(rule read-need ()
   :match  (and (wanted (needed ?c ?k ?q)) (reading-of need ?m))
-  :assert (reads-as need ?m)
+  :assert (open (reads-as need ?m))
   :why    "suppose need is read as {?m}")
 
 (rule one-reading ()

@@ -66,9 +66,9 @@
   :assert (h3 ?x)
   :why    "h2({?x}) → h3({?x})")
 
-(hrule guess (?R ?T)
+(rule guess (?R ?T)
   :match  (is-a ?x ?T)
-  :assert (?R ?x)
+  :assert (open (?R ?x))
   :why    "guess: is {?x} {?R}?")
 
 (relation is-a T T :why "{?3} is a {?4}")
@@ -79,11 +79,9 @@
 (is-a Item T)
 (is-a X    Item)
 
-(solve
-  :hrules (
-    guess (h1 Item)
-    guess (h2 Item)
-    guess (h3 Item)))
+(guess h1 Item)
+(guess h2 Item)
+(guess h3 Item)
 
 (query
   :goal (h1 ?x))

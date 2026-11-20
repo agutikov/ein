@@ -140,7 +140,7 @@ impl<'a> Reader<'a> {
         let mut rule_heads: FxHashSet<Symbol> = FxHashSet::default();
         for reg in [
             &kb.program().rules,
-            &kb.program().hrules,
+            &kb.program().hypotheses,
             &kb.program().obligations,
         ] {
             for (_, rule) in reg.iter() {

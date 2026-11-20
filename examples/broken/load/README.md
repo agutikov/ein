@@ -36,7 +36,7 @@ parse error, read where the module is.
   ([Q-M1f.399](../../../docs/decisions/language/Q-M1f.399-a-rule-states-facts-or-a-word-to-the-engine.md)): the
   grammar takes one name after it, and the loader holds the rest, each line listing the engine's words.
   `ein_word_unknown` writes `:ein dead`, a word that is none of the engine's; `ein_beside_assert` writes it beside
-  an `:assert`, where a rule states one or the other; `ein_on_hrule` writes it on an hrule, which proposes a fact.
+  an `:assert`, where a rule states one or the other.
 - **No declarator binds `open`**
   ([Q-M1f.66](../../../docs/decisions/language/Q-M1f.66-open-is-written-only-as-a-rules-verdict.md)): it is a
   name wherever a name goes, and the kernel's word at the head of a written fact, a premise or a conclusion.
@@ -58,7 +58,7 @@ parse error, read where the module is.
   name listed that the module does not provide, two definitions of one short name, and a cycle.
   `import_cycle.ein` and `import_cycle_b.ein` import each other. Both are fixtures: the reported chain is the
   resolution stack, so entering the cycle from either side is a different message.
-- **Duplicates and missing parts**: a relation, a rule or an hrule declared twice, a macro twice, two `(solve …)`
+- **Duplicates and missing parts**: a relation, a rule or a hypothesis rule declared twice, a macro twice, two `(solve …)`
   forms, a rule with no `:match` or no `:assert`, the two half-specified declarators (`rule_half_declarators.ein`,
   a node-kind probe too), a macro called with the wrong count, a `std` macro used without its import, and a
   derivation cycle in written provenance (`derivation_cycle.ein`, `:using ((r c d))`).
@@ -93,7 +93,7 @@ oversight. Recorded so the gap is a decision and not a hole:
 | message | why no fixture |
 |---|---|
 | a malformed `(macro …)`, `(rule …)` or `(import …)`, a fact with a non-atom head, an unexpected top-level form | **the grammar refuses each shape at the parse**: `(macro m)`, `(rule r)`, `(import)`, `(?R a b)` are parse errors. The loader reads that shape off the tree with an `expect` naming the production of [`ein.y`](../../../ein.rs/crates/ein-ir/src/ein.y) that states it, so a caller that hand-builds an AST (`ein_ir::load` is public API) gets a panic naming the grammar rather than a load error, and each shape is a row of `ein-ir/tests/grammar_pages.rs`' table. |
-| `non-rule form where a rule was expected` · `unresolved (import …) — internal error` | **unreachable by construction.** The top-level router only sends `rule`/`hrule`-headed forms to the rule ingester, and `resolve_imports` consumes every import before the router runs. Each is an internal-invariant assertion. |
+| `non-rule form where a rule was expected` · `unresolved (import …) — internal error` | **unreachable by construction.** The top-level router only sends `rule`-headed forms to the rule ingester, and `resolve_imports` consumes every import before the router runs. Each is an internal-invariant assertion. |
 | `(import M) — file-relative import needs a base directory` | **not expressible as a file.** It fires only when `base_dir` is `None`, i.e. `ein_ir::load(…, None)` over parsed source, and loading a *file* always supplies one, on every command. It is an inline unit test in [`ein-ir/tests/kb_semantics.rs`](../../../ein.rs/crates/ein-ir/tests/kb_semantics.rs). |
 
 A message about a top-level form ends `at None`: the form is built without a source position

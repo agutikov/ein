@@ -144,8 +144,8 @@ pub struct Terms {
     ///
     /// **The single signal the fan-out reads.** An entering that needed to
     /// number something cannot be finished on a worker, and the engine has a
-    /// dozen places that would have numbered it — the blind enumerator, an
-    /// `hrule` activator, a rule's conclusion. Rather
+    /// dozen places that would have numbered it — the blind enumerator, a
+    /// hypothesis a rule concludes, a rule's conclusion. Rather
     /// than teach each of them a new error to propagate, each stops what it is
     /// doing and this says so: whatever the entering produced afterwards is
     /// **not** the entering the sequential engine would have run, so the
@@ -205,29 +205,29 @@ pub const STRUCTURAL: [&str; 5] = ["absent", "and", "false", "not", "or"];
 pub const PREDICATES: [&str; 2] = ["eq", "neq"];
 
 /// **The kernel's own words**: no import qualifies one, and a declarator
-/// binds none but `false` and `not`, as a relation, a rule, an hrule or an
-/// alias ([`binds_no_reserved`]).
+/// binds none but `false` and `not`, as a relation, a rule or an alias
+/// ([`binds_no_reserved`]).
 ///
-/// The grammar never reads twelve words as a name (`ein-ir`'s
+/// The grammar never reads ten words as a name (`ein-ir`'s
 /// `grammar::RESERVED_WORDS`, and the printer's copy,
 /// [`crate::text::LEXER_KEYWORDS`]): `and` / `or` / `neq` / `rule` /
-/// `hrule` / `query` / `solve` / `config` / `trace` / `macro` / `import` /
-/// `open`. So what still reaches the loader as a declared name is the
-/// structural primitives a position gives a meaning to (`absent`, `false`,
-/// `not`), the predicate `eq`, `relation` — a name wherever a name goes, so
-/// `(relation ?R ?A ?B)` stays a legal pattern — and the kernel's dunder. This is
-/// about *binding* a name: a fact may still have a reserved head, such as a
-/// stored `(not X)` octagon.
+/// `query` / `solve` / `config` / `trace` / `macro` / `import`. So what
+/// still reaches the loader as a declared name is the structural primitives
+/// a position gives a meaning to (`absent`, `false`, `not`, `open`), the
+/// predicate `eq`, `relation` — a name wherever a name goes, so `(relation ?R
+/// ?A ?B)` stays a legal pattern — and the kernel's dunder. This is about
+/// *binding* a name: a fact may still have a reserved head, such as a stored
+/// `(not X)` octagon.
 ///
-/// **That set is not this one.** The two overlap in four names (`and`,
-/// `neq`, `open`, `or`) and neither contains the other. `open` is in
-/// both (Q-M1f.66): the grammar reads it only as the
-/// verdict a rule's `:assert` writes, `(open)` or `(open ?R)`, and never as a
-/// name, so no program binds it and none writes it as a value.
+/// **That set is not this one.** The two overlap in three names (`and`,
+/// `neq`, `or`) and neither contains the other. `open` is here alone
+/// (Q-M1f.66, Q-M1f.571): the kernel reads it at the head of a written
+/// fact, a premise or a conclusion, and it is a name elsewhere, which no
+/// declarator binds.
 ///
 /// **The kernel's dunder is here** (Q-M1f.7): [`CLOSED`] is written only
 /// with its fixed meaning, so a program may not bind it, as a relation it
-/// declares, a rule's, an hrule's or a macro's name, or an import's `:as`; it
+/// declares, a rule's or a macro's name, or an import's `:as`; it
 /// may use it wherever a name is used, as a relation or as a value, which is
 /// how `(imply1 functional __closed__)` hands the trigger to a rule. The engine's
 /// three writeback names ([`FORCED_POSITIVE`], [`MONOTONIC_UNCONDITIONAL`],
@@ -248,8 +248,8 @@ pub fn is_reserved(name: &str) -> bool {
 /// The two of [`RESERVED`] that are the standard library's names
 /// (Q-M1f.557): `false`, whose fact `std.core`'s rule reads, and `not`, whose
 /// facts `std.contradiction`'s rules read. A declarator may bind either, as a
-/// relation a program or a module declares, a rule's or an hrule's name, or
-/// an import's `:as`; a macro may not, since its calls would then be every
+/// relation a program or a module declares, a rule's name, or an import's
+/// `:as`; a macro may not, since its calls would then be every
 /// `(false)` and `(not X)`, `std.core`'s among them. The grammar and the
 /// loader still give each its shape.
 pub const LIBRARY_NAMES: [&str; 2] = ["false", "not"];
@@ -328,7 +328,6 @@ pub struct Kernel {
     /// whether or not a puzzle declares them.
     pub relation: Symbol,
     pub rule: Symbol,
-    pub hrule: Symbol,
     pub macro_: Symbol,
     pub query: Symbol,
     pub config: Symbol,
@@ -367,7 +366,6 @@ impl Terms {
             not: intern("not"),
             relation: intern("relation"),
             rule: intern("rule"),
-            hrule: intern("hrule"),
             macro_: intern("macro"),
             query: intern("query"),
             config: intern("config"),

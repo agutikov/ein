@@ -750,7 +750,7 @@ fn the_program_views_kb_is_the_kb_views_drawing() {
     }
 }
 
-/// Every corpus program the claim is about: one with no rule, hrule, macro
+/// Every corpus program the claim is about: one with no rule, hypothesis rule, macro
 /// or import, that loads and saturates, and is no saved file.
 #[test]
 fn the_program_views_kb_is_the_kb_views_drawing_on_the_corpus() {
@@ -786,7 +786,7 @@ fn the_program_views_kb_is_the_kb_views_drawing_on_the_corpus() {
                         check(*f)
                             || matches!(
                                 k.ast.head_name(*f),
-                                Some("rule" | "hrule" | "macro" | "import")
+                                Some("rule" | "macro" | "import")
                             )
                     })
                 {

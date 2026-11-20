@@ -802,8 +802,7 @@ pub(crate) fn extras(
     } else {
         frontier.iter().map(|o| of(&o.node.set)).collect()
     };
-    // The candidates' relations stand in for `:hrules`' targets: they are
-    // what a commitment is made of.
+    // The candidates' relations: they are what a commitment is made of.
     let mut targets: Vec<ein_core::Symbol> = Vec::new();
     for c in &a.candidates {
         let rel = terms.facts.get(c.fact).0;

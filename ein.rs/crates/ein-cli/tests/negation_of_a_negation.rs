@@ -297,7 +297,7 @@ fn a_search_reaches_the_same_region_by_a_variable_and_by_shape() {
                      :why \"a fact beside its denial\")\n\
                      (rule denial-denied () :match (and (not (ok ?x)) (not (not (ok ?x)))) \
                      :assert (false) :why \"a denial beside its denial\")\n\
-                     (hrule guess () :match (person ?p) :assert (liar ?p) \
+                     (rule guess () :match (person ?p) :assert (open (liar ?p)) \
                      :why \"suppose {{?p}} lies\")\n{text}\n"
                 ),
             );

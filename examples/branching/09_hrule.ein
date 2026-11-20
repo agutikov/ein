@@ -1,20 +1,20 @@
-;;; Branching demo 9 — hrule-driven generation.
+;;; Branching demo 9 — generation by a hypothesis rule.
 ;;;
-;;; With no hrule, H comes from the blind combinatorial enumerator. Here
-;;; a *hypothesis rule* takes over: `guess-co-located` is declared
-;;; with `(hrule …)` — the same shape as `(rule …)`, but its
-;;; conclusions are routed to the hypothesis layer as *candidates*,
-;;; and saturation never fires it: an hrule's `:assert` is a
-;;; speculation, not an entailment, which a commitment may add and
-;;; nothing derives.
+;;; With no hypothesis rule, H comes from the blind combinatorial enumerator.
+;;; Here a *hypothesis rule* takes over: `guess` is a rule whose conclusion is
+;;; a hypothesis, `(open (?R ?x1 ?x2))`, activated by the fact `(guess
+;;; co-located Color House)`. What it concludes under `open` is a
+;;; *candidate*, and no saturation stores it: a hypothesis is a speculation,
+;;; not an entailment, which a commitment may add and nothing derives.
 ;;;
-;;; Declaring an hrule takes the blind enumerator's place — H is built
-;;; by the hrules' rung, and every candidate comes from an hrule. `ein
-;;; show hyps` lists exactly the hrule's (Color, House) pairs that root
-;;; does not already hold, seven of them.
 ;;;
-;;; This basic hrule reproduces the enumerator's `co-located`
-;;; candidates — the point is the *mechanism*. A smarter hrule
+;;; A rule that writes an `open` fact at root takes the blind enumerator's
+;;; place, and every candidate comes from the rule: `ein show hyps` says H is
+;;; from `hypothesis-rules`, and lists exactly its (Color, House) pairs that
+;;; root does not already hold, seven of them.
+;;;
+;;; This basic hypothesis rule reproduces the enumerator's `co-located`
+;;; candidates — the point is the *mechanism*. A smarter hypothesis rule
 ;;; could exploit puzzle structure the blind enumerator cannot
 ;;; express (e.g. guess only for the most-constrained object).
 ;;;
@@ -44,11 +44,11 @@
   :why    "{?R} not functional")
 
 ;; ── The hypothesis rule. Every (Color, House) pair is a
-;; ── co-located candidate. Saturation never fires an `hrule`;
+;; ── co-located candidate. Saturation never fires a hypothesis rule;
 ;; ── the hypothesis layer runs it to build H.
-(hrule guess (?R ?T1 ?T2)
+(rule guess (?R ?T1 ?T2)
   :match  (and (is-a ?x1 ?T1) (is-a ?x2 ?T2))
-  :assert (?R ?x1 ?x2)
+  :assert (open (?R ?x1 ?x2))
   :why    "guess: is {?x1} {?R} with {?x2}?")
 
 (relation is-a       T T :why "{?3} is a {?4}")
@@ -66,10 +66,7 @@
 (co-located Red   H1 :source "(1)")
 (co-located Green H2 :source "(2)")
 
-(solve
-  :hrules (
-    guess (co-located Color House)
-  ))
+(guess co-located Color House)
 
 (query
   :goal (co-located Blue ?h)

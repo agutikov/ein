@@ -951,18 +951,19 @@ fn distinct_closures_have_distinct_keys() {
 
 const BLIND: &str = "examples/branching/12_typed_blind_solve.ein";
 
-/// A puzzle with no `(hrule …)` solves on the blind combinatorial path: its
+/// A puzzle with no a rule that concludes `(open F)` solves on the blind combinatorial path: its
 /// maximal line is the puzzle's two models, the two colourings of H2 and H3
 /// that the anchor `(color-of H1 Red)` leaves. The walk, asked for its first
 /// model, reported one; R holds both.
 ///
-/// The acceptance program (`zebra2`) is hrule-driven, so it never enters the
-/// blind branch of the generator at all. Without a fixture that both takes
-/// that path *and* converges, a change to the blind enumerator would be a
-/// silent change: the demos that run blind abort at `k = 0`, so they cannot
-/// witness "still solves". The `hrules.is_empty()` assertion is what keeps
-/// this test on the path it names — an hrule added to the fixture would make
-/// the solve pass while testing nothing.
+/// The acceptance program (`zebra2`) states its hypotheses with a rule, so it
+/// never enters the blind branch of the generator at all. Without a fixture
+/// that both takes that path *and* converges, a change to the blind
+/// enumerator would be a silent change: the demos that run blind abort at
+/// `k = 0`, so they cannot witness "still solves". The `hypotheses.is_empty()`
+/// assertion is what keeps this test on the path it names — a rule that
+/// concludes a hypothesis added to the fixture would make the solve pass
+/// while testing nothing.
 #[test]
 fn the_blind_path_solves_to_its_two_models() {
     let k = maximal_line(BLIND, |states, _| states.len());
@@ -972,7 +973,7 @@ fn the_blind_path_solves_to_its_two_models() {
     let mut terms = Terms::new();
     let kb = load_file(&mut ast, &mut terms, &repo_root().join(BLIND)).expect("loads");
     assert!(
-        kb.program().hrules.is_empty(),
+        kb.program().hypotheses.is_empty(),
         "the fixture must stay blind-path"
     );
 }

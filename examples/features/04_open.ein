@@ -18,7 +18,7 @@
 ;;; in the KB."
 ;;;
 ;;; Use case: gate hypothesis emission on still-undecided slots.
-;;; Without `(unknown …)`, an hrule would propose hypotheses even
+;;; Without `(unknown …)`, a hypothesis rule would propose hypotheses even
 ;;; for already-decided pairs and the engine has to filter them
 ;;; out downstream. With `(unknown …)` the rule writer states the
 ;;; condition declaratively.
@@ -28,8 +28,8 @@
 ;;; the open state.
 
 ;; Demonstration rule — derives candidate facts.
-;; In real puzzles this'd be an `hrule` (hypothesis rule); for
-;; the demo we use `rule` so the firings land in (reasoning).
+;; In real puzzles this'd conclude a hypothesis, `(open F)`; for the
+;; demo it concludes the fact, so the firings land in (reasoning).
 ;; stdlib pattern-macro sugar — forall/unknown from the std.macro module.
 (import std.macro :symbols (forall unknown))
 ;; A fact beside its stored negation is a contradiction by this module's rules (Q-M1f.557).

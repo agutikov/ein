@@ -6,7 +6,7 @@
 //! The grammar takes `(not ?x)` as a conclusion, for a variable bound to a
 //! fact. A rule whose variable held a name would store `(not k)`, which no
 //! program can write and whose `--dump-answer` state file would not reload,
-//! and an hrule would propose it, so R would hold two states that differ in a
+//! and a hypothesis rule would propose it, so R would hold two states that differ in a
 //! fact nothing can read.
 //!
 //! Two halves, both held here. **The loader** refuses the conclusion wherever
@@ -55,17 +55,11 @@ const TAIL: &str = "not takes a pattern (relation argument …) or a variable bo
                     (absent …)";
 
 /// `(shape, the forms after HEAD, what the first line of stderr holds)`.
-const REFUSED: [(&str, &str, &str); 18] = [
+const REFUSED: [(&str, &str, &str); 15] = [
     (
         "a-written-fact",
         "(rule r () :match (paid ?g) :assert (not ?g) :why \"w\")",
         "rule 'r': its :assert writes (not ?g), and ?g can be a name: (paid ?g) binds ?g where \
-         the fact (paid Ann) holds Ann — not takes",
-    ),
-    (
-        "an-hrule",
-        "(hrule r () :match (paid ?g) :assert (not ?g) :why \"w\")",
-        "hrule 'r': its :assert writes (not ?g), and ?g can be a name: (paid ?g) binds ?g where \
          the fact (paid Ann) holds Ann — not takes",
     ),
     (
@@ -100,22 +94,16 @@ const REFUSED: [(&str, &str, &str); 18] = [
         "?g is its parameter, which the fact (r Bob) binds to Bob",
     ),
     (
-        "an-hrules-activator",
-        "(hrule r (?g) :match () :assert (not ?g) :why \"w\")\n(solve :hrules (r (Bob)))",
-        "hrule 'r': its :assert writes (not ?g), and ?g can be a name: ?g is its parameter, \
-         which (solve :hrules (r (Bob))) binds to Bob",
-    ),
-    (
         "another-rules-conclusion",
         "(rule mk () :match (is-a ?g Guest) :assert (met ?g) :why \"m\")\n\
          (rule r () :match (met ?g) :assert (not ?g) :why \"w\")",
         "(met ?g) binds ?g where rule 'mk' writes (met ?g)",
     ),
     (
-        "an-hrules-conclusion",
-        "(hrule mk () :match (is-a ?g Guest) :assert (seen ?g) :why \"m\")\n\
+        "a-hypothesis-rules-conclusion",
+        "(rule mk () :match (is-a ?g Guest) :assert (open (seen ?g)) :why \"m\")\n\
          (rule r () :match (seen ?g) :assert (not ?g) :why \"w\")",
-        "(seen ?g) binds ?g where hrule 'mk' writes (seen ?g)",
+        "(seen ?g) binds ?g where rule 'mk' writes (open (seen ?g))",
     ),
     (
         "a-guard-alone",
@@ -128,12 +116,6 @@ const REFUSED: [(&str, &str, &str); 18] = [
         "a-parameters-relation",
         "(r paid)\n(rule r (?R) :match (?R ?g) :assert (not ?g) :why \"w\")",
         "(?R ?g) binds ?g where the fact (paid Ann) holds Ann",
-    ),
-    (
-        "an-hrules-parameters-relation",
-        "(hrule r (?R) :match (?R ?g) :assert (not ?g) :why \"w\")\n(solve :hrules (r (paid)))",
-        "hrule 'r': its :assert writes (not ?g), and ?g can be a name: (?R ?g) binds ?g where \
-         the fact (paid Ann) holds Ann",
     ),
     (
         "a-name-written-through-a-parameter",
@@ -164,7 +146,7 @@ const REFUSED: [(&str, &str, &str); 18] = [
 ];
 
 /// What loads: `(not ?x)` of a variable the program shows no name for.
-const ACCEPTED: [(&str, &str); 10] = [
+const ACCEPTED: [(&str, &str); 9] = [
     // A declared relation held out of the hypotheses holds what is written.
     (
         "a-declared-relation-held-out",
@@ -179,9 +161,9 @@ const ACCEPTED: [(&str, &str); 10] = [
          (rule r () :match (claim ?c) :assert (not ?c) :why \"w\")",
     ),
     (
-        "a-declared-relation-beside-an-hrule",
+        "a-declared-relation-beside-a-hypothesis-rule",
         "(relation claim Claim :why \"{?3} is claimed\")\n(claim (paid Bob))\n\
-         (hrule guess () :match (is-a ?g Guest) :assert (seen ?g) :why \"g\")\n\
+         (rule guess () :match (is-a ?g Guest) :assert (open (seen ?g)) :why \"g\")\n\
          (rule r () :match (claim ?c) :assert (not ?c) :why \"w\")",
     ),
     (
@@ -206,10 +188,6 @@ const ACCEPTED: [(&str, &str); 10] = [
     (
         "a-parameter-bound-to-a-fact",
         "(r (paid Bob))\n(rule r (?c) :match () :assert (not ?c) :why \"w\")",
-    ),
-    (
-        "an-hrule-over-facts",
-        "(claim (paid Bob))\n(hrule r () :match (claim ?c) :assert (not ?c) :why \"w\")",
     ),
     (
         "the-negation-of-a-pattern",
@@ -319,21 +297,18 @@ fn a_conclusion_negating_a_name_is_refused_on_every_command() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// The regressions' seven witnesses of a negated name, each read from its
-/// file, as `regressions.rs` reads one command's run of each.
+/// The regressions' six witnesses of a negated name the loader refuses, each
+/// read from its file, as `regressions.rs` reads one command's run of each;
+/// `not-name-hrule-concluded.ein`, `(open (not ?g))`, is refused at the parse,
+/// a hypothesis being a fact, and its row holds that.
 #[test]
 fn the_registers_witnesses_are_refused_on_every_command() {
     let scratch = Scratch::new("ein-negated-names-witnesses");
-    let witnesses: [(&str, &str); 7] = [
+    let witnesses: [(&str, &str); 6] = [
         (
             "not-name-concluded",
             "rule 'deny': its :assert writes (not ?g), and ?g can be a name: (paid ?g) binds ?g \
              where the fact (paid Ann) holds Ann",
-        ),
-        (
-            "not-name-hrule-concluded",
-            "hrule 'suppose': its :assert writes (not ?g), and ?g can be a name: (paid ?g) binds \
-             ?g where the fact (paid Ann) holds Ann",
         ),
         (
             "not-name-parameter",
@@ -430,8 +405,7 @@ fn states(out: &str) -> Option<usize> {
 }
 
 /// A binding the loader does not read: the firing stores no negation of a
-/// name and an hrule proposes none, a stored negation of a fact beside it is
-/// kept, no state file holds one, and `ein solve` counts what `ein oracle`
+/// name, a stored negation of a fact beside it is kept, no state file holds one, and `ein solve` counts what `ein oracle`
 /// counts (Q-M1f.128). Each program reaches the name through the relation of
 /// a parameter whose activator a rule derives through a variable, `(marks
 /// ?R)` then `(deny ?R)`.
@@ -446,7 +420,7 @@ fn a_name_only_a_run_meets_is_not_negated() {
     let mut bad = Vec::new();
     const ON: &str = "(rule on () :match (marks ?R) :assert (deny ?R) :why \"o\")\n";
     // (shape, the forms after HEAD and ON, R's states)
-    let cases: [(&str, &str, usize); 3] = [
+    let cases: [(&str, &str, usize); 2] = [
         // `(paid Ann)` binds `?g` to a name, `(claim (paid Bob))` to a fact.
         (
             "a-derived-activators-relation",
@@ -454,15 +428,6 @@ fn a_name_only_a_run_meets_is_not_negated() {
              (rule deny (?R) :match (?R ?g) :assert (not ?g) :why \"w\")\n\
              (solve :hypothesis-relations ())",
             1,
-        ),
-        // An hrule over `met`, which `deny` fills with a guest and the
-        // program with a fact: its one candidate is `(not (paid Bob))`.
-        (
-            "an-hrule-over-a-derived-fact",
-            "(met (paid Bob))\n(marks met)\n\
-             (rule deny (?R) :match (paid ?g) :assert (?R ?g) :why \"w\")\n\
-             (hrule suppose () :match (met ?c) :assert (not ?c) :why \"s\")",
-            2,
         ),
         // A rule that concludes a fact beside the negation: the fact stays.
         (

@@ -2,10 +2,10 @@
 ;;;
 ;;; 06_friends_tables_everyone_sits.ein made small enough for `ein oracle`: the pair (Ann, Bob)
 ;;; fits both tables, the duo (Cat, Dan) only the big one, each table has two seats, and everyone
-;;; owes a seat (`total-owed`). The hrule proposes a friend only the seats of a table their group
+;;; owes a seat (`total-owed`). The hypothesis rule proposes a friend only the seats of a table their group
 ;;; fits, 12 candidates; the obligation proposes beside it every seat that would pay a debt
 ;;; (Q-M1f.570), so `(sits Cat S1)`, `(sits Cat S2)`, `(sits Dan S1)` and `(sits Dan S2)`, the
-;;; seats the hrule's guard leaves out, are candidates too: 16.
+;;; seats the hypothesis rule's guard leaves out, are candidates too: 16.
 ;;;
 ;;; What it was the witness of: the obligation tree may branch a state that owes Cat a seat on
 ;;; the candidates that pay it alone. With the union, every fact that pays a debt is a candidate.
@@ -43,13 +43,12 @@
   :assert (false)
   :why    "{?a} and {?b} are friends and sit at different tables")
 
-(hrule seat ()
+(rule seat ()
   :match  (and (member ?p ?g) (fits ?g ?t) (at ?s ?t))
-  :assert (sits ?p ?s)
+  :assert (open (sits ?p ?s))
   :why    "guess that {?p} sits in seat {?s}, at table {?t}, which {?p}'s group {?g} fits")
 
 (solve
-  :hrules (seat)
   :expect (region
             (model (sits Ann B1) (sits Bob B2) (sits Cat S1) (sits Dan S2))
             (model (sits Ann B1) (sits Bob B2) (sits Cat S2) (sits Dan S1))

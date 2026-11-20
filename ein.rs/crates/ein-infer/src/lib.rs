@@ -38,8 +38,8 @@ pub mod explain;
 pub mod explore;
 pub mod extendable;
 pub mod firing;
-pub mod hrule;
 pub mod hypgen;
+pub mod hypothesis_rules;
 pub mod invariant;
 pub mod known_dead;
 pub mod match_;
@@ -86,7 +86,7 @@ pub use explain::{
 pub use firing::{
     ActivatorId, BindingKey, Env, FireError, Firing, build_conclusion, build_fact, fire,
 };
-pub use hrule::Hrules;
+pub use hypothesis_rules::HypothesisRules;
 pub use hypgen::{CLOSED, Drop, HypGenStats, Skip, candidate_objects};
 pub use match_::{Emit, Match, Matcher};
 pub use naf_deps::{NafDep, compute_naf_map, derived_naf_warnings};

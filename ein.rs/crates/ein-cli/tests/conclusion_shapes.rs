@@ -17,7 +17,7 @@
 //! | an `and` inside an `and`, written and through a macro | [`an_and_inside_an_and_is_read_flat`], [`a_macros_and_inside_an_and_is_read_flat`], [`the_witnesses_answer_as_their_flat_twins`]: the same answer, facts and read-out as the flat conclusion, held by invariance |
 //! | `(or …)`, an `(or …)` inside an `(and …)`, a connective as a conclusion's argument or under its `not` | refused at the parse: the grammar's table, `ein-ir/tests/grammar_pages.rs`, and [`no_disjunction_and_no_compound_fact_is_a_conclusion`] here |
 //! | the same written by a macro's expansion | refused at load: `docs/ein/user/04-reference/07-diagnostics.md` § 2.16, `ein-ir`'s `from_ir::tests::a_macros_expansion_is_held_to_the_grammars_shapes` |
-//! | an hrule's `(and …)` of more than one conjunct, written or through a macro | refused at load (Q-M1f.271): `07-diagnostics.md` § 2.28, [`an_hrule_concludes_one_fact`], on every command |
+//! | a hypothesis of an `(and …)`, `(open (and …))`, written or through a macro | refused at the parse or at load (Q-M1f.271), on every command, and a conjunction of hypotheses loads: [`a_hypothesis_is_one_fact`] |
 //!
 //! ```text
 //! cargo test -p ein-cli --test conclusion_shapes
@@ -369,39 +369,28 @@ fn no_disjunction_and_no_compound_fact_is_a_conclusion() {
     }
 }
 
-/// **An hrule proposes one fact per match**, so its conclusion, read flat, is
-/// one conjunct, and one of more is refused at load, on every command, one
-/// line placed where the `:assert` is written (Q-M1f.271,
-/// `docs/ein/user/04-reference/07-diagnostics.md` § 2.28), never the first conjunct
-/// proposed alone and the others dropped in silence. An `(and …)` of
-/// one conjunct is one conclusion, and loads.
+/// **A hypothesis is one fact** (Q-M1f.271): `(open F)` takes one fact, and
+/// `(open (and …))` is refused, at the parse where it is written, at load
+/// where a macro's expansion makes it, on every command, never the first
+/// conjunct proposed alone and the others dropped in silence. A rule
+/// concludes several hypotheses as a conjunction of `(open F)`, each one
+/// fact, which loads and proposes each (Q-M1f.575).
 #[test]
-fn an_hrule_concludes_one_fact() {
+fn a_hypothesis_is_one_fact() {
     let both = "(macro both (?x) (and (p ?x) (q ?x)) :why \"both p and q of {?x}\")\n";
-    let hrule = |assert: &str| {
-        // Its relations open: an hrule proposing a closed one is refused too
+    let rule = |assert: &str| {
+        // Its relations open: a hypothesis of a closed one is refused too
         // (`docs/ein/user/04-reference/07-diagnostics.md` § 2.26).
         let decls = DECLS.lines().take(3).collect::<Vec<_>>().join("\n");
-        format!("{decls}\n{both}(hrule h () :match () :assert {assert} :why \"the guess\")\n")
+        format!("{decls}\n{both}(rule h () :match () :assert {assert} :why \"the guess\")\n")
     };
-    let line = |written: &str, n: usize| {
-        format!(
-            "hrule 'h': its :assert writes {written}, {n} conclusions — an hrule proposes one \
-             fact per match, each a commitment of its own: write one hrule per conclusion"
-        )
-    };
-    for (assert, written, n) in [
-        ("(and (p a) (q a))", "(and (p a) (q a))", 2),
-        (
-            "(and (and (p a) (q a)) (r a))",
-            "(and (and (p a) (q a)) (r a))",
-            3,
-        ),
-        ("(both a)", "(and (p a) (q a))", 2),
-        ("(and (r a) (both a))", "(and (r a) (and (p a) (q a)))", 3),
+    for assert in [
+        "(open (and (p a) (q a)))",
+        "(open (and (and (p a) (q a)) (r a)))",
+        "(open (and (p a)))",
+        "(open (both a))",
     ] {
-        let text = hrule(assert);
-        let want = line(written, n);
+        let text = rule(assert);
         for args in [
             &["saturate"][..],
             &["saturate", "--dump"],
@@ -418,26 +407,32 @@ fn an_hrule_concludes_one_fact() {
             assert_eq!(
                 run.code,
                 code,
-                "{assert}: `ein {}` refuses it",
-                args.join(" ")
+                "{assert}: `ein {}` refuses it\n{}",
+                args.join(" "),
+                run.stderr
             );
             let first = run.stderr.lines().next().unwrap_or("");
             assert!(
-                first.starts_with("kb load error: c.ein:") && first.ends_with(&want),
+                first.starts_with("c.ein:") || first.starts_with("kb load error: c.ein:"),
                 "{assert}: `ein {}`'s first line: {first}",
                 args.join(" ")
             );
         }
     }
-    // One conjunct, written bare or in an `(and …)`, proposes its fact.
-    for assert in ["(p a)", "(and (p a))", "(and (and (p a)))"] {
-        let run = ein(&hrule(assert), &["solve"]);
+    // One hypothesis a conjunct, each its own commitment.
+    for (assert, k) in [
+        ("(open (p a))", 2),
+        ("(and (open (p a)))", 2),
+        ("(and (open (p a)) (open (q a)))", 4),
+        ("(and (and (open (p a)) (open (q a))) (open (r a)))", 8),
+    ] {
+        let run = ein(&rule(assert), &["solve"]);
         assert_eq!(run.code, 0, "{assert}: loads\n{}", run.stderr);
         let s = run.summary.expect("solve writes its summary");
         assert_eq!(
             s["region"]["k_s"].as_u64(),
-            Some(2),
-            "{assert}: R is ∅ and {{(p a)}}"
+            Some(k),
+            "{assert}: R is every commitment of the hypotheses"
         );
     }
 }

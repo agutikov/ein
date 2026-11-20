@@ -6,7 +6,7 @@
 //!   the canonical form or folded (Q-M1f.419). A program with no rule, no
 //!   import and no macro draws the same digraph as `ein render kb` of it,
 //!   but for what the loader adds. The knowledge base is not split.
-//! - **the rules**: a digraph per rule, hrule and macro, as `ein render rule`
+//! - **the rules**: a digraph per rule and macro, as `ein render rule`
 //!   draws it ([`crate::rules`]).
 //! - **`query`**: the queries, each its `:goal` drawn as a rule's match is,
 //!   and the clauses beside it in a note, and the `(solve …)` clause, a note.
@@ -69,8 +69,8 @@ impl TraceView {
 }
 
 /// The declarators: a top-level form headed by one of these is no fact.
-const DECLARATORS: [&str; 8] = [
-    "rule", "hrule", "macro", "query", "solve", "config", "import", "trace",
+const DECLARATORS: [&str; 7] = [
+    "rule", "macro", "query", "solve", "config", "import", "trace",
 ];
 
 // ── node ids ───────────────────────────────────────────────────────
@@ -546,7 +546,7 @@ fn render_trace_dag(ast: &Ast, form: NodeId) -> String {
 /// `(config …)` and `(import …)`.
 pub fn to_dot_form(ast: &Ast, form: NodeId, opts: DotOpts) -> String {
     match ast.head_name(form).unwrap_or("") {
-        "rule" | "hrule" | "macro" => render_rule_form(ast, form, opts.rule_mode, opts.fold),
+        "rule" | "macro" => render_rule_form(ast, form, opts.rule_mode, opts.fold),
         "query" | "solve" => render_queries(ast, &[form], opts.fold),
         "trace" => render_trace(ast, form, opts.trace_view),
         "config" | "import" => String::new(),
@@ -555,8 +555,8 @@ pub fn to_dot_form(ast: &Ast, form: NodeId, opts: DotOpts) -> String {
     }
 }
 
-/// A whole program → its three parts, `kb`, a digraph per rule, hrule and
-/// macro, and `query`, then a written trace's digraph; those that draw
+/// A whole program → its three parts, `kb`, a digraph per rule and macro,
+/// and `query`, then a written trace's digraph; those that draw
 /// nothing are left out, and the rest joined by blank lines.
 pub fn to_dot(ast: &Ast, forms: &[NodeId], opts: DotOpts) -> String {
     let forms: Vec<NodeId> = forms
@@ -566,7 +566,7 @@ pub fn to_dot(ast: &Ast, forms: &[NodeId], opts: DotOpts) -> String {
         .collect();
     let mut rendered: Vec<String> = vec![render_kb(ast, &forms, opts.fold)];
     for &f in &forms {
-        if matches!(ast.head_name(f), Some("rule" | "hrule" | "macro")) {
+        if matches!(ast.head_name(f), Some("rule" | "macro")) {
             rendered.push(render_rule_form(ast, f, opts.rule_mode, opts.fold));
         }
     }

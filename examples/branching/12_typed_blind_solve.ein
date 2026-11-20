@@ -1,8 +1,8 @@
 ;;; Ein — branching demo 12: a typed puzzle the blind enumerator solves.
 ;;;
-;;; A no-hrule, NON-`T`-typed puzzle that solves via the blind
-;;; hypothesis enumerator, the rung H is built by when a program
-;;; declares no `(hrule …)`: its slots are real types, `House` and
+;;; A NON-`T`-typed puzzle with no hypothesis rule that solves via the blind
+;;; hypothesis enumerator, the writer of H where root holds no `open` fact
+;;; and activates no obligation: its slots are real types, `House` and
 ;;; `Color`, never `T`.
 ;;;
 ;;; Why it exists
@@ -13,7 +13,7 @@
 ;;; `typecheck-arg-1` are the contradiction rules that kill them, so the
 ;;; puzzle converges on the blind path all the same: of H's 51
 ;;; candidates, 47 die alone (`ein show hyps` lists them). The zebra
-;;; puzzles are hrule-driven and never take this path; this file is the
+;;; puzzles state their hypotheses with a rule and never take this path; this file is the
 ;;; witness that a typed puzzle solves on it.
 ;;;
 ;;;

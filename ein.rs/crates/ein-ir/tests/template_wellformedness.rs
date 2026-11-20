@@ -13,7 +13,7 @@
 //!   text needs, so a `{?1}` is a reference the renumbering missed, and is
 //!   refused here; a reference past the arrows prints as written, and is
 //!   refused too;
-//! - a **rule**'s and an **hrule**'s name a variable the firing binds: a
+//! - a **rule**'s and an **hypothesis rule**'s name a variable the firing binds: a
 //!   parameter, or a variable of a positive premise of its `:match` once the
 //!   macros are expanded — not one only an `(absent …)` reads, which binds
 //!   nothing, and in a top-level `(or …)` one every disjunct binds;
@@ -136,7 +136,7 @@ fn check_form(ast: &Ast, form: NodeId, file: &str, out: &mut Vec<String>) {
     let Some(head) = ast.head_name(form) else {
         return;
     };
-    if !matches!(head, "relation" | "rule" | "hrule" | "macro") {
+    if !matches!(head, "relation" | "rule" | "macro") {
         return;
     }
     let args = ast.form_args(form);

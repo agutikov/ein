@@ -419,12 +419,12 @@ pub fn program_of_saved(kb: &mut Kb) {
     }
 }
 
-/// The flat top-level `(rule …)` / `(hrule …)` declarations.
+/// The flat top-level `(rule …)` declarations.
 pub fn rule_forms(ast: &Ast, forms: &[NodeId]) -> Vec<NodeId> {
     forms
         .iter()
         .copied()
-        .filter(|f| matches!(ast.head_name(*f), Some("rule" | "hrule")))
+        .filter(|f| ast.head_name(*f) == Some("rule"))
         .collect()
 }
 

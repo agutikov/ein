@@ -1,21 +1,18 @@
-//! **A `(solve …)` list names what the program has** (Q-M1f.114 to .116).
+//! **A `(solve …)` list names what the program has** (Q-M1f.114).
 //!
-//! The three lists of a `(solve …)` choose the candidates, so the lattice the
-//! answer is a region of. A name in one that matched nothing, read as one
-//! that matches none, would act in silence: `:hrules (gues …)` beside an
-//! hrule `guess` would propose nothing, an activator `(att Color House)`
-//! facts of a relation nothing else names, an activator of another arity
-//! would be skipped, `:hypothesis-relations (like)` would leave H empty and
-//! `:no-hypothesis (like)` restrict nothing. The loader refuses each
-//! (`ein_ir::from_ir`'s `refuse_solve_names`), one line at the name, the same
-//! on every command.
+//! The two lists of a `(solve …)` configure the blind enumerator, so the
+//! lattice the answer is a region of. A name in one that matched nothing,
+//! read as one that matches none, would act in silence:
+//! `:hypothesis-relations (like)` would leave H empty and `:no-hypothesis
+//! (like)` restrict nothing. The loader refuses each (`ein_ir::from_ir`'s
+//! `refuse_solve_names`), one line at the name, the same on every command.
 //!
-//! What must keep loading is held beside it: a relation only a rule's or an
-//! hrule's `:assert` derives, one named only by a goal that an activator of
-//! the list has its hrule propose (a goal over a relation nothing else
-//! names is itself refused, Q-M1f.119), one the
-//! program only passes to a rule (`(functional at)`), an imported rule's,
-//! `is-a`, `eq`, the empty list, and an activator's argument that is a value.
+//! What must keep loading is held beside it: a relation only a rule's
+//! `:assert` derives, a hypothesis among them, one named only by a goal that
+//! an activator has a rule that concludes a hypothesis propose (a goal over a
+//! relation nothing else names is itself refused, Q-M1f.119), one the program
+//! only passes to a rule (`(functional at)`), an imported rule's, `is-a`,
+//! `eq`, and the empty list.
 
 use std::path::Path;
 use std::process::Command;
@@ -39,17 +36,18 @@ fn ein(args: &[&str]) -> Run {
     }
 }
 
-/// A program with one hrule, `guess (?R ?T1 ?T2)`, whose `?R` names the
-/// relation it proposes facts of; `at` is declared, `near` is named only by
-/// being passed to `functional`, and `glad` only by a rule's `:assert`.
+/// A program with one rule that concludes a hypothesis, `guess (?R ?T1
+/// ?T2)`, whose `?R` names the relation it proposes facts of, and one with no
+/// parameter, `plain`; `at` is declared, `near` is named only by being passed
+/// to `functional`, and `glad` only by a rule's `:assert`.
 const HEAD: &str = "(relation at Color House :why \"{?3} is at {?4}\")\n\
      (rule functional (?R)\n  :match (and (?R ?a ?b) (?R ?a ?c) (neq ?b ?c))\n  :assert (false)\n  \
      :why \"{?R} is not functional: {?a} has both {?b} and {?c}\")\n\
      (rule glad ()\n  :match (at ?c ?h)\n  :assert (glad ?c)\n  \
      :why \"{?c} is at {?h}, so {?c} is glad\")\n\
-     (hrule guess (?R ?T1 ?T2)\n  :match (and (is-a ?a ?T1) (is-a ?b ?T2))\n  :assert (?R ?a ?b)\n  \
+     (rule guess (?R ?T1 ?T2)\n  :match (and (is-a ?a ?T1) (is-a ?b ?T2))\n  :assert (open (?R ?a ?b))\n  \
      :why \"guess that {?R} holds of {?a} and {?b}\")\n\
-     (hrule plain ()\n  :match (is-a ?a Color)\n  :assert (seen ?a)\n  \
+     (rule plain ()\n  :match (is-a ?a Color)\n  :assert (open (seen ?a))\n  \
      :why \"guess that {?a} is seen\")\n\
      (functional at)\n(functional near)\n\
      (is-a Red Color) (is-a H1 House) (is-a H2 House)\n";
@@ -58,44 +56,7 @@ const HEAD: &str = "(relation at Color House :why \"{?3} is at {?4}\")\n\
 const CLAIM: &str = "(query :goal (at Red ?h) :expect (model))\n";
 
 /// `(shape, the solve form, what the line says after `solve: its `)`.
-const REFUSED: [(&str, &str, &str); 9] = [
-    (
-        "hrules-name",
-        "(solve :hrules (gues (at Color House)))",
-        ":hrules names gues, and the program declares no hrule gues — it declares guess, plain",
-    ),
-    (
-        "hrules-name-of-a-rule",
-        "(solve :hrules (glad))",
-        ":hrules names glad, and the program declares no hrule glad — it declares guess, plain",
-    ),
-    (
-        "hrules-later-bare-name",
-        "(solve :hrules (guess (at Color House) plan))",
-        ":hrules names plan, and the program declares no hrule plan — it declares guess, plain",
-    ),
-    (
-        "hrules-activator-relation",
-        "(solve :hrules (guess (att Color House)))",
-        ":hrules gives hrule 'guess' (att Color House), whose att is its parameter ?R, which \
-         names a relation, and the program names no relation att",
-    ),
-    (
-        "hrules-second-activator-relation",
-        "(solve :hrules (guess (at Color House) (nearr House House)))",
-        ":hrules gives hrule 'guess' (nearr House House), whose nearr is its parameter ?R, which \
-         names a relation, and the program names no relation nearr",
-    ),
-    (
-        "hrules-activator-short",
-        "(solve :hrules (guess (at Color)))",
-        ":hrules gives hrule 'guess' (at Color), 2 arguments, and guess takes 3, (?R ?T1 ?T2)",
-    ),
-    (
-        "hrules-activator-for-no-parameter",
-        "(solve :hrules (plain (at)))",
-        ":hrules gives hrule 'plain' (at), 1 argument, and plain takes 0, ()",
-    ),
+const REFUSED: [(&str, &str, &str); 2] = [
     (
         "hypothesis-relations",
         "(solve :hypothesis-relations (at glda))",
@@ -108,34 +69,22 @@ const REFUSED: [(&str, &str, &str); 9] = [
     ),
 ];
 
-/// Lists that name what the program has, each of which loads.
-const ACCEPTED: [(&str, &str); 12] = [
-    ("declared", "(solve :hrules (guess (at Color House)))"),
-    (
-        "passed-to-a-rule",
-        "(solve :hrules (guess (near House House)))",
-    ),
-    (
-        "two-activators-and-the-name-again",
-        "(solve :hrules (guess (at Color House) guess (near House House) plain))",
-    ),
-    ("no-parameter", "(solve :hrules (plain))"),
-    (
-        "a-value-that-is-no-relation",
-        "(solve :hrules (guess (at Colour House)))",
-    ),
+/// Programs that name what they have, each of which loads: the lists, and
+/// what a rule that concludes a hypothesis lets a goal name.
+const ACCEPTED: [(&str, &str); 8] = [
     ("a-rules-conclusion", "(solve :hypothesis-relations (glad))"),
-    ("an-hrules-conclusion", "(solve :no-hypothesis (seen is-a))"),
+    (
+        "a-hypothesis-rules-conclusion",
+        "(solve :no-hypothesis (seen is-a))",
+    ),
     // Named only by the goal below, which may ask about it because this
     // activator has `guess` propose it (Q-M1f.119).
-    (
-        "a-premise-of-a-goal",
-        "(solve :hrules (guess (wanted Color House)))",
-    ),
+    ("a-premise-of-a-goal", "(guess wanted Color House)"),
     ("is-a-alone", "(solve :hypothesis-relations (is-a))"),
     ("the-empty-lists", "(solve :hypothesis-relations ())"),
-    ("the-empty-hrules", "(solve :hrules ())"),
     ("no-list", "(solve)"),
+    ("an-activator", "(guess at Color House)"),
+    ("no-parameter", ""),
 ];
 
 /// Every command that reads a program, the file last, each with the exit a
@@ -237,21 +186,12 @@ fn a_list_naming_nothing_is_refused_on_every_command() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
-/// The regressions' five witnesses of a `(solve …)` list, each read from its
+/// The regressions' two witnesses of a `(solve …)` list, each read from its
 /// file, as `regressions.rs` reads one command's run of each.
 #[test]
 fn the_registers_witnesses_are_refused_on_every_command() {
     let scratch = Scratch::new("ein-solve-list-witnesses");
-    let witnesses: [(&str, &str); 5] = [
-        ("solve-hrules-no-such-hrule", ":hrules names gues"),
-        (
-            "solve-hrules-no-such-relation",
-            ":hrules gives hrule 'guess' (att Color House), whose att is its parameter ?R",
-        ),
-        (
-            "solve-hrules-activator-arity",
-            ":hrules gives hrule 'guess' (at Color), 2 arguments, and guess takes 3",
-        ),
+    let witnesses: [(&str, &str); 2] = [
         (
             "solve-hypothesis-relations-no-such-relation",
             ":hypothesis-relations names like",
@@ -279,18 +219,18 @@ fn a_list_naming_what_the_program_has_loads() {
     let scratch = Scratch::new("ein-solve-lists-accepted");
     let mut bad = Vec::new();
     // `wanted` is named only by this goal, and a goal may ask about it only
-    // where the list's activator has `guess` propose it (Q-M1f.119).
+    // where an activator has `guess` propose it (Q-M1f.119).
     let wanted = "(query :goal (and (at Red ?h) (absent (wanted Red ?h))))\n";
     let goal = "(query :goal (and (at Red ?h) (absent (glad ?h))))\n";
-    // A list beside an hrule that proposes what it filters is a conflict
-    // (`mechanism_conflicts.rs`), and `plain`, which has
-    // no parameter, always proposes `seen`: the shapes that write a list are
-    // read beside a `plain` with a parameter and no activator, which proposes
-    // nothing and still writes `seen` in an hrule's `:assert`, so the list is
-    // dead, one `note:`, and the names it holds are what this test is about.
+    // A list beside a rule that proposes what it filters is a conflict
+    // (`mechanism_conflicts.rs`), and `plain`, which has no parameter, always
+    // proposes `seen`: the shapes that write a list are read beside a `plain`
+    // with a parameter and no activator, which proposes nothing and still
+    // writes `seen` in its `:assert`, so the list is dead, one `note:`, and
+    // the names it holds are what this test is about.
     let quiet = HEAD.replace(
-        "(hrule plain ()\n  :match (is-a ?a Color)",
-        "(hrule plain (?T)\n  :match (is-a ?a ?T)",
+        "(rule plain ()\n  :match (is-a ?a Color)",
+        "(rule plain (?T)\n  :match (is-a ?a ?T)",
     );
     assert_ne!(
         quiet, HEAD,
@@ -327,9 +267,9 @@ fn a_list_naming_what_the_program_has_loads() {
     ));
     programs.push((
         "eq-as-the-relation".to_string(),
-        "(hrule h (?R)\n  :match (and (is-a ?x T) (?R ?x ?x))\n  :assert (hit ?x)\n  \
+        "(rule h (?R)\n  :match (and (is-a ?x T) (?R ?x ?x))\n  :assert (open (hit ?x))\n  \
          :why \"{?R} holds of {?x} and itself: guess that {?x} is hit\")\n\
-         (is-a k T)\n(solve :hrules (h (eq)))\n"
+         (is-a k T)\n(h eq)\n"
             .to_string(),
     ));
     for (shape, text) in &programs {

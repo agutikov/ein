@@ -988,9 +988,9 @@ fn the_witnesses_are_saved_and_loaded_as_their_states() {
          (relation kept Thing :why \"{?3} is kept\")\n\
          (has $x [a]) (has a/b {b}) (has it's f') (has <= (box !x @x ~))\n\
          (has a^b%=+& a.b-c_d*)\n\
-         (hrule tags () :match (has ?x ?y) :assert (tag ?x) :why \"{?x} may be tagged\")\n\
+         (rule tags () :match (has ?x ?y) :assert (open (tag ?x)) :why \"{?x} may be tagged\")\n\
          (rule keep () :match (and (tag ?x) (has ?x ?y)) :assert (kept ?y) :why \"{?y} kept\")\n\
-         (solve :hrules (tags))\n",
+         \n",
     )
     .expect("the witness is written");
     let mut bad = Vec::new();

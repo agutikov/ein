@@ -11,7 +11,7 @@
 ;;;
 ;;; ── What is said of it ─────────────────────────────────────────────────
 ;;;
-;;; No hrule, and no obligation activated at root, so the blind enumerator
+;;; No hypothesis rule, and no obligation activated at root, so the blind enumerator
 ;;; builds H, and it proposes `lt`: `(lt B A)`, `(lt C A)`, `(lt C B)` and
 ;;; `(lt A C)`. An obligation rule a program loads and nothing activates
 ;;; chooses no rung. `connex` concludes `(false)` from an `absent` over

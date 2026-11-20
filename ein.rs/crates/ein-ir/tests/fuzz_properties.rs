@@ -26,12 +26,12 @@
 //!    (Q-M1e2.28): each keyword pair an accepted program holds is a
 //!    form's own, on the form's list, and no term or nested fact holds one.
 //! 6. **No firing meets an unbound variable** (Q-M1e2.37): every plan the
-//!    compiler builds for an accepted program's rules and hrules reads, in
+//!    compiler builds for an accepted program's rules and hypothesis rules reads, in
 //!    each conclusion, only registers each disjunct binds, so a loader that
 //!    lets one through shows here. It compiles with `ein-infer`, a
 //!    dev-dependency.
 //! 7. **The compiler refuses nothing the loader accepts** (Q-M1f.84): every
-//!    plan of an accepted program's rules, hrules and obligations, one per
+//!    plan of an accepted program's rules, hypothesis rules and obligations, one per
 //!    activator, and every query's goal compiles; a nested `(or …)`, a
 //!    clause past the register file, a goal's relation variable and a
 //!    primitive a macro's expansion writes in another shape (Q-M1f.80) are the
@@ -127,7 +127,6 @@ const ALPHABET: &[char] = &[
 /// how the `rulex` class of ambiguity gets hit on purpose rather than by luck.
 const SPLICES: &[&str] = &[
     "rule",
-    "hrule",
     "relation",
     "query",
     "config",
@@ -293,7 +292,7 @@ fn seeds() -> Vec<String> {
         "(= a b :source \"s\")".into(),
         "(not (color-loc Red House-1) :rule x :using (c1))".into(),
         "(a 1..5 :k 1..* :s \"x\\ny\" :w _ :v ?v)".into(),
-        "(hrule h () :match (p ?a) :assert (q ?a) :why \"w\")".into(),
+        "(rule h () :match (p ?a) :assert (open (q ?a)) :why \"w\")".into(),
         "()".into(),
     ];
     // `.ein` only. Any text is a legal fuzz seed, but the seed corpus is a
@@ -650,10 +649,9 @@ fn a_generated_refusal_is_the_same_twice_and_within_its_budget() {
 fn listed(head: &str) -> &'static [&'static str] {
     match head {
         "relation" | "macro" => &["why"],
-        "rule" | "hrule" => &["match", "assert", "why"],
+        "rule" => &["match", "assert", "why"],
         "query" => &["goal", "goal-text", "over", "expect"],
         "solve" => &[
-            "hrules",
             "hypothesis-relations",
             "no-hypothesis",
             "no-search",
@@ -761,7 +759,7 @@ fn no_accepted_program_carries_a_keyword_its_form_does_not_list() {
     );
 }
 
-/// The first conclusion variable a plan of `text`'s rules or hrules reads
+/// The first conclusion variable a plan of `text`'s rules or hypothesis rules reads
 /// that one of its disjuncts leaves unbound, as `rule 'r': ?y`; `None` where
 /// `text` does not load, or every plan binds what its conclusions read.
 ///
@@ -795,7 +793,7 @@ fn unbound_conclusion(text: &str) -> Option<String> {
     let rules: Vec<ein_core::Rule> = program
         .rules
         .values()
-        .chain(program.hrules.values())
+        .chain(program.hypotheses.values())
         .cloned()
         .collect();
     for rule in &rules {
@@ -845,13 +843,13 @@ fn unbound_conclusion(text: &str) -> Option<String> {
 
 /// **No firing meets an unbound variable**.
 ///
-/// The loader refuses a rule or an hrule whose conclusion writes a variable
+/// The loader refuses a rule or a hypothesis rule whose conclusion writes a variable
 /// some way of satisfying its `:match` leaves unbound (Q-M1e2.37). So, for every generated
 /// program the loader accepts, every plan the compiler builds for its rules
-/// and hrules reads, in each conclusion, only registers each disjunct binds
+/// and hypothesis rules reads, in each conclusion, only registers each disjunct binds
 /// ([`unbound_conclusion`]). A firing builds its conclusion from the registers
 /// a match through one disjunct bound, so this holds every firing at once: an
-/// hrule's, whose template would otherwise build no fact and propose nothing
+/// hypothesis rule's, whose template would otherwise build no fact and propose nothing
 /// in silence, and a rule's that no state fires among them. It holds the
 /// loader's reading of what binds to the compiler's; a firing that met one
 /// would stop the run, `ein_infer::firing::FireError::UnboundVar`.
@@ -889,7 +887,7 @@ fn no_firing_meets_an_unbound_variable() {
 }
 
 /// The first refusal the compiler makes of a plan of `text`, which the loader
-/// accepts, as `rule 'r': …`: every rule's, hrule's and obligation's plan, one
+/// accepts, as `rule 'r': …`: every rule's, hypothesis rule's and obligation's plan, one
 /// per activator as the engine compiles them, and every query's goal. `None`
 /// where `text` does not load, or every plan compiles.
 fn compile_refusal(text: &str) -> Option<String> {
@@ -901,7 +899,7 @@ fn compile_refusal(text: &str) -> Option<String> {
     let rules: Vec<ein_core::Rule> = program
         .rules
         .values()
-        .chain(program.hrules.values())
+        .chain(program.hypotheses.values())
         .chain(program.obligations.values())
         .cloned()
         .collect();

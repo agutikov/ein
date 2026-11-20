@@ -1235,7 +1235,7 @@ fn the_report_row_carries_what_h_leaves_out_where_the_text_prints_it() {
     let cube = row(WITNESS, "solve", 0);
     assert_eq!(
         cube["outside"],
-        serde_json::json!([{"relation": "flag", "arity": 1, "why": "no-hrule"}]),
+        serde_json::json!([{"relation": "flag", "arity": 1, "why": "not-proposed"}]),
         "{cube}"
     );
     assert!(
@@ -1577,13 +1577,7 @@ fn a_claim_still_not_checked_says_what_was_asked_first() {
 fn the_regions_false_is_refuted_at_an_alive_root() {
     let d = Dir::new("false-at-root");
     let body = seven_states();
-    let at = body.find("(solve").expect("its (solve …)");
-    // The form ends `…(c-prop Item)))`: the claim goes before its last `)`.
-    let close = at + body[at..].find(")))").expect("the form's end") + 2;
-    let f = d.file(
-        "alive.ein",
-        &format!("{} :expect (false){}", &body[..close], &body[close..]),
-    );
+    let f = d.file("alive.ein", &format!("{body}(solve :expect (false))\n"));
     let whole = ein(&["test", &f]);
     assert_eq!(whole.code, 1, "{}{}", whole.out, whole.err);
     assert!(

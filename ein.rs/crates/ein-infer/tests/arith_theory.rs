@@ -1445,6 +1445,25 @@ impl Module {
             .collect()
     }
 
+    /// Whether a rule of the module concludes a hypothesis, `(open F)` with
+    /// `F` a fact: what the module would have the search guess.
+    fn guesses(&self) -> bool {
+        self.declared("rule").iter().any(|&(_, r)| {
+            self.ast.form_args(r).iter().any(|&a| match self.ast.node(a) {
+                Node::KwPair { key, value } => {
+                    matches!(self.ast.node(key), Node::Keyword(k) if self.ast.sym(k) == "assert")
+                        && self.ast.conjuncts(value).iter().any(|&c| {
+                            self.ast.head_name(c) == Some("open")
+                                && self.ast.form_args(c).first().is_some_and(|&f| {
+                                    matches!(self.ast.node(f), Node::SForm { .. })
+                                })
+                        })
+                }
+                _ => false,
+            })
+        })
+    }
+
     /// The value of a rule's `:match` or `:assert`.
     fn clause(&self, rule: NodeId, keyword: &str) -> NodeId {
         self.ast
@@ -1736,7 +1755,7 @@ fn absents_of(spec: &Spec) -> Vec<(String, String)> {
         }
     }
     assert!(
-        m.declared("hrule").is_empty() && m.declared("macro").is_empty(),
+        !m.guesses() && m.declared("macro").is_empty(),
         "{} guesses nothing, and expands nothing but std.math.positional's macro",
         spec.file
     );
@@ -2488,7 +2507,7 @@ fn the_tagged_calls_keep_their_shapes() {
             // What starts a walk: a written fact, or a conclusion of a rule
             // that reads no fact of the same walk.
             let mut starts: BTreeSet<NodeId> = BTreeSet::new();
-            if matches!(head, "rule" | "hrule") {
+            if head == "rule" {
                 let mut read_heads: Vec<String> = Vec::new();
                 for &a in ast.form_args(f) {
                     if let Node::KwPair { key, value } = ast.node(a)

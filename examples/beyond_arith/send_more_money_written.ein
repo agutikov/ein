@@ -51,11 +51,10 @@
 (total-owed val is-a)   ; every letter owes a digit
 (functional val)        ; and has one
 (injective val)         ; and no two letters share one
-(hrule guess ()
+(rule guess ()
   :match  (and (is-a ?l Letter) (is-a ?d Digit))
-  :assert (val ?l ?d)
+  :assert (open (val ?l ?d))
   :why    "suppose {?l} = {?d}")
-(solve :hrules (guess))
 
 (rule carry-first ()
   :match  (first ?c)

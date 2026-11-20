@@ -17,7 +17,7 @@ sweeps assert.
 
 | file | property | what it is now |
 |---|---|---|
-| [`hrule-reads-not.ein`](hrule-reads-not.md) | `no-crash` | an `(hrule …)` whose `:match` reads the `not` relation. Legal ein-lang; every command answers it as `ein oracle` does, and where an hrule reads `not`, every hrule is matched before any candidate is emitted |
+| [`hrule-reads-not.ein`](hrule-reads-not.md) | `no-crash` | a hypothesis rule whose `:match` reads the `not` relation. Legal ein-lang; every command answers it as `ein oracle` does, each hypothesis rule matched as it is reached, nothing written between two of them |
 | [`unsat-core-id-space.ein`](unsat-core-id-space.md) | `id-order` | a program whose core could move under a permuted id space. No core it reports moves; its corpus fixture is [`examples/ein-bugs/unsat-core-id-space.ein`](../../examples/ein-bugs/unsat-core-id-space.ein), which the id-order sweep permutes |
 | [`d3-unsat-core.ein`](d3-unsat-core.md) | `id-order` | the same, from another seed. Not monotone: `fire-0` concludes `(not …)` from `r1`, which `fire-1` derives under an `absent` over a relation a commitment can extend, so the static check flags it and nothing is claimed of its answer. Its fixture is [`examples/ein-bugs/d3-unsat-core.ein`](../../examples/ein-bugs/d3-unsat-core.ein) |
 | [`d3-goal-row-order.ein`](d3-goal-row-order.md) | `id-order` | one model that satisfies the goal twice. The read-out prints every binding row, sorted, so no row moves; its fixture is [`examples/ein-bugs/d3-goal-row-order.ein`](../../examples/ein-bugs/d3-goal-row-order.ein) |

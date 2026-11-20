@@ -80,7 +80,7 @@ read, and the choices made, `(commit …)`, which loads back to the state with n
 | file | what it shows |
 |---|---|
 | `01_a_rule_builds_a_fact.ein` | root alone: a rule builds `(note (bad a))`, a fact with a fact inside it no file writes |
-| `02_a_choice_with_a_fact_inside_it.ein` | a state on a choice: an hrule proposes `(note (bad a))`, saved as `(commit (note (bad a)))` |
+| `02_a_choice_with_a_fact_inside_it.ein` | a state on a choice: a hypothesis rule proposes `(note (bad a))`, saved as `(commit (note (bad a)))` |
 | `03_the_standard_library.ein` | the standard library's twin: its state carries the five modules its imports read |
 | `04_a_saved_node.ein` | a saved file in the corpus: `02`'s state as its dump writes it, which every command reads as the node it names, its claims NOT CHECKED |
 
@@ -783,8 +783,8 @@ nothing is proposed whatever the program declares, and the obligations judge
 root, so R is root where it owes nothing and empty, root the owing node it
 stops at, where it owes. That is what the fixtures whose question is root's
 verdict or root's saturation say: `algebra/23` to `26`, `bijection/01` to `03`,
-`slots/01` to `04`, `07` to `13`, `region/04_owing` and `05_empty`. An hrule or
-a list beside `:no-search` proposes or filters nothing, and says so in a
+`slots/01` to `04`, `07` to `13`, `region/04_owing` and `05_empty`. A hypothesis rule
+or a list beside `:no-search` proposes or filters nothing, and says so in a
 `note:`
 ([Q-M1f.254](../docs/decisions/hypotheses/Q-M1f.254-solve-no-search-relaxes-no-conflict.md));
 `ein test --no-search`, a flag of the runner, is another thing, a run that

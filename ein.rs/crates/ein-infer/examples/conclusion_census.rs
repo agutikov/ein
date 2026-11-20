@@ -1,4 +1,4 @@
-//! The conclusion census: every rule's, hrule's and obligation's `:assert`
+//! The conclusion census: every rule's and obligation's `:assert`
 //! in the corpus, **after
 //! macro expansion**, by shape.
 //!
@@ -81,7 +81,7 @@ fn main() {
         programs += 1;
         for (which, reg) in [
             ("rule", &kb.program().rules),
-            ("hrule", &kb.program().hrules),
+            ("hypothesis", &kb.program().hypotheses),
             ("obligation", &kb.program().obligations),
         ] {
             for (name, rule) in reg.iter() {

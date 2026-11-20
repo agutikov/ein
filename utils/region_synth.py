@@ -29,7 +29,7 @@ free on nodes saturation moves). Each is cut into prime implicants
 (Quine–McCluskey, then a greedy cover). A dead implicant is a rule asserting
 `(false)` whose premises are its literals: `(h X)` for a 1, `(absent (h X))`
 for a 0. **Since M1e2 S1e2.2.5 a 0 never reaches a dead rule**: a
-refutation resting on an `absent` over a relation the hrule proposes takes
+refutation resting on an `absent` over a relation the hypothesis rule proposes takes
 `dead` out of what a larger commitment keeps, so a target's dead node with a
 non-dead superset is written owing (`owing_holes`), what is dead is
 upward-closed, and every hole is owing.
@@ -134,8 +134,8 @@ def owing_holes(status: list[str], n: int) -> list[str]:
     """Every dead node with a non-dead superset, made owing — M1e2 S1e2.2.5.
 
     Such a node is a dead hole, or below one, and the only rule that writes it
-    is a refutation resting on an `(absent (h X))` over a relation the hrule
-    proposes, under which `dead` is not upward-closed. Owing is the form that
+    is a refutation resting on an `(absent (h X))` over a relation the
+    hypothesis rule proposes, under which `dead` is not upward-closed. Owing is the form that
     says what was meant: the node owes the commitment that lifts it, as
     `s1e2.4.1_probes/three_components_owe.ein` writes it. What is left dead is
     upward-closed, so its rules read no `absent` and every hole is owing.
@@ -335,7 +335,7 @@ def program(spec: dict) -> str:
         pos, neg = literals(t, cands)
         key = f"K{j}"
         # No 0-literal: no `need` fact, so the guard gives no witness and the
-        # obligation writes no payment beside the hrule's candidates — a debt
+        # obligation writes no payment beside the hypothesis rule's candidates — a debt
         # nothing pays.
         needs += [f"(need {key} {c})" for c in neg]
         prem = [f"(h {c})" for c in pos] or ["(world ?w)"]
@@ -348,7 +348,7 @@ def program(spec: dict) -> str:
                   f"  :why    \"{why}\")", ""]
     if needs:
         out += [" ".join(needs), ""]
-    out += ["(hrule guess () :match (slot ?x) :assert (h ?x) :why \"guess: (h {?x})?\")", ""]
+    out += ["(rule guess () :match (slot ?x) :assert (open (h ?x)) :why \"guess: (h {?x})?\")", ""]
     out += rules
     out += ["(query :goal (h ?x))"]
     return "\n".join(out) + "\n"

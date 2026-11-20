@@ -5,7 +5,7 @@
 //! A macro's body is a template the grammar never reads expanded, so what a
 //! call writes could otherwise be met only where it is used, or not at all:
 //! `eq` or `absent` at another arity refused only where a plan
-//! is compiled, while a rule only a commitment activates, an hrule, an
+//! is compiled, while a rule only a commitment activates, a hypothesis rule, an
 //! obligation and a rule no activator reaches load; a `not` of no fact and a
 //! connective where a value goes matched; `(eq k)`, `(false k)`, an
 //! `(or …)`, `(not k)` and a conjunction as a value concluded; and a
@@ -16,8 +16,8 @@
 //! instantiation, before any command compiles, fires, proposes or owes it.
 //!
 //! Every shape a macro's body can malform a primitive in, at every site a rule
-//! is activated from (at root, only under a commitment, by no activator, as an
-//! hrule and, for a `:match`, as an obligation), and the sixteen register
+//! is activated from (at root, only under a commitment, by no activator, and,
+//! for a `:match`, as a hypothesis rule and as an obligation), and the sixteen register
 //! witnesses, each on every command that reads a program and every path that
 //! fires a rule: `saturate`, every `solve` mode, `--events`, `oracle`, `test`
 //! with a claim, the views, `kb save` and so a container. Each refuses with one
@@ -224,11 +224,13 @@ fn site(site: &str, call: &str, clause: &str) -> Option<(&'static str, String)> 
                 m("(?R ?x)")
             ),
         ),
-        "hrule" => (
-            "hrule 'r'",
+        // A hypothesis's `:match`: its `:assert` writes the call under
+        // `open`, where a value goes, which `value_rule.rs` holds.
+        "hypothesis" if clause == ":match" => (
+            "rule 'r'",
             format!(
-                "(hrule r ()\n  :match  {}\n  :assert {a}\n  :why \"guess of {{?x}}\")\n\
-                 (solve :hrules (r))\n",
+                "(rule r ()\n  :match  {}\n  :assert (open {a})\n  :why \"guess of {{?x}}\")\n\
+                 \n",
                 m("(a ?x)")
             ),
         ),
@@ -243,7 +245,7 @@ fn site(site: &str, call: &str, clause: &str) -> Option<(&'static str, String)> 
     })
 }
 
-const SITES: [&str; 5] = ["root", "commitment", "never", "hrule", "obligation"];
+const SITES: [&str; 5] = ["root", "commitment", "never", "hypothesis", "obligation"];
 
 /// Every command that reads a program and every path that fires a rule, the
 /// file last; `{einb}` and `{events}` are the run's scratch paths. Each with
@@ -371,7 +373,7 @@ fn every_malformed_primitive_is_refused_before_any_path_runs_it() {
             }
         }
     }
-    assert_eq!(programs, 8 * 5 + 10 * 4, "every shape at every site");
+    assert_eq!(programs, 8 * 5 + 10 * 3, "every shape at every site");
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
@@ -381,7 +383,7 @@ fn every_malformed_primitive_is_refused_before_any_path_runs_it() {
 #[test]
 fn the_registers_witnesses_are_refused_on_every_command() {
     let scratch = Scratch::new("ein-macro-witnesses");
-    let witnesses: [(&str, &str, &str, &str); 17] = [
+    let witnesses: [(&str, &str, &str, &str); 16] = [
         (
             "macro-eq-under-commitment",
             "rule 'r'",
@@ -390,7 +392,7 @@ fn the_registers_witnesses_are_refused_on_every_command() {
         ),
         (
             "macro-absent-hrule",
-            "hrule 'h'",
+            "rule 'h'",
             ":match",
             "writes (absent (p ?x) (q ?x))",
         ),
@@ -420,7 +422,7 @@ fn the_registers_witnesses_are_refused_on_every_command() {
         ),
         (
             "macro-neq-connective-hrule",
-            "hrule 'h'",
+            "rule 'h'",
             ":match",
             "writes (neq ?x (and (p k)))",
         ),
@@ -462,19 +464,13 @@ fn the_registers_witnesses_are_refused_on_every_command() {
         ),
         (
             "macro-eq-candidate",
-            "hrule 'h'",
+            "rule 'h'",
             ":assert",
-            "writes (eq ?x)",
+            "writes (open (eq ?x))",
         ),
         (
             "macro-bare-conclusion-under-commitment",
             "rule 'r'",
-            ":assert",
-            "concludes ?x",
-        ),
-        (
-            "macro-bare-conclusion-hrule",
-            "hrule 'h'",
             ":assert",
             "concludes ?x",
         ),

@@ -82,9 +82,9 @@
   :assert (false)
   :why    "{?p} will not sit facing the air-conditioner at {?s}")
 
-(hrule seat ()
+(rule seat ()
   :match  (and (member ?p ?g) (fits ?g ?t) (at ?s ?t))
-  :assert (sits ?p ?s)
+  :assert (open (sits ?p ?s))
   :why    "guess that {?p} sits in seat {?s}, at table {?t}, which {?p}'s group {?g} fits")
 
 (query :goal (sits ?p ?s))

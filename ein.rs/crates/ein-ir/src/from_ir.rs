@@ -1,8 +1,8 @@
 //! IR → `Kb` — the loader.
 //!
 //! The loader walks a **flat sequence** of top-level forms and classifies each
-//! by its head: `relation` declares one, `rule` / `hrule` declare a rule,
-//! `macro` a pattern macro, `query` / `config` fill their slots, `trace` is
+//! by its head: `relation` declares one, `rule` a rule, `macro` a pattern
+//! macro, `query` / `config` fill their slots, `trace` is
 //! engine output and is ignored, and **anything else is a fact**. No form is a
 //! block wrapper: a `(facts …)` form loads as a fact whose relation is `facts`,
 //! like any other head.
@@ -66,7 +66,7 @@ impl From<Overflow> for KbLoadError {
 /// `--no-require-why` does (Q-M1f.62).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct LoadOptions {
-    /// Refuse every `(relation …)`, `(rule …)`, `(hrule …)` and `(macro …)`
+    /// Refuse every `(relation …)`, `(rule …)` and `(macro …)`
     /// the load reads, the stdlib's and an imported module's included, that
     /// carries no `:why "…"`, one line each ([`WHY_REQUIRED_OF`]); the parser
     /// reads a macro's `:why` as it reads the others', and the stdlib's macros
@@ -82,7 +82,7 @@ impl Default for LoadOptions {
 
 /// The forms [`LoadOptions::require_why`] asks for a `:why`, as its refusal
 /// names them.
-pub const WHY_REQUIRED_OF: &str = "relation, rule, hrule and macro";
+pub const WHY_REQUIRED_OF: &str = "relation, rule and macro";
 
 /// The most distinct variables a rule's `:match`, its parameters among them,
 /// or a query's `:goal` may write (Q-M1f.73).
@@ -264,7 +264,7 @@ pub fn load_query_by(
             .expect("a top-level form's head is a name (ein.y's Form)");
         match head {
             "relation" => relations.push(form),
-            "rule" | "hrule" => rules.push(form),
+            "rule" => rules.push(form),
             "macro" => macro_forms.push(form),
             "import" => errors.push(format!(
                 "unresolved (import …) at {} — internal error",
@@ -392,38 +392,30 @@ pub fn load_query_by(
     } else {
         None
     };
-    // What a state can hold a fact of: those, and the relations a
-    // `(solve :hrules …)` activator has its hrule propose.
-    let holdable = relations_of.as_ref().map(|known| {
-        let mut all = known.clone();
-        all.extend(activator_relations(ast, &kb, &relation_places));
-        all
-    });
     // Kept on the program: what a goal given beside it is held to
     // ([`read_goal`]), and what the slice of a knowledge base reads a
     // relation by (Q-M1f.523).
-    if let Some(all) = holdable.as_ref() {
+    if let Some(all) = relations_of.as_ref() {
         let symbols = all
             .iter()
             .map(|name| terms.intern_text(name))
             .collect::<Result<Vec<Symbol>, Overflow>>()?;
         kb.program_mut().relations_of = symbols.into_boxed_slice();
     }
-    validate_solve(ast, &kb, holdable.as_ref(), &mut errors);
+    validate_solve(ast, &kb, relations_of.as_ref(), &mut errors);
     // The `open` facts the program writes, into the part of root no fork
     // inherits (Q-M1f.566).
     write_open_facts(ast, terms, &mut kb, &written_open, &mut errors);
-    // A `(solve …)` list that names an hrule or a relation the program does
-    // not have.
+    // A `(solve …)` list that names a relation the program does not have.
     if let Some(known) = relations_of.as_ref() {
-        refuse_solve_names(ast, terms, &kb, known, &relation_places, &mut errors);
+        refuse_solve_names(ast, &kb, known, &mut errors);
     }
     let unimported: Vec<String> = stdlib_macros
         .iter()
         .filter(|n| !declared_macros.contains_key(*n))
         .cloned()
         .collect();
-    validate_queries(ast, &kb, holdable.as_ref(), &unimported, &mut errors);
+    validate_queries(ast, &kb, relations_of.as_ref(), &unimported, &mut errors);
     // …and one a claim lists, which is a fact too. A claim headed
     // by the call names no relation of the program and has its own line
     // (Q-M1f.118), so this one is for a program nothing else refuses.
@@ -439,15 +431,9 @@ pub fn load_query_by(
     // `std.macro` would leave the invocation in place and the rule would
     // silently never fire.
     let mut rule_matches: Vec<(String, NodeId)> = Vec::new();
-    for registry in [
-        &kb.program().rules,
-        &kb.program().hrules,
-        &kb.program().obligations,
-    ] {
-        for (name, rule) in registry.iter() {
-            if let Some(p) = rule.match_.as_ref() {
-                rule_matches.push((format!("rule '{}'", terms.sym(name)), NodeId(p.expr.0)));
-            }
+    for (name, rule) in kb.program().every_rule() {
+        if let Some(p) = rule.match_.as_ref() {
+            rule_matches.push((format!("rule '{}'", terms.sym(name)), NodeId(p.expr.0)));
         }
     }
     // …and a goal, which is a premise too: unexpanded, the call would
@@ -502,7 +488,7 @@ struct Lines<'a> {
 ///
 /// The compiler resolves a pattern's leaves against `Terms` the first time it
 /// builds a plan for a rule, and a constant that appears only inside a rule —
-/// `Ann` in `(hrule guess … :assert (seat Ann ?v))`, which no fact mentions —
+/// `Ann` in `(rule guess … :assert (open (seat Ann ?v)))`, which no fact mentions —
 /// is therefore first seen *during the search*. That is one symbol on one
 /// corpus file, and it would be a curiosity except for what
 /// [03-design/08-parallelism.md](../../../../docs/ein/ein.rs/03-design/08-parallelism.md) needs:
@@ -548,23 +534,20 @@ fn intern_program_names(ast: &Ast, terms: &mut Terms, kb: &Kb) {
 
     let program = kb.program();
     let mut roots: Vec<NodeId> = Vec::new();
-    for registry in [&program.rules, &program.hrules, &program.obligations] {
-        for (_, rule) in registry.iter() {
-            roots.extend(
-                [rule.match_.as_ref(), rule.assert_.as_ref()]
-                    .into_iter()
-                    .flatten()
-                    .map(|p| NodeId(p.expr.0)),
-            );
-        }
+    for (_, rule) in program.every_rule() {
+        roots.extend(
+            [rule.match_.as_ref(), rule.assert_.as_ref()]
+                .into_iter()
+                .flatten()
+                .map(|p| NodeId(p.expr.0)),
+        );
     }
     // Every query, not just the active one: a name that only query 2 mentions
     // is still a name the compiler must not meet for the first time mid-run.
     for q in &program.queries {
         roots.extend(q.kw_pairs.iter().map(|e| NodeId(e.0)));
     }
-    // …and the `(solve …)` block, whose `:hrules` activators bind hrule
-    // parameters to names no fact may mention.
+    // …and the `(solve …)` block's lists.
     if let Some(s) = &program.solve {
         roots.extend(s.kw_pairs.iter().map(|e| NodeId(e.0)));
     }
@@ -677,10 +660,8 @@ fn validate_solve(
 /// [`warn_derived_relation_activators`] reads them off it.
 #[derive(Default)]
 struct RelationPlaces {
-    /// `(name, index)`: a rule's or an hrule's parameter, or a marker's
-    /// argument, that holds a relation's name.
-    positions: BTreeSet<(String, usize)>,
-    /// Every name a fact or a conclusion writes at one.
+    /// Every name a fact or a conclusion writes where a relation's name is
+    /// held: a rule's parameter that heads a form, or a marker's argument.
     passed: BTreeSet<String>,
 }
 
@@ -702,12 +683,12 @@ fn relation_heads(ast: &Ast, node: NodeId, out: &mut BTreeSet<String>) {
 
 /// What a claim's refusal, and a goal's, says a relation of the program is.
 const CLAIM_RELATION: &str = "a relation of the program is one it declares, states a fact of, or \
-                              writes in a rule or an hrule";
+                              writes in a rule";
 
 /// **The atoms the program writes first in a tuple** (Q-M1f.522), outside its
 /// goals and its `(solve …)` lists (Q-M1f.114): the relation of every fact it
 /// states and of every fact inside one, at any depth; of every form at any
-/// depth in a rule's, an hrule's or an obligation's `:match` or `:assert`, as
+/// depth in a rule's or an obligation's `:match` or `:assert`, as
 /// expanded; every relation it declares; and every name a fact or a conclusion
 /// passes where a relation's name is held (`places.passed`), the relation an
 /// activator gives a parameter that heads a form, `happy` in `(tag happy)`.
@@ -730,14 +711,12 @@ fn relations_written(
             written.insert(terms.sym(name).to_string());
         }
     }
-    for registry in [&program.rules, &program.hrules, &program.obligations] {
-        for (_, rule) in registry.iter() {
-            for pat in [rule.match_.as_ref(), rule.assert_.as_ref()]
-                .into_iter()
-                .flatten()
-            {
-                relation_heads(ast, NodeId(pat.expr.0), &mut written);
-            }
+    for (_, rule) in program.every_rule() {
+        for pat in [rule.match_.as_ref(), rule.assert_.as_ref()]
+            .into_iter()
+            .flatten()
+        {
+            relation_heads(ast, NodeId(pat.expr.0), &mut written);
         }
     }
     for &f in facts {
@@ -793,74 +772,27 @@ fn program_relations(written: &BTreeSet<String>) -> BTreeSet<String> {
     known
 }
 
-/// The relations a `(solve :hrules …)` activator gives its hrule at a
-/// parameter that names a relation: that hrule proposes facts of each, so a
-/// state can hold one, and a goal may ask about it and a claim list it.
-/// [`refuse_solve_names`] holds each to the program's other
-/// relations, a goal's among them.
-fn activator_relations(ast: &Ast, kb: &Kb, places: &RelationPlaces) -> BTreeSet<String> {
-    let mut known: BTreeSet<String> = BTreeSet::new();
-    if let Some(solve) = kb.program().solve()
-        && let Some(value) = solve_keyword(ast, &solve.kw_pairs, "hrules")
-        && let Node::SForm { head, .. } = ast.node(value)
-    {
-        let mut hrule: Option<&str> = None;
-        for item in std::iter::once(head).chain(ast.form_args(value).iter().copied()) {
-            match ast.node(item) {
-                Node::Atom(s) if hrule.is_none() => hrule = Some(ast.sym(s)),
-                Node::SForm { head: h, .. } => {
-                    let Some(name) = hrule else { continue };
-                    for (i, &a) in std::iter::once(&h).chain(ast.form_args(item)).enumerate() {
-                        if let Some(arg) = ast.atom_name(a)
-                            && places.positions.contains(&(name.to_string(), i))
-                        {
-                            known.insert(arg.to_string());
-                        }
-                    }
-                }
-                _ => {}
-            }
-        }
-    }
-    known
-}
-
 /// **A `(solve …)` list names what the program has**.
 ///
-/// The three lists choose the candidates, so a name in one that matches
-/// nothing would move H, and R with it, in silence: `:hrules (gues …)` beside
-/// an hrule `guess` would propose nothing, an activator `(att Color House)`
-/// facts of a relation `att` nothing else names, and `:no-hypothesis (like)`
-/// would restrict nothing. Each is refused here, one line per name, placed at
-/// the name:
-///
-/// - **`:hrules`**: the list's first name, and every bare name after it, is
-///   an hrule the program declares; an activator gives its hrule as many
-///   arguments as the hrule has parameters; and an activator's argument at a
-///   parameter that names a relation is a relation of the program.
-/// - **`:hypothesis-relations`**, **`:no-hypothesis`**: every name is a
-///   relation of the program.
+/// The two lists configure the blind enumerator, so a name in one that
+/// matches nothing would move H, and R with it, in silence:
+/// `:no-hypothesis (like)` would restrict nothing. Each is refused here, one
+/// line per name, placed at the name: every name `:hypothesis-relations` or
+/// `:no-hypothesis` holds is a relation of the program.
 ///
 /// **A relation of the program** is an atom the program writes first in a
 /// tuple outside the `(solve …)` lists ([`relations_written`], Q-M1f.522):
 /// the relation of a fact it states and of a fact inside one, of any form in
-/// a rule's, an hrule's or an obligation's `:match` or `:assert`, one it
-/// declares, and a name a fact or a conclusion passes where a relation's name
-/// is held, `(bijective color-loc)`; and here, for the lists, the relation of
-/// any form in a query's `:goal`. So a relation only a rule's `:assert`
-/// derives is one. It is not *a relation something makes*: an activator's
-/// hrule makes the relation it is given, `att` as well as `at`, so what tells
-/// a misspelt name is that the program writes it nowhere else (Q-M1f.114).
-///
-/// An activator's argument at a parameter that names no relation is a value,
-/// a type or an object, and is not checked: `(guess (at Colour House))`
-/// loads, and proposes nothing.
+/// a rule's or an obligation's `:match` or `:assert`, one it declares, and a
+/// name a fact or a conclusion passes where a relation's name is held,
+/// `(bijective color-loc)`; and here, for the lists, the relation of any form
+/// in a query's `:goal`. So a relation only a rule's `:assert` derives is
+/// one. It is not *a relation something makes*: what tells a misspelt name
+/// is that the program writes it nowhere else (Q-M1f.114).
 fn refuse_solve_names(
     ast: &Ast,
-    terms: &Terms,
     kb: &Kb,
     relations_of: &BTreeSet<String>,
-    places: &RelationPlaces,
     errors: &mut Vec<String>,
 ) {
     /// A list's names with their nodes: a bare name, or a form's head and
@@ -896,18 +828,8 @@ fn refuse_solve_names(
             relation_heads(ast, goal, &mut known);
         }
     }
-    let hrules: Vec<String> = program
-        .hrules
-        .iter()
-        .map(|(n, _)| terms.sym(n).to_string())
-        .collect();
-    let declared_hrules = if hrules.is_empty() {
-        "it declares no hrule".to_string()
-    } else {
-        format!("it declares {}", hrules.join(", "))
-    };
     const RELATION: &str = "a relation of the program is one it declares, states a fact of, or \
-                            writes in a rule, an hrule or a goal";
+                            writes in a rule or a goal";
 
     for &pair in solve.kw_pairs.iter() {
         let Node::KwPair { key, value } = ast.node(NodeId(pair.0)) else {
@@ -916,97 +838,19 @@ fn refuse_solve_names(
         let Node::Keyword(key) = ast.node(key) else {
             continue;
         };
-        match ast.sym(key) {
-            list @ ("hypothesis-relations" | "no-hypothesis") => {
-                for (node, name) in names(ast, value) {
-                    if !known.contains(&name) {
-                        errors.push(format!(
-                            "{}solve: its :{list} names {name}, and the program names no \
-                             relation {name} — {RELATION}",
-                            placed_or(ast, node, value),
-                        ));
-                    }
-                }
-            }
-            "hrules" => {
-                let Node::SForm { head, .. } = ast.node(value) else {
-                    continue;
-                };
-                let mut hrule: Option<String> = None;
-                for item in std::iter::once(head).chain(ast.form_args(value).iter().copied()) {
-                    match ast.node(item) {
-                        // `()` is the list that names none.
-                        Node::Atom(s) if ein_core::text::INTERNAL_NAMES.contains(&ast.sym(s)) => {}
-                        Node::Atom(s) => {
-                            let name = ast.sym(s).to_string();
-                            if hrule.is_none() {
-                                hrule = Some(name.clone());
-                            }
-                            if !hrules.contains(&name) {
-                                errors.push(format!(
-                                    "{}solve: its :hrules names {name}, and the program \
-                                     declares no hrule {name} — {declared_hrules}",
-                                    placed_or(ast, item, value),
-                                ));
-                            }
-                        }
-                        Node::SForm { .. } => {
-                            let Some(h) = hrule.as_ref().filter(|h| hrules.contains(h)) else {
-                                continue;
-                            };
-                            let rule = terms
-                                .syms
-                                .get(h)
-                                .and_then(|sym| program.hrules.get(sym))
-                                .expect("a declared hrule");
-                            let args = names(ast, item);
-                            let written = crate::dump::dump_compact(ast, item);
-                            if args.len() != rule.params.len() {
-                                let params: Vec<String> = rule
-                                    .params
-                                    .iter()
-                                    .map(|&p| format!("?{}", terms.sym(p)))
-                                    .collect();
-                                errors.push(format!(
-                                    "{}solve: its :hrules gives hrule '{h}' {written}, {}, and \
-                                     {h} takes {}, ({}) — an activator binds each parameter once",
-                                    placed_or(ast, item, value),
-                                    count(args.len(), "argument"),
-                                    rule.params.len(),
-                                    params.join(" "),
-                                ));
-                                continue;
-                            }
-                            for (i, (node, name)) in args.iter().enumerate() {
-                                if places.positions.contains(&(h.clone(), i))
-                                    && !known.contains(name)
-                                {
-                                    errors.push(format!(
-                                        "{}solve: its :hrules gives hrule '{h}' {written}, \
-                                         whose {name} is its parameter ?{}, which names a \
-                                         relation, and the program names no relation {name} — \
-                                         {RELATION}",
-                                        placed_or(ast, *node, item),
-                                        terms.sym(rule.params[i]),
-                                    ));
-                                }
-                            }
-                        }
-                        _ => {}
-                    }
-                }
-            }
-            _ => {}
+        let list = ast.sym(key);
+        if !matches!(list, "hypothesis-relations" | "no-hypothesis") {
+            continue;
         }
-    }
-}
-
-/// `n argument`, `n arguments`.
-fn count(n: usize, what: &str) -> String {
-    if n == 1 {
-        format!("1 {what}")
-    } else {
-        format!("{n} {what}s")
+        for (node, name) in names(ast, value) {
+            if !known.contains(&name) {
+                errors.push(format!(
+                    "{}solve: its :{list} names {name}, and the program names no \
+                     relation {name} — {RELATION}",
+                    placed_or(ast, node, value),
+                ));
+            }
+        }
     }
 }
 
@@ -1543,13 +1387,12 @@ fn ingest_rules(
             continue;
         }
         let name_sym = terms.intern_text(&name)?;
-        // `rule` and `hrule` share one name-space.
+        // Every rule shares one name-space, whichever pass walks it.
         if kb.program().rules.contains(name_sym)
-            || kb.program().hrules.contains(name_sym)
             || kb.program().obligations.contains(name_sym)
             || kb.program().hypotheses.contains(name_sym)
         {
-            errors.push(format!("duplicate rule/hrule name '{name}' at {loc}"));
+            errors.push(format!("duplicate rule name '{name}' at {loc}"));
             continue;
         }
         let pairs = kw_pairs(ast, &args);
@@ -1664,24 +1507,6 @@ fn ingest_rules(
         if errors.len() != n_errors {
             continue;
         }
-        let is_obligation = matches!(opened, Opened::Owes);
-        // An hrule proposes one fact per match, each a commitment of its own,
-        // so its conclusion, read flat, is one conjunct (Q-M1f.271): a
-        // conjunction could read as *each is a guess* or as *these together*,
-        // and no commitment states the second.
-        if head == "hrule" && !is_obligation {
-            let n = ast.conjuncts(assert_node).len();
-            if n > 1 {
-                errors.push(format!(
-                    "{}hrule '{name}': its :assert writes {}, {} — an hrule proposes one fact \
-                     per match, each a commitment of its own: write one hrule per conclusion",
-                    placed_form(ast, assert_node),
-                    crate::dump::dump_compact(ast, assert_node),
-                    count(n, "conclusion"),
-                ));
-                continue;
-            }
-        }
         let params: Vec<Symbol> = param_names
             .iter()
             .map(|p| terms.intern_text(p))
@@ -1723,8 +1548,7 @@ fn ingest_rules(
         match opened {
             // Never the saturator's: it derives nothing, so it has no place in
             // a queue that orders derivation, and it is read once per quiescent
-            // KB after the fixpoint instead. An `hrule` asserting `open` is the
-            // same object and goes the same way (`08-obligations.md`).
+            // KB after the fixpoint instead (`08-obligations.md`).
             Opened::Owes => kb.program_mut().add_obligation(rule),
             // A rule that concludes hypotheses is read by the pass that
             // writes a state's `open` facts, at every state, and never by the
@@ -1743,7 +1567,6 @@ fn ingest_rules(
                 }
                 kb.program_mut().add_hypothesis(rule);
             }
-            Opened::Nothing if head == "hrule" => kb.program_mut().add_hrule(rule),
             Opened::Nothing => kb.program_mut().add_rule(rule),
         }
     }
@@ -1760,9 +1583,8 @@ fn ingest_rules(
 ///
 /// - **a word that is none of the engine's**, `:ein dead`;
 /// - **`:ein` beside an `:assert`**: a rule states facts or a word to the
-///   engine, never both, since a state the firing ends takes no fact from it;
-/// - **`:ein` on an hrule**: an hrule proposes a fact, a commitment of its
-///   own, and what ends a state proposes none.
+///   engine, never both, since a state the firing ends takes no fact from
+///   it.
 fn engine_word(
     ast: &Ast,
     head: &str,
@@ -1778,13 +1600,6 @@ fn engine_word(
         .atom_name(node)
         .expect(":ein takes a name (ein.y's RuleClause)");
     let words = EngineWord::ALL.map(EngineWord::as_str).join(", ");
-    if head == "hrule" {
-        errors.push(format!(
-            "{who}: states :ein {written} — an hrule proposes a fact, which it states under \
-             :assert, and a word to the engine is a rule's (the engine's words: {words})"
-        ));
-        return Err(());
-    }
     if kw_get(pairs, "assert").is_some() {
         errors.push(format!(
             "{who}: states :ein {written} beside an :assert — a rule states what it concludes \
@@ -2051,7 +1866,7 @@ fn refuse_no_fact_holds(
 /// **A conclusion's every variable is bound**
 /// ([`07-diagnostics.md` § 2.13](../../../../docs/ein/user/04-reference/07-diagnostics.md#213-a-conclusions-variable-nothing-binds)).
 ///
-/// Every variable a rule's or an hrule's `:assert` writes, at any depth, must
+/// Every variable a rule's `:assert` writes, at any depth, must
 /// be bound on every way its `:match` can hold, as the compiler reads it
 /// (`ein_infer::compile`):
 ///
@@ -2065,7 +1880,9 @@ fn refuse_no_fact_holds(
 /// to one — is not bound outside it. A top-level `(or …)` is one way per
 /// disjunct, and the variable must be bound in each; a nested one binds what
 /// every one of its arms binds (and is refused, [`refuse_nested_disjunctions`]).
-/// An `(open …)` conclusion names a relation, which `validate_open` checks.
+/// A hypothesis, `(open F)`, is read as `F` is: a variable it writes is bound
+/// as any conclusion's; what a state owes, `(open R)` or `(open ?R)`, writes a
+/// name or a parameter.
 ///
 /// One line per variable, in the order the `:assert` writes them, naming the
 /// rule, the variable, the disjuncts that leave it unbound where some bind it,
@@ -2077,7 +1894,7 @@ fn refuse_no_fact_holds(
 /// **Checked at load, on every command**, so no firing meets a variable it
 /// cannot ground, and whether a program loads does not depend on whether a
 /// run reaches a node that fires the rule: a rule only a commitment fires is
-/// refused as one root fires is, and so is an hrule whose template could
+/// refused as one root fires is, and so is a rule whose hypothesis could
 /// propose nothing.
 fn refuse_unbound_conclusions(
     ast: &Ast,
@@ -2152,9 +1969,7 @@ fn refuse_unbound_conclusions(
         .collect();
     let mut vars: Vec<String> = Vec::new();
     for c in ast.conjuncts(assert_node) {
-        if !is_open_form(ast, c) {
-            written(ast, c, &mut vars);
-        }
+        written(ast, c, &mut vars);
     }
     for v in vars {
         let unbound: Vec<NodeId> = disjuncts
@@ -2189,10 +2004,11 @@ fn refuse_unbound_conclusions(
 /// A top-level `(or …)` is one way the rule holds per disjunct, each compiled
 /// as a plan of its own (`ein_infer::compile`'s `match_disjuncts`). One written
 /// as a premise, of an `(and …)`, an `(absent …)` or a top-level `(or …)`, is
-/// not lowered. A plan is compiled per activator, by the hypothesis layer for
-/// an hrule and where a state is answered for a goal, so a refusal where the
-/// plan is compiled would let a rule only a commitment activates, an hrule, a
-/// goal and one no state reaches load, and some commands answer what others
+/// not lowered. A plan is compiled per activator, by the pass that writes a
+/// state's `open` facts for a rule that concludes a hypothesis, and where a
+/// state is answered for a goal, so a refusal where the plan is compiled
+/// would let a rule only a commitment activates, such a rule, a goal and one
+/// no state reaches load, and some commands answer what others
 /// stop on. The loader refuses it instead, one line per disjunction as
 /// written, naming what it is a premise of; the walk is the compiler's
 /// (`premise`), so it does not descend into a pattern, a guard or a stored
@@ -2869,32 +2685,25 @@ fn validate_relation_parameters(
         heads: Vec<(usize, Symbol)>,
     }
     let mut named: Vec<Named> = Vec::new();
-    for registry in [
-        &kb.program().rules,
-        &kb.program().hrules,
-        &kb.program().obligations,
-        &kb.program().hypotheses,
-    ] {
-        for (name, rule) in registry.iter() {
-            let heads: Vec<(usize, Symbol)> = rule
-                .params
-                .iter()
-                .copied()
-                .enumerate()
-                .filter(|&(_, p)| {
-                    [rule.match_.as_ref(), rule.assert_.as_ref()]
-                        .into_iter()
-                        .flatten()
-                        .any(|pat| names_relation(ast, NodeId(pat.expr.0), terms.sym(p)))
-                })
-                .collect();
-            if !heads.is_empty() {
-                named.push(Named {
-                    rule: name,
-                    arity: rule.params.len(),
-                    heads,
-                });
-            }
+    for (name, rule) in kb.program().every_rule() {
+        let heads: Vec<(usize, Symbol)> = rule
+            .params
+            .iter()
+            .copied()
+            .enumerate()
+            .filter(|&(_, p)| {
+                [rule.match_.as_ref(), rule.assert_.as_ref()]
+                    .into_iter()
+                    .flatten()
+                    .any(|pat| names_relation(ast, NodeId(pat.expr.0), terms.sym(p)))
+            })
+            .collect();
+        if !heads.is_empty() {
+            named.push(Named {
+                rule: name,
+                arity: rule.params.len(),
+                heads,
+            });
         }
     }
     if named.is_empty() {
@@ -2939,7 +2748,7 @@ fn validate_relation_parameters(
     let mut asserted: Vec<NodeId> = Vec::new();
     for registry in [
         &kb.program().rules,
-        &kb.program().hrules,
+        &kb.program().hypotheses,
         &kb.program().obligations,
     ] {
         for (_, rule) in registry.iter() {
@@ -3180,40 +2989,35 @@ fn warn_derived_relation_activators(
     }
 
     let program = kb.program();
-    let registries: [(&'static str, &ein_core::entities::Registry<Rule>); 3] = [
-        ("rule", &program.rules),
-        ("hrule", &program.hrules),
-        ("rule", &program.obligations),
-    ];
+    let rules: Vec<(&'static str, (Symbol, &Rule))> =
+        program.every_rule().map(|r| ("rule", r)).collect();
     // Each rule's parameters, and the positions that hold relation names
     // because a parameter heads a form.
     let mut params: BTreeMap<String, Vec<String>> = BTreeMap::new();
     let mut rp: BTreeMap<Pos, Holds> = BTreeMap::new();
-    for (_, registry) in registries {
-        for (name, rule) in registry.iter() {
-            let name = terms.sym(name).to_string();
-            let ps: Vec<String> = rule
-                .params
-                .iter()
-                .map(|&p| terms.sym(p).to_string())
-                .collect();
-            for (i, p) in ps.iter().enumerate() {
-                if [rule.match_.as_ref(), rule.assert_.as_ref()]
-                    .into_iter()
-                    .flatten()
-                    .any(|pat| names_relation(ast, NodeId(pat.expr.0), p))
-                {
-                    rp.insert(
-                        (name.clone(), i),
-                        Holds::Param {
-                            rule: name.clone(),
-                            param: format!("?{p}"),
-                        },
-                    );
-                }
+    for &(_, (name, rule)) in &rules {
+        let name = terms.sym(name).to_string();
+        let ps: Vec<String> = rule
+            .params
+            .iter()
+            .map(|&p| terms.sym(p).to_string())
+            .collect();
+        for (i, p) in ps.iter().enumerate() {
+            if [rule.match_.as_ref(), rule.assert_.as_ref()]
+                .into_iter()
+                .flatten()
+                .any(|pat| names_relation(ast, NodeId(pat.expr.0), p))
+            {
+                rp.insert(
+                    (name.clone(), i),
+                    Holds::Param {
+                        rule: name.clone(),
+                        param: format!("?{p}"),
+                    },
+                );
             }
-            params.insert(name, ps);
         }
+        params.insert(name, ps);
     }
     if rp.is_empty() {
         return RelationPlaces::default();
@@ -3230,90 +3034,86 @@ fn warn_derived_relation_activators(
     for &f in facts.iter().chain(solve_blocks) {
         arguments(ast, f, &mut written);
     }
-    for (_, registry) in registries {
-        for (_, rule) in registry.iter() {
-            for pat in [rule.match_.as_ref(), rule.assert_.as_ref()]
-                .into_iter()
-                .flatten()
-            {
-                arguments(ast, NodeId(pat.expr.0), &mut written);
-            }
+    for &(_, (_, rule)) in &rules {
+        for pat in [rule.match_.as_ref(), rule.assert_.as_ref()]
+            .into_iter()
+            .flatten()
+        {
+            arguments(ast, NodeId(pat.expr.0), &mut written);
         }
     }
 
     // Every argument a conclusion writes, with where the deriving rule's
     // `:match` binds it.
     let mut sites: Vec<Site> = Vec::new();
-    for (head, registry) in registries {
-        for (name, rule) in registry.iter() {
-            let Some(assert) = rule.assert_.as_ref() else {
+    for &(head, (name, rule)) in &rules {
+        let Some(assert) = rule.assert_.as_ref() else {
+            continue;
+        };
+        let rule_name = terms.sym(name).to_string();
+        let disjuncts: Vec<NodeId> = match rule.match_.as_ref() {
+            None => Vec::new(),
+            Some(m) => {
+                let m = NodeId(m.expr.0);
+                if matches!(ast.node(m), Node::SForm { .. }) && ast.head_name(m) == Some("or") {
+                    ast.form_args(m).to_vec()
+                } else {
+                    vec![m]
+                }
+            }
+        };
+        for c in ast.conjuncts(NodeId(assert.expr.0)) {
+            let Some(c) = stated(ast, c) else {
                 continue;
             };
-            let rule_name = terms.sym(name).to_string();
-            let disjuncts: Vec<NodeId> = match rule.match_.as_ref() {
-                None => Vec::new(),
-                Some(m) => {
-                    let m = NodeId(m.expr.0);
-                    if matches!(ast.node(m), Node::SForm { .. }) && ast.head_name(m) == Some("or") {
-                        ast.form_args(m).to_vec()
-                    } else {
-                        vec![m]
-                    }
-                }
+            let conclusion = positive(ast, c);
+            let args = ast.form_args(conclusion).to_vec();
+            let targets: Vec<String> = match relation_of(ast, conclusion) {
+                Some(rel) => vec![rel],
+                None => params
+                    .iter()
+                    .filter(|(r, ps)| ps.len() == args.len() && written.contains(*r))
+                    .map(|(r, _)| r.clone())
+                    .collect(),
             };
-            for c in ast.conjuncts(NodeId(assert.expr.0)) {
-                if is_open_form(ast, c) || !matches!(ast.node(c), Node::SForm { .. }) {
-                    continue;
-                }
-                let conclusion = positive(ast, c);
-                let args = ast.form_args(conclusion).to_vec();
-                let targets: Vec<String> = match relation_of(ast, conclusion) {
-                    Some(rel) => vec![rel],
-                    None => params
-                        .iter()
-                        .filter(|(r, ps)| ps.len() == args.len() && written.contains(*r))
-                        .map(|(r, _)| r.clone())
-                        .collect(),
-                };
-                for to in targets {
-                    for (i, &arg) in args.iter().enumerate() {
-                        let ways = match ast.node(arg) {
-                            Node::Var(s) => {
-                                let var = ast.sym(s);
-                                let by_param: Vec<usize> = rule
-                                    .params
-                                    .iter()
-                                    .enumerate()
-                                    .filter(|(_, p)| terms.sym(**p) == var)
-                                    .map(|(m, _)| m)
-                                    .collect();
-                                let ds: Vec<NodeId> = if disjuncts.is_empty() {
-                                    vec![NodeId(assert.expr.0)]
-                                } else {
-                                    disjuncts.clone()
-                                };
-                                ds.iter()
-                                    .map(|&d| {
-                                        let mut o: Vec<Occ> =
-                                            by_param.iter().map(|&m| Occ::Param(m)).collect();
-                                        if !disjuncts.is_empty() {
-                                            occs(ast, d, var, &mut o);
-                                        }
-                                        (d, o)
-                                    })
-                                    .collect()
-                            }
-                            _ => Vec::new(),
-                        };
-                        sites.push(Site {
-                            head,
-                            rule: rule_name.clone(),
-                            conclusion: c,
-                            to: (to.clone(), i),
-                            arg,
-                            ways,
-                        });
-                    }
+            for to in targets {
+                for (i, &arg) in args.iter().enumerate() {
+                    let ways = match ast.node(arg) {
+                        Node::Var(s) => {
+                            let var = ast.sym(s);
+                            let by_param: Vec<usize> = rule
+                                .params
+                                .iter()
+                                .enumerate()
+                                .filter(|(_, p)| terms.sym(**p) == var)
+                                .map(|(m, _)| m)
+                                .collect();
+                            let ds: Vec<NodeId> = if disjuncts.is_empty() {
+                                vec![NodeId(assert.expr.0)]
+                            } else {
+                                disjuncts.clone()
+                            };
+                            ds.iter()
+                                .map(|&d| {
+                                    let mut o: Vec<Occ> =
+                                        by_param.iter().map(|&m| Occ::Param(m)).collect();
+                                    if !disjuncts.is_empty() {
+                                        occs(ast, d, var, &mut o);
+                                    }
+                                    (d, o)
+                                })
+                                .collect()
+                        }
+                        _ => Vec::new(),
+                    };
+                    sites.push(Site {
+                        head,
+                        rule: rule_name.clone(),
+                        conclusion: c,
+                        to: (to.clone(), i),
+                        arg,
+                        ways,
+                    });
                 }
             }
         }
@@ -3471,7 +3271,6 @@ fn warn_derived_relation_activators(
             sites: &sites,
             written: &written,
             facts,
-            solve_blocks,
             errors: &mut *errors,
         });
     }
@@ -3479,7 +3278,6 @@ fn warn_derived_relation_activators(
     // What the program passes where a relation name is held: a fact's
     // argument, and a conclusion's.
     let mut places = RelationPlaces {
-        positions: rp.keys().cloned().collect(),
         passed: BTreeSet::new(),
     };
     for &f in facts {
@@ -3515,7 +3313,6 @@ fn warn_derived_relation_activators(
         sites: &'a [Site],
         written: &'a BTreeSet<String>,
         facts: &'a [NodeId],
-        solve_blocks: &'a [NodeId],
         errors: &'a mut Vec<String>,
     }
 
@@ -3532,8 +3329,8 @@ fn warn_derived_relation_activators(
     /// would store `(eq a)`.
     ///
     /// Read as the check above reads relation names: a position that holds
-    /// relation names can hold `eq` where a fact, a conclusion or a `(solve
-    /// :hrules …)` activator writes `eq` there; or where a conclusion writes a
+    /// relation names can hold `eq` where a fact, an activator among them, or
+    /// a conclusion writes `eq` there; or where a conclusion writes a
     /// variable that its `:match` binds, in some disjunct, only at positions
     /// that can hold `eq`, or only with an `eq` or `neq` guard, over the
     /// program's names, while the program writes `eq` as a name; to a
@@ -3554,7 +3351,6 @@ fn warn_derived_relation_activators(
         /// it on from a position that can.
         enum EqFrom {
             Fact(NodeId),
-            Hrules(NodeId),
             Signature(String),
             Conclusion {
                 head: &'static str,
@@ -3578,7 +3374,6 @@ fn warn_derived_relation_activators(
             let dump = |n: NodeId| crate::dump::dump_compact(ast, n);
             match &at[pos] {
                 EqFrom::Fact(f) => format!("the fact {}", dump(*f)),
-                EqFrom::Hrules(s) => dump(*s),
                 EqFrom::Signature(r) => {
                     format!("the declaration of {r}, which writes {w} as a type")
                 }
@@ -3611,7 +3406,7 @@ fn warn_derived_relation_activators(
         let w = c.word;
         let is_eq = |n: NodeId| matches!(c.ast.node(n), Node::Atom(s) if c.ast.sym(s) == w);
         let mut at: BTreeMap<Pos, EqFrom> = BTreeMap::new();
-        // Written: a fact's argument, and a `(solve :hrules …)` activator's.
+        // Written: a fact's argument, an activator's among them.
         for &f in c.facts {
             let p = positive(c.ast, f);
             let Some(rel) = relation_of(c.ast, p) else {
@@ -3621,31 +3416,6 @@ fn warn_derived_relation_activators(
                 let pos = (rel.clone(), k);
                 if is_eq(a) && c.rp.contains_key(&pos) {
                     at.entry(pos).or_insert(EqFrom::Fact(f));
-                }
-            }
-        }
-        for &block in c.solve_blocks {
-            for &pair in c.ast.form_args(block) {
-                let Node::KwPair { key, value } = c.ast.node(pair) else {
-                    continue;
-                };
-                if !matches!(c.ast.node(key), Node::Keyword(k) if c.ast.sym(k) == "hrules") {
-                    continue;
-                }
-                let Some(hrule) = c.ast.head_name(value) else {
-                    continue;
-                };
-                for &item in c.ast.form_args(value) {
-                    let Node::SForm { head, .. } = c.ast.node(item) else {
-                        continue;
-                    };
-                    let tuple = std::iter::once(head).chain(c.ast.form_args(item).iter().copied());
-                    for (k, a) in tuple.enumerate() {
-                        let pos = (hrule.to_string(), k);
-                        if is_eq(a) && c.rp.contains_key(&pos) {
-                            at.entry(pos).or_insert(EqFrom::Hrules(block));
-                        }
-                    }
                 }
             }
         }
@@ -3771,90 +3541,88 @@ fn warn_derived_relation_activators(
                 nested(ast, a, param, values);
             }
         }
-        let registries: [(&'static str, &ein_core::entities::Registry<Rule>); 3] = [
-            ("rule", &c.program.rules),
-            ("hrule", &c.program.hrules),
-            ("rule", &c.program.obligations),
-        ];
-        for (head, registry) in registries {
-            for (name, rule) in registry.iter() {
-                let rule_name = c.terms.sym(name).to_string();
-                for (i, &p) in rule.params.iter().enumerate() {
-                    let pos = (rule_name.clone(), i);
-                    if !at.contains_key(&pos) {
+        let rules: Vec<(&'static str, (Symbol, &Rule))> =
+            c.program.every_rule().map(|r| ("rule", r)).collect();
+        for &(head, (name, rule)) in &rules {
+            let rule_name = c.terms.sym(name).to_string();
+            for (i, &p) in rule.params.iter().enumerate() {
+                let pos = (rule_name.clone(), i);
+                if !at.contains_key(&pos) {
+                    continue;
+                }
+                let param = c.terms.sym(p);
+                let mut forms: Vec<NodeId> = Vec::new();
+                let mut values: Vec<NodeId> = Vec::new();
+                if let Some(m) = rule.match_.as_ref() {
+                    premises(c.ast, NodeId(m.expr.0), param, &mut forms, &mut values);
+                }
+                if let Some(a) = rule.assert_.as_ref() {
+                    for conclusion in c.ast.conjuncts(NodeId(a.expr.0)) {
+                        let Some(conclusion) = stated(c.ast, conclusion) else {
+                            continue;
+                        };
+                        let conclusion = positive(c.ast, conclusion);
+                        if matches!(c.ast.node(conclusion), Node::SForm { head, .. }
+                            if matches!(c.ast.node(head), Node::Var(s) if c.ast.sym(s) == param))
+                        {
+                            forms.push(conclusion);
+                        }
+                        for &a in c.ast.form_args(conclusion) {
+                            nested(c.ast, a, param, &mut values);
+                        }
+                    }
+                }
+                let source = render(c.ast, w, &at, &pos);
+                let binds = match at[&pos] {
+                    EqFrom::Fact(_) => {
+                        format!("{source} binds ?{param} to {w}")
+                    }
+                    _ => format!("?{param} can be bound to {w} by {source}"),
+                };
+                for form in forms {
+                    let n = c.ast.form_args(form).len();
+                    let why = match w {
+                        "eq" if n == 2 => continue,
+                        "eq" => {
+                            "eq is the relation of equality, which holds between exactly two \
+                             values"
+                        }
+                        "false" if n == 0 => continue,
+                        "false" => {
+                            "false takes no argument: (false) says that the state is \
+                             impossible, and names nothing"
+                        }
+                        _ => {
+                            "absent is negation as failure, a premise's test, and no fact is \
+                             of it"
+                        }
+                    };
+                    c.errors.push(format!(
+                        "{head} '{rule_name}': its parameter ?{param} heads {}, a form of {n} \
+                         argument{}, and {binds} — {why}",
+                        crate::dump::dump_compact(c.ast, form),
+                        if n == 1 { "" } else { "s" },
+                    ));
+                }
+                // A value: a fact a state could hold (the value rule,
+                // Q-M1f.113), so never one of `eq`, of `absent` or of
+                // `false` with an argument.
+                for form in values {
+                    let n = c.ast.form_args(form).len();
+                    if w == "false" && n == 0 {
                         continue;
                     }
-                    let param = c.terms.sym(p);
-                    let mut forms: Vec<NodeId> = Vec::new();
-                    let mut values: Vec<NodeId> = Vec::new();
-                    if let Some(m) = rule.match_.as_ref() {
-                        premises(c.ast, NodeId(m.expr.0), param, &mut forms, &mut values);
-                    }
-                    if let Some(a) = rule.assert_.as_ref() {
-                        for conclusion in c.ast.conjuncts(NodeId(a.expr.0)) {
-                            let conclusion = positive(c.ast, conclusion);
-                            if matches!(c.ast.node(conclusion), Node::SForm { head, .. }
-                                if matches!(c.ast.node(head), Node::Var(s) if c.ast.sym(s) == param))
-                            {
-                                forms.push(conclusion);
-                            }
-                            for &a in c.ast.form_args(conclusion) {
-                                nested(c.ast, a, param, &mut values);
-                            }
-                        }
-                    }
-                    let source = render(c.ast, w, &at, &pos);
-                    let binds = match at[&pos] {
-                        EqFrom::Fact(_) | EqFrom::Hrules(_) => {
-                            format!("{source} binds ?{param} to {w}")
-                        }
-                        _ => format!("?{param} can be bound to {w} by {source}"),
+                    let why = match w {
+                        "eq" => "eq is computed and never stored",
+                        "false" => "false takes no argument",
+                        _ => "absent is negation as failure, a premise's test",
                     };
-                    for form in forms {
-                        let n = c.ast.form_args(form).len();
-                        let why = match w {
-                            "eq" if n == 2 => continue,
-                            "eq" => {
-                                "eq is the relation of equality, which holds between exactly two \
-                                 values"
-                            }
-                            "false" if n == 0 => continue,
-                            "false" => {
-                                "false takes no argument: (false) says that the state is \
-                                 impossible, and names nothing"
-                            }
-                            _ => {
-                                "absent is negation as failure, a premise's test, and no fact is \
-                                 of it"
-                            }
-                        };
-                        c.errors.push(format!(
-                            "{head} '{rule_name}': its parameter ?{param} heads {}, a form of {n} \
-                             argument{}, and {binds} — {why}",
-                            crate::dump::dump_compact(c.ast, form),
-                            if n == 1 { "" } else { "s" },
-                        ));
-                    }
-                    // A value: a fact a state could hold (the value rule,
-                    // Q-M1f.113), so never one of `eq`, of `absent` or of
-                    // `false` with an argument.
-                    for form in values {
-                        let n = c.ast.form_args(form).len();
-                        if w == "false" && n == 0 {
-                            continue;
-                        }
-                        let why = match w {
-                            "eq" => "eq is computed and never stored",
-                            "false" => "false takes no argument",
-                            _ => "absent is negation as failure, a premise's test",
-                        };
-                        c.errors.push(format!(
-                            "{head} '{rule_name}': its parameter ?{param} heads {}, written where \
-                             a value goes, and {binds} — {why}, and a value is a name, or a fact a \
-                             state could hold",
-                            crate::dump::dump_compact(c.ast, form),
-                        ));
-                    }
+                    c.errors.push(format!(
+                        "{head} '{rule_name}': its parameter ?{param} heads {}, written where \
+                         a value goes, and {binds} — {why}, and a value is a name, or a fact a \
+                         state could hold",
+                        crate::dump::dump_compact(c.ast, form),
+                    ));
                 }
             }
         }
@@ -3870,17 +3638,17 @@ fn warn_derived_relation_activators(
 /// fact, `(hypothesis ?h)` then `(not ?h)`; whether it is bound to one depends
 /// on the data. Unread, a rule whose variable holds a name would store `(not
 /// k)`, which no program can write and whose `--dump-answer` state file would
-/// not reload, and an hrule would propose it, so R would hold two states that
-/// differ in a fact nothing can read. A written `(not k)` is a parse error,
+/// not reload, and a hypothesis would propose it, so R would hold two states
+/// that differ in a fact nothing can read. A written `(not k)` is a parse error,
 /// and a macro's is refused by [`Shapes::negation`].
 ///
 /// **What is read** (Q-M1f.127). A position, a relation
 /// and an argument's index, *holds a name* where the program shows one there:
 /// a written fact, at any depth and under a `(not …)`; a `(relation …)`
-/// declaration; a rule's or an hrule's conclusion that writes a name, or a
-/// variable that can hold one, to a fixpoint; for a rule's parameter, its
-/// activator, written as a fact or in `(solve :hrules …)`; and, where the
-/// program declares no hrule, every argument of a declared relation the
+/// declaration; a rule's conclusion that writes a name, a hypothesis
+/// `(open F)` among them, or a variable that can hold one, to a fixpoint; for
+/// a rule's parameter, its written activator; and, where the program declares
+/// no rule that concludes a hypothesis, every argument of a declared relation the
 /// `(solve …)` lists leave among the hypotheses, since a commitment states a
 /// fact of one over the program's names. A conclusion
 /// variable *can hold a name* where, in one disjunct of the `:match`, every
@@ -3890,7 +3658,7 @@ fn warn_derived_relation_activators(
 ///
 /// A pattern or a conclusion whose relation is a parameter, `(?R ?x)`, is read
 /// as one of each relation a written activator names there: a fact `(deny
-/// paid)`, a `(solve :hrules …)` entry, or a conclusion that writes the name.
+/// paid)`, or a conclusion that writes the name.
 ///
 /// **What is not read**: such a pattern where the activator is only derived
 /// through a variable, `:assert (deny ?R)`, and what the obligations rung
@@ -3922,10 +3690,6 @@ fn refuse_negated_names(
         Concluded {
             who: String,
             conclusion: String,
-        },
-        Activator {
-            solve: String,
-            name: String,
         },
         /// A declared relation the blind enumerator proposes facts of.
         Commitment {
@@ -4110,17 +3874,18 @@ fn refuse_negated_names(
     }
 
     let program = kb.program();
-    let registries: [(&'static str, &ein_core::entities::Registry<Rule>); 2] =
-        [("rule", &program.rules), ("hrule", &program.hrules)];
+    // Every rule that concludes facts, once, whole: the obligations conclude
+    // what a state owes and no fact.
     let mut sites: Vec<Site<'_>> = Vec::new();
-    for (head, registry) in registries {
-        for (name, rule) in registry.iter() {
-            sites.push(Site {
-                head,
-                name: terms.sym(name).to_string(),
-                rule,
-            });
-        }
+    for (name, rule) in program
+        .every_rule()
+        .filter(|&(n, _)| !program.obligations.contains(n))
+    {
+        sites.push(Site {
+            head: "rule",
+            name: terms.sym(name).to_string(),
+            rule,
+        });
     }
     // The conclusions `(not ?x)`, per rule: nothing to read where none is
     // written.
@@ -4151,47 +3916,8 @@ fn refuse_negated_names(
     for &f in facts {
         written(ast, f, f, &mut names, &mut passed);
     }
-    // An hrule's activators, `(solve :hrules (NAME (a b) …))`.
-    for &block in solve_blocks {
-        for &pair in ast.form_args(block) {
-            let Node::KwPair { key, value } = ast.node(pair) else {
-                continue;
-            };
-            if !matches!(ast.node(key), Node::Keyword(k) if ast.sym(k) == "hrules") {
-                continue;
-            }
-            let Some(hrule) = relation_of(ast, value) else {
-                continue;
-            };
-            for &item in ast.form_args(value) {
-                let Node::SForm { head, .. } = ast.node(item) else {
-                    continue;
-                };
-                for (i, a) in std::iter::once(head)
-                    .chain(ast.form_args(item).iter().copied())
-                    .enumerate()
-                {
-                    if let Some(name) = ast.atom_name(a) {
-                        passed
-                            .entry((hrule.clone(), i))
-                            .or_default()
-                            .insert(name.to_string());
-                        names
-                            .entry((hrule.clone(), i))
-                            .or_insert_with(|| Holds::Activator {
-                                solve: format!(
-                                    "(solve :hrules {})",
-                                    crate::dump::dump_compact(ast, value)
-                                ),
-                                name: name.to_string(),
-                            });
-                    }
-                }
-            }
-        }
-    }
-
-    // A commitment's facts. With no hrule declared, the candidates are facts
+    // A commitment's facts. With no rule that concludes a hypothesis, the
+    // candidates are facts
     // of the declared relations the `(solve …)` lists leave in
     // (`ein_infer::hypgen::eligible_relations`), over the program's names: a
     // state can hold a name at each of their positions. Not read where the
@@ -4218,7 +3944,7 @@ fn refuse_negated_names(
                 if matches!(ast.node(key), Node::Keyword(k) if ast.sym(k) == "no-search"))
         })
     });
-    if program.hrules.is_empty() && !closure_written && !no_search {
+    if program.hypotheses.is_empty() && !closure_written && !no_search {
         let listed = |want: &str| -> Option<BTreeSet<String>> {
             let value = solve_blocks.iter().find_map(|&block| {
                 ast.form_args(block).iter().find_map(|&pair| match ast.node(pair) {
@@ -4295,10 +4021,6 @@ fn refuse_negated_names(
                     "{} binds {v} where {who} writes {conclusion}",
                     crate::dump::dump_compact(ast, p)
                 ),
-                (Some(p), Holds::Activator { solve, name }) => format!(
-                    "{} binds {v} where {solve} names {name}",
-                    crate::dump::dump_compact(ast, p)
-                ),
                 (Some(p), Holds::Commitment { relation }) => format!(
                     "{} binds {v} where a commitment can hold a name, {relation} being a \
                      declared relation the hypotheses are taken from",
@@ -4312,9 +4034,6 @@ fn refuse_negated_names(
                 }
                 (None, Holds::Concluded { who, conclusion }) => {
                     format!("{v} is its parameter, which {who} binds by writing {conclusion}")
-                }
-                (None, Holds::Activator { solve, name }) => {
-                    format!("{v} is its parameter, which {solve} binds to {name}")
                 }
             })
         };
@@ -4539,7 +4258,7 @@ fn refuse_eq_facts_of_another_arity(ast: &Ast, facts: &[NodeId], errors: &mut Ve
 /// **A macro's call is a premise, a conclusion or a goal, and never a fact**
 /// ([`07-diagnostics.md` § 2.24](../../../../docs/ein/user/04-reference/07-diagnostics.md#224-a-macros-call-is-no-fact)).
 ///
-/// The loader expands a macro's call in a rule's or an hrule's `:match` and
+/// The loader expands a macro's call in a rule's `:match` and
 /// `:assert` and in a query's `:goal` (Q-M1f.130). A fact headed by a macro's
 /// name, `(pp j)` beside `(macro pp (?a) (p ?a))`, would otherwise be stored
 /// as a fact of a relation `pp`: the fact the body spells would not, no
@@ -4741,9 +4460,29 @@ fn sforms_under(ast: &Ast, node: NodeId, out: &mut Vec<NodeId>) {
     }
 }
 
-/// Is `node` the reserved verdict atom — `(open)` or `(open ?R)`?
+/// Is `node` a form headed `open`: what a state owes, `(open R)`, or a
+/// hypothesis, `(open F)`?
 fn is_open_form(ast: &Ast, node: NodeId) -> bool {
     matches!(ast.node(node), Node::SForm { .. }) && ast.head_name(node) == Some("open")
+}
+
+/// **The fact a conclusion's conjunct states**, as a check that reads what a
+/// state can hold reads it: the conjunct itself, where it is a form; `F` for
+/// a hypothesis written as a fact, `(open F)`, which a commitment brings into
+/// a state as it is written; and `None` for what a state owes, `(open R)` or
+/// `(open ?R)`, and for a hypothesis a variable holds, `(open ?f)`, neither
+/// of which writes a form.
+fn stated(ast: &Ast, node: NodeId) -> Option<NodeId> {
+    if !matches!(ast.node(node), Node::SForm { .. }) {
+        return None;
+    }
+    if !is_open_form(ast, node) {
+        return Some(node);
+    }
+    match ast.form_args(node) {
+        [f] if matches!(ast.node(*f), Node::SForm { .. }) => Some(*f),
+        _ => None,
+    }
 }
 
 /// Every variable name occurring under `node`.
@@ -4848,9 +4587,7 @@ enum Opened {
 ///
 /// 1. **an obligation's `(open …)` beside another conclusion** — what a
 ///    state owes is a rule's whole `:assert` (Q-M1f.575);
-/// 2. **an hrule that concludes `open`** but as an obligation — an hrule
-///    proposes a fact, a hypothesis already;
-/// 3. **a projection that does not resolve** — `(open ?R)` names the relation
+/// 2. **a projection that does not resolve** — `(open ?R)` names the relation
 ///    whose extent is incomplete and the engine reads the rest out of the
 ///    rule's own `absent`: exactly one `absent` holding a positive `?R`
 ///    premise, and exactly one such premise bearing a variable the guard does
@@ -4897,15 +4634,6 @@ fn validate_open(
         .filter_map(|&c| owes(c).map(|o| (c, o)))
         .collect();
     let Some((at, (rel, is_var))) = owed.first().cloned() else {
-        if head == "hrule" {
-            errors.push(format!(
-                "{}hrule '{name}': its :assert concludes {} — an hrule proposes a fact, which is \
-                 a hypothesis already: write a rule that concludes (open …)",
-                placed(ast, opens[0]),
-                crate::dump::dump_compact(ast, opens[0]),
-            ));
-            return Opened::Nothing;
-        }
         let rest = conjuncts
             .iter()
             .copied()
@@ -5420,7 +5148,7 @@ mod tests {
         );
         // The saturation's rules are those every program gets and no other.
         assert!(
-            kb.program().rules.values().all(|r| r.implicit) && kb.program().hrules.is_empty(),
+            kb.program().rules.values().all(|r| r.implicit) && kb.program().hypotheses.is_empty(),
             "…and to neither of the two that fire during a search"
         );
 
@@ -5476,7 +5204,7 @@ mod tests {
         assert_eq!(rule.ein, Some(EngineWord::Inconsistent));
         assert!(rule.assert_.is_none(), "it concludes no fact");
         assert!(rule.match_.is_some());
-        assert!(kb.program().hrules.is_empty() && kb.program().obligations.is_empty());
+        assert!(kb.program().hypotheses.is_empty() && kb.program().obligations.is_empty());
 
         // A word that is none of the engine's.
         assert_eq!(
@@ -5509,17 +5237,6 @@ mod tests {
                 "{e}"
             );
         }
-        // On an hrule, which proposes a fact.
-        let e = err(&format!(
-            "{P}(hrule h ()\n  :match (p ?x)\n  :ein inconsistent\n  :why \"x\")\n"
-        ));
-        assert!(
-            e.contains(
-                "hrule 'h': states :ein inconsistent — an hrule proposes a fact, which it \
-                 states under :assert, and a word to the engine is a rule's"
-            ),
-            "{e}"
-        );
     }
 
     /// **A variable used once is what to write where any value will do**, and
@@ -5540,7 +5257,7 @@ mod tests {
     }
 
     /// **A rule shape that reads nothing is refused at load**
-    /// (Q-M1e2.18). Each shape in each place it can take, in a rule, an hrule
+    /// (Q-M1e2.18). Each shape in each place it can take, in a rule, a hypothesis rule
     /// and an obligation, one line naming the rule and the clause; and what
     /// stays: a guard on values, a parameter head.
     ///
@@ -5605,8 +5322,8 @@ mod tests {
                 format!("rule 'r': its :assert writes (?r a) with ?r as its relation, {FREE}"),
             ),
             (
-                "(hrule h () :match (p ?r) :assert (?r a) :why \"p holds of {?r}: guess that {?r} holds of a\")".to_string(),
-                format!("hrule 'h': its :assert writes (?r a) with ?r as its relation, {FREE}"),
+                "(rule h () :match (p ?r) :assert (open (?r a)) :why \"p holds of {?r}: guess that {?r} holds of a\")".to_string(),
+                format!("rule 'h': its :assert writes (?r a) with ?r as its relation, {FREE}"),
             ),
             // An obligation's `:match`.
             (
@@ -5659,7 +5376,7 @@ mod tests {
     /// **Three shapes the compiler cannot compile are refused at load**. An
     /// `(or …)`
     /// written as a premise, of an `(and …)`, an `(absent …)` or a top-level
-    /// `(or …)`, in a rule's, an hrule's or a goal's clause, written or
+    /// `(or …)`, in a rule's, a hypothesis rule's or a goal's clause, written or
     /// produced by a macro (Q-M1f.74); a `:match` or a `:goal` past the
     /// register file, a rule's parameters counted (Q-M1f.73); and a goal's
     /// premise whose relation is a variable, under `and`, `or` and `absent`.
@@ -5698,8 +5415,8 @@ mod tests {
                 r("and", or),
             ),
             (
-                "(hrule h () :match (and (a ?x) (or (p ?x) (q ?x))) :assert (out ?x) :why \"h\")".to_string(),
-                nested("hrule 'h'", ":match", "and", or, "split the rule"),
+                "(rule h () :match (and (a ?x) (or (p ?x) (q ?x))) :assert (open (out ?x)) :why \"h\")".to_string(),
+                nested("rule 'h'", ":match", "and", or, "split the rule"),
             ),
             (
                 "(macro either (?x) (or (p ?x) (q ?x)) :why \"either\")\n\
@@ -5783,7 +5500,7 @@ mod tests {
     /// **A macro's expansion is held to the grammar's shapes** (Q-M1f.67).
     ///
     /// Each shape a macro's body or a call's argument can malform, in a rule's,
-    /// an hrule's and an obligation's `:match` and as a conclusion, refused at
+    /// a hypothesis rule's and an obligation's `:match` and as a conclusion, refused at
     /// load with one line naming the rule, the clause and the expanded form,
     /// the position where it is written first. Then what loads: an unused
     /// malformed macro (Q-M1f.67), and every shape the grammar takes where a
@@ -5811,7 +5528,6 @@ mod tests {
             [
                 format!("(rule r () :match (and (a ?x) {call}) :assert (p ?x) :why \"r\")"),
                 format!("(rule r (?R) :match (and (?R ?x) {call}) :assert (p ?x) :why \"r\")"),
-                format!("(hrule r () :match (and (a ?x) {call}) :assert (p ?x) :why \"r\")"),
                 format!("(rule r () :match (and (a ?x) {call}) :assert (open (p ?x)) :why \"r\")"),
             ]
         };
@@ -5819,7 +5535,6 @@ mod tests {
             [
                 format!("(rule r () :match (a ?x) :assert {call} :why \"r\")"),
                 format!("(rule r (?R) :match (?R ?x) :assert {call} :why \"r\")"),
-                format!("(hrule r () :match (a ?x) :assert {call} :why \"r\")"),
             ]
         };
         let refusals: Vec<(Vec<String>, &str)> = vec![
@@ -5898,11 +5613,7 @@ mod tests {
         for (texts, want) in &refusals {
             for text in texts {
                 let got = err(&format!("{pre}{m}\n{text}"));
-                let who = if text.starts_with("(hrule") {
-                    "hrule 'r'"
-                } else {
-                    "rule 'r'"
-                };
+                let who = "rule 'r'";
                 assert!(
                     got.lines().count() == 1 && got.contains(&format!("{who}: its {want}")),
                     "{text}\nwants {who}: its {want}\ngot {got}"
@@ -6006,18 +5717,17 @@ mod tests {
     ///
     /// Each way the program shows a name where the variable is bound: a
     /// written fact, at the top and inside another fact; a declaration; a
-    /// parameter's activator, written and in `(solve :hrules …)`; another
-    /// rule's conclusion, a name and a variable that can hold one; a guard
-    /// alone; one disjunct of two; a macro's `(not ?a)`; an hrule's; a pattern
-    /// and a conclusion whose relation is a parameter, through its written
-    /// activator; and a declared relation the hypotheses are taken from. Then
-    /// what loads: a position that holds facts alone, two premises of which
-    /// one holds no name, a variable bound through the relation of a parameter
-    /// whose activator is derived, a
-    /// premise under `(absent …)` beside one that holds facts, a guard beside
-    /// a premise that holds facts, and a declared relation no commitment
-    /// states a fact of: held out by a `(solve …)` list, beside an hrule, or
-    /// closed.
+    /// parameter's written activator; another rule's conclusion, a name and a
+    /// variable that can hold one, a hypothesis among them; a guard alone; one
+    /// disjunct of two; a macro's `(not ?a)`; a pattern and a conclusion whose
+    /// relation is a parameter, through its written activator; and a declared
+    /// relation the hypotheses are taken from. Then what loads: a position
+    /// that holds facts alone, two premises of which one holds no name, a
+    /// variable bound through the relation of a parameter whose activator is
+    /// derived, a premise under `(absent …)` beside one that holds facts, a
+    /// guard beside a premise that holds facts, and a declared relation no
+    /// commitment states a fact of: held out by a `(solve …)` list, beside a
+    /// rule that concludes a hypothesis, or closed.
     #[test]
     fn a_conclusion_negating_a_name_is_refused_at_load() {
         let pre =
@@ -6052,12 +5762,6 @@ mod tests {
                 "(r k)\n(rule r (?x) :match () :assert (not ?x) :why \"r\")".to_string(),
                 "?x is its parameter, which the fact (r k) binds to k",
             ),
-            (
-                "(hrule r (?x) :match () :assert (not ?x) :why \"r\")\n(solve :hrules (r (k)))"
-                    .to_string(),
-                "hrule 'r': its :assert writes (not ?x), and ?x can be a name: ?x is its \
-                 parameter, which (solve :hrules (r (k))) binds to k",
-            ),
             // `m` is no declared relation: what a rule writes there shows it.
             (
                 format!("(rule mk () :match () :assert (m k) :why \"mk\")\n{not_m}"),
@@ -6070,8 +5774,8 @@ mod tests {
                 "(m ?x) binds ?x where rule 'mk' writes (seen (m ?y))",
             ),
             (
-                format!("(p k)\n(hrule mk () :match (p ?y) :assert (m ?y) :why \"mk\")\n{not_m}"),
-                "(m ?x) binds ?x where hrule 'mk' writes (m ?y)",
+                format!("(p k)\n(rule mk () :match (p ?y) :assert (open (m ?y)) :why \"mk\")\n{not_m}"),
+                "(m ?x) binds ?x where rule 'mk' writes (open (m ?y))",
             ),
             (
                 "(rule r () :match (neq ?x k) :assert (not ?x) :why \"r\")".to_string(),
@@ -6092,10 +5796,6 @@ mod tests {
                  (rule r () :match (a ?x) :assert (and (p ?x) (neg ?x)) :why \"r\")"
                     .to_string(),
                 "rule 'r': its :assert writes (not ?x), and ?x can be a name",
-            ),
-            (
-                "(a k)\n(hrule r () :match (a ?x) :assert (not ?x) :why \"r\")".to_string(),
-                "hrule 'r': its :assert writes (not ?x), and ?x can be a name",
             ),
             // A pattern whose relation is a parameter, read as each relation
             // a written activator names; and a name written through one.
@@ -6149,7 +5849,7 @@ mod tests {
              (rule r () :match (a ?x) :assert (not ?x) :why \"r\")",
             "(a (p k))\n(solve :hypothesis-relations (p))\n\
              (rule r () :match (a ?x) :assert (not ?x) :why \"r\")",
-            "(a (p k))\n(hrule g () :match (p ?y) :assert (p ?y) :why \"g\")\n\
+            "(a (p k))\n(rule g () :match (p ?y) :assert (open (p ?y)) :why \"g\")\n\
              (rule r () :match (a ?x) :assert (not ?x) :why \"r\")",
             "(a (p k)) (__closed__ a)\n(rule r () :match (a ?x) :assert (not ?x) :why \"r\")",
         ] {
@@ -6160,7 +5860,7 @@ mod tests {
     /// **A conclusion's every variable is bound, and is refused at load where
     /// it is not**. Each shape, one line per variable naming the rule, the variable
     /// and the two explicit spellings: a free variable, an `(or …)` arm, a
-    /// variable seen only under an `(absent …)`, and an hrule; and a guard's
+    /// variable seen only under an `(absent …)`, and a hypothesis rule; and a guard's
     /// under an `(absent …)`, a nested conclusion's, an empty `:match`'s, two
     /// variables in one conclusion and a `forall`'s. Then what binds, and
     /// loads: a parameter, a relation premise at any depth, a stored `(not
@@ -6198,10 +5898,10 @@ mod tests {
                 "(rule r () :match (and (p ?x) (absent (eq ?y a))) :assert (hit ?y) :why \"p holds of {?x} and nothing equals a, so hit holds of a value no premise binds\")",
                 line("rule", "r", "y", ""),
             ),
-            // An hrule.
+            // A hypothesis.
             (
-                "(hrule h () :match (p ?x) :assert (q ?y) :why \"p holds of {?x}: guess that q holds of a value no premise binds\")",
-                line("hrule", "h", "y", ""),
+                "(rule h () :match (p ?x) :assert (open (q ?y)) :why \"p holds of {?x}: guess that q holds of a value no premise binds\")",
+                line("rule", "h", "y", ""),
             ),
             // Nested in a conclusion's argument, and an empty `:match`.
             (
@@ -6245,7 +5945,7 @@ mod tests {
             "(rule r () :match (and (p ?x) (is-a ?y House)) :assert (q ?y) :why \"p holds of {?x} and {?y} is a House, so q holds of {?y}\")",
             "(rule r () :match (or (p ?x) (q ?x)) :assert (hit ?x) :why \"p or q holds of {?x}, so hit holds of {?x}\")",
             "(rule r () :match (and (p ?x) (absent (q ?x))) :assert (hit ?x) :why \"p holds of {?x} and q does not, so hit holds of {?x}\")",
-            "(hrule h () :match (p ?x) :assert (q ?x) :why \"p holds of {?x}: guess that q holds of {?x}\")",
+            "(rule h () :match (p ?x) :assert (open (q ?x)) :why \"p holds of {?x}: guess that q holds of {?x}\")",
             "(rule r () :match () :assert (q a) :why \"q holds of a, with no premise\")",
         ] {
             ok(&format!("{pre}{rule}"));
@@ -6287,7 +5987,7 @@ mod tests {
                 ),
             ),
             // A variable inside a fact pattern, and one under a relation a
-            // parameter names; an hrule derives too.
+            // parameter names; a hypothesis rule derives too.
             (
                 format!(
                     "{pre}{r}\n(rule mk () :match (box (g ?f)) :assert (r ?f) :why \"box holds of (g {{?f}}), so rule r is switched on for {{?f}}\")"
@@ -6308,10 +6008,10 @@ mod tests {
             ),
             (
                 format!(
-                    "{pre}{r}\n(hrule mk () :match (item ?f) :assert (r ?f) :why \"{{?f}} is an item: guess that rule r is switched on for {{?f}}\")"
+                    "{pre}{r}\n(rule mk () :match (item ?f) :assert (open (r ?f)) :why \"{{?f}} is an item: guess that rule r is switched on for {{?f}}\")"
                 ),
                 format!(
-                    "hrule 'mk': its :assert writes (r ?f), whose ?f is {r_param}, and (item ?f) \
+                    "rule 'mk': its :assert writes (r ?f), whose ?f is {r_param}, and (item ?f) \
                      can bind ?f to a fact, as an argument of the declared relation item — {NAMED}"
                 ),
             ),
@@ -6461,7 +6161,7 @@ mod tests {
                 line("(?R ?x)", 1, "the fact (r eq) binds ?R to eq"),
             ),
             // Derived: a conclusion, a marker, a guard while `eq` is a name
-            // of the program, and an hrule's `(solve :hrules …)` activator.
+            // of the program, and a hypothesis rule's written activator.
             (
                 format!(
                     "{pre}{r}\n(rule mk () :match (p ?y) :assert (r eq) :why \"p holds of {{?y}}, so rule r is switched on for eq\")"
@@ -6495,11 +6195,11 @@ mod tests {
             ),
             (
                 format!(
-                    "{pre}(hrule h (?R) :match (?R ?x) :assert (hit ?x) :why \"{{?R}} holds of {{?x}}: guess that hit holds of {{?x}}\")\n(solve :hrules (h (eq)))"
+                    "{pre}(rule h (?R) :match (?R ?x) :assert (open (hit ?x)) :why \"{{?R}} holds of {{?x}}: guess that hit holds of {{?x}}\")\n(h eq)"
                 ),
                 format!(
-                    "hrule 'h': its parameter ?R heads (?R ?x), a form of 1 argument, and (solve \
-                     :hrules (h (eq))) binds ?R to eq {TAIL}"
+                    "rule 'h': its parameter ?R heads (?R ?x), a form of 1 argument, and the \
+                     fact (h eq) binds ?R to eq {TAIL}"
                 ),
             ),
             // A written fact, and its negation.

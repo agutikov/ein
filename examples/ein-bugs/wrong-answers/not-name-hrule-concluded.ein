@@ -1,27 +1,27 @@
-;;; An hrule's `:assert (not ?g)` with `?g` bound to a guest puts `(not Ann)` in H —
+;;; A hypothesis `(not ?g)` with `?g` bound to a guest put `(not Ann)` in H —
 ;;; regression `not-name-hrule-concluded`.
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;
-;;; Two guests, of whom Ann has paid, and an hrule that proposes `(not ?g)` of whoever
-;;; has paid.
+;;; Two guests, of whom Ann has paid, and a hypothesis rule that supposes `(not ?g)` of
+;;; whoever has paid.
 ;;;
 ;;; ── The answer, by hand ───────────────────────────────────────────────────
 ;;;
-;;; `(not Ann)` is the negation of no fact, so it is no hypothesis: refused at load,
-;;; one line, on every command. Without the hrule's candidate H is empty and R is
-;;; {∅}.
+;;; `(not Ann)` is the negation of no fact, so it is no hypothesis: refused, one line,
+;;; on every command. Without the rule's candidate H is empty and R is {∅}. Under
+;;; `open`, `(not ?g)` is no fact's spelling, and the parse refuses it.
 ;;;
 ;;; ── What the engine answered ──────────────────────────────────────────────
 ;;;
-;;; At `55aadd0b`, release: the program loads; H is the one candidate `(not Ann)`, and R is
+;;; At `55aadd0b`, release: the program loaded; H was the one candidate `(not Ann)`, and R
 ;;; two states, ∅ and {(not Ann)}, which differ in a fact nothing can read: the goal
-;;; answers `?g = Ann` in both, exit 0 on every command.
-;;; The engine refuses it at load.
+;;; answered `?g = Ann` in both, exit 0 on every command.
+;;; The engine refuses it at the parse.
 ;;;
 
 (relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest) (is-a Bob Guest)
 (paid Ann)
-(hrule suppose () :match (paid ?g) :assert (not ?g) :why "suppose not {?g}")
+(rule suppose () :match (paid ?g) :assert (open (not ?g)) :why "suppose not {?g}")
 (query :goal (paid ?g))

@@ -63,9 +63,9 @@
   :assert (false)
   :why    "{?a} and {?b} are jointly forbidden by an incompat fact")
 
-(hrule guess (?R ?T)
+(rule guess (?R ?T)
   :match  (is-a ?x ?T)
-  :assert (?R ?x)
+  :assert (open (?R ?x))
   :why    "guess: is {?x} {?R}?")
 
 (relation is-a     T T :why "{?3} is a {?4}")
@@ -82,9 +82,7 @@
 
 (incompat a b :source "(only the {a, b} pair is forbidden)")
 
-(solve
-  :hrules (
-    guess (proposed Custom)))
+(guess proposed Custom)
 
 (query
   :goal (proposed ?x))

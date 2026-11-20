@@ -1,15 +1,15 @@
-;;; An hrule whose conclusion is an `and` inside an `and` proposes one
+;;; A hypothesis rule whose conclusion is an `and` inside an `and` proposed one
 ;;; fact headed `and`, a commitment no state can hold.
 ;;;
-;;; A nested `(and …)` in an hrule: the inner one was a template headed `and`,
+;;; A nested `(and …)` in a hypothesis: the inner one was a template headed `and`,
 ;;; and as the first conjunct it was the one the hypothesis layer read
 ;;; (`hrule-and.ein`), so H was `{(and (p a) (q a))}`, one candidate over the
 ;;; relation `and`, and R two states, the second holding `(and (p a) (q a))`;
-;;; `(r a)` was proposed by nothing. A conclusion is read flat at any depth, so
-;;; it is three conjuncts, and the right answer is `hrule-and.ein`'s: refused at
-;;; load, an hrule's conclusion being one fact (Q-M1f.271).
+;;; `(r a)` was proposed by nothing. The right answer is `hrule-and.ein`'s, a
+;;; refusal (Q-M1f.271): written under `open`, the conjunction is refused at the
+;;; parse, `and` heading no fact (Q-M1f.567).
 ;;;
 (relation p Thing :why "p {?3}")
 (relation q Thing :why "q {?3}")
 (relation r Thing :why "r {?3}")
-(hrule h () :match () :assert (and (and (p a) (q a)) (r a)) :why "propose p and q, and r, of a")
+(rule h () :match () :assert (open (and (and (p a) (q a)) (r a))) :why "propose p and q, and r, of a")

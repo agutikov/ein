@@ -158,7 +158,7 @@ const WRITTEN: &[(&str, &str)] = &[
         "fifo_gap_static",
         "(relation thing T)\n(relation a T)\n(relation b T)\n(relation p T)\n(relation q T)\n(relation z T)\n\
          (thing one)\n(a one)\n\
-         (hrule guess-b () :match (thing ?x) :assert (b ?x))\n\
+         (rule guess-b () :match (thing ?x) :assert (open (b ?x)))\n\
          (rule r2 () :match (and (a ?x) (b ?x) (absent (q ?x))) :assert (p ?x) :priority 200)\n\
          (rule r1 () :match (and (a ?x) (absent (z ?x))) :assert (q ?x) :priority 200)\n\
          (query :goal (p ?x))\n",

@@ -612,7 +612,7 @@ const PHRASE_GROUPS: &[(&str, &str, &str)] = &[
         "fact",
     ),
     ("Relation", "A relation's declaration", "relation"),
-    ("Rule", "A rule and an hrule", "rule"),
+    ("Rule", "A rule", "rule"),
     ("Match", "A rule's `:match`: premises", "match"),
     ("Pattern", "A pattern and its terms", "pattern"),
     ("Assert", "A rule's `:assert`: conclusions", "assert"),
@@ -1347,6 +1347,13 @@ const TABLE: &[Row] = &[
         &["top-level-claim"],
         "(merged (model) (model))",
     ),
+    // The removed `hrule` form: `hrule` is a name, so the form is a fact
+    // whose arguments are no fact's (Q-M1f.567).
+    row(
+        "a fact's argument, the removed hrule form",
+        &[],
+        "(hrule guess (?R ?T) :match (is-a ?x ?T) :assert (?R ?x))",
+    ),
     // A saved file's three wrappers stand at the top, and none is a fact's
     // relation there (Q-M1f.401).
     row(
@@ -1390,11 +1397,6 @@ const TABLE: &[Row] = &[
         "a rule's name and parameters",
         &["rule-name-params"],
         "(rule x)",
-    ),
-    row(
-        "a rule's name and parameters",
-        &["rule-name-params"],
-        "(hrule x)",
     ),
     row(
         "a rule's name and parameters",
@@ -1493,11 +1495,6 @@ const TABLE: &[Row] = &[
         "(rule w () :match (n ?x) :assert (box (_ ?x)))",
     ),
     row(
-        "a premise's relation, in an hrule",
-        &["wild-head"],
-        "(hrule h () :match (_ ?x) :assert (tag ?x ?x))",
-    ),
-    row(
         "a premise's relation and a conclusion's",
         &["wild-head"],
         "(rule r () :match (and (n ?x) (_ 2)) :assert (box (_ ?x)))",
@@ -1533,11 +1530,6 @@ const TABLE: &[Row] = &[
         "(rule e () :match (and (p ?x) (absent (and (q ?y) (neq ?y _)))) :assert (hit ?x))",
     ),
     row(
-        "a guard's argument, in an hrule",
-        &["wild-guard"],
-        "(hrule h () :match (and (p ?x) (eq ?x _)) :assert (hit ?x))",
-    ),
-    row(
         "a guard's argument",
         &["guard-kwpair"],
         "(rule e () :match (and (p ?x) (eq ?x :k a)) :assert (hit ?x))",
@@ -1558,11 +1550,6 @@ const TABLE: &[Row] = &[
         "an absent's premise",
         &[],
         "(rule r () :match (and (p ?x) (absent \"s\")) :assert (hit ?x))",
-    ),
-    row(
-        "a conjunct, in an hrule",
-        &[],
-        "(hrule h () :match (and (p ?x) _) :assert (hit ?x))",
     ),
     row(
         "an absent's premise",
@@ -1625,12 +1612,12 @@ const TABLE: &[Row] = &[
     row(
         "a query's keyword",
         &["query-lattice-keyword"],
-        "(query :goal (a ?x) :hrules (h))",
+        "(query :goal (a ?x) :no-hypothesis (p))",
     ),
     row(
         "a query's keyword",
         &["query-lattice-keyword"],
-        "(query :goal (a ?x) :no-hypothesis (p))",
+        "(query :goal (a ?x) :hypothesis-relations (p))",
     ),
     row(
         "a query's :over",
@@ -1752,6 +1739,11 @@ const TABLE: &[Row] = &[
         "a solve's keyword",
         &["solve-keyword"],
         "(solve :hrule (h))",
+    ),
+    row(
+        "a solve's keyword, the removed :hrules",
+        &[],
+        "(solve :hrules (guess (chosen Drink)))",
     ),
     row(
         "a solve's keyword",
@@ -2080,16 +2072,6 @@ const TABLE: &[Row] = &[
         "(rule r () :match (p ?x) :assert (open \"q\"))",
     ),
     row(
-        "an hrule's premise",
-        &[],
-        "(hrule g () :match (p \"a\") :assert (q a))",
-    ),
-    row(
-        "an hrule's conclusion",
-        &[],
-        "(hrule g () :match (p ?x) :assert (q \"a\"))",
-    ),
-    row(
         "a rule's keyword",
         &[],
         "(rule r () :match (p ?x) :assert (q ?x) :priority \"5\")",
@@ -2129,8 +2111,6 @@ const TABLE: &[Row] = &[
         &[],
         "(relation p T) (solve :hypothesis-relations (\"p\"))",
     ),
-    row("a solve's hrules", &[], "(solve :hrules (\"g\"))"),
-    row("a solve's hrules", &[], "(solve :hrules (g (\"a\")))"),
     row(
         "a config flag's value",
         &[],
@@ -2262,16 +2242,6 @@ const TABLE: &[Row] = &[
         "(rule r () :match (and (n ?x) (absent (tag ?x ?_))) :assert (hit ?x))",
     ),
     row(
-        "a premise's argument, in an hrule",
-        &[],
-        "(hrule h () :match (n _) :assert (hit a))",
-    ),
-    row(
-        "a premise's argument, in an hrule",
-        &[],
-        "(hrule h () :match (n ?_) :assert (hit a))",
-    ),
-    row(
         "a premise's relation",
         &[],
         "(rule w () :match (?_ 2) :assert (hit w))",
@@ -2280,11 +2250,6 @@ const TABLE: &[Row] = &[
         "a pattern's relation",
         &[],
         "(rule w () :match (box (?_ 2)) :assert (hit w))",
-    ),
-    row(
-        "a premise's relation, in an hrule",
-        &[],
-        "(hrule h () :match (?_ ?x) :assert (tag ?x ?x))",
     ),
     row(
         "a guard's argument",
@@ -2335,16 +2300,6 @@ const TABLE: &[Row] = &[
         "(rule r () :match (p ?x) :assert (open _))",
     ),
     row(
-        "an hrule's conclusion",
-        &[],
-        "(hrule g () :match (p ?x) :assert (tag ?x _))",
-    ),
-    row(
-        "an hrule's conclusion",
-        &[],
-        "(hrule g () :match (p ?x) :assert (tag ?x ?_))",
-    ),
-    row(
         "a query's goal",
         &[],
         "(relation holds T) (holds a) (query :goal (holds _))",
@@ -2389,7 +2344,6 @@ const TABLE: &[Row] = &[
         &[],
         "(relation p T) (solve :hypothesis-relations (?_))",
     ),
-    row("a solve's hrules", &[], "(solve :hrules (_))"),
     row(
         "a config flag's value",
         &[],
@@ -2435,11 +2389,6 @@ const TABLE: &[Row] = &[
         &[],
         "(rule r () :match (p ?x) :assert (q ?x) :where (neq ?x a))",
     ),
-    row(
-        "an hrule's keyword",
-        &[],
-        "(hrule h () :match (p ?x) :assert (q ?x) :zz 1)",
-    ),
     row("a fact's keyword", &[], "(relation q T) (q c :zz 1)"),
     row(
         "a stored negation's keyword",
@@ -2476,11 +2425,6 @@ const TABLE: &[Row] = &[
         "a pattern",
         &[],
         "(rule r () :match (p ?x :k v) :assert (q ?x))",
-    ),
-    row(
-        "a pattern, in an hrule",
-        &[],
-        "(hrule h () :match (p ?x :k v) :assert (q ?x))",
     ),
     row(
         "an absent",
@@ -2559,11 +2503,6 @@ const TABLE: &[Row] = &[
         "a rule's :match, the empty conjunction",
         &[],
         "(rule r () :match (and) :assert (hit a))",
-    ),
-    row(
-        "an hrule's :match, the empty conjunction",
-        &[],
-        "(hrule h () :match (and) :assert (hit a))",
     ),
     row(
         "a rule's :assert, the empty conclusion",
@@ -2704,11 +2643,6 @@ const TABLE: &[Row] = &[
         "a conclusion's relation",
         &[],
         "(rule r () :match (n ?x) :assert (absent (p ?x)))",
-    ),
-    row(
-        "an hrule's conclusion's relation",
-        &[],
-        "(hrule h () :match (n ?x) :assert (absent ?x))",
     ),
     // ── `false` takes no argument, wherever it is written ──
     row("a top-level fact's relation", &[], "(false k)"),
@@ -2859,11 +2793,6 @@ const TABLE: &[Row] = &[
         &[],
         "(rule r () :match (n ?x) :assert (not (or (p ?x) (q ?x))))",
     ),
-    row(
-        "an hrule's :assert",
-        &[],
-        "(hrule h () :match (n ?x) :assert (or (p ?x) (q ?x)))",
-    ),
     // ── A rule's word to the engine: `:ein` takes one name ──
     row(
         "a rule's :ein",
@@ -2886,7 +2815,7 @@ const TABLE: &[Row] = &[
 
 /// A row's program: a rule row's declarations before it.
 fn text(r: &Row) -> String {
-    if r.program.contains("(rule ") || r.program.contains("(hrule ") {
+    if r.program.contains("(rule ") {
         if r.program.contains("(relation ") {
             r.program.to_string()
         } else {
@@ -3014,12 +2943,6 @@ fn the_lines_the_grammar_does_not_cover_are_still_reached() {
              (rule r () :match (and (p ?x) (absent (hit ?x))) :assert (and (open hit) (p a)) \
              :why \"r\")",
             "<loader>:2:64: rule 'r': `(open hit)` stands beside another conclusion",
-        ),
-        (
-            "(relation p T :why \"p\") (relation hit T :why \"h\")\n\
-             (hrule h () :match (p ?x) :assert (open (hit ?x)) :why \"h\")",
-            "<loader>:2:36: hrule 'h': its :assert concludes (open (hit ?x)) — an hrule \
-             proposes a fact, which is a hypothesis already",
         ),
         (
             "(macro id (?x) ?x)\n(relation p T) (relation hit T)\n(rule r () :match (id foo) :assert (hit a))",

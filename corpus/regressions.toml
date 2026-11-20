@@ -1386,7 +1386,7 @@ refused   = true
 [case.now]
 run     = "solve --maximal"
 line    = "all"
-refused = "examples/ein-bugs/wrong-answers/str-in-hrule.ein:29:47: unexpected `\"lbl\"`: a string"
+refused = "examples/ein-bugs/wrong-answers/str-in-hrule.ein:29:52: unexpected `\"lbl\"`: a string"
 
 [[case]]
 id       = "wild-in-match"
@@ -1494,7 +1494,7 @@ refused   = true
 [case.now]
 run     = "solve --maximal"
 line    = "all"
-refused = "examples/ein-bugs/wrong-answers/wild-in-hrule.ein:28:30: unexpected `_`: _ (reserved)"
+refused = "examples/ein-bugs/wrong-answers/wild-in-hrule.ein:28:29: unexpected `_`: _ (reserved)"
 
 [[case]]
 id       = "pair-core-root-given"
@@ -2118,7 +2118,7 @@ models    = [
   [],
   ["(tag a)"],
 ]
-qualifier = "neqw — no candidate: no hrule proposes it. R holds of it only what the program states and saturation derives"
+qualifier = "neqw — no candidate: no hypothesis rule proposes it. R holds of it only what the program states and saturation derives"
 outside   = ["neqw"]
 
 [case.now]
@@ -2675,7 +2675,7 @@ models    = []
 
 [[case]]
 id       = "empty-match-false"
-title    = "a rule or hrule whose `:match` is `()` never fires"
+title    = "a rule or hypothesis rule whose `:match` is `()` never fires"
 settings = "default"
 witness  = "examples/ein-bugs/wrong-answers/empty-match-false.ein"
 
@@ -2710,7 +2710,7 @@ core_status = "within-budget"
 
 [[case]]
 id       = "empty-match-fact"
-title    = "a rule or hrule whose `:match` is `()` never fires"
+title    = "a rule or hypothesis rule whose `:match` is `()` never fires"
 settings = "default"
 witness  = "examples/ein-bugs/wrong-answers/empty-match-fact.ein"
 
@@ -2741,7 +2741,7 @@ models    = [
 
 [[case]]
 id       = "empty-match-activator"
-title    = "a rule or hrule whose `:match` is `()` never fires"
+title    = "a rule or hypothesis rule whose `:match` is `()` never fires"
 settings = "default"
 witness  = "examples/ein-bugs/wrong-answers/empty-match-activator.ein"
 
@@ -2772,7 +2772,7 @@ models    = [
 
 [[case]]
 id       = "empty-match-hrule"
-title    = "a rule or hrule whose `:match` is `()` never fires"
+title    = "a rule or hypothesis rule whose `:match` is `()` never fires"
 settings = "default"
 witness  = "examples/ein-bugs/wrong-answers/empty-match-hrule.ein"
 
@@ -3481,7 +3481,7 @@ models    = []
 
 [[case]]
 id       = "hrule-eq"
-title    = "an hrule's `eq` or `neq` instance is a hypothesis, and a commitment stores it"
+title    = "a hypothesis rule's `eq` or `neq` instance is a hypothesis, and a commitment stores it"
 settings = "default"
 decisions = ["Q-M1e2.26", "Q-M1f.32"]
 witness  = "examples/ein-bugs/wrong-answers/hrule-eq.ein"
@@ -3672,7 +3672,7 @@ refused   = true
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "kb load error: hrule 'h': its :assert writes ?y, which no premise or parameter binds — to conclude it of the objects a relation holds of, bind it with a premise such as (R ?y), or of every name of the program with (eq ?y ?y)"
+refused = "kb load error: rule 'h': its :assert writes ?y, which no premise or parameter binds — to conclude it of the objects a relation holds of, bind it with a premise such as (R ?y), or of every name of the program with (eq ?y ?y)"
 
 [[case]]
 id       = "assert-var-never-fires"
@@ -3762,7 +3762,7 @@ refused   = true
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "kb load error: hrule 'h': its parameter ?R heads (?R ?x), a form of 1 argument, and (solve :hrules (h (eq))) binds ?R to eq — eq is the relation of equality, which holds between exactly two values"
+refused = "kb load error: rule 'h': its parameter ?R heads (?R ?x), a form of 1 argument, and the fact (h eq) binds ?R to eq — eq is the relation of equality, which holds between exactly two values"
 
 [[case]]
 id       = "eq-arity-conclusion"
@@ -3837,7 +3837,7 @@ refused   = true
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "kb load error: hrule 'h': its :match writes (or (p ?x) (q ?x)) as a premise of and — an (or …) is a whole :match, each of its premises one way it holds: lift it to the top of the :match, or split the rule"
+refused = "kb load error: rule 'h': its :match writes (or (p ?x) (q ?x)) as a premise of and — an (or …) is a whole :match, each of its premises one way it holds: lift it to the top of the :match, or split the rule"
 
 [[case]]
 id       = "nested-or-never-compiled"
@@ -4051,7 +4051,7 @@ refused   = true
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "kb load error: {FILE}:32:21: hrule 'h': its :match writes (absent (p ?x) (q ?x)), and absent takes exactly 1 argument, not 2 — negation as failure is over one premise, so wrap several in an (and …)"
+refused = "kb load error: {FILE}:32:21: rule 'h': its :match writes (absent (p ?x) (q ?x)), and absent takes exactly 1 argument, not 2 — negation as failure is over one premise, so wrap several in an (and …)"
 
 [[case]]
 id       = "macro-eq-obligation"
@@ -4122,7 +4122,7 @@ refused   = true
 
 [case.now]
 run     = "oracle"
-refused = "kb load error: {FILE}:32:29: hrule 'h': its :match writes (neq ?x (and (p k))), and (and (p k)) is a connective where a value goes — and heads no fact, and a value is a name, a variable or a fact (relation argument …)"
+refused = "kb load error: {FILE}:32:29: rule 'h': its :match writes (neq ?x (and (p k))), and (and (p k)) is a connective where a value goes — and heads no fact, and a value is a name, a variable or a fact (relation argument …)"
 
 [[case]]
 id       = "macro-not-conjunction-obligation"
@@ -4220,7 +4220,7 @@ refused   = true
 
 [case.now]
 run     = "oracle"
-refused = "kb load error: {FILE}:30:18: hrule 'h': its :assert writes (eq ?x), and eq takes exactly 2 arguments, not 1 — it compares two values, so write one guard per pair"
+refused = "kb load error: {FILE}:33:12: rule 'h': its :assert writes (open (eq ?x)), and (eq ?x) is written where a value goes — eq is computed and never stored, and a value is a name, a variable, or a fact a state could hold, (relation argument …) or its negation"
 
 [[case]]
 id       = "macro-bare-conclusion-under-commitment"
@@ -4236,20 +4236,6 @@ refused   = true
 run     = "solve"
 line    = "all"
 refused = "kb load error: {FILE}:36:15: rule 'r': its :assert concludes ?x, which is not a fact — a conclusion is a fact (relation argument …), or an (and …) of facts"
-
-[[case]]
-id       = "macro-bare-conclusion-hrule"
-title    = "a conclusion a macro's expansion leaves no form loads, and is refused only where a firing meets it"
-settings = "default"
-decisions = ["Q-M1f.67", "Q-M1f.80", "Q-M1f.81"]
-witness  = "examples/ein-bugs/wrong-answers/macro-bare-conclusion-hrule.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "oracle"
-refused = "kb load error: {FILE}:34:15: hrule 'h': its :assert concludes ?x, which is not a fact — a conclusion is a fact (relation argument …), or an (and …) of facts"
 
 [[case]]
 id       = "fact-head"
@@ -4635,7 +4621,7 @@ refused   = true
 
 [case.now]
 run     = "saturate --dump"
-refused = "kb load error: examples/ein-bugs/wrong-answers/open-solve-list.ein:26:31: solve: its :hypothesis-relations names open, and the program names no relation open — a relation of the program is one it declares, states a fact of, or writes in a rule, an hrule or a goal"
+refused = "kb load error: examples/ein-bugs/wrong-answers/open-solve-list.ein:26:31: solve: its :hypothesis-relations names open, and the program names no relation open — a relation of the program is one it declares, states a fact of, or writes in a rule or a goal"
 
 [[case]]
 id       = "trace-step"
@@ -5331,50 +5317,8 @@ stdout    = "closed"
 signal    = 13
 
 [[case]]
-id       = "hrules-name"
-title    = "a `(solve …)` list that names an hrule or a relation the program does not have loads in silence, and moves H and R"
-settings = "default"
-decisions = ["Q-M1f.114"]
-witness  = "examples/ein-bugs/wrong-answers/solve-hrules-no-such-hrule.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "saturate --dump"
-refused = "kb load error: examples/ein-bugs/wrong-answers/solve-hrules-no-such-hrule.ein:37:17: solve: its :hrules names gues, and the program declares no hrule gues — it declares guess"
-
-[[case]]
-id       = "hrules-activator-relation"
-title    = "a `(solve …)` list that names an hrule or a relation the program does not have loads in silence, and moves H and R"
-settings = "default"
-decisions = ["Q-M1f.114"]
-witness  = "examples/ein-bugs/wrong-answers/solve-hrules-no-such-relation.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "saturate --dump"
-refused = "kb load error: examples/ein-bugs/wrong-answers/solve-hrules-no-such-relation.ein:38:24: solve: its :hrules gives hrule 'guess' (att Color House), whose att is its parameter ?R, which names a relation, and the program names no relation att — a relation of the program is one it declares, states a fact of, or writes in a rule, an hrule or a goal"
-
-[[case]]
-id       = "hrules-activator-arity"
-title    = "a `(solve …)` list that names an hrule or a relation the program does not have loads in silence, and moves H and R"
-settings = "default"
-decisions = ["Q-M1f.114"]
-witness  = "examples/ein-bugs/wrong-answers/solve-hrules-activator-arity.ein"
-
-[case.right]
-refused   = true
-
-[case.now]
-run     = "saturate --dump"
-refused = "kb load error: examples/ein-bugs/wrong-answers/solve-hrules-activator-arity.ein:36:24: solve: its :hrules gives hrule 'guess' (at Color), 2 arguments, and guess takes 3, (?R ?T1 ?T2) — an activator binds each parameter once"
-
-[[case]]
 id       = "hypothesis-relations"
-title    = "a `(solve …)` list that names an hrule or a relation the program does not have loads in silence, and moves H and R"
+title    = "a `(solve …)` list that names a relation the program does not have loads in silence, and moves H and R"
 settings = "default"
 decisions = ["Q-M1f.114"]
 witness  = "examples/ein-bugs/wrong-answers/solve-hypothesis-relations-no-such-relation.ein"
@@ -5384,11 +5328,11 @@ refused   = true
 
 [case.now]
 run     = "saturate --dump"
-refused = "kb load error: examples/ein-bugs/wrong-answers/solve-hypothesis-relations-no-such-relation.ein:31:31: solve: its :hypothesis-relations names like, and the program names no relation like — a relation of the program is one it declares, states a fact of, or writes in a rule, an hrule or a goal"
+refused = "kb load error: examples/ein-bugs/wrong-answers/solve-hypothesis-relations-no-such-relation.ein:31:31: solve: its :hypothesis-relations names like, and the program names no relation like — a relation of the program is one it declares, states a fact of, or writes in a rule or a goal"
 
 [[case]]
 id       = "no-hypothesis"
-title    = "a `(solve …)` list that names an hrule or a relation the program does not have loads in silence, and moves H and R"
+title    = "a `(solve …)` list that names a relation the program does not have loads in silence, and moves H and R"
 settings = "default"
 decisions = ["Q-M1f.114"]
 witness  = "examples/ein-bugs/wrong-answers/solve-no-hypothesis-no-such-relation.ein"
@@ -5398,7 +5342,7 @@ refused   = true
 
 [case.now]
 run     = "saturate --dump"
-refused = "kb load error: examples/ein-bugs/wrong-answers/solve-no-hypothesis-no-such-relation.ein:31:24: solve: its :no-hypothesis names like, and the program names no relation like — a relation of the program is one it declares, states a fact of, or writes in a rule, an hrule or a goal"
+refused = "kb load error: examples/ein-bugs/wrong-answers/solve-no-hypothesis-no-such-relation.ein:31:24: solve: its :no-hypothesis names like, and the program names no relation like — a relation of the program is one it declares, states a fact of, or writes in a rule or a goal"
 
 [[case]]
 id       = "goal-macro-unknown"
@@ -5502,7 +5446,7 @@ refused   = true
 
 [case.now]
 run     = "saturate --dump"
-refused = "kb load error: examples/ein-bugs/wrong-answers/goal-no-such-relation.ein:28:15: query: its :goal writes (payed ?g), and the program names no relation payed — a relation of the program is one it declares, states a fact of, or writes in a rule or an hrule, so no state holds a fact of payed"
+refused = "kb load error: examples/ein-bugs/wrong-answers/goal-no-such-relation.ein:28:15: query: its :goal writes (payed ?g), and the program names no relation payed — a relation of the program is one it declares, states a fact of, or writes in a rule, so no state holds a fact of payed"
 
 [[case]]
 id       = "goal-absent-no-such-relation"
@@ -5516,7 +5460,7 @@ refused   = true
 
 [case.now]
 run     = "saturate --dump"
-refused = "kb load error: examples/ein-bugs/wrong-answers/goal-absent-no-such-relation.ein:29:44: query: its :goal writes (payed ?g), and the program names no relation payed — a relation of the program is one it declares, states a fact of, or writes in a rule or an hrule, so no state holds a fact of payed"
+refused = "kb load error: examples/ein-bugs/wrong-answers/goal-absent-no-such-relation.ein:29:44: query: its :goal writes (payed ?g), and the program names no relation payed — a relation of the program is one it declares, states a fact of, or writes in a rule, so no state holds a fact of payed"
 
 [[case]]
 id       = "claim-derived-relation"
@@ -5682,7 +5626,7 @@ refused   = true
 
 [case.now]
 run     = "saturate --dump"
-refused = "examples/ein-bugs/wrong-answers/absent-hrule-concluded.ein:23:49: unexpected `absent`"
+refused = "examples/ein-bugs/wrong-answers/absent-hrule-concluded.ein:23:54: unexpected `absent`"
 
 [[case]]
 id       = "false-fact-argument"
@@ -5850,7 +5794,7 @@ refused   = true
 
 [case.now]
 run     = "saturate --dump"
-refused = "kb load error: examples/ein-bugs/wrong-answers/pattern-argument-hrule.ein:27:46: hrule 'guess': its :match writes (says (or (paid ?g) (welcome ?g))), and (or (paid ?g) (welcome ?g)) is a connective where a value goes — or heads no fact, and a value is a name, a variable or a fact (relation argument …)"
+refused = "kb load error: examples/ein-bugs/wrong-answers/pattern-argument-hrule.ein:27:45: rule 'guess': its :match writes (says (or (paid ?g) (welcome ?g))), and (or (paid ?g) (welcome ?g)) is a connective where a value goes — or heads no fact, and a value is a name, a variable or a fact (relation argument …)"
 
 [[case]]
 id       = "pattern-argument-goal"
@@ -5882,7 +5826,7 @@ refused = "kb load error: examples/ein-bugs/wrong-answers/pattern-argument-macro
 
 [[case]]
 id       = "not-name-concluded"
-title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and an hrule proposes it"
+title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and a hypothesis rule proposes it"
 settings = "default"
 decisions = ["Q-M1f.113", "Q-M1f.127", "Q-M1f.128"]
 witness  = "examples/ein-bugs/wrong-answers/not-name-concluded.ein"
@@ -5896,7 +5840,7 @@ refused = "kb load error: examples/ein-bugs/wrong-answers/not-name-concluded.ein
 
 [[case]]
 id       = "not-name-hrule-concluded"
-title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and an hrule proposes it"
+title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and a hypothesis rule proposes it"
 settings = "default"
 decisions = ["Q-M1f.113", "Q-M1f.127", "Q-M1f.128"]
 witness  = "examples/ein-bugs/wrong-answers/not-name-hrule-concluded.ein"
@@ -5906,11 +5850,11 @@ refused   = true
 
 [case.now]
 run     = "saturate --dump"
-refused = "kb load error: examples/ein-bugs/wrong-answers/not-name-hrule-concluded.ein:26:49: hrule 'suppose': its :assert writes (not ?g), and ?g can be a name: (paid ?g) binds ?g where the fact (paid Ann) holds Ann — not takes a pattern (relation argument …) or a variable bound to a fact: it is the stored negation of one fact, and a name is no fact; negation as failure is (absent …)"
+refused = "examples/ein-bugs/wrong-answers/not-name-hrule-concluded.ein:26:54: unexpected `?g`: a variable"
 
 [[case]]
 id       = "not-name-parameter"
-title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and an hrule proposes it"
+title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and a hypothesis rule proposes it"
 settings = "default"
 decisions = ["Q-M1f.113", "Q-M1f.127", "Q-M1f.128"]
 witness  = "examples/ein-bugs/wrong-answers/not-name-parameter.ein"
@@ -5924,7 +5868,7 @@ refused = "kb load error: examples/ein-bugs/wrong-answers/not-name-parameter.ein
 
 [[case]]
 id       = "not-name-macro"
-title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and an hrule proposes it"
+title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and a hypothesis rule proposes it"
 settings = "default"
 decisions = ["Q-M1f.113", "Q-M1f.127", "Q-M1f.128"]
 witness  = "examples/ein-bugs/wrong-answers/not-name-macro.ein"
@@ -5938,7 +5882,7 @@ refused = "kb load error: examples/ein-bugs/wrong-answers/not-name-macro.ein:26:
 
 [[case]]
 id       = "not-name-guard"
-title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and an hrule proposes it"
+title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and a hypothesis rule proposes it"
 settings = "default"
 decisions = ["Q-M1f.113", "Q-M1f.127", "Q-M1f.128"]
 witness  = "examples/ein-bugs/wrong-answers/not-name-guard.ein"
@@ -5952,7 +5896,7 @@ refused = "kb load error: examples/ein-bugs/wrong-answers/not-name-guard.ein:23:
 
 [[case]]
 id       = "not-name-derived"
-title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and an hrule proposes it"
+title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and a hypothesis rule proposes it"
 settings = "default"
 decisions = ["Q-M1f.113", "Q-M1f.127", "Q-M1f.128"]
 witness  = "examples/ein-bugs/wrong-answers/not-name-derived.ein"
@@ -5966,7 +5910,7 @@ refused = "kb load error: examples/ein-bugs/wrong-answers/not-name-derived.ein:2
 
 [[case]]
 id       = "not-name-under-commitment"
-title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and an hrule proposes it"
+title    = "a conclusion `(not ?x)` whose variable holds a name stores the negation of a name, and a hypothesis rule proposes it"
 settings = "default"
 decisions = ["Q-M1f.113", "Q-M1f.127", "Q-M1f.128"]
 witness  = "examples/ein-bugs/wrong-answers/not-name-under-commitment.ein"
@@ -5980,7 +5924,7 @@ refused = "kb load error: examples/ein-bugs/wrong-answers/not-name-under-commitm
 
 [[case]]
 id       = "hrule-reads-absent-not"
-title    = "an hrule whose `:match` reads `not` stops a debug build, exit 101, where a release build answers"
+title    = "a hypothesis rule whose `:match` reads `not` stops a debug build, exit 101, where a release build answers"
 settings = "default"
 decisions = ["Q-M1f.129"]
 witness  = "examples/ein-bugs/wrong-answers/hrule-reads-absent-not.ein"
@@ -6013,7 +5957,7 @@ models    = [
 
 [[case]]
 id       = "hrule-reads-not"
-title    = "an hrule whose `:match` reads `not` stops a debug build, exit 101, where a release build answers"
+title    = "a hypothesis rule whose `:match` reads `not` stops a debug build, exit 101, where a release build answers"
 settings = "default"
 decisions = ["Q-M1f.129"]
 witness  = "examples/ein-bugs/wrong-answers/hrule-reads-not.ein"
@@ -6046,7 +5990,7 @@ models    = [
 
 [[case]]
 id       = "hrule-reads-unknown"
-title    = "an hrule whose `:match` reads `not` stops a debug build, exit 101, where a release build answers"
+title    = "a hypothesis rule whose `:match` reads `not` stops a debug build, exit 101, where a release build answers"
 settings = "default"
 decisions = ["Q-M1f.129"]
 witness  = "examples/ein-bugs/wrong-answers/hrule-reads-unknown.ein"
@@ -6731,7 +6675,7 @@ queries   = [{ classes = 1, expect = "held" }, { classes = 1, expect = "held" }]
 
 [[case]]
 id       = "hrule-and"
-title    = "an hrule whose conclusion is an `(and …)` proposes its first conjunct alone, and the others are dropped in silence"
+title    = "a hypothesis rule whose conclusion is an `(and …)` proposes its first conjunct alone, and the others are dropped in silence"
 settings = "default"
 decisions = ["Q-M1f.271"]
 witness  = "examples/ein-bugs/wrong-answers/hrule-and.ein"
@@ -6742,11 +6686,11 @@ refused   = true
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "kb load error: examples/ein-bugs/wrong-answers/hrule-and.ein:19:37: hrule 'h': its :assert writes (and (p a) (q a)), 2 conclusions — an hrule proposes one fact per match, each a commitment of its own: write one hrule per conclusion"
+refused = "examples/ein-bugs/wrong-answers/hrule-and.ein:19:37: unexpected `and`"
 
 [[case]]
 id       = "hrule-and-in-and"
-title    = "an hrule whose conclusion is an `(and …)` proposes its first conjunct alone, and the others are dropped in silence"
+title    = "a hypothesis rule whose conclusion is an `(and …)` proposes its first conjunct alone, and the others are dropped in silence"
 settings = "default"
 decisions = ["Q-M1f.271"]
 witness  = "examples/ein-bugs/wrong-answers/hrule-and-in-and.ein"
@@ -6757,7 +6701,7 @@ refused   = true
 [case.now]
 run     = "solve"
 line    = "all"
-refused = "kb load error: examples/ein-bugs/wrong-answers/hrule-and-in-and.ein:15:42: hrule 'h': its :assert writes (and (and (p a) (q a)) (r a)), 3 conclusions — an hrule proposes one fact per match, each a commitment of its own: write one hrule per conclusion"
+refused = "examples/ein-bugs/wrong-answers/hrule-and-in-and.ein:15:37: unexpected `and`"
 
 [[case]]
 id       = "closed-by-rule"

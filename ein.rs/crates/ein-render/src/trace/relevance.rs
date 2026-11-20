@@ -7,7 +7,8 @@
 //!
 //! [`relevant_firings`] recovers that human-scale slice by a **provenance
 //! backtrack** from the solution, exactly as one would do by hand: seed with
-//! the solved assignment (the goal's relations and the `:hrules` targets),
+//! the solved assignment (the goal's relations and what the hypothesis rules
+//! guess),
 //! keep only firings on a provenance path to a seed, drop the redundant
 //! re-derivations, and flag as *conditional* every firing whose derivation
 //! transitively consumes a commitment fact — the rest is the unconditional
@@ -19,13 +20,14 @@
 
 use ein_core::{FactId, Kb, Terms};
 use ein_infer::firing::Firing;
-use ein_infer::{query_value, solve_value};
+use ein_infer::query_value;
 use ein_ir::{Ast, Node, NodeId};
 use rustc_hash::FxHashSet;
 
 /// Relation names the puzzle solves for — the query goal's relations plus the
-/// `:hrules` targets, which `(solve …)` holds. Empty when
-/// there is no query.
+/// relations the rules that conclude a hypothesis are given to guess: what an
+/// activator binds a parameter that heads a form to, `color-loc` in `(guess
+/// color-loc Color House)`. Empty when there is no query.
 fn solution_relations(ast: &Ast, kb: &Kb, terms: &Terms) -> FxHashSet<ein_core::Symbol> {
     let mut rels: FxHashSet<ein_core::Symbol> = FxHashSet::default();
     let Some(query) = kb.program().query() else {
@@ -35,18 +37,13 @@ fn solution_relations(ast: &Ast, kb: &Kb, terms: &Terms) -> FxHashSet<ein_core::
     if let Some(goal) = query_value(ast, query, "goal") {
         collect_goal_relations(ast, goal, &mut names);
     }
-    if let Some(hrules) = kb
-        .program()
-        .solve()
-        .and_then(|s| solve_value(ast, s, "hrules"))
-        && let Node::SForm { args, .. } = ast.node(hrules)
-    {
-        // `(<activator> (R T1 T2) …)` — each triple's head is a relation.
-        for triple in ast.args(args) {
-            if let Node::SForm { head, .. } = ast.node(*triple)
-                && let Node::Atom(s) = ast.node(head)
-            {
-                names.push(ast.sym(s).to_string());
+    for rule in kb.program().hypotheses.values() {
+        for f in kb.rule_apps_by_rule(rule.name) {
+            let args = terms.facts.args(f);
+            for &i in rule.relation_params.iter() {
+                if let Some(sym) = args.get(i).and_then(|v| v.as_sym()) {
+                    rels.insert(sym);
+                }
             }
         }
     }

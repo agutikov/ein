@@ -1,10 +1,10 @@
-;;; An hrule's premise `(says (or …))` loads and proposes nothing —
+;;; A hypothesis rule's premise `(says (or …))` loads and proposes nothing —
 ;;; regression `pattern-argument-hrule`.
 ;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;
-;;; Two guests, the fact `(says (paid Ann))`, and an hrule that supposes a guest
+;;; Two guests, the fact `(says (paid Ann))`, and a hypothesis rule that supposes a guest
 ;;; welcome where it is said they paid or are welcome, `(says (or (paid ?g) (welcome
 ;;; ?g)))`.
 ;;;
@@ -15,7 +15,7 @@
 ;;;
 ;;; ── What the engine answered ──────────────────────────────────────────────
 ;;;
-;;; At `52e05fc1`, release: the program loads; the hrule's premise matches nothing, H is
+;;; At `52e05fc1`, release: the program loads; the hypothesis rule's premise matches nothing, H is
 ;;; empty and R is {∅}, exit 0 on every command.
 ;;; Today it is refused at load, at the pattern, on every command.
 
@@ -24,5 +24,5 @@
 (relation says Claim :why "it is said that {?3}")
 (relation welcome Guest :why "{?3} is welcome")
 (says (paid Ann))
-(hrule guess () :match (and (is-a ?g Guest) (says (or (paid ?g) (welcome ?g)))) :assert (welcome ?g) :why "suppose {?g} is welcome")
+(rule guess () :match (and (is-a ?g Guest) (says (or (paid ?g) (welcome ?g)))) :assert (open (welcome ?g)) :why "suppose {?g} is welcome")
 (query :goal (welcome ?g))

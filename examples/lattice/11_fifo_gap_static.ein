@@ -41,7 +41,7 @@
 (thing one)
 (a one)
 
-(hrule guess-b () :match (thing ?x) :assert (b ?x) :why "guess: (b {?x})?")
+(rule guess-b () :match (thing ?x) :assert (open (b ?x)) :why "guess: (b {?x})?")
 
 (rule r2 ()
   :match  (and (a ?x) (b ?x) (absent (q ?x)))

@@ -8,7 +8,7 @@
 //! |---|---|---|
 //! | `;; Rules — the saturation agenda's (N)` | the rules a saturation fires | its stratum, or `no plan compiled` where the run compiled none of it |
 //! | `;; Obligation rules (N)` | the rules read on the fixpoint, which derive nothing | how many facts headed by its name the saturated knowledge base holds for its parameters |
-//! | `;; Hypothesis rules (N)` | the rules that propose the candidates, which no saturation reads | how many tuples `(solve :hrules …)` writes for its parameters |
+//! | `;; Hypothesis rules (N)` | the rules that conclude a hypothesis, `(open F)`, which no saturation reads (the facts such a rule concludes beside them are a rule of the agenda's) | how many facts headed by its name the knowledge base holds for its parameters |
 //!
 //! Every line is the dump's one form for a rule, `;;   NAME  :params (…)`
 //! and then what the section says of it. A rule without parameters is bound
@@ -119,10 +119,10 @@ fn an_obligation_rule_nothing_activates_says_so() {
     );
 }
 
-/// **A hypothesis rule with parameters is listed with the tuples its
-/// `(solve :hrules …)` writes for it**, and an obligation rule with the
-/// activators the saturated knowledge base holds, here the two a rule
-/// derives at root and no file states.
+/// **A hypothesis rule with parameters is listed with the activators the
+/// program writes for it**, and an obligation rule with the activators the
+/// saturated knowledge base holds, here the two a rule derives at root and no
+/// file states.
 #[test]
 fn a_hypothesis_rule_is_listed_with_its_activators() {
     let scratch = Scratch::new("ein-saturate-dump-activators");
@@ -141,11 +141,11 @@ fn a_hypothesis_rule_is_listed_with_its_activators() {
   :match  (relation ?R Guest Chair)
   :assert (filled ?R)
   :why    "{?R} leaves no chair empty.")
-(hrule guess-of (?R)
+(rule guess-of (?R)
   :match  (and (is-a ?g Guest) (is-a ?c Chair))
-  :assert (?R ?g ?c)
+  :assert (open (?R ?g ?c))
   :why    "suppose {?R} of {?g} and {?c}.")
-(solve :hrules (guess-of (seat) (near)))
+(guess-of seat) (guess-of near)
 "#,
     )
     .expect("the program is written");
@@ -170,7 +170,7 @@ fn a_hypothesis_rule_is_listed_with_its_activators() {
 
 /// **A rule without parameters has nothing after them** in the two sections
 /// that count activators, and a hypothesis rule with parameters for which
-/// the program writes no `:hrules` tuple has no activator. Every rule of the
+/// the program writes no activator has none. Every rule of the
 /// program stands in exactly one section.
 #[test]
 fn every_rule_stands_in_one_section() {
@@ -194,13 +194,13 @@ fn every_rule_stands_in_one_section() {
   :match  (and (is-a ?c Chair) (absent (?R ?g ?c)))
   :assert (open ?R)
   :why    "{?c} is empty.")
-(hrule guess ()
+(rule guess ()
   :match  (and (is-a ?g Guest) (is-a ?c Chair))
-  :assert (seat ?g ?c)
+  :assert (open (seat ?g ?c))
   :why    "suppose {?g} sits on {?c}.")
-(hrule guess-of (?R)
+(rule guess-of (?R)
   :match  (and (is-a ?g Guest) (is-a ?c Chair))
-  :assert (?R ?g ?c)
+  :assert (open (?R ?g ?c))
   :why    "suppose {?R} of {?g} and {?c}.")
 (filled seat)
 "#,

@@ -30,7 +30,7 @@
 
 (need K1 A) (need K1 B) (need K1 C) (need K1 D)
 
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess: (h {?x})?")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess: (h {?x})?")
 
 (rule dead-1 ()
   :match  (and (h A) (h B))

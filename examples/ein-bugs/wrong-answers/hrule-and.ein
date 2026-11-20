@@ -1,19 +1,19 @@
-;;; An hrule whose conclusion is an `(and …)` proposes its first conjunct
-;;; alone, and the others are dropped in silence.
+;;; A hypothesis rule whose conclusion is an `(and …)` proposed its first conjunct
+;;; alone, and the others were dropped in silence.
 ;;;
-;;; An hrule proposes facts, each a commitment of its own, and `h` writes two,
-;;; `(p a)` and `(q a)`. The hypothesis layer read the first template of the
-;;; hrule's plan alone (`ein_infer::hrule`'s `proposes`), so H was `{(p a)}`
-;;; and R two states, ∅ and `{(p a)}`; `(q a)` was proposed by nothing and no
-;;; line said so. The mechanisms check and the hypothesis relations read the
-;;; first conjunct too (`asserted_relation`), so `q` was no relation the hrule
-;;; proposes.
+;;; A hypothesis is one fact, each a commitment of its own, and `h` supposes two,
+;;; `(p a)` and `(q a)`, as one. The hypothesis layer read the first template of
+;;; the rule's plan alone, so H was `{(p a)}` and R two states, ∅ and
+;;; `{(p a)}`; `(q a)` was proposed by nothing and no line said so. The
+;;; mechanisms check and the hypothesis relations read the first conjunct too
+;;; (`asserted_relation`), so `q` was no relation the rule proposes.
 ;;;
-;;; The right answer is a refusal at load, one line, *an hrule proposes one fact
-;;; per match: write one hrule per conclusion* (Q-M1f.271). Two hrules, one a
-;;; conjunct, give H `{(p a), (q a)}` and R four states.
+;;; The right answer is a refusal, one line (Q-M1f.271). Written as a rule that
+;;; concludes `(open (and (p a) (q a)))`, it is refused at the parse: `and`
+;;; heads no fact, and `open` takes one (Q-M1f.567). Two conjuncts `(open (p a))`
+;;; and `(open (q a))` give H `{(p a), (q a)}` and R four states.
 ;;;
 ;;;
 (relation p Thing :why "p {?3}")
 (relation q Thing :why "q {?3}")
-(hrule h () :match () :assert (and (p a) (q a)) :why "propose p and q of a")
+(rule h () :match () :assert (open (and (p a) (q a))) :why "propose p and q of a")

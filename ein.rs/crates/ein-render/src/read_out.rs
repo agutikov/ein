@@ -921,7 +921,7 @@ pub fn outside_text(outside: &[Outside]) -> Option<String> {
     let it = if one { "it" } else { "them" };
     let why = match first.why {
         Why::NotOwed => format!("no obligation owes {it}"),
-        Why::NoHrule => format!("no hrule proposes {it}"),
+        Why::NotProposed => format!("no hypothesis rule proposes {it}"),
         Why::Arity if one => format!(
             "it has arity {}, and the blind enumerator proposes arity 1 and 2 only",
             first.arity

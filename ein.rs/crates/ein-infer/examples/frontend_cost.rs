@@ -263,7 +263,7 @@ fn cell(root: &Path, rel: &str, rounds: u32) {
         "  forms {own_forms} own → {resolved_forms} resolved · facts {} · relations {} · rules {}",
         kb.n_facts(),
         kb.program().relations.len(),
-        kb.program().rules.len() + kb.program().hrules.len(),
+        kb.program().rules.len() + kb.program().hypotheses.len(),
     );
     // Counters, for **one** load — reset here rather than around the timing
     // loop above, which runs the path `rounds` times.

@@ -787,7 +787,7 @@ fn each_row_prints_its_summary_fields_number() {
 /// **The clock and the cube group their counts** (the page's § 9): `-t`'s
 /// `route` row and `the cube`'s two counts print in digit groups of three,
 /// as every row of the read-out does. No corpus run prints a count past a thousand on
-/// either, so the program is written here: eleven slots an hrule guesses, and
+/// either, so the program is written here: eleven slots a hypothesis rule guesses, and
 /// an obligation `(h A)` triggers that nothing pays, so the cube is 2^11
 /// nodes, 2 048 saturations, and each of the 1 024 nodes without `(h A)` is
 /// discharged with an owing superset.
@@ -802,7 +802,7 @@ fn the_clock_and_the_cube_group_their_counts() {
          (relation need T T :why \"h holding of {?4} pays debt {?3}\")\n\
          (slot A) (slot B) (slot C) (slot D) (slot E) (slot F) (slot G) (slot H) (slot I) (slot J) (slot K)\n\
          (need K1 Z)\n\
-         (hrule guess () :match (slot ?x) :assert (h ?x) :why \"guess that h holds of {?x}\")\n\
+         (rule guess () :match (slot ?x) :assert (open (h ?x)) :why \"guess that h holds of {?x}\")\n\
          (rule owe () :match (and (h A) (absent (and (need K1 ?y) (h ?y)))) :assert (open h) \
          :why \"h holds of A and of nothing that pays debt K1: one such is still owed\")\n",
     )

@@ -101,8 +101,9 @@
 //! **Which statements are the puzzle's** nothing declares, and
 //! [`small_kb`] reads it off the candidates. A fact of a relation a
 //! candidate is of is a given, and is dropped. Past that it depends on what
-//! built `H`. Where the program's own hrules or obligations did, the
-//! relations that rung reads are what the universe is made of: a fact of one
+//! built `H`. Where the program's own rules that conclude a hypothesis or
+//! its obligations did, the relations those writers read are what the
+//! universe is made of: a fact of one
 //! is kept, and every other fact that names one of the names the candidates'
 //! relations hold is dropped. Where the blind enumerator did, nothing says
 //! what the universe is made of, and only a fact that names a candidates'
@@ -1051,8 +1052,8 @@ pub struct Stated<'a> {
     /// `H`, in the universe's order.
     pub candidates: &'a [Candidate],
     /// **The candidates' relations**: the relations a candidate of `H` is
-    /// of, and, where the program's own hrules or its obligations built `H`,
-    /// those that rung can still propose a fact of
+    /// of, and, where the program's own rules that conclude a hypothesis or
+    /// its obligations built `H`, those they can still propose a fact of
     /// ([`crate::hypgen::eligible_relations`]). The second half is what
     /// keeps a relation here once root has decided every fact of it and no
     /// candidate of it is left.
@@ -1069,13 +1070,13 @@ pub struct Stated<'a> {
     /// on the whole of what the program states of that relation, and no
     /// premise of the firing records it.
     pub read_absent: FxHashSet<Symbol>,
-    /// **The program's own rung built `H`**: its hrules, or what would
-    /// discharge its obligations. Not the blind enumerator, which a program
-    /// with neither an hrule nor an obligation activated at root, or with an
-    /// obligation the ladder declines, falls to.
+    /// **The program's own writers built `H`**: its rules that conclude a
+    /// hypothesis, or what would discharge its obligations. Not the blind
+    /// enumerator, which a program with neither such a rule writing at root
+    /// nor an obligation activated there falls to.
     pub declared: bool,
-    /// The relations read by the rung of the ladder that built `H`: the
-    /// program's hrules' premises where it declares one, the triggers and
+    /// The relations read by the writers that built `H`: the premises of the
+    /// program's rules that conclude a hypothesis, the triggers and
     /// witnesses of the obligations root owes where the candidates are what
     /// would discharge them, and none under the blind enumerator, which
     /// reads names and no relation.
@@ -1647,7 +1648,9 @@ fn theory_in(
     // hypothesis, its obligations, or the two together (Q-M1f.570).
     let declared = matches!(
         read.rung,
-        crate::oblgen::Mode::Hrules | crate::oblgen::Mode::Obligations | crate::oblgen::Mode::Union
+        crate::oblgen::Mode::HypothesisRules
+            | crate::oblgen::Mode::Obligations
+            | crate::oblgen::Mode::Union
     );
     let generator_reads = {
         // The generator's readers take a session, and read root through
@@ -1666,7 +1669,7 @@ fn theory_in(
         }
         let rules =
             |s: &mut crate::saturator::Session<'_>| -> Result<FxHashSet<Symbol>, SolveError> {
-                Ok(crate::hrule::Hrules::new(s)?
+                Ok(crate::hypothesis_rules::HypothesisRules::new(s)?
                     .plans()
                     .iter()
                     .flat_map(|p| crate::monotone::reads_of(p, s.terms))
@@ -1674,7 +1677,7 @@ fn theory_in(
                     .collect())
             };
         match read.rung {
-            crate::oblgen::Mode::Hrules => rules(&mut s)?,
+            crate::oblgen::Mode::HypothesisRules => rules(&mut s)?,
             crate::oblgen::Mode::Obligations => read.obligation_reads,
             crate::oblgen::Mode::Union => {
                 let mut both = rules(&mut s)?;

@@ -14,7 +14,7 @@
 //! now holds what such a debt would propose: the one corpus program its
 //! `grow` column named then, `oblig-derived-activator.ein`, has no node that
 //! proposes outside H, and what the column still finds is what the reading
-//! leaves out, an activator written with a variable or an hrule that reads
+//! leaves out, an activator written with a variable or a hypothesis rule that reads
 //! what a commitment can change.
 //!
 //! ### The static half
@@ -29,7 +29,7 @@
 //! | `act+` | those whose activator relation is in `D⁺` and not in `D`: derived only through a rule root has no plan of |
 //! | `armers` | each saturation plan of root that concludes an obligation rule's activator, as `rule>obligation`, with `*` where the plan reads a relation in `D` |
 //! | `trigger` | the obligation plans with an obligation-trigger site: a commitment can add an instance of a plan root has |
-//! | `hrule-reads` | the active hrule plans whose `:match` reads a relation in `D`, as `hrule:relation` |
+//! | `hypothesis-rule-reads` | the active hypothesis rule plans whose `:match` reads a relation in `D`, as `rule:relation` |
 //!
 //! ### The dynamic half
 //!
@@ -114,7 +114,7 @@ struct Static {
     n: usize,
     obligation_rules: usize,
     obligation_plans: usize,
-    hrules: usize,
+    hypothesis_rules: usize,
     root_dead: bool,
     root_owes: usize,
     monotone: bool,
@@ -123,7 +123,7 @@ struct Static {
     act_chain: BTreeSet<String>,
     armers: BTreeSet<String>,
     trigger: BTreeSet<String>,
-    hrule_reads: BTreeSet<String>,
+    hypothesis_rule_reads: BTreeSet<String>,
 }
 
 /// The dynamic half of a row.
@@ -272,7 +272,7 @@ fn read(path: &Path, limit: u32, list: usize, iterate: bool) -> Result<Read, &'s
         n: p.proposed.len(),
         obligation_rules: program.obligations.len(),
         obligation_plans: root_plans.len(),
-        hrules: program.hrules.len(),
+        hypothesis_rules: program.hypotheses.len(),
         root_dead,
         root_owes: owes.total(),
         monotone: m.is_monotone(),
@@ -311,9 +311,9 @@ fn read(path: &Path, limit: u32, list: usize, iterate: bool) -> Result<Read, &'s
                 .insert(named(&terms, site.rule, &site.activator));
         }
     }
-    // The active hrule plans, compiled as the generator compiles them, and
+    // The active hypothesis rule plans, compiled as the generator compiles them, and
     // the relations of `D` each one's `:match` reads.
-    if !program.hrules.is_empty() {
+    if !program.hypotheses.is_empty() {
         let proposals = {
             let mut s = Session {
                 kb: &mut kb,
@@ -327,7 +327,7 @@ fn read(path: &Path, limit: u32, list: usize, iterate: bool) -> Result<Read, &'s
                 .proposals
         };
         for proposal in proposals {
-            let Some(rule) = program.hrules.get(proposal.rule) else {
+            let Some(rule) = program.hypotheses.get(proposal.rule) else {
                 continue;
             };
             let Ok(plan) = compile_rule(&ast, &mut terms, rule, proposal.activator_fact) else {
@@ -335,7 +335,7 @@ fn read(path: &Path, limit: u32, list: usize, iterate: bool) -> Result<Read, &'s
             };
             for (r, _) in monotone::reads_of(&plan, &terms) {
                 if m.changes(r, &terms) {
-                    stat.hrule_reads.insert(format!(
+                    stat.hypothesis_rule_reads.insert(format!(
                         "{}:{}",
                         named(&terms, proposal.rule, &proposal.activator),
                         r.label(&terms)
@@ -651,7 +651,7 @@ fn main() {
             "n",
             "obligation-rules",
             "obligation-plans",
-            "hrules",
+            "hypothesis-rules",
             "root",
             "root-owes",
             "verdict",
@@ -660,7 +660,7 @@ fn main() {
             "act+",
             "armers",
             "trigger",
-            "hrule-reads",
+            "hypothesis-rule-reads",
             "cube",
             "check",
             "nodes",
@@ -715,7 +715,7 @@ fn main() {
             s.n.to_string(),
             s.obligation_rules.to_string(),
             s.obligation_plans.to_string(),
-            s.hrules.to_string(),
+            s.hypothesis_rules.to_string(),
             if s.root_dead { "dead" } else { "alive" }.to_string(),
             s.root_owes.to_string(),
             if s.monotone { "monotone" } else { "flagged" }.to_string(),
@@ -724,7 +724,7 @@ fn main() {
             joined(&s.act_chain, ","),
             joined(&s.armers, ","),
             joined(&s.trigger, ","),
-            joined(&s.hrule_reads, ","),
+            joined(&s.hypothesis_rule_reads, ","),
         ];
         let reach = match &row.cube {
             Ok(_) => "within the limit".to_string(),
@@ -751,10 +751,10 @@ fn main() {
                 format!("{rel} ({}; {reach})", joined(&s.trigger, ", ")),
             );
         }
-        if !s.hrule_reads.is_empty() {
+        if !s.hypothesis_rule_reads.is_empty() {
             note(
-                "hrule-reads",
-                format!("{rel} ({}; {reach})", joined(&s.hrule_reads, ", ")),
+                "hypothesis-rule-reads",
+                format!("{rel} ({}; {reach})", joined(&s.hypothesis_rule_reads, ", ")),
             );
         }
         match &row.cube {
@@ -839,7 +839,7 @@ fn main() {
         "act+",
         "armers",
         "trigger",
-        "hrule-reads",
+        "hypothesis-rule-reads",
         "new-act",
         "new-trig",
         "grow",

@@ -19,7 +19,7 @@
 //! | three counts, on the facts the rules derive: four swap pairs and eight functions their own swap; the duals `Andn`/`Orn` and `Randn`/`Rorn`; twelve functions up to the order of the inputs | [`the_three_corrected_counts`] |
 //! | the one-sided identity and absorbing facts are derived (Q-M1f.327), eight a relation over seven functions, and their two-sided meets four | [`the_one_sided_forms_are_derived`] |
 //! | each module's closing rule closes its relations and names every rule and the entry of the module below it | [`each_closing_rule_names_every_rule_and_closes_every_relation`] |
-//! | the modules are monotone: no `absent`, no `not`, no `or`, no hrule and no macro; `neq` and `(false)` only in the two rules that refute | [`the_modules_write_no_negation`] |
+//! | the modules are monotone: no `absent`, no `not`, no `or`, no hypothesis rule and no macro; `neq` and `(false)` only in the two rules that refute | [`the_modules_write_no_negation`] |
 //! | **the full adder built from five gates is the binary adder's table**: on every one of its eight inputs, its sum and carry are `std.math.bits`' `bin-fa` row, and both are Rust's sum | [`the_full_adder_from_gates_is_the_bits_table`] |
 //!
 //! The generator computes the same relations from the columns,
@@ -327,6 +327,25 @@ impl Module {
                 (name.to_string(), f)
             })
             .collect()
+    }
+
+    /// Whether a rule of the module concludes a hypothesis, `(open F)` with
+    /// `F` a fact: what the module would have the search guess.
+    fn guesses(&self) -> bool {
+        self.declared("rule").iter().any(|&(_, r)| {
+            self.ast.form_args(r).iter().any(|&a| match self.ast.node(a) {
+                Node::KwPair { key, value } => {
+                    matches!(self.ast.node(key), Node::Keyword(k) if self.ast.sym(k) == "assert")
+                        && self.ast.conjuncts(value).iter().any(|&c| {
+                            self.ast.head_name(c) == Some("open")
+                                && self.ast.form_args(c).first().is_some_and(|&f| {
+                                    matches!(self.ast.node(f), Node::SForm { .. })
+                                })
+                        })
+                }
+                _ => false,
+            })
+        })
     }
 
     fn clause(&self, rule: NodeId, keyword: &str) -> NodeId {
@@ -692,7 +711,7 @@ fn each_closing_rule_names_every_rule_and_closes_every_relation() {
 /// **Monotone**: no `absent`, no `not` and no `or` in any rule of the four
 /// modules, so each is one stratum (a program that imports `std.bool.inputs`
 /// holds `std.algebra`'s `total-owed`, whose `absent` is the obligation's);
-/// no hrule and no macro, nothing guessed but what an obligation proposes;
+/// no hypothesis rule and no macro, nothing guessed but what an obligation proposes;
 /// and `neq` and `(false)` only in the two rules that refute, `one-value`
 /// and `required`.
 #[test]
@@ -702,7 +721,7 @@ fn the_modules_write_no_negation() {
     for name in ["gates", "props", "circuit", "inputs"] {
         let m = module(name);
         assert!(
-            m.declared("hrule").is_empty() && m.declared("macro").is_empty(),
+            !m.guesses() && m.declared("macro").is_empty(),
             "{name} guesses nothing and expands nothing"
         );
         for (rule, node) in m.declared("rule") {

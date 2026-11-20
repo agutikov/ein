@@ -15,7 +15,7 @@ on every commit.
 (rule mk-p () :match (and (on A) (g ?x)) :assert (p ?x))
 (rule mk-q () :match (and (on B) (h ?y)) :assert (q ?y))
 (rule clash () :match (and (p ?x) (q ?y)) :assert (false))
-(hrule guess () :match (sw ?s) :assert (on ?s) …)
+(rule guess () :match (sw ?s) :assert (open (on ?s)) …)
 ```
 
 ## What it guards

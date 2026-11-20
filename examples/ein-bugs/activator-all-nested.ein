@@ -28,7 +28,7 @@
 (relation watch   T :why "{?3} is under watch")
 (relation alarm   T :why "an alarm is raised for {?3}")
 
-(hrule check () :match (item ?x) :assert (checked ?x) :why "guess that {?x} is checked")
+(rule check () :match (item ?x) :assert (open (checked ?x)) :why "guess that {?x} is checked")
 
 (rule flag () :match (and (item ?x) (absent (checked ?x))) :assert (watch ?x) :why "{?x} is an item not yet checked, so it is put under watch")
 (rule watch (?n) :match (item ?n) :assert (alarm ?n) :why "{?n} is an item under watch, so an alarm is raised for {?n}")

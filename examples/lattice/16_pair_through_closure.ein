@@ -31,19 +31,18 @@
   :assert (false)
   :why    "p and q of {?x} are jointly forbidden")
 
-(hrule guess (?R ?T)
+(rule guess (?R ?T)
   :match  (is-a ?x ?T)
-  :assert (?R ?x)
+  :assert (open (?R ?x))
   :why    "guess: is {?x} {?R}?")
 
 (is-a Item T)
 (is-a X    Item)
 
+(guess p-prop Item)
+(guess q-prop Item)
+(guess r-prop Item)
 (solve
-  :hrules (
-    guess (p-prop Item)
-    guess (q-prop Item)
-    guess (r-prop Item))
   :expect (region
             (model)
             (model (p-prop X))

@@ -13,7 +13,7 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; No hrule, and no obligation activated at root, so the blind enumerator
+;;; No hypothesis rule, and no obligation activated at root, so the blind enumerator
 ;;; builds H: `(likes A B)`, `(likes B A)`, `(near A B)` and `(near B A)`.
 ;;; Nothing refutes any of them, and `symmetric` makes each `near` fact bring
 ;;; the other: R is 16 commitments and 8 states, the control's answer.

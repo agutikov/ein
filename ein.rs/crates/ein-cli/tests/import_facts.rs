@@ -150,7 +150,7 @@ fn in_place(text: &str, module: &str, listed: &[&str]) -> String {
     let declared: Vec<&str> = text
         .lines()
         .filter_map(|l| {
-            ["(relation ", "(rule ", "(hrule ", "(macro "]
+            ["(relation ", "(rule ", "(macro "]
                 .iter()
                 .find_map(|d| l.strip_prefix(d))?
                 .split_whitespace()

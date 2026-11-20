@@ -1155,7 +1155,7 @@ fn a_square_cube_answers_its_first_questions_in_a_handful_of_saturations() {
 }
 
 /// **A bare `_` is refused at the parse, in every position**
-/// (Q-M1e2.22): `_` in a rule's, an hrule's or an obligation's pattern is
+/// (Q-M1e2.22): `_` in a rule's, a hypothesis rule's or an obligation's pattern is
 /// refused at each `_`, and the fresh variable, `?wN`, a variable read
 /// nowhere else, is what to write: each program so written loads and answers.
 #[test]
@@ -1213,16 +1213,16 @@ fn a_wildcard_answers_what_a_fresh_variable_does() {
          (pair a b)
          (rule t () :match (pair _ _) :assert (hit t) :why \"some two values are a pair, so hit holds of t\")
          (rule u () :match (and (pair ?x _) (pair _ ?x)) :assert (hit u) :why \"{?x} is first in a pair and second in a pair, so hit holds of u\")",
-        // An hrule.
+        // A hypothesis rule.
         "(relation holds T T :why \"holds relates {?3} to {?4}\") (relation tag T :why \"{?3} is tagged\")
          (holds a b)
-         (hrule h () :match (holds ?x _) :assert (tag ?x) :why \"guess that {?x}, which holds relates to some value, is tagged\")",
-        // An obligation whose witness premise writes `_`, with an hrule and
+         (rule h () :match (holds ?x _) :assert (open (tag ?x)) :why \"guess that {?x}, which holds relates to some value, is tagged\")",
+        // An obligation whose witness premise writes `_`, with a hypothesis rule and
         // without one.
         "(relation item T :why \"{?3} is an item\") (relation tag T T :why \"{?3} is tagged {?4}\") (relation lbl T :why \"{?3} is a label\")
          (item a) (item b) (lbl x) (lbl y)
          (rule owe () :match (and (item ?x) (absent (tag ?x _))) :assert (open tag) :why \"item {?x} has no tag yet — one is still owed\")
-         (hrule h () :match (and (item ?x) (lbl ?l)) :assert (tag ?x ?l) :why \"guess that item {?x} is tagged {?l}\")",
+         (rule h () :match (and (item ?x) (lbl ?l)) :assert (open (tag ?x ?l)) :why \"guess that item {?x} is tagged {?l}\")",
         "(relation item T :why \"{?3} is an item\") (relation tag T T :why \"{?3} is tagged {?4}\") (relation lbl T :why \"{?3} is a label\")
          (item a) (item b) (lbl x) (lbl y)
          (rule owe () :match (and (item ?x) (absent (tag ?x _))) :assert (open tag) :why \"item {?x} has no tag yet — one is still owed\")",

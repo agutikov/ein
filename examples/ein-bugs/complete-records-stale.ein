@@ -50,8 +50,8 @@
 (marker)
 (is-a A T) (is-a B T)
 
-(hrule guess-q () :match (marker)    :assert (q A) :why "guess that q holds of A")
-(hrule guess-p () :match (is-a ?x T) :assert (p ?x) :why "guess that p holds of {?x}")
+(rule guess-q () :match (marker)    :assert (open (q A)) :why "guess that q holds of A")
+(rule guess-p () :match (is-a ?x T) :assert (open (p ?x)) :why "guess that p holds of {?x}")
 
 ;; One step from any (p ?x) once (q A) holds, so inside the fork that committed
 ;; to (q A) every p candidate dies, and a kill cache would store both negatives.

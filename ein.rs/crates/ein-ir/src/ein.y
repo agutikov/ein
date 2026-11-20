@@ -213,7 +213,6 @@ RelationClauses -> Vec<b::Id>:
 // ── Rules ────────────────────────────────────────────────────────────
 Rule -> b::Id:
     "(" "rule" DeclName Params RuleClauses ")" { b::named(p, "rule", b::cat(vec![$3, $4], $5)) }
-  | "(" "hrule" DeclName Params RuleClauses ")" { b::named(p, "hrule", b::cat(vec![$3, $4], $5)) }
   ;
 Params -> b::Id: "(" Vars ")" { b::params(p, $2) } ;
 RuleClause -> b::Id:
@@ -383,8 +382,7 @@ ClaimNested -> b::Id:
 
 Solve -> b::Id: "(" "solve" SolveClauses ")" { b::named(p, "solve", $3) } ;
 SolveClause -> b::Id:
-    ":hrules" Hrules { b::pair(p, $lexer, $1, $2) }
-  | ":hypothesis-relations" NameList { b::pair(p, $lexer, $1, $2) }
+    ":hypothesis-relations" NameList { b::pair(p, $lexer, $1, $2) }
   | ":no-hypothesis" NameList { b::pair(p, $lexer, $1, $2) }
   // A flag, the one keyword that takes no value: the program
   // states that its lattice is root alone. Its pair holds `()`.
@@ -392,14 +390,6 @@ SolveClause -> b::Id:
   | ":expect" RegionClaim { b::pair(p, $lexer, $1, $2) }
   ;
 SolveClauses -> Vec<b::Id>: { b::none() } | SolveClauses SolveClause { b::push($1, $2) } ;
-// `(h1 h2)`, or an hrule with its activator's arguments: `(guess (color-loc
-// Color House) …)`.
-Hrules -> b::Id:
-    "(" ")" { b::empty(p) }
-  | "(" Name HruleItems ")" { b::list(p, $2, $3) }
-  ;
-HruleItem -> b::Id: Name { $1 } | NameListPlus { $1 } ;
-HruleItems -> Vec<b::Id>: { b::none() } | HruleItems HruleItem { b::push($1, $2) } ;
 // The expected region.
 RegionClaim -> b::Id:
     "(" "region" RegionItems ")" { b::list(p, b::name(p, $lexer, $2), $3) }

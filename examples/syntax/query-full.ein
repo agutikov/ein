@@ -1,10 +1,10 @@
 ;;; Syntax probe — query-full.
 ;;;
-;;; A `(query …)` with its `:goal` and its `:goal-text`, beside the
-;;; `(solve …)` that holds the `:hrules` list: the query asks, and the
-;;; lattice is stated once, in the solve. The two hrules the list names
-;;; are declared: a `:hrules` list naming an hrule the program does not
-;;; declare is refused (Q-M1f.115).
+;;; A `(query …)` with its `:goal` and its `:goal-text`, beside two rules
+;;; without parameters that conclude hypotheses of `drinks`: the query asks,
+;;; and the hypotheses are the rules'. The goal may name `drinks`, which only
+;;; a hypothesis writes: a relation of the program is any atom it writes
+;;; first in a tuple, under `open` too (Q-M1f.522).
 ;;;
 ;;; One of the eighteen node-kind fixtures. As corpus entries they are
 ;;; rendered under every parse view and every op, and each rendering is
@@ -12,9 +12,8 @@
 ;;; shapes is drawn moves a digest. They exist because no *puzzle*
 ;;; contains these shapes.
 
-(hrule h1 () :match (is-a ?h House) :assert (drinks Water ?h)
+(rule h1 () :match (is-a ?h House) :assert (open (drinks Water ?h))
   :why "guess that water is drunk in {?h}")
-(hrule h2 () :match (is-a ?h House) :assert (drinks Tea ?h)
+(rule h2 () :match (is-a ?h House) :assert (open (drinks Tea ?h))
   :why "guess that tea is drunk in {?h}")
-(solve :hrules (h1 h2))
 (query :goal (drinks Water ?h) :goal-text "who drinks water")

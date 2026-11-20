@@ -25,13 +25,15 @@
 (one-seat-each   seat)
 (one-person-each seat)
 
-(hrule guess (?p ?s)
+(rule guess (?p ?s)
   :match  (instance ?p Person)
-  :assert (seat ?p ?s)
+  :assert (open (seat ?p ?s))
   :why    "guess that {?p} sits in {?s}")
 
-(solve
-  :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)))
+(guess Ann S1)
+(guess Ann S2)
+(guess Bob S1)
+(guess Bob S2)
 
 (query
   :goal   (seat ?who ?slot)

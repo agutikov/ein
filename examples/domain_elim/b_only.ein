@@ -52,9 +52,9 @@
   :why "{?R} injective ⟹ injective-negative active.")
 
 ;; ── Pathway B: hypothesis generator.
-(hrule guess (?R ?T1 ?T2)
+(rule guess (?R ?T1 ?T2)
   :match  (and (is-a ?a ?T1) (is-a ?b ?T2))
-  :assert (?R ?a ?b)
+  :assert (open (?R ?a ?b))
   :why "guess: ({?R} {?a} {?b})?")
 
 (relation is-a      T T         :why "{?3} is a {?4}")
@@ -69,8 +69,7 @@
 (color-loc Red   H2 :source "(1) Red is in house 2")
 (color-loc Green H3 :source "(2) Green is in house 3")
 
-(solve
-  :hrules (guess (color-loc Color House)))
+(guess color-loc Color House)
 
 (query
   :goal (color-loc Blue ?h))

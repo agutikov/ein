@@ -111,7 +111,7 @@
 //!   counted beside and not groups: `cliques`, `sizes`, `most`, `mean`,
 //!   `steps`, `cut`;
 //! - `declared`, what the program declares, beside: the relations its active
-//!   hrules propose (`proposed`), its obligations owe (`owable`) and its
+//!   hypothesis rules propose (`proposed`), its obligations owe (`owable`) and its
 //!   closures take out (`closed`), by [`ein_infer::mechanisms::read`] at
 //!   root's fixpoint, and the groups `of_a_proposed_relation`,
 //!   `of_an_owable_relation`, `of_a_closed_relation`, `of_none_of_them`;
@@ -709,8 +709,8 @@ fn tokens(form: &str) -> Vec<&str> {
 /// and its arguments, a keyword and its value left out. `None` for a form
 /// that states no fact.
 fn fact_of_form(form: &str) -> Option<String> {
-    const DECLARATORS: [&str; 9] = [
-        "relation", "rule", "hrule", "macro", "import", "query", "solve", "config", "trace",
+    const DECLARATORS: [&str; 8] = [
+        "relation", "rule", "macro", "import", "query", "solve", "config", "trace",
     ];
     let toks = tokens(form);
     if toks.len() < 3 || DECLARATORS.contains(&toks[1]) {
@@ -1300,8 +1300,8 @@ fn declared_beside(
             .count()
     };
     let declared = json!({
-        "hrules": mechanisms.as_ref().map(|m| m.hrules.len()),
-        "active_hrule_plans": mechanisms.as_ref().map(|m| m.proposals.len()),
+        "hypothesis_rules": mechanisms.as_ref().map(|m| m.hypothesis_rules.len()),
+        "hypothesis_plans": mechanisms.as_ref().map(|m| m.proposals.len()),
         "obligation_rules": mechanisms.as_ref().map(|m| m.obligation_rules.len()),
         "obligation_plans": mechanisms.as_ref().map(|m| m.obligations.len()),
         "proposed": proposed,

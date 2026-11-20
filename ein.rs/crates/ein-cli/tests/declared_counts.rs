@@ -91,13 +91,13 @@ const OTHER_COUNTS: [(&str, &str); 22] = [
          :why \"{?a} likes {?b}\")\n",
     ),
     (
-        "an-hrules-match",
-        "(hrule h ()\n  :match (fan ?a ?b)\n  :assert (seen ?a)\n  \
+        "a-hypothesis-rules-match",
+        "(rule h ()\n  :match (fan ?a ?b)\n  :assert (open (seen ?a))\n  \
          :why \"guess that {?a} is seen, {?b}\")\n",
     ),
     (
-        "an-hrules-assert",
-        "(hrule h ()\n  :match (fan ?a)\n  :assert (likes ?a)\n  \
+        "a-hypothesis-rules-assert",
+        "(rule h ()\n  :match (fan ?a)\n  :assert (open (likes ?a))\n  \
          :why \"guess that {?a} likes\")\n",
     ),
     (
@@ -256,9 +256,9 @@ fn what_is_not_a_declared_relations_form_loads() {
         // A `(solve …)` list is a list of names, not a form.
         (
             "a-solve-list",
-            "(hrule guess (?R ?T)\n  :match (is-a ?a ?T)\n  :assert (?R ?a)\n  \
+            "(rule guess (?R ?T)\n  :match (is-a ?a ?T)\n  :assert (open (?R ?a))\n  \
              :why \"guess that {?R} holds of {?a}\")\n(is-a Bob Person)\n\
-             (solve :hrules (guess (fan Person)) :no-hypothesis (likes))\n",
+             (guess fan Person) (solve :no-hypothesis (likes))\n",
         ),
         (
             "a-solve-list-of-relations",

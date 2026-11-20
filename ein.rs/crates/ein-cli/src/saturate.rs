@@ -536,28 +536,23 @@ fn kb_section(
 
     // The two kinds of rule no agenda holds, each in the form of a rule
     // above: an obligation rule is read on the fixpoint and derives nothing,
-    // a hypothesis rule proposes the candidates and is read by no
-    // saturation. Beside one with parameters, how many activators bind them:
-    // the facts headed by an obligation rule's name that this knowledge base
-    // holds, and the tuples `(solve :hrules …)` writes for a hypothesis rule.
-    if !p.obligations.is_empty() {
+    // a rule that concludes a hypothesis is read by the pass that writes a
+    // state's `open` facts and by no saturation (the facts it concludes
+    // beside them are a rule of the agenda's, listed above). Beside one with
+    // parameters, how many activators bind them: the facts headed by its
+    // name that this knowledge base holds.
+    for (title, registry) in [
+        ("Obligation rules", &p.obligations),
+        ("Hypothesis rules", &p.hypotheses),
+    ] {
+        if registry.is_empty() {
+            continue;
+        }
         let _ = writeln!(o);
-        let _ = writeln!(o, ";; Obligation rules ({})", p.obligations.len());
-        for rule in p.obligations.values() {
+        let _ = writeln!(o, ";; {title} ({})", registry.len());
+        for rule in registry.values() {
             let n = (!rule.params.is_empty())
                 .then(|| ein_infer::compile::activators_for(kb, terms, rule).len());
-            let _ = writeln!(o, "{}", rule_line(terms, rule, &activators_text(n)));
-        }
-    }
-    if !p.hrules.is_empty() {
-        let _ = writeln!(o);
-        let _ = writeln!(o, ";; Hypothesis rules ({})", p.hrules.len());
-        let counts = ein_infer::hrule::activator_counts(kb, terms, ast);
-        for rule in p.hrules.values() {
-            let n = counts
-                .iter()
-                .find(|(name, _)| *name == rule.name)
-                .and_then(|(_, n)| *n);
             let _ = writeln!(o, "{}", rule_line(terms, rule, &activators_text(n)));
         }
     }

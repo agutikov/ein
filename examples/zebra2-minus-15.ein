@@ -350,12 +350,13 @@
 ;; `(bijective …)` declarations + the two `*-hierarchy` knobs drive them.
 
 ;; ──── Hypothesis generation ────────────────────────────────
-;; One hrule parameterised over (?R ?T1 ?T2); activators in the
-;; (solve …) :hrules clause enumerate every *-loc relation with
+;; One rule parameterised over (?R ?T1 ?T2) supposes (?R ?a ?b), a
+;; hypothesis, for every ?a of type ?T1 and ?b of type ?T2; its
+;; activators, after the conditions, name every *-loc relation with
 ;; its (attribute-type, House) pair.
-(hrule guess (?R ?T1 ?T2)
+(rule guess (?R ?T1 ?T2)
   :match  (and (is-a ?a ?T1) (is-a ?b ?T2))
-  :assert (?R ?a ?b)
+  :assert (open (?R ?a ?b))
   :why    "guess: ({?R} {?a} {?b})?")
 
 ;; ──── Relation signatures ──────────────────────────────────
@@ -497,16 +498,14 @@
 ;; Everything else (schema, rules, ontology, conditions 1-14) is identical;
 ;; generated from zebra2.ein, not edited by hand.
 
-(solve
-  ;; Hypothesis-generator activators: one (?R ?T1 ?T2) triple per
-  ;; *-loc relation; the hrule emits (?R ?v ?h) candidates for
-  ;; every (v, h) of the corresponding types.
-  :hrules (guess
-            (color-loc  Color       House)
-            (nation-loc Nationality House)
-            (drink-loc  Drink       House)
-            (smoke-loc  Cigarette   House)
-            (pet-loc    Pet         House)))
+;; The hypothesis rule's activators: one (?R ?T1 ?T2) triple per
+;; *-loc relation; `guess` supposes (?R ?v ?h) for every (v, h)
+;; of the corresponding types.
+(guess color-loc  Color       House)
+(guess nation-loc Nationality House)
+(guess drink-loc  Drink       House)
+(guess smoke-loc  Cigarette   House)
+(guess pet-loc    Pet         House)
 
 (query
   ;; The two puzzle questions are "who drinks water?" and "who owns the

@@ -441,10 +441,10 @@ fn an_import_brings_the_module_whole_with_its_own_imports() {
 /// **The kernel's dunder, `__closed__`, reaches the guard** (Q-M1f.7), and
 /// is refused there; the other names of [`ein_core::RESERVED`] a program can
 /// write, `and`, `neq`, `or`, `absent`, `eq`, `open` and `relation`, are
-/// tokens of their own that no declarator takes, so `(hrule eq …)` is a parse
+/// tokens of their own that no declarator takes, so `(rule eq …)` is a parse
 /// error, refused where a declarator binds one, and never a load error.
 /// `false` and `not`, the standard library's names, are bound by a relation,
-/// a rule and an hrule ([`ein_core::LIBRARY_NAMES`]).
+/// a rule and a hypothesis rule ([`ein_core::LIBRARY_NAMES`]).
 #[test]
 fn the_reserved_name_guard_is_on_declarators_and_matches_whole_names() {
     let (terms, kb) =
@@ -478,9 +478,9 @@ fn the_reserved_name_guard_is_on_declarators_and_matches_whole_names() {
             "1:11: unexpected `absent`",
         ),
         (
-            "hrule",
-            "(hrule open () :match (x ?a) :assert (y ?a) :why \"w\")",
-            "1:8: unexpected `open`",
+            "hypothesis rule",
+            "(rule open () :match (x ?a) :assert (open (y ?a)) :why \"w\")",
+            "1:7: unexpected `open`",
         ),
     ] {
         let e = parse(&mut Ast::new(), source, None).expect_err(declarator);
@@ -501,8 +501,8 @@ fn the_reserved_name_guard_is_on_declarators_and_matches_whole_names() {
             "(relation __closed__ T T :why \"__closed__ holds of {?3} and {?4}\")",
         ),
         (
-            "hrule",
-            "(hrule __closed__ () :match (x ?a) :assert (y ?a) :why \"guess that y holds of {?a}, as x does\")",
+            "hypothesis rule",
+            "(rule __closed__ () :match (x ?a) :assert (open (y ?a)) :why \"guess that y holds of {?a}, as x does\")",
         ),
     ] {
         let msg = load_error(source);
@@ -1134,21 +1134,23 @@ fn the_zebra_registries_and_indexes_hold_what_the_puzzle_declared() {
     assert_eq!(kb.facts().filter(|&f| f == again.id()).count(), 1);
 }
 
-/// `examples/zebra.ein` loads to 71 facts, 18 of them given and none derived.
+/// `examples/zebra.ein` loads to 76 facts, 18 of them given and none derived.
 ///
 /// The count is the puzzle's own arithmetic and is worth spelling out because
 /// most of it is *not* in the file as facts: 5 relation declarations each also
 /// emit a companion `(relation R)` membership fact, and those cover exactly the
 /// declared relations — an auto-vivified property-tag carrier gets no
-/// declaration, so it gets no membership fact either. That asymmetry is the
-/// part a refactor breaks: vivify a membership fact for `symmetric` and the
-/// count silently becomes 75 with nothing else looking wrong.
+/// declaration, so it gets no membership fact either; and the hypothesis
+/// rule's five activators, `(guess co-located Color House)` and its four
+/// siblings, are facts the file writes. That asymmetry is the part a refactor
+/// breaks: vivify a membership fact for `symmetric` and the count silently
+/// becomes 80 with nothing else looking wrong.
 ///
 /// "None derived" is the other half, and it is the load-time invariant the
 /// whole trace rests on: everything the engine later attributes to a rule was
 /// put there by the engine.
 #[test]
-fn zebra_loads_seventy_one_facts_eighteen_of_them_given_and_none_derived() {
+fn zebra_loads_seventy_six_facts_eighteen_of_them_given_and_none_derived() {
     let mut terms = Terms::new();
     let kb = load_file(
         &mut Ast::new(),
@@ -1157,7 +1159,7 @@ fn zebra_loads_seventy_one_facts_eighteen_of_them_given_and_none_derived() {
     )
     .expect("zebra.ein loads");
 
-    assert_eq!(kb.n_facts(), 71);
+    assert_eq!(kb.n_facts(), 76);
     let kinds = |want: ProvKind, with_source: bool| {
         kb.facts()
             .filter(|&f| {

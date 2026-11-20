@@ -2,8 +2,7 @@
 //! ([04-hypothesis-generation.md § 6](../../../../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#6-scoping-and-the-mechanisms-judged-together)).
 //!
 //! Three writers of a hypothesis, `(open F)` (Q-M1f.566, Q-M1f.570): a rule
-//! that concludes one, an `(hrule …)` among them, with the `(open …)` the
-//! program writes; an obligation, activated, which writes `(open R)` where an
+//! that concludes one, with the `(open …)` the program writes; an obligation, activated, which writes `(open R)` where an
 //! instance is owed and `(open F)` for what would pay it; and the blind
 //! enumerator, which runs only where root holds no `open` fact and no
 //! obligation is activated ([`crate::hypgen`]). Three declarations configure
@@ -11,7 +10,7 @@
 //!
 //! | | mechanism | read here as |
 //! |---|---|---|
-//! | H | a rule that concludes `(open F)`, an `(hrule …)` activated by `(solve :hrules …)` | [`Mechanisms::proposals`]: each active plan and the relation each hypothesis is of |
+//! | H | a rule that concludes `(open F)`, activated by a fact of its name | [`Mechanisms::proposals`]: each active plan and the relation each hypothesis is of |
 //! | O | an obligation rule, `:assert (open ?R)` | [`Mechanisms::obligations`]: each obligation plan the state's activators compile, and the relation it owes |
 //! | HR | `(solve :hypothesis-relations …)` | [`Mechanisms::listed`] |
 //! | NH | `(solve :no-hypothesis …)` | [`Mechanisms::excluded`] |
@@ -68,15 +67,14 @@ use crate::saturator::{Saturator, Session};
 
 /// One plan of a generating mechanism: the rule it is compiled from, the
 /// activator's arguments (empty for a rule without parameters), and the
-/// relation it is about — the one an hrule's `:assert` proposes a fact of,
-/// or the one an obligation's `(open ?R)` owes. `None` where the plan names
-/// none: a bare `(open)`, or an hrule whose `:assert` is no fact's template.
+/// relation it is about — the one a hypothesis `(open F)` is a fact of, or
+/// the one an obligation's `(open ?R)` owes. `None` where the plan names
+/// none: a hypothesis a variable holds, `(open ?f)`.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct Plan {
     pub rule: Symbol,
     pub activator: Box<[Value]>,
-    /// The activator fact itself: an obligation's, which the state holds; an
-    /// hrule's synthetic `(h args…)`, which it does not. `None` for a rule
+    /// The activator fact itself, which the state holds. `None` for a rule
     /// without parameters.
     pub activator_fact: Option<FactId>,
     pub relation: Option<Symbol>,
@@ -94,17 +92,17 @@ pub struct Open {
 /// What a program declares, at one state.
 #[derive(Clone, Default, Debug)]
 pub struct Mechanisms {
-    /// Every rule the program declares that concludes a hypothesis, an
-    /// `(hrule …)` among them, in load order, active or not.
-    pub hrules: Vec<Symbol>,
+    /// Every rule the program declares that concludes a hypothesis, in load
+    /// order, active or not.
+    pub hypothesis_rules: Vec<Symbol>,
     /// The active plans of those, in the generator's order, one per
     /// hypothesis each states.
     pub proposals: Vec<Plan>,
     /// Every obligation rule the program declares, in load order.
     pub obligation_rules: Vec<Symbol>,
     /// The obligation plans this state's activators compile, in report order.
-    /// Non-empty, with no hrule, is what takes the ladder's second rung; an
-    /// obligation rule in `obligation_rules` with no plan here takes none.
+    /// Non-empty, the obligations write; an obligation rule in
+    /// `obligation_rules` with no plan here writes nothing.
     pub obligations: Vec<Plan>,
     /// `:hypothesis-relations`, as the generator reads it: `None` where the
     /// program writes none.
@@ -122,7 +120,8 @@ pub struct Mechanisms {
 }
 
 impl Mechanisms {
-    /// The relations the active hrules propose facts of.
+    /// The relations the active rules that conclude a hypothesis propose
+    /// facts of.
     pub fn proposed(&self) -> FxHashSet<Symbol> {
         self.proposals.iter().filter_map(|p| p.relation).collect()
     }
@@ -137,16 +136,11 @@ impl Mechanisms {
 /// they were loaded, and closures and activators as the state holds them.
 pub fn read(s: &mut Session<'_>) -> Result<Mechanisms, CompileError> {
     let program = s.kb.program_arc();
-    let hrules: Vec<Symbol> = program
-        .hrules
-        .iter()
-        .chain(program.hypotheses.iter())
-        .map(|(n, _)| n)
-        .collect();
-    let proposals = if hrules.is_empty() {
+    let hypothesis_rules: Vec<Symbol> = program.hypotheses.iter().map(|(n, _)| n).collect();
+    let proposals = if hypothesis_rules.is_empty() {
         Vec::new()
     } else {
-        crate::hrule::Hrules::new(s)?
+        crate::hypothesis_rules::HypothesisRules::new(s)?
             .proposals(s.terms)
             .iter()
             .map(|(p, relation)| Plan {
@@ -181,7 +175,7 @@ pub fn read(s: &mut Session<'_>) -> Result<Mechanisms, CompileError> {
         .collect();
     let (listed, excluded, closed) = crate::hypgen::scoping(s);
     Ok(Mechanisms {
-        hrules,
+        hypothesis_rules,
         proposals,
         obligation_rules,
         obligations,
@@ -227,7 +221,8 @@ pub struct Report {
 
 /// **Could two mechanisms meet in this program?** Read off the loaded
 /// program, before any saturation, so that a program declaring at most one
-/// pays nothing: an hrule, an obligation rule, `:hypothesis-relations` and
+/// pays nothing: a rule that concludes a hypothesis, an obligation rule,
+/// `:hypothesis-relations` and
 /// `:no-hypothesis` are each present or not as written, and a closure is
 /// possible wherever `__closed__` is written, a fact's head or argument or
 /// any word of a rule's `:assert`. Two of them, or one and a possible
@@ -243,7 +238,7 @@ pub fn may_conflict(kb: &Kb, terms: &Terms, ast: &Ast) -> bool {
         })
     };
     let present = [
-        !program.hrules.is_empty() || !program.hypotheses.is_empty(),
+        !program.hypotheses.is_empty(),
         !program.obligations.is_empty(),
         lists(crate::hypgen::HYPOTHESIS_RELATIONS),
         lists(crate::hypgen::NO_HYPOTHESIS),
@@ -263,12 +258,8 @@ pub fn may_conflict(kb: &Kb, terms: &Terms, ast: &Ast) -> bool {
         return true;
     }
     program
-        .rules
-        .values()
-        .chain(program.hrules.values())
-        .chain(program.obligations.values())
-        .chain(program.hypotheses.values())
-        .filter_map(|r| r.assert_.as_ref())
+        .every_rule()
+        .filter_map(|(_, r)| r.assert_.as_ref())
         .any(|a| writes_name(ast, NodeId(a.expr.0), ein_core::terms::CLOSED))
 }
 
@@ -441,15 +432,14 @@ pub fn judge(m: &Mechanisms, kb: &Kb, terms: &Terms, ast: &Ast) -> Report {
         return out;
     }
 
-    let h = !m.hrules.is_empty();
+    let h = !m.hypothesis_rules.is_empty();
     let rules = || {
-        m.hrules
+        m.hypothesis_rules
             .iter()
             .map(|&h| format!("'{}'", terms.sym(h)))
             .collect::<Vec<_>>()
             .join(", ")
     };
-    let all_hrules = m.hrules.iter().all(|&r| kb.program().hrules.contains(r));
     // `(solve :no-search)`: nothing is proposed, so a rule that concludes a
     // hypothesis proposes no candidate and a list filters nothing, each a
     // note; beside an obligation it is silent, the obligation judging root
@@ -457,11 +447,10 @@ pub fn judge(m: &Mechanisms, kb: &Kb, terms: &Terms, ast: &Ast) -> Report {
     if m.no_search {
         let at = list(crate::hypgen::NO_SEARCH).map_or(String::new(), |(at, _)| w.at(at));
         if h {
-            let (one, word) = match (m.hrules.len() == 1, all_hrules) {
-                (true, true) => ("hrule", "proposes"),
-                (true, false) => ("rule", "proposes"),
-                (false, true) => ("hrules", "propose"),
-                (false, false) => ("rules", "propose"),
+            let (one, word) = if m.hypothesis_rules.len() == 1 {
+                ("rule", "proposes")
+            } else {
+                ("rules", "propose")
             };
             out.notes.push(format!(
                 "{at}solve: its :no-search states the lattice is root alone, so {one} {} {word} \
@@ -607,13 +596,9 @@ impl Words<'_> {
     }
 
     /// Where rule `rule`'s `:assert` is written, `FILE:LINE:COL: `: a rule
-    /// that concludes a hypothesis, an hrule among them.
+    /// that concludes a hypothesis.
     fn assert_of(&self, rule: Symbol) -> Option<String> {
-        let program = self.kb.program();
-        let r = program
-            .hrules
-            .get(rule)
-            .or_else(|| program.hypotheses.get(rule))?;
+        let r = self.kb.program().hypotheses.get(rule)?;
         let a = r.assert_.as_ref()?;
         self.ast
             .loc(NodeId(a.expr.0))
@@ -634,8 +619,6 @@ impl Words<'_> {
                 let program = self.kb.program();
                 let kind = if program.obligations.contains(r) {
                     "obligation"
-                } else if program.hrules.contains(r) {
-                    "hrule"
                 } else {
                     "rule"
                 };

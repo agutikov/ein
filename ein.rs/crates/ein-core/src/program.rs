@@ -24,13 +24,8 @@ pub struct Program {
     /// (Q-M1f.447). [`Program::relations`] keeps the first of a name's.
     pub declarations: Vec<Declaration>,
     pub rules: Registry<Rule>,
-    /// Hypothesis rules — a `Rule` by shape, kept out of `rules` so
-    /// the saturator, which walks `rules`, never fires one. `hypgen` is the
-    /// only consumer. Rules and hrules share **one** name-space.
-    pub hrules: Registry<Rule>,
-    /// Obligation rules — a `Rule` by shape whose
-    /// `:assert` is the reserved verdict atom `(open)` / `(open ?R)` and
-    /// nothing else. Kept out of `rules` for the same reason `hrules` are:
+    /// Obligation rules — a `Rule` by shape whose `:assert` is what a state
+    /// owes, `(open R)` or `(open ?R)`, and nothing else. Kept out of `rules`:
     /// the saturator walks `rules`, and an obligation rule must never enter
     /// its agenda. It derives nothing — an `open` conclusion is a per-node
     /// verdict tally, never a stored fact — so it has no business in a queue
@@ -92,9 +87,8 @@ pub struct Program {
     pub commit: Option<Box<[String]>>,
     /// **The relations of the program** (Q-M1f.522, Q-M1f.119): what a goal
     /// and a claim may name, every atom the program writes first in a tuple,
-    /// the kernel's words it writes among them, `eq` and `neq`, and each
-    /// relation a `(solve :hrules …)` activator gives its hrule, in the order
-    /// of their text. The loader's, and empty where it refused the program.
+    /// the kernel's words it writes among them, and `eq` and `neq`, in the
+    /// order of their text. The loader's, and empty where it refused the program.
     /// What a goal given beside the program is held to
     /// (`ein_ir::from_ir::read_goal`), and what the slice of a knowledge base
     /// reads a relation by (`ein_infer::slice`, Q-M1f.523).
@@ -176,10 +170,6 @@ impl Program {
         self.rules.insert_new(rule.name, rule);
     }
 
-    pub fn add_hrule(&mut self, rule: Rule) {
-        self.hrules.insert_new(rule.name, rule);
-    }
-
     pub fn add_obligation(&mut self, rule: Rule) {
         self.obligations.insert_new(rule.name, rule);
     }
@@ -188,27 +178,36 @@ impl Program {
         self.hypotheses.insert_new(rule.name, rule);
     }
 
+    /// **Every rule the program declares, once, with its whole `:assert`**,
+    /// in the order of the passes that walk them: the saturator's
+    /// ([`Program::rules`]), the rules that conclude a hypothesis
+    /// ([`Program::hypotheses`]), the obligations. A rule that concludes a
+    /// hypothesis beside facts is in [`Program::rules`] too, with those facts
+    /// alone, under the same name: it is read here once, whole.
+    pub fn every_rule(&self) -> impl Iterator<Item = (Symbol, &Rule)> + '_ {
+        self.rules
+            .iter()
+            .filter(|&(n, _)| !self.hypotheses.contains(n))
+            .chain(self.hypotheses.iter())
+            .chain(self.obligations.iter())
+    }
+
     /// A name's `NameRef` category.
     ///
     /// `relation` and `rule` are the only two kernel forms hardcoded as
     /// `"relation"`. `type` and `instance` are **not** special:
     /// they categorise as relations only when a puzzle declares them.
-    /// `hrules` are deliberately absent — a name declared only as an hrule
-    /// falls through to `"object"`.
     ///
-    /// **Obligations are not**, and the difference from `hrules`
-    /// is the whole reason the line is here. A category says what a name *is*;
-    /// [`Program::obligations`] is a split by which pass **walks** a rule, over
-    /// one name-space, so an obligation rule's name is a rule name in exactly
-    /// the way `total`'s is. Left out, it would be an `Object` — and
+    /// **Every rule's name is a rule's**, whichever pass walks it. A category
+    /// says what a name *is*; [`Program::obligations`] and
+    /// [`Program::hypotheses`] are a split by which pass **walks** a rule,
+    /// over one name-space, so an obligation rule's name is a rule name in
+    /// exactly the way `total`'s is. Left out, it would be an `Object` — and
     /// `hypgen::candidate_objects` keeps every `Object`, so the blind
     /// enumerator would propose `(seats total-owed C1)`: the *name of a
     /// rule* as a puzzle value. `tests/stdlib/bijection/06_blind_enumeration.ein`
     /// is the witness, and the assertion that catches it lives in
     /// `ein-infer/tests/obligation_reports.rs`.
-    ///
-    /// `hrules` stay out as a fixed behaviour rather than as a judgement about
-    /// what an hrule's name is, which is why the two cannot share a line.
     pub fn categorise(&self, terms: &Terms, name: Symbol) -> NameCategory {
         if name == terms.kernel.relation || name == terms.kernel.rule {
             return NameCategory::Relation;

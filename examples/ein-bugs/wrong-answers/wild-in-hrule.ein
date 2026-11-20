@@ -1,23 +1,23 @@
-;;; A wildcard `_` in an hrule's `:match` proposes nothing —
+;;; A wildcard `_` in a hypothesis rule's `:match` proposes nothing —
 ;;; regression `wild-in-hrule` (`corpus/regressions.toml`), the
-;;; case's mechanism in an hrule.
+;;; case's mechanism in a hypothesis rule.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; One fact, `(holds a b)`, and one hrule that proposes `(tag ?x)` for each
+;;; One fact, `(holds a b)`, and one hypothesis rule that proposes `(tag ?x)` for each
 ;;; `holds` fact, whatever its second argument: the pattern writes `_` there.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
 ;;; A bare `_` is reserved and refused wherever it is written (Q-M1e2.22):
 ;;; the program is refused at the parse, at the `_`. With `_` written `?any`
-;;; (`wild-in-hrule-twin.ein`) the hrule proposes `(tag a)`, H is that one
+;;; (`wild-in-hrule-twin.ein`) the hypothesis rule proposes `(tag a)`, H is that one
 ;;; candidate, nothing refutes, and R is `∅` and `{(tag a)}`.
 ;;;
 ;;; ── What the engine answered, and what it answers ──────────────────────
 ;;;
 ;;; At `c73a0796`, in a release build and a debug one, H was empty: `_` was
-;;; an opaque slot that matched nothing, so the hrule matched no fact and
+;;; an opaque slot that matched nothing, so the hypothesis rule matched no fact and
 ;;; proposed no candidate. `ein solve FILE` printed *no candidate: R is {∅}
 ;;; or empty, decided by root alone*, and R was `{∅}`. Today the parse
 ;;; refuses the `_`.
@@ -25,4 +25,4 @@
 
 (relation holds Node Node) (relation tag Node)
 (holds a b)
-(hrule h () :match (holds ?x _) :assert (tag ?x))
+(rule h () :match (holds ?x _) :assert (open (tag ?x)))

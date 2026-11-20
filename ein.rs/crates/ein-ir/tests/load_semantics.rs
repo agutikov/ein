@@ -11,7 +11,7 @@
 //! | the 32-body `(config …)` coercion | [`the_config_coercion_table_is_stable`], against a checked-in table |
 //! | the accumulated message | [`load_errors_accumulate_in_pass_order`], the same way |
 //! | 16 of the `.expected` fixtures | [`the_load_negative_fixtures_are_byte_identical`] |
-//! | `require_why` refuses a relation, rule or hrule with no `:why`, one line each, and loads it without the flag | [`require_why_refuses_each_form_without_one`] |
+//! | `require_why` refuses a relation, rule or hypothesis rule with no `:why`, one line each, and loads it without the flag | [`require_why_refuses_each_form_without_one`] |
 //! | a macro is asked for a `:why` too, since its parser reads one | [`a_macro_needs_a_why_only_where_its_parser_reads_one`] |
 //! | `require_why` decides only whether a corpus program loads: one it lets through loads to the same KB, and it refuses none | [`require_why_decides_loading_only`] |
 //! | the default requires a `:why`, and `require_why: false` loads without one (Q-M1f.62) | [`the_default_requires_a_why_and_false_loads_without`] |
@@ -96,10 +96,9 @@ fn the_load_negative_fixtures_are_byte_identical() {
         .unwrap_or_else(|_| root.join("stdlib"));
 
     let mut bad = Vec::new();
-    // Nine more are refused at the parse, under `examples/broken/`, where
+    // Eight more are refused at the parse, under `examples/broken/`, where
     // `grammar_decisions.rs` holds their reports: `config_bad_value`,
-    // `config_unknown_flag`, `empty_absent`, `hrule_reserved_name`,
-    // `macro_reserved_name`, `relation_malformed`, `relation_needs_a_name`,
+    // `config_unknown_flag`, `empty_absent`, `macro_reserved_name`, `relation_malformed`, `relation_needs_a_name`,
     // `relation_reserved_name` and `rule_reserved_name`; and `(mirror 3)`
     // names the relation `3`, so it has no fixture here.
     // `eq_in_a_macro_body`: the loader holds a macro's expansion to the
@@ -323,7 +322,7 @@ fn missing(head: &str, name: &str) -> String {
     )
 }
 
-/// **With `require_why` on, a relation, a rule and an hrule without a `:why`
+/// **With `require_why` on, a relation, a rule and a hypothesis rule without a `:why`
 /// are each refused with one line naming the form; with it off, each loads**
 /// (Q-M1f.62): the grammar takes a `:why` as optional, and the loader's flag
 /// requires it. A `:why` that is not a string is no template; the grammar
@@ -335,7 +334,7 @@ fn require_why_refuses_each_form_without_one() {
         "(relation owns Person Thing :why \"{?3} owns {?4}\")",
         "(relation has Person Thing :why \"{?3} has {?4}\")",
         "(rule keep () :match (owns ?p ?x) :assert (has ?p ?x) :why \"{?p} keeps {?x}\")",
-        "(hrule guess () :match (has ?p ?x) :assert (owns ?p ?x) :why \"suppose {?p} owns {?x}\")",
+        "(rule guess () :match (has ?p ?x) :assert (open (owns ?p ?x)) :why \"suppose {?p} owns {?x}\")",
         "(owns Ann box)",
     ];
     let with = whole.join("\n");
@@ -352,8 +351,8 @@ fn require_why_refuses_each_form_without_one() {
         ),
         (
             3,
-            "(hrule guess () :match (has ?p ?x) :assert (owns ?p ?x))",
-            "hrule",
+            "(rule guess () :match (has ?p ?x) :assert (open (owns ?p ?x)))",
+            "rule",
             "guess",
         ),
     ];
@@ -382,18 +381,18 @@ fn require_why_refuses_each_form_without_one() {
     // One line per form, in pass order, beside the loader's other refusals.
     let none = "(rule keep () :match (owns ?p ?x) :assert (has ?p ?x))\n\
                 (relation owns Person Thing)\n(relation owns Person Thing :why \"o\")\n\
-                (hrule guess () :match (has ?p ?x) :assert (owns ?p ?x))";
+                (rule guess () :match (has ?p ?x) :assert (open (owns ?p ?x)))";
     let refused = load_text_with(none, true).expect_err("refused");
     let lines: Vec<&str> = refused.split("; ").collect();
     assert_eq!(lines.len(), 3, "{refused}");
     assert_eq!(lines[0], missing("relation", "owns"));
     assert_eq!(
         lines[1..],
-        [missing("rule", "keep"), missing("hrule", "guess")]
+        [missing("rule", "keep"), missing("rule", "guess")]
     );
 }
 
-/// **A macro is asked for its `:why`**, as a relation, a rule and an hrule
+/// **A macro is asked for its `:why`**, as a relation, a rule and a hypothesis rule
 /// are (Q-M1f.59).
 #[test]
 fn a_macro_needs_a_why_only_where_its_parser_reads_one() {
@@ -523,7 +522,7 @@ fn require_why_decides_loading_only() {
 /// (`ein_core::why::render_why`), and `}` is one of the name rule's
 /// characters, so `?a}b` is a variable no reference can name: `{?a}b}` is the
 /// reference `{?a}` and the text `b}`. Each place a template names a scope's
-/// variables, a rule's and an hrule's `:why`, a macro's and a query's
+/// variables, a rule's and a hypothesis rule's `:why`, a macro's and a query's
 /// `:goal-text`, is refused with one line where it writes one; the same
 /// program loads with a reference to a variable it can reach (`?n*`, the
 /// regression `template-var-star`'s),
@@ -545,8 +544,8 @@ fn a_template_naming_a_variable_no_reference_reaches_is_refused() {
             ":why",
         ),
         (
-            "(hrule h () :match (p ?a}b) :assert (q ?a}b) :why \"guess {?a}b}\")",
-            "hrule 'h'",
+            "(rule h () :match (p ?a}b) :assert (open (q ?a}b)) :why \"guess {?a}b}\")",
+            "rule 'h'",
             ":why",
         ),
         (

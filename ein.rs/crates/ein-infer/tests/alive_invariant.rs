@@ -74,9 +74,9 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// rule's `:match` (`match-only`'s `Z`), and one a fact names only inside a
 /// nested fact (the rest).
 ///
-/// - `mixed-type-hypothesis.ein` — `Ann`, in an `hrule`'s `:assert`. That
-///   query drives the hrule rung, whose candidates already name `Ann`; the
-///   seed reaches its blind probe (`EIN_LEFTOVER`) alone.
+/// - `mixed-type-hypothesis.ein` — `Ann`, in a hypothesis rule's `:assert`.
+///   The hypothesis rule writes H there, whose candidates already name `Ann`;
+///   the seed reaches its blind probe (`EIN_LEFTOVER`) alone.
 /// - `07_schroder.ein` — `G`, in the probe rule `probe-undecided`, which fires
 ///   in **root** saturation, so `G` is a name at root without the seed too;
 ///   and `C`, `D`, inside its stored negatives.
@@ -105,7 +105,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 ///   a name of the program there, and the twin, whose rules are `w1` and
 ///   `w2`, names it in no fact.
 /// - `ein-bugs/activator-all-nested.ein` — `a`, inside `(item (box a))`:
-///   its one candidate is the hrule's `(checked (box a))`, and the
+///   its one candidate is the hypothesis rule's `(checked (box a))`, and the
 ///   name is no candidate's.
 /// - `assert-neq-w-x.ein` and `assert-eq-x-w.ein`, `w` in a
 ///   concluded `neq` or `eq`, a constant of the rule's `:assert` and so a
@@ -115,9 +115,8 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// - `relvar-eq-assert.ein`, `w` in a conclusion whose relation a
 ///   parameter binds to `eq`, as `assert-eq-x-w.ein`'s; and
 ///   `goal-nested-var.ein`, `a` and `b` inside its stored negations.
-/// - `syntax/query-full.ein`'s `House`, `Water` and `Tea`, constants of the
-///   two hrules its `:hrules` names, which the program declares, since the
-///   loader refuses a list naming an hrule the program does not declare.
+/// - `syntax/query-full.ein`'s `House`, `Water` and `Tea`, constants of its
+///   two hypothesis rules, which need no activator, having no parameter.
 /// - `and-in-and.ein` and `and-in-and-macro.ein`, `a`, a name only a
 ///   rule's conclusion writes: a constant of the conclusion, read at any
 ///   depth, however the conclusion's `and` nests.
@@ -159,8 +158,8 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// refuses (a string, a keyword pair inside a term, a bare `_`, `eq` at
 /// another arity) and the loader's refusals (a premise that is no form, a
 /// relation variable no parameter binds, a relation parameter bound to a
-/// fact, an hrule concluding more than one fact).
-const SEEDED: [(&str, &[&str]); 157] = [
+/// fact).
+const SEEDED: [(&str, &[&str]); 154] = [
     (
         "examples/arith/int.ein",
         &[
@@ -302,7 +301,7 @@ const SEEDED: [(&str, &[&str]); 157] = [
     ),
     (
         "examples/ein-bugs/mixed-type-hypothesis.ein",
-        &["`Ann`, asserted by hrule `guess`"],
+        &["`Ann`, asserted by rule `guess`"],
     ),
     (
         "examples/ein-bugs/wrong-answers/and-in-and-macro.ein",
@@ -348,7 +347,7 @@ const SEEDED: [(&str, &[&str]); 157] = [
     ),
     (
         "examples/ein-bugs/wrong-answers/empty-match-hrule.ein",
-        &["`b`, asserted by hrule `h`"],
+        &["`b`, asserted by rule `h`"],
     ),
     (
         "examples/ein-bugs/wrong-answers/fresh-name-default.ein",
@@ -442,9 +441,9 @@ const SEEDED: [(&str, &[&str]); 157] = [
     (
         "examples/syntax/query-full.ein",
         &[
-            "`House`, matched by hrule `h1`",
-            "`Tea`, asserted by hrule `h2`",
-            "`Water`, asserted by hrule `h1`",
+            "`House`, matched by rule `h1`",
+            "`Tea`, asserted by rule `h2`",
+            "`Water`, asserted by rule `h1`",
         ],
     ),
     (
@@ -468,18 +467,6 @@ const SEEDED: [(&str, &[&str]); 157] = [
             "`b`, in (facts (r a b))",
             "`c`, in (reasoning (r b c))",
         ],
-    ),
-    (
-        "examples/word_problems/boxes12.ein",
-        &["`read-need`, asserted by rule `readings`"],
-    ),
-    (
-        "examples/word_problems/boxes13.ein",
-        &["`read-need`, asserted by rule `readings`"],
-    ),
-    (
-        "examples/word_problems/readings.ein",
-        &["`read-need`, asserted by rule `readings`"],
     ),
     (
         "stdlib/elim.ein",

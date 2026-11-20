@@ -1,5 +1,5 @@
 ;; `:expect` closes every relation it names, so a name the program writes as a
-;; relation nowhere (no declaration, no fact, no rule or hrule)
+;; relation nowhere (no declaration, no fact, no rule or hypothesis rule)
 ;; would close something that does not exist — and pass, vacuously, for ever.
 
 (relation p Thing Place :why "p holds of {?3} and {?4}")

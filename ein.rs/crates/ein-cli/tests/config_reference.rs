@@ -563,11 +563,11 @@ fn the_retired_flags_are_refused_with_why() {
 
 // ── `--no-require-why`, the loader's flag ──────────────────────────
 
-/// A program whose relation `p`, rule `r1` and hrule `h1` carry no `:why`,
+/// A program whose relation `p`, rule `r1` and hypothesis rule `h1` carry no `:why`,
 /// and which states a claim, so that `ein test` has one to check.
 const NO_WHY: &str = "(relation p Thing)\n(relation q Thing :why \"{?3} is q\")\n\
                       (rule r1 () :match (p ?x) :assert (q ?x))\n\
-                      (hrule h1 () :match (q ?x) :assert (q ?x))\n(p a)\n\
+                      (rule h1 () :match (q ?x) :assert (open (q ?x)))\n(p a)\n\
                       (solve :expect (region (model (p a) (q a))))\n";
 
 /// The commands that load a program: every one takes `--no-require-why`.
@@ -661,7 +661,7 @@ fn require_why_decides_loading_only() {
     let f = write_fixture(&dir, "no-why", NO_WHY);
     let f = f.to_string_lossy().to_string();
     let out = dir.join("no-why.einb").to_string_lossy().to_string();
-    let lines = [("relation", "p"), ("rule", "r1"), ("hrule", "h1")].map(|(head, name)| {
+    let lines = [("relation", "p"), ("rule", "r1"), ("rule", "h1")].map(|(head, name)| {
         format!(
             "{head} '{name}' has no :why \"…\", which this load requires of every {}",
             ein_ir::WHY_REQUIRED_OF

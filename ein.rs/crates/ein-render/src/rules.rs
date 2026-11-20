@@ -854,7 +854,7 @@ fn ein_node(id: &str, word: &str) -> String {
 
 // ── public entry points ────────────────────────────────────────────
 
-/// One `(rule …)`, `(hrule …)` or `(macro …)` form as a DOT digraph, every
+/// One `(rule …)` or `(macro …)` form as a DOT digraph, every
 /// pattern in the canonical form, or folded where `fold`.
 pub fn render_rule_form(ast: &Ast, rule: NodeId, mode: RuleMode, fold: bool) -> String {
     let parts = extract(ast, rule);

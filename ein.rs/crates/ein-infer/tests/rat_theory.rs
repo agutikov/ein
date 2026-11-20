@@ -1030,6 +1030,25 @@ impl Module {
             .collect()
     }
 
+    /// Whether a rule of the module concludes a hypothesis, `(open F)` with
+    /// `F` a fact: what the module would have the search guess.
+    fn guesses(&self) -> bool {
+        self.declared("rule").iter().any(|&(_, r)| {
+            self.ast.form_args(r).iter().any(|&a| match self.ast.node(a) {
+                Node::KwPair { key, value } => {
+                    matches!(self.ast.node(key), Node::Keyword(k) if self.ast.sym(k) == "assert")
+                        && self.ast.conjuncts(value).iter().any(|&c| {
+                            self.ast.head_name(c) == Some("open")
+                                && self.ast.form_args(c).first().is_some_and(|&f| {
+                                    matches!(self.ast.node(f), Node::SForm { .. })
+                                })
+                        })
+                }
+                _ => false,
+            })
+        })
+    }
+
     fn clause(&self, rule: NodeId, keyword: &str) -> NodeId {
         self.ast
             .form_args(rule)
@@ -1179,7 +1198,7 @@ fn the_theory_writes_no_negation_and_no_guard() {
         "the rules that derive the flag"
     );
     assert!(
-        m.declared("hrule").is_empty() && m.declared("macro").is_empty(),
+        !m.guesses() && m.declared("macro").is_empty(),
         "std.math.rat guesses nothing and expands nothing"
     );
 }

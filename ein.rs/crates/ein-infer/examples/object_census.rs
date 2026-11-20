@@ -33,7 +33,7 @@
 //! counts, for each set, the commitments and the states of R that are left.
 //! A program past the limit is `over-limit` and no count is given.
 //!
-//! **Where another rung built H**, an hrule's or the obligations', the marks
+//! **Where another writer built H**, a hypothesis rule or the obligations, the marks
 //! are of that rung's candidates and no cube is run: the question is the
 //! blind enumerator's. For those programs the `alone` columns say what the
 //! blind enumerator would propose at root were it asked

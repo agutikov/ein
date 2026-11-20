@@ -75,8 +75,8 @@
 ;; Explicit rather than defaulted, because this encoding is the one that
 ;; stresses hypothesis filtering: `co-located` spans 30 attribute values
 ;; (zebra2's five projections each span 5), so an unfiltered enumeration
-;; is ~20x larger. The `:hrules` clause in (solve …) is what actually
-;; bounds it; these knobs decide how hard each candidate is tested
+;; is ~20x larger. The hypothesis rule's activators are what actually
+;; bound it; these knobs decide how hard each candidate is tested
 ;; before it is entered.
 (config
   ;; `:record-alternative-justifications` is the one flag set here, and
@@ -167,30 +167,30 @@
 
 
 ;; ──── Hypothesis generation ────────────────────────────────────────
-;; Byte-for-byte zebra2's hrule: the guessed RELATION rides in as the
-;; parameter ?R, so the body names only kernel primitives and variables,
-;; and the `:hrules` activators in (solve …) say what to speculate
-;; about. What differs between the two encodings is *only* the activator
-;; list — zebra2 names five different typed relations, this file names
+;; Byte-for-byte zebra2's hypothesis rule: the guessed RELATION rides in as
+;; the parameter ?R, so the body names only kernel primitives and variables,
+;; and its activators, facts `(guess …)` after the conditions, say what
+;; to speculate about. What differs between the two encodings is *only* the
+;; activator list — zebra2 names five different typed relations, this file names
 ;; the SAME generic `co-located` five times, once per attribute type
 ;; that has to be placed:
 ;;
-;;   zebra2   (color-loc Color House) (nation-loc Nationality House) …
-;;   zebra    (co-located Color House) (co-located Nationality House) …
+;;   zebra2   (guess color-loc Color House) (guess nation-loc Nationality House) …
+;;   zebra    (guess co-located Color House) (guess co-located Nationality House) …
 ;;
 ;; Either way the candidate space is the 25 attribute values × 5 houses
 ;; = 125 raw `(?R V H)` facts — and ~18x smaller than the unguided
 ;; enumeration the file would get without one (2255 candidates over
-;; `co-located` × `next-to`: with no hrule, hypgen fills EVERY slot of
-;; EVERY open relation, type-blind).
+;; `co-located` × `next-to`: with no hypothesis rule, the blind enumerator
+;; fills EVERY slot of EVERY open relation, type-blind).
 ;;
 ;; House is deliberately not an activator's ?T1: a house's own placement
 ;; is not a degree of freedom, and `(co-located House-i House-j)` is
 ;; excluded by same-type slot exclusion anyway.
-(hrule guess (?R ?T1 ?T2)
+(rule guess (?R ?T1 ?T2)
   :match  (and (instance ?a ?T1)
                (instance ?b ?T2))
-  :assert (?R ?a ?b)
+  :assert (open (?R ?a ?b))
   :why    "guess: ({?R} {?a} {?b})?")
 
 
@@ -314,15 +314,13 @@
 ;; (15) The Norwegian lives next to the blue house.
 (next-to    Norwegian Blue       :source "condition (15)")
 
-(solve
-  ;; One activator per attribute type that must be placed — all five
-  ;; naming the same generic link relation.
-  :hrules (guess
-            (co-located Color       House)
-            (co-located Nationality House)
-            (co-located Drink       House)
-            (co-located Cigarette   House)
-            (co-located Pet         House)))
+;; One activator per attribute type that must be placed — all five
+;; naming the same generic link relation.
+(guess co-located Color       House)
+(guess co-located Nationality House)
+(guess co-located Drink       House)
+(guess co-located Cigarette   House)
+(guess co-located Pet         House)
 
 (query
   ;; The two puzzle questions are "who drinks water?" and "who owns the

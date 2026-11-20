@@ -1,10 +1,10 @@
-;;; An hrule whose `:match` calls the stdlib's `unknown`, which reads `not`,
+;;; A hypothesis rule whose `:match` calls the stdlib's `unknown`, which reads `not`,
 ;;; stops a debug build — regression `hrule-reads-unknown`.
 ;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────────
 ;;;
-;;; Two guests, of whom Bob is known not to have paid, and an hrule that supposes a
+;;; Two guests, of whom Bob is known not to have paid, and a hypothesis rule that supposes a
 ;;; guest has paid where that is unknown, `std.macro`'s `(unknown (paid ?g))`: `(and
 ;;; (absent (paid ?g)) (absent (not (paid ?g))))`.
 ;;;
@@ -26,8 +26,8 @@
 (relation paid Guest :why "{?3} has paid")
 (is-a Ann Guest) (is-a Bob Guest)
 (not (paid Bob))
-(hrule suppose ()
+(rule suppose ()
   :match  (and (is-a ?g Guest) (unknown (paid ?g)))
-  :assert (paid ?g)
+  :assert (open (paid ?g))
   :why "suppose {?g} has paid: it is not known whether they have")
 (query :goal (paid ?g) :expect (or (model) (model (paid Ann))))

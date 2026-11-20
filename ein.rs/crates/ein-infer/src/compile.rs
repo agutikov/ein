@@ -605,9 +605,9 @@ impl<'a> Compiler<'a> {
         if rule.params.len() != args.len() {
             // Leaving `bindings` empty would drop every premise headed by a
             // parameter, and a plan whose premises all drop fires
-            // unconditionally. Both drivers filter mismatched activators
-            // before they get here (`activators_for`, `hrule.Hrules`); a
-            // direct caller that constructs the pair anyway gets told, in
+            // unconditionally. Every driver filters mismatched activators
+            // before they get here (`activators_for`); a direct caller that
+            // constructs the pair anyway gets told, in
             // Ein's words: the activator as a fact and the parameters as the
             // rule writes them.
             let fact = crate::events::sexpr(self.terms, fact);
@@ -998,8 +998,7 @@ impl<'a> Compiler<'a> {
     ///
     /// **No program reaches it**: such an activator activates nothing, and
     /// [`activators_for`] hands no plan's driver one (Q-M1f.1), whether the
-    /// program wrote it or a state derived it; an hrule's activator is a
-    /// name. A direct caller of [`compile_rule`] with one does, and reads the
+    /// program wrote it or a state derived it. A direct caller of [`compile_rule`] with one does, and reads the
     /// line in Ein's words (Q-M1f.75).
     fn head_not_a_name(&self, node: NodeId, head: NodeId, v: Value) -> CompileError {
         debug_assert!(v.as_fact().is_some(), "a value that is no name is a fact");

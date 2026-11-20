@@ -8,7 +8,6 @@
 //! (solve :expect (false))                          ; every node dead
 //! (solve :expect (region))                         ; R empty, either kind
 //! (solve
-//!   :hrules (guess (a-prop Item) guess (b-prop Item))
 //!   :expect (region
 //!             (model)                              ; one state of R each
 //!             (model (a-prop X))

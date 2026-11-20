@@ -1174,15 +1174,12 @@ impl Kb {
 
     /// Does a fact with this head **activate** a rule?
     ///
-    /// Both registries that a fact can activate, and only those. A saturation
-    /// rule and an obligation rule find their activators the same way — by
-    /// name, in this index — because the two registries share **one
-    /// name-space**
+    /// The three registries that a fact can activate, and only those. A
+    /// saturation rule, an obligation rule and a rule that concludes a
+    /// hypothesis find their activators the same way — by name, in this
+    /// index — because the registries share **one name-space**
     /// ([08-obligations.md](../../../../docs/ein/user/03-syntax-and-semantics/08-obligations.md#the-form-open-r)):
-    /// which pass walks a rule is not a fact about its activator. `hrules` are absent
-    /// and stay absent — a generic hrule takes its activators from the query's
-    /// `:hrules` keyword and never from the store, because an hrule activator
-    /// steers the search.
+    /// which pass walks a rule is not a fact about its activator.
     fn is_rule_app(&self, rel: Symbol) -> bool {
         self.program.rules.contains(rel)
             || self.program.obligations.contains(rel)
@@ -1402,7 +1399,8 @@ impl Kb {
             }
         }
         // Registry names are unioned in, so a relation declared with no facts
-        // yet still has an entry. An obligation's name is a rule's
+        // yet still has an entry. An obligation's name, and the name of a
+        // rule that concludes a hypothesis, is a rule's
         // (`Program::categorise`), so it is unioned in as a rule's is, and a
         // rule that names one as a value seeds nothing (Q-M1f.226).
         for name in self.program.relations.keys() {
@@ -1412,6 +1410,9 @@ impl Kb {
             layer.names.entry(name);
         }
         for name in self.program.obligations.keys() {
+            layer.names.entry(name);
+        }
+        for name in self.program.hypotheses.keys() {
             layer.names.entry(name);
         }
         layer
@@ -1477,6 +1478,7 @@ impl Kb {
             .keys()
             .chain(self.program.rules.keys())
             .chain(self.program.obligations.keys())
+            .chain(self.program.hypotheses.keys())
         {
             flat.names.entry(name);
         }

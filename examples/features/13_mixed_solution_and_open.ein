@@ -4,7 +4,7 @@
 ;; R is the commitments whose state is alive and discharged
 ;; (docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md § 2). A node that
 ;; owes is alive and not in R; a node that is dead is neither. The candidates
-;; are the two choices the hrule proposes and `(likes Ann Soup)`, which the
+;; are the two choices the hypothesis rule proposes and `(likes Ann Soup)`, which the
 ;; obligation proposes beside them (Q-M1f.570). Among the cube's nodes:
 ;;
 ;;     ∅                              owes 1 — nothing feeds Ann
@@ -60,7 +60,7 @@
 ;; The obligation, which proposes what pays Ann's debt.
 (total-owed likes is-a)
 
-(hrule pick () :match (is-a ?p Person) :assert (choice ?p) :why "suppose {?p} is the one chosen")
+(rule pick () :match (is-a ?p Person) :assert (open (choice ?p)) :why "suppose {?p} is the one chosen")
 
 (rule feeds ()
   :match  (choice Ann)

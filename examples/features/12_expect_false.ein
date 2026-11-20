@@ -24,7 +24,7 @@
 ;;;   no-room    P3 has every hole excluded — ⊥
 ;;;
 ;;; **Why it is forced rather than searched.** The blind three-pigeons-two-holes
-;;; version — no givens, no `forced`, an `(hrule …)` guessing placements — is
+;;; version — no givens, no `forced`, a hypothesis rule guessing placements — is
 ;;; not a contradiction: `--single` says **Ambiguity**, and R's maximal line is
 ;;; 6 states, each placing two pigeons and leaving the third nowhere, which is
 ;;; alive as far as saturation is concerned: nothing in an open world obliges

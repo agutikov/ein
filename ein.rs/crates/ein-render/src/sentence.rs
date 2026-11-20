@@ -16,7 +16,7 @@
 use ein_core::{FactId, Program, Symbol, Terms, Value, render_why};
 
 /// A rule's `:why`, filled with a firing's bindings; `None` where the rule
-/// (or hrule) carries none, or an empty one.
+/// carries none, or an empty one.
 pub fn rule_sentence(
     program: &Program,
     terms: &Terms,
@@ -26,7 +26,7 @@ pub fn rule_sentence(
     let rule = program
         .rules
         .get(rule)
-        .or_else(|| program.hrules.get(rule))?;
+        .or_else(|| program.hypotheses.get(rule))?;
     let template = terms.sym(rule.why?);
     if template.is_empty() {
         return None;

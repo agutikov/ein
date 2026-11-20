@@ -1,11 +1,11 @@
-;;; The same `(neq ?x (and …))` in an hrule: the hypothesis layer matches it and
+;;; The same `(neq ?x (and …))` in a hypothesis rule: the hypothesis layer matches it and
 ;;; proposes a candidate —
 ;;; regression `macro-neq-connective-hrule`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
 ;;; `h`'s `:match` expands to `(and (a ?x) (neq ?x (and (p k))))`, as
-;;; `macro-neq-connective.ein`'s rule does. An hrule's `:match` is read by the
+;;; `macro-neq-connective.ein`'s rule does. A hypothesis rule's `:match` is read by the
 ;;; hypothesis layer, which proposes its conclusion where the match holds.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
@@ -28,8 +28,7 @@
 (is-a k Thing)
 (a k)
 (macro diff (?a ?b) (neq ?a ?b) :why "{?a} is not {?b}")
-(hrule h ()
+(rule h ()
   :match  (and (a ?x) (diff ?x (and (p k))))
-  :assert (p ?x)
+  :assert (open (p ?x))
   :why "{?x} is an a, and not the conjunction, so guess p")
-(solve :hrules (h))

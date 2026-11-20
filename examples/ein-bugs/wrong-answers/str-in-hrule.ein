@@ -1,10 +1,10 @@
-;;; A string written in an hrule's `:assert` proposes nothing —
+;;; A string written in a hypothesis rule's `:assert` proposes nothing —
 ;;; regression `str-in-hrule` (`corpus/regressions.toml`), the
-;;; case's mechanism in an hrule.
+;;; case's mechanism in a hypothesis rule.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; Two `holds` facts, over the names `1` and `a`, and one hrule that
+;;; Two `holds` facts, over the names `1` and `a`, and one hypothesis rule that
 ;;; proposes tagging each with the string `"lbl"`.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
@@ -17,13 +17,13 @@
 ;;; ── What the engine answered, and what it answers ──────────────────────
 ;;;
 ;;; At `ff023413`, in a release build and a debug one, R was `{∅}`: the rule
-;;; compiler did not lower a string, so the hrule's template held an opaque
-;;; slot, which builds no fact, and the hrule rung dropped a template that
-;;; builds none in silence (`hrule.rs`). H was empty: `ein solve FILE -H`
+;;; compiler did not lower a string, so the hypothesis rule's template held an opaque
+;;; slot, which builds no fact, and the hypothesis layer dropped a template that
+;;; builds none in silence. H was empty: `ein solve FILE -H`
 ;;; printed *no candidate: R is {∅} or empty, decided by root alone*. Today
 ;;; the program is refused at the parse: *unexpected `"lbl"`: a string*.
 ;;;
 
 (relation holds Node) (relation tag Node Node)
 (holds 1) (holds a)
-(hrule h () :match (holds ?x) :assert (tag ?x "lbl"))
+(rule h () :match (holds ?x) :assert (open (tag ?x "lbl")))

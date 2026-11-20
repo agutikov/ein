@@ -6,4 +6,4 @@
 
 (relation p Node :why "p holds of {?3}") (relation oorz Node :why "oorz holds of {?3}")
 (p a)
-(hrule h () :match (p ?x) :assert (oorz ?x) :why "p holds of {?x}: guess that oorz holds of {?x} too")
+(rule h () :match (p ?x) :assert (open (oorz ?x)) :why "p holds of {?x}: guess that oorz holds of {?x} too")

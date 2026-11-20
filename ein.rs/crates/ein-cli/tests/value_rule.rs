@@ -84,7 +84,7 @@ const REFUSED: [(&str, &str, &str, &str); 45] = [
     ),
     (
         "absent-hrule-concluded",
-        "(hrule r () :match (p ?x) :assert (absent ?x) :why \"w\")",
+        "(rule r () :match (p ?x) :assert (open (absent ?x)) :why \"w\")",
         "unexpected `absent`",
         ABSENT_NOTE,
     ),
@@ -333,9 +333,9 @@ const REFUSED: [(&str, &str, &str, &str); 45] = [
         "",
     ),
     (
-        "and-pattern-argument-hrule",
-        "(hrule r () :match (and (p ?x) (absent (q (and (p ?x))))) :assert (won ?x) :why \"w\")",
-        "hrule 'r': its :match writes (q (and (p ?x))), and (and (p ?x)) is a connective where \
+        "and-pattern-argument-hypothesis-rule",
+        "(rule r () :match (and (p ?x) (absent (q (and (p ?x))))) :assert (open (won ?x)) :why \"w\")",
+        "rule 'r': its :match writes (q (and (p ?x))), and (and (p ?x)) is a connective where \
          a value goes",
         "",
     ),
@@ -629,7 +629,7 @@ fn the_registers_witnesses_are_refused_on_every_command() {
         ),
         (
             "pattern-argument-hrule",
-            "hrule 'guess': its :match writes (says (or (paid ?g) (welcome ?g)))",
+            "rule 'guess': its :match writes (says (or (paid ?g) (welcome ?g)))",
             "",
         ),
         (

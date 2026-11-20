@@ -3,7 +3,7 @@
 ;;; one could: a resumed fork's delta in an order the interner chose. No
 ;;; corpus core moves, and this is the shape that would make one.
 ;;;
-;;; Two candidates, the hrule's `(on A)` and `(on B)`. Each alone is alive;
+;;; Two candidates, the hypothesis rule's `(on A)` and `(on B)`. Each alone is alive;
 ;;; together `clash` derives (false) from every pair (p ?x) (q ?y), 40 × 40 =
 ;;; 1 600 derivations of two premises each, every one the same closure size.
 ;;; So every core of {(on A), (on B)} is four facts, (on A) (on B) (g x) (h y),
@@ -51,4 +51,4 @@
 (rule mk-q () :match (and (on B) (h ?y)) :assert (q ?y) :why "B is on and h holds of {?y}, so q holds of {?y}")
 (rule clash () :match (and (p ?x) (q ?y)) :assert (false) :why "p holds of {?x} and q of {?y}, which cannot both be")
 
-(hrule guess () :match (sw ?s) :assert (on ?s) :why "guess: on {?s}?")
+(rule guess () :match (sw ?s) :assert (open (on ?s)) :why "guess: on {?s}?")

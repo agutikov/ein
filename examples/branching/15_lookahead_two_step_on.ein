@@ -72,9 +72,9 @@
 
 ;; The generator, written out so the blind rung never runs: the candidates are
 ;; exactly these three and no model can bind a type as an object.
-(hrule guess ()
+(rule guess ()
   :match  (cand ?x)
-  :assert (p ?x)
+  :assert (open (p ?x))
   :why    "guess (p {?x})")
 
 ;; A and B are exclusive — ONE firing, which the pre-branch lookahead sees.

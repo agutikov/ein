@@ -24,7 +24,7 @@
 //! reading over nodes would: [`OVER`], where no alive node derives the
 //! activator and H still holds what would pay it, and [`UNDER`], where the
 //! rule writes the activator with a variable and H gains nothing. So is the
-//! shape it does not reach, [`HRULE_READS_H`]: no activator is derived there
+//! shape it does not reach, [`RULE_READS_H`]: no activator is derived there
 //! at all.
 
 use std::collections::BTreeSet;
@@ -138,28 +138,28 @@ const FLIP: &str = "\
 (solve :no-hypothesis (is-a kind))
 ";
 
-/// Both debts are stated and no activator is derived: the hrule that
-/// proposes a drink reads `likes`, which the other hrule proposes, so it can
+/// Both debts are stated and no activator is derived: the hypothesis rule that
+/// proposes a drink reads `likes`, which the other hypothesis rule proposes, so it can
 /// propose at a node what it did not at root, a `hypothesis` site of the
-/// static check (Q-M1f.574). H is the union (Q-M1f.570): the hrules' at root
+/// static check (Q-M1f.574). H is the union (Q-M1f.570): the hypothesis rules' at root
 /// and what pays root's two debts.
-const HRULE_READS_H: &str = "\
+const RULE_READS_H: &str = "\
 (is-a Ann Person) (is-a Soup Food) (is-a Tea Drink)
 (total-owed likes is-a)
 (total-owed drinks is-a)
-(hrule guess-likes  () :match (and (is-a ?a Person) (is-a ?b Food))  :assert (likes ?a ?b)  :why \"guess: (likes {?a} {?b})?\")
-(hrule guess-drinks () :match (and (likes ?p ?f) (is-a ?d Drink)) :assert (drinks ?p ?d) :why \"{?p} likes {?f}; guess: (drinks {?p} {?d})?\")
+(rule guess-likes  () :match (and (is-a ?a Person) (is-a ?b Food))  :assert (open (likes ?a ?b))  :why \"guess: (likes {?a} {?b})?\")
+(rule guess-drinks () :match (and (likes ?p ?f) (is-a ?d Drink)) :assert (open (drinks ?p ?d)) :why \"{?p} likes {?f}; guess: (drinks {?p} {?d})?\")
 ";
 
-/// The witness beside hrules that each propose a relation where its activator
+/// The witness beside hypothesis rules that each propose a relation where its activator
 /// holds: the obligations write beside them, and the later debt pays as it
-/// does with no hrule (Q-M1f.570).
-const HRULE_DERIVED: &str = "\
+/// does with no hypothesis rule (Q-M1f.570).
+const RULES_DERIVED: &str = "\
 (is-a Ann Person) (is-a Soup Food) (is-a Tea Drink)
 (total-owed likes is-a)
 (rule arm () :match (likes ?p ?f) :assert (total-owed drinks is-a) :why \"{?p} likes {?f}, which switches on the debt that every Person drinks a Drink\")
-(hrule guess-likes  () :match (and (total-owed likes is-a)  (is-a ?a Person) (is-a ?b Food))  :assert (likes ?a ?b)  :why \"likes is owed; guess: (likes {?a} {?b})?\")
-(hrule guess-drinks () :match (and (total-owed drinks is-a) (is-a ?a Person) (is-a ?b Drink)) :assert (drinks ?a ?b) :why \"drinks is owed; guess: (drinks {?a} {?b})?\")
+(rule guess-likes  () :match (and (total-owed likes is-a)  (is-a ?a Person) (is-a ?b Food))  :assert (open (likes ?a ?b))  :why \"likes is owed; guess: (likes {?a} {?b})?\")
+(rule guess-drinks () :match (and (total-owed drinks is-a) (is-a ?a Person) (is-a ?b Drink)) :assert (open (drinks ?a ?b)) :why \"drinks is owed; guess: (drinks {?a} {?b})?\")
 (solve :no-hypothesis (is-a))
 ";
 
@@ -277,8 +277,8 @@ const PROBES: &[Probe] = &[
         flagged: true,
     },
     Probe {
-        name: "an hrule reads what the other proposes, no activator derived",
-        body: HRULE_READS_H,
+        name: "a hypothesis rule reads what the other proposes, no activator derived",
+        body: RULE_READS_H,
         rung: Mode::Union,
         universe: Ok(&[TEA, LIKES_SOUP]),
         later: &[],
@@ -286,8 +286,8 @@ const PROBES: &[Probe] = &[
         flagged: true,
     },
     Probe {
-        name: "the witness beside the hrules",
-        body: HRULE_DERIVED,
+        name: "the witness beside the hypothesis rules",
+        body: RULES_DERIVED,
         rung: Mode::Union,
         universe: Ok(&[TEA, LIKES_SOUP]),
         later: &[("(total-owed drinks is-a)", &["arm"], &[TEA])],

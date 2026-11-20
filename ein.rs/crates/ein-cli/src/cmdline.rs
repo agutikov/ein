@@ -192,7 +192,7 @@ fn no_require_why() -> Arg {
         .long("no-require-why")
         .action(ArgAction::SetTrue)
         .help(
-            "load a program in which a relation, rule, hrule or macro carries \
+            "load a program in which a relation, rule or macro carries \
              no :why \"…\". By default such a program is refused, one line per \
              form. It decides whether a program loads, never what a loaded one \
              answers",

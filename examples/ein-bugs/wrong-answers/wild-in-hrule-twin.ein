@@ -1,9 +1,9 @@
 ;;; The twin of `wild-in-hrule.ein`: the same program with the
-;;; wildcard `_` written as `?any`, a variable the hrule reads nowhere else.
-;;; The hrule proposes `(tag a)`, and R is `∅` and `{(tag a)}` (`ein solve
+;;; wildcard `_` written as `?any`, a variable the hypothesis rule reads nowhere else.
+;;; The hypothesis rule proposes `(tag a)`, and R is `∅` and `{(tag a)}` (`ein solve
 ;;; FILE`): the answer the witness's `_` was read as meaning, where the
 ;;; witness itself is refused at the parse (Q-M1e2.22).
 
 (relation holds Node Node :why "{?3} holds {?4}") (relation tag Node :why "{?3} is tagged")
 (holds a b)
-(hrule h () :match (holds ?x ?any) :assert (tag ?x) :why "{?x} holds {?any}: guess that {?x} is tagged")
+(rule h () :match (holds ?x ?any) :assert (open (tag ?x)) :why "{?x} holds {?any}: guess that {?x} is tagged")

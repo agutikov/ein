@@ -1,4 +1,4 @@
-;;; A macro whose body writes `absent` over two premises, called in an hrule:
+;;; A macro whose body writes `absent` over two premises, called in a hypothesis rule:
 ;;; `ein saturate` answers and every solve question stops —
 ;;; regression `macro-absent-hrule`.
 ;;;
@@ -6,8 +6,8 @@
 ;;;
 ;;; `two`'s body is `(absent ?a ?b)`, so `(two (p ?x) (q ?x))` expands to an
 ;;; `absent` of two premises, which the grammar refuses where a rule writes it
-;;; (negation as failure is over one premise). An hrule is compiled where the
-;;; hypothesis layer asks it for candidates, which a saturation never does.
+;;; (negation as failure is over one premise). A hypothesis rule is compiled by
+;;; the pass that writes a state's `open` facts, never by a saturation.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
@@ -18,7 +18,7 @@
 ;;;
 ;;; At `dbfd7862`, release: every solve question, `oracle` and `render lattice`
 ;;; stopped where the hypothesis layer compiles `h`, exit 1, on the compiler's
-;;; line; `ein saturate` and `render kb`, which ask no hrule for candidates,
+;;; line; `ein saturate` and `render kb`, which ask no hypothesis rule for candidates,
 ;;; answered, exit 0.
 ;;; The engine refuses it at load.
 ;;;
@@ -30,8 +30,7 @@
 (is-a k Thing)
 (a k)
 (macro two (?a ?b) (absent ?a ?b) :why "neither {?a} nor {?b}")
-(hrule h ()
+(rule h ()
   :match  (and (a ?x) (two (p ?x) (q ?x)))
-  :assert (p ?x)
+  :assert (open (p ?x))
   :why "{?x} is an a, and neither a p nor a q, so guess it is a p")
-(solve :hrules (h))

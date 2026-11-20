@@ -657,14 +657,13 @@ fn a_rule_needs_params_and_a_query_needs_a_kw_pair() {
     for src in [
         "(rule x :match (a) :assert (b))",
         "(rule x)",
-        "(hrule x)",
         "(query)",
     ] {
         rejected(src);
     }
     for src in [
         "(rule x () :match (a) :assert (b))",
-        "(hrule x () :match (a) :assert (b))",
+        "(rule x () :match (a) :assert (open (b)))",
         "(query :goal (x))",
         "(config)",
         "(rule x ())",
@@ -753,7 +752,7 @@ fn any_head_outside_the_declarator_set_is_a_generic_fact() {
         "unexpected `:foo`: a keyword this form does not take"
     );
     for word in [
-        "rule", "hrule", "query", "config", "macro", "import", "trace",
+        "rule", "query", "config", "macro", "import", "trace",
     ] {
         let src = format!("({word} a b c)");
         assert!(
@@ -790,12 +789,10 @@ fn any_head_outside_the_declarator_set_is_a_generic_fact() {
 #[test]
 fn the_documented_ambiguities_resolve_as_recorded() {
     // `None` = a parse error. `Some(s)` = accepted, dumping to `s`.
-    let cases: [(&str, Option<&str>); 78] = [
+    let cases: [(&str, Option<&str>); 77] = [
         // unexpected `?a`: a variable
         ("(rulex (?a) :match X :assert Y)", None),
         ("(rulex A)", Some("(rulex A)")),
-        // unexpected `?a`: a variable
-        ("(hrulex (?a) :match X :assert Y)", None),
         // unexpected `?a`: a variable
         ("(macrox (?a) B)", None),
         // unexpected `:as`

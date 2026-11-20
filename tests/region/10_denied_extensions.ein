@@ -32,13 +32,11 @@
   :assert (not (seats ?h ?c))
   :why    "{?g} sits on {?c}, so {?h} does not")
 
-(hrule guess ()
+(rule guess ()
   :match  (and (is-a ?g Guest) (is-a ?c Chair))
-  :assert (seats ?g ?c)
+  :assert (open (seats ?g ?c))
   :why    "guess that {?g} sits on {?c}")
 
-(solve
-  :hrules (guess))
 
 (query
   :goal   (seats ?who ?where)

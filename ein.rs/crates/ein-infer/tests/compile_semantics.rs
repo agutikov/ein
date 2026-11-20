@@ -424,7 +424,7 @@ fn a_nested_or_is_refused_in_a_premise_and_inside_an_absent() {
 /// a variable as the whole conclusion. **The loader refuses all three**
 /// (`ein_ir::from_ir`'s `refuse_malformed_primitives`, and
 /// Q-M1f.80), with the same words, the position where the expanded form is
-/// written first, so a rule only a commitment activates, an hrule and an
+/// written first, so a rule only a commitment activates, a hypothesis rule and an
 /// obligation are refused by every command, not only where they are compiled
 /// or fired; the compiler's two arms and the firing's line are invariants. So
 /// is a relation variable no parameter binds under an `absent`, the loader's
@@ -881,7 +881,7 @@ fn arity_three_is_unenumerated() {
 /// The text every command prints when it refuses a program is the loader's
 /// line or the compiler's, behind at most `kb load error: ` (`ein-cli`'s
 /// `common`). So every corpus program is loaded, and where it loads, every plan
-/// its rules, hrules and obligations compile, one per activator as the engine
+/// its rules, hypothesis rules and obligations compile, one per activator as the engine
 /// compiles them, and every query's goal: no refusal holds the Python class,
 /// the IR's repr, a `Loc(…)` or a development id. The compile refusals a
 /// corpus program reaches are counted, and there are none: the macro body's
@@ -919,7 +919,7 @@ fn no_corpus_program_is_refused_in_the_python_spelling() {
         let rules: Vec<_> = program
             .rules
             .values()
-            .chain(program.hrules.values())
+            .chain(program.hypotheses.values())
             .chain(program.obligations.values())
             .cloned()
             .collect();

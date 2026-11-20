@@ -62,7 +62,7 @@ fn parse_view(ast: &Ast, forms: &[NodeId], view: &str) -> Result<String, String>
         forms
             .iter()
             .copied()
-            .filter(|f| matches!(ast.head_name(*f), Some("rule" | "hrule")))
+            .filter(|f| ast.head_name(*f) == Some("rule"))
             .collect()
     };
     Ok(match view {

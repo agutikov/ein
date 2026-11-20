@@ -33,6 +33,6 @@
 
 (rule mk () :match (seed ?x) :assert (p ?x) :why "{?x} is a seed, so p holds of {?x}")
 
-(hrule g () :match (seed ?x) :assert (q ?x) :why "{?x} is a seed: guess that q holds of {?x}")
+(rule g () :match (seed ?x) :assert (open (q ?x)) :why "{?x} is a seed: guess that q holds of {?x}")
 
 (rule neg () :match (q ?x) :assert (not (p ?x)) :why "q holds of {?x}, so p does not hold of {?x}")

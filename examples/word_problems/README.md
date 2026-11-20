@@ -99,7 +99,7 @@ sharing's quotient and remainder).
 [`gaps.ein`](gaps.ein) adds, by `absent`, `(not-stated Q)` for a quantity that is wanted, has no value and needs
 nothing; `(unanswered QUESTION Q)` for a question that rests on one; and `(rests-on QUESTION Q NUMBER)` for a
 question computed from an assumption. [`readings.ein`](readings.ein) adds the readings of *need* as facts,
-`(reading-of need whole-only)` and `(reading-of need pack-all)`, the hrule `read-need` that proposes `(reads-as
+`(reading-of need whole-only)` and `(reading-of need pack-all)`, the hypothesis rule `read-need` that proposes `(reads-as
 need R)` for every question of how many containers are needed, a rule a reading that answers under it, and the
 obligation `reading-owed`: a state with such a question and no reading **owes** one, so root is not in R and
 every state of R names the reading its answer rests on. [`listed_is_all.ein`](listed_is_all.ein) is an
@@ -110,7 +110,7 @@ problem that adopts it states that `has` is no hypothesis relation, `(solve :no-
 
 Each module has one entry rule, as `std.math.decimal-arith` has `decimal-arith`: `(import words :symbols (words))`, `(import gaps
 :symbols (gaps))`, `(import readings :symbols (readings))`, `(import listed_is_all :symbols (listed-is-all))`. A
-problem that imports `readings` also writes `(solve :hrules (read-need))`, which a module cannot write for it.
+problem that imports `readings` needs nothing more: `read-need` has no parameter, so it needs no activator.
 
 ## The forms the theory takes
 

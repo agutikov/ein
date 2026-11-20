@@ -1045,8 +1045,8 @@ fn a_bare_underscore_names_nothing_in_every_place() {
             "(rule w () :match (p ?x) :assert (tag ?x {}))",
         ),
         (
-            "an hrule's conclusion",
-            "(hrule g () :match (p ?x) :assert (tag ?x {}))",
+            "a hypothesis",
+            "(rule g () :match (p ?x) :assert (open (tag ?x {})))",
         ),
         ("a query's goal", "(query :goal (hit {}))"),
         (
@@ -1470,7 +1470,7 @@ fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
         ),
         (
             "examples/ein-bugs/wrong-answers/hrule-assert-var.ein",
-            line("hrule", "h", "y", ""),
+            line("rule", "h", "y", ""),
         ),
         (
             "examples/ein-bugs/wrong-answers/assert-var-never-fires.ein",
@@ -3093,7 +3093,7 @@ fn a_goals_empty_row_says_whether_the_goal_has_a_variable() {
 /// command that answers a
 /// program: `()` is the empty conjunction, which is true, so a rule whose
 /// `:match` is `()` fires once at root, or once per activator fact, with only
-/// its parameters bound, and an hrule's proposes its conclusion likewise; and
+/// its parameters bound, and a hypothesis rule's proposes its conclusion likewise; and
 /// `:assert ()` concludes nothing. `()` is no premise over the parser's
 /// synthetic `#empty`, which no fact holds and which would never fire the rule
 /// in silence, and `:assert ()` stores no fact under that head, whose
@@ -3188,7 +3188,7 @@ fn an_empty_match_fires_and_an_empty_conclusion_asserts_nothing() {
     assert_eq!(r.code, 0, "{}", r.err);
     let md = std::fs::read_to_string(dir.join("oracle/region.md")).expect("region.md");
     assert!(md.contains("core ∅ by r"), "{md}");
-    // The hrule proposes its conclusion: H is `(q b)`.
+    // The hypothesis rule proposes its conclusion: H is `(q b)`.
     let r = ein(&["solve", "-H", &w("empty-match-hrule")]);
     assert!(r.out.lines().any(|l| l.trim() == "(q b)"), "{}", r.out);
 }
@@ -3228,8 +3228,8 @@ fn eq_at_another_arity_is_refused_at_load() {
         (
             w("eq-arity-hrule"),
             format!(
-                "hrule 'h': its parameter ?R heads (?R ?x), a form of 1 argument, and (solve \
-                 :hrules (h (eq))) binds ?R to eq {tail}"
+                "rule 'h': its parameter ?R heads (?R ?x), a form of 1 argument, and the fact \
+                 (h eq) binds ?R to eq {tail}"
             ),
         ),
         (
@@ -3344,7 +3344,7 @@ fn every_command(file: &str, einb: &str) -> Vec<(Vec<String>, i32)> {
 /// the loader's, behind `kb load error: `, with none of the Python IR's
 /// spelling on stderr, not a refusal made where a plan is compiled, printed
 /// several ways, while a command that never compiles the plan answers (a
-/// commitment's activator, an hrule, a goal, a rule no activator reaches,
+/// commitment's activator, a hypothesis rule, a goal, a rule no activator reaches,
 /// the views and `kb save`).
 ///
 /// `(eq ?x)` in a macro's body is the loader's refusal too (Q-M1f.80):
@@ -3377,7 +3377,7 @@ fn a_compile_refusal_reads_the_same_on_every_command() {
         (w("nested-or-under-commitment"), rule.clone()),
         (
             w("nested-or-hrule"),
-            nested("hrule 'h'", ":match", "split the rule"),
+            nested("rule 'h'", ":match", "split the rule"),
         ),
         (w("nested-or-never-compiled"), rule.clone()),
         (w("nested-or-goal"), goal.clone()),

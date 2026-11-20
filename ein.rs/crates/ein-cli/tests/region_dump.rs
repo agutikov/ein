@@ -132,7 +132,7 @@ fn wide_program(dir: &Path, n: usize) -> PathBuf {
         s.push_str(&format!("(is-a x{i} T) (cand x{i})\n"));
     }
     s.push_str(
-        "(hrule guess () :match (cand ?x) :assert (p ?x) :why \"guess that p holds of the candidate {?x}\")\n\
+        "(rule guess () :match (cand ?x) :assert (open (p ?x)) :why \"guess that p holds of the candidate {?x}\")\n\
          (query :goal (cand ?x))\n",
     );
     let path = dir.join(format!("wide-{n}.ein"));

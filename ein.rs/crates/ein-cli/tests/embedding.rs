@@ -165,7 +165,7 @@ fn run(path: &Path) -> Result<String, String> {
 fn the_worked_example_runs() {
     let out = run(&repo_root().join("examples/zebra2.ein")).expect("solve zebra2");
     let want = "\
-loaded 84 facts
+loaded 89 facts
 one state: 25 facts over H
   h_water = House-1
   h_zebra = House-5

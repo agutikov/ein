@@ -4,7 +4,7 @@
 //! A fact argument is a name (a [`crate::Symbol`]) or a nested fact. A name
 //! prints **bare** where its text reads back as one name under the name rule
 //! (Q-M1e2.24, and `ein.l`'s `NAME`): a run of
-//! [name characters](is_name_char), not a bare `_`, not one of the eleven
+//! [name characters](is_name_char), not a bare `_`, not one of the ten
 //! words that are never a name ([`LEXER_KEYWORDS`]) and not one of the
 //! engine's three writeback names. So `1`, `07`, `-7`, `1..5`, `it's` and
 //! `[a]` print bare, and `(p 1) (p 01)` print as two facts. Anything else
@@ -26,14 +26,14 @@
 
 use std::borrow::Cow;
 
-/// The eleven words that are never a name (`ein-ir`'s
+/// The ten words that are never a name (`ein-ir`'s
 /// `grammar::RESERVED_WORDS`, tokens of their own in `ein.l`): a name that is
 /// one of them prints quoted. A longer run (`not-red`, `rule.x`, `neq-1`) is
 /// the name it spells, a reserved word being a whole token. `open` is no
 /// longer one of them (Q-M1f.66): it is a name wherever a name goes, and a
 /// form headed `open`, which the kernel reads, prints bare ([`head`]).
 pub const LEXER_KEYWORDS: &[&str] = &[
-    "and", "or", "neq", "rule", "hrule", "query", "solve", "config", "trace", "macro", "import",
+    "and", "or", "neq", "rule", "query", "solve", "config", "trace", "macro", "import",
 ];
 
 /// A character of a name, under the name rule (`ein.l`'s `NAME`): ASCII
@@ -71,7 +71,7 @@ pub fn is_name_char(ch: char) -> bool {
 
 /// Does `s`, written bare, read back as one name? A run of
 /// [name characters](is_name_char) that is not a bare `_`, not one of the
-/// eleven words that are never a name ([`LEXER_KEYWORDS`]), and not one of
+/// ten words that are never a name ([`LEXER_KEYWORDS`]), and not one of
 /// the engine's three writeback names (`ein.l`'s `WRITEBACK`). The
 /// fourteen words a position gives a meaning to (`relation`, `model`, `not`, …) are
 /// names wherever a name goes, so they print bare.

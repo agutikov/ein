@@ -1,15 +1,15 @@
-;;; A disjunction nested inside a conjunction, in an hrule: `ein saturate`
+;;; A disjunction nested inside a conjunction, in a hypothesis rule: `ein saturate`
 ;;; answers and every solve question stops — regression
 ;;; `nested-or-hrule`.
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; An hrule is compiled where the hypothesis layer asks it for candidates,
-;;; which a saturation never does.
+;;; A hypothesis rule is compiled by the pass that writes a state's `open` facts,
+;;; never by a saturation.
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; An `(or …)` is a whole `:match`, an hrule's as a rule's, so `h` is
+;;; An `(or …)` is a whole `:match`, a hypothesis rule's as a rule's, so `h` is
 ;;; refused at load: every command exits 1 (`ein test`: 2).
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
@@ -22,8 +22,7 @@
 (relation p Thing :why "{?3} is a p")
 (relation q Thing :why "{?3} is a q")
 (a k)
-(hrule h ()
+(rule h ()
   :match  (and (a ?x) (or (p ?x) (q ?x)))
-  :assert (p ?x)
+  :assert (open (p ?x))
   :why "{?x} is an a, and a p or a q, so guess it is a p")
-(solve :hrules (h))

@@ -311,13 +311,13 @@ fn mode_and_view_names_alias_and_an_unknown_one_is_refused() {
 
 // ── the static file views (`ein render rules` / `rule`) ──
 
-/// The `(rule …)` / `(hrule …)` forms of a parsed file, in file order — the
+/// The `(rule …)` / a rule that concludes `(open F)` forms of a parsed file, in file order — the
 /// `rule_forms` the `render` subcommands filter on.
 fn rule_forms(ast: &Ast, forms: &[NodeId]) -> Vec<NodeId> {
     forms
         .iter()
         .copied()
-        .filter(|f| matches!(ast.head_name(*f), Some("rule" | "hrule")))
+        .filter(|f| ast.head_name(*f) == Some("rule"))
         .collect()
 }
 

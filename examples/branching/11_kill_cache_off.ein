@@ -11,7 +11,7 @@
 ;;; Dog. The model is unique: R's maximal line is one state, Blue, Milk,
 ;;; Dog and Cigar together, and every row the query has says ?p = Dog.
 ;;;
-;;; The hrule `guess` proposes 18 candidates, 12 of them dead alone, and
+;;; The hypothesis rule `guess` proposes 18 candidates, 12 of them dead alone, and
 ;;; every minimal dead set is one of those 12. The other six are the
 ;;; pairs among Blue, Milk, Dog and Cigar; any set of them is alive, so R
 ;;; is a sub-cube of dimension 6, 64 commitments, whose closures are 15
@@ -68,11 +68,11 @@
 
 ;; Type-aware candidate generation: propose a `co-located` between an
 ;; instance of attribute type ?A and one of type ?B. (Blind hypgen would
-;; emit type-wrong pairs that never resolve; the hrule keeps generation
+;; emit type-wrong pairs that never resolve; the hypothesis rule keeps generation
 ;; type-aware — the mini_zebra pattern, demo 05.)
-(hrule guess (?A ?B)
+(rule guess (?A ?B)
   :match  (and (is-a ?a ?A) (is-a ?b ?B))
-  :assert (co-located ?a ?b)
+  :assert (open (co-located ?a ?b))
   :why    "guess: are {?a} and {?b} co-located?")
 
 (relation is-a       T T :why "{?3} is a {?4}")
@@ -93,10 +93,12 @@
 (co-located Red Cat  :source "(2) the Red house keeps the Cat")
 (co-located Red Pipe :source "(3) the Red house smokes a Pipe")
 
-(solve
-  :hrules (
-    guess (Color Drink) guess (Color Pet) guess (Color Smoke)
-    guess (Drink Pet)   guess (Drink Smoke) guess (Pet Smoke)))
+(guess Color Drink)
+(guess Color Pet)
+(guess Color Smoke)
+(guess Drink Pet)
+(guess Drink Smoke)
+(guess Pet Smoke)
 
 (query
   :goal (and (co-located ?x Milk) (co-located ?x ?p) (is-a ?p Pet)))

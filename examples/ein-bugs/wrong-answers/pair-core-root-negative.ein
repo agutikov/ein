@@ -31,6 +31,6 @@
 (seed a)
 (not (p a))
 
-(hrule g () :match (seed ?x) :assert (q ?x) :why "{?x} is a seed: guess that q holds of {?x}")
+(rule g () :match (seed ?x) :assert (open (q ?x)) :why "{?x} is a seed: guess that q holds of {?x}")
 
 (rule pos () :match (q ?x) :assert (p ?x) :why "q holds of {?x}, so p holds of {?x}")

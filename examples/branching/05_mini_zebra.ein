@@ -48,14 +48,14 @@
 ;; (Nationality/Drink/Pet) through one relation, so a 2-slot
 ;; signature can't name all three for hypgen's name-free object
 ;; exclusion. Instead, object selection moves into user space: this
-;; `guess` hrule proposes a `co-located` between an instance of one
+;; `guess` hypothesis rule proposes a `co-located` between an instance of one
 ;; attribute type and an instance of another. `(is-a ?a ?A)` binds
 ;; ?a to the *instances* of the activator type ?A (the attribute
 ;; types are `is-a T`, never `is-a Nationality`), so leaves are
 ;; selected by pattern, not by a kernel is-a-leaf rule.
-(hrule guess (?A ?B)
+(rule guess (?A ?B)
   :match  (and (is-a ?a ?A) (is-a ?b ?B))
-  :assert (co-located ?a ?b)
+  :assert (open (co-located ?a ?b))
   :why    "guess: are {?a} and {?b} co-located?")
 
 (relation is-a       T T :why "{?3} is a {?4}")
@@ -74,11 +74,9 @@
 (co-located Alice Tea :source "(1) Alice drinks Tea")
 (co-located Alice Cat :source "(2) Alice has the Cat")
 
-(solve
-  :hrules (
-    guess (Nationality Drink)
-    guess (Nationality Pet)
-    guess (Drink Pet)))
+(guess Nationality Drink)
+(guess Nationality Pet)
+(guess Drink Pet)
 
 (query
   :goal (and (co-located ?n Coffee)

@@ -132,11 +132,11 @@ fn root_block(terms: &Terms, kb: &Kb, stats: &ein_infer::region::RootStats) -> J
 ///
 /// The probe of
 /// [what a state of R leaves open](../../../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md#5-a-state-of-r-is-a-model-of-the-program-as-h-scopes-it)
-/// takes: `complete` means *the active rung proposes nothing*, and the active
-/// rung is whichever of the three the program earned. A node the hrule rung or
-/// the obligations rung called complete may still have facts the blind
-/// enumerator would guess at, and their number is the difference between "one
-/// model" and "2ⁿ models" when the reading is open-world.
+/// takes: `complete` means *the writers propose nothing*, the writers being
+/// whichever the program has. A node the hypothesis rules or the obligations
+/// called complete may still have facts the blind enumerator would guess at,
+/// and their number is the difference between "one model" and "2ⁿ models"
+/// when the reading is open-world.
 ///
 /// **It is a read, and that is the whole design.** The pass is config-free
 /// (no lookahead filter, so no `(not h)` kill is written) and writes nothing

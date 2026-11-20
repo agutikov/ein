@@ -6,5 +6,5 @@
 
 (relation p Node :why "p holds of {?3}") (relation nneqw Node :why "nneqw holds of {?3}") (relation tag Node :why "{?3} is tagged")
 (p a) (nneqw a)
-(hrule h () :match (p ?x) :assert (tag ?x) :why "p holds of {?x}; guess that {?x} is tagged")
+(rule h () :match (p ?x) :assert (open (tag ?x)) :why "p holds of {?x}; guess that {?x} is tagged")
 (query :goal (nneqw ?y))

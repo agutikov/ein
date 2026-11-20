@@ -1,4 +1,4 @@
-;;; Load-negative — a `rule` with no `:assert` and an `hrule` with no `:match`.
+;;; Load-negative — a `rule` with no `:assert` and a hypothesis rule with no `:match`.
 ;;;
 ;;; Both halves of a declarator are required, and the message accumulates:
 ;;; two errors in the rule pass, in form order. `rule_missing_assert.ein` and
@@ -13,4 +13,4 @@
 ;;; contains these shapes.
 
 (rule only-match () :match (r ?a ?b) :why "r holds of {?a} and {?b}, and with no :assert the rule concludes nothing")
-(hrule h () :assert (r a b) :why "guess that r holds of a and b")
+(rule h () :assert (open (r a b)) :why "guess that r holds of a and b")

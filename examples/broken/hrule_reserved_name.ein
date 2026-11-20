@@ -1,3 +1,0 @@
-;; …and the hrule namespace, which reports its own kind.
-
-(hrule absent () :match (x ?a) :assert (y ?a) :why "w")

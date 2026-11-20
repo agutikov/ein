@@ -66,8 +66,8 @@ const STDLIB_ALIAS: &str = "std";
 /// them, brings no second copy and moves the module from nowhere.
 pub const CORE: &str = "std.core";
 
-/// The four heads that *bind* a name.
-const DECLARATORS: [&str; 4] = ["rule", "hrule", "relation", "macro"];
+/// The three heads that *bind* a name.
+const DECLARATORS: [&str; 3] = ["rule", "relation", "macro"];
 
 /// The heads of the top-level forms that are neither a declaration nor a
 /// fact: what a program asks, how it is solved and configured, an engine's

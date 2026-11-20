@@ -121,8 +121,8 @@ impl From<Overflow> for FireError {
 /// hold*). A conclusion `(not ?x)` is of a variable bound to a fact, a
 /// stored negation among them, whose negation is a fact too (Q-M1f.391);
 /// where a binding gives it a name there is nothing to conclude, so the
-/// firing stores nothing for it and an hrule proposes nothing, as a true `eq`
-/// conclusion adds nothing ([`build_conclusion`]). The loader refuses the
+/// firing stores nothing for it, as a true `eq` conclusion adds nothing
+/// ([`build_conclusion`]). The loader refuses the
 /// shape wherever the program shows the variable can hold a name
 /// (`ein_ir::from_ir`'s `refuse_negated_names`); this is what is left, a
 /// binding only a run meets (Q-M1f.128). Stored, `(not k)` would be a fact
@@ -253,8 +253,8 @@ fn not_a_fact(
         // A whole conclusion that is no fact, `?y` or a name (Q-M1f.351): only a macro's
         // body writes one (`(macro id (?x) ?x)` called as a conclusion). A
         // line here would stop only the firing that met it, so a rule only a
-        // commitment activates would load and some commands would answer it,
-        // and an hrule's would be dropped in silence. The loader
+        // commitment activates would load and some commands would answer it.
+        // The loader
         // refuses it, after expansion, with the same words (`ein_ir::from_ir`'s
         // `refuse_malformed_primitives`), so no program reaches it.
         (None, None) => unreachable!(

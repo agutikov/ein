@@ -128,7 +128,7 @@ fn provided(rel: &str) -> BTreeSet<String> {
     let p = kb.program();
     p.rules
         .keys()
-        .chain(p.hrules.keys())
+        .chain(p.hypotheses.keys())
         .map(|s| ein_corpus::unprefixed(terms.sym(s)))
         .collect()
 }

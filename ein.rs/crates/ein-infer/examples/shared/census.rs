@@ -138,7 +138,7 @@ pub fn root_of<T>(
             events: &mut events,
             memo: memo.clone(),
         };
-        ein_infer::hrule::Hrules::new(&mut s)
+        ein_infer::hypothesis_rules::HypothesisRules::new(&mut s)
             .map(|h| h.plans().to_vec())
             .unwrap_or_default()
     };

@@ -1,7 +1,7 @@
 ;; LOAD NEGATIVE — a lattice keyword left on (query …).
 ;;
-;; Solving and asking are two forms: the keywords that choose the
-;; candidate list (`:hrules`, `:hypothesis-relations`, `:no-hypothesis`) are the
+;; Solving and asking are two forms: the keywords that configure the
+;; candidates (`:hypothesis-relations`, `:no-hypothesis`, `:no-search`) are the
 ;; lattice's, and the lattice is stated once, in `(solve …)`. Several queries
 ;; ask about one region, so a query may not choose its own. The loader says where
 ;; the keyword went instead of calling it unknown.

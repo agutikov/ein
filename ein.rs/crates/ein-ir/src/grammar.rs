@@ -55,12 +55,12 @@ pub use lrpar::parser::RECOVERY_STEP_BUDGET;
 /// rest.
 pub const REPAIRS_SHOWN: usize = 3;
 
-/// The eleven words that are never a name: tokens of their own in `ein.l`,
+/// The ten words that are never a name: tokens of their own in `ein.l`,
 /// each a declarator or a kernel connective. `ein_core::text::LEXER_KEYWORDS`
 /// is the printer's copy, which `the_reserved_words_are_the_printers` holds
 /// to this one.
-pub const RESERVED_WORDS: [&str; 11] = [
-    "and", "or", "neq", "rule", "hrule", "query", "solve", "config", "trace", "macro", "import",
+pub const RESERVED_WORDS: [&str; 10] = [
+    "and", "or", "neq", "rule", "query", "solve", "config", "trace", "macro", "import",
 ];
 
 /// The fifteen words a position gives a meaning to: tokens of their own in
@@ -141,8 +141,7 @@ pub fn shown_char(c: char) -> String {
 /// The `(query …)` keywords that choose the lattice, which belong on
 /// `(solve …)`, one program having one lattice: a query that writes one is
 /// refused at the keyword, with a note saying where it goes.
-const LATTICE_KEYWORDS: [&str; 4] = [
-    ":hrules",
+const LATTICE_KEYWORDS: [&str; 3] = [
     ":hypothesis-relations",
     ":no-hypothesis",
     ":no-search",
@@ -656,7 +655,7 @@ fn empty_connective(
         }
     }
     let place = match (head, name, clause) {
-        (Some(h @ ("rule" | "hrule")), Some(n), Some(c)) => format!("{h} '{n}''s {c}"),
+        (Some(h @ "rule"), Some(n), Some(c)) => format!("{h} '{n}''s {c}"),
         (Some(h @ ("query" | "solve")), _, Some(c)) => format!("the {h}'s {c}"),
         (Some("macro"), Some(n), _) => format!("macro '{n}''s template"),
         _ => "this form".to_string(),
@@ -665,18 +664,18 @@ fn empty_connective(
     // value, not inside another connective.
     let whole = matches!(before.as_slice(), [.., c, "(", _] if Some(*c) == clause);
     Some(match (word, head, clause, whole) {
-        ("and", Some("rule" | "hrule"), Some(":match"), true) => format!(
+        ("and", Some("rule"), Some(":match"), true) => format!(
             "{place} writes (and), the empty conjunction, whose one spelling is () — and takes \
              one premise or more"
         ),
-        ("and", Some("rule" | "hrule"), Some(":assert"), true) => format!(
+        ("and", Some("rule"), Some(":assert"), true) => format!(
             "{place} writes (and), the empty conclusion, whose one spelling is () — and takes \
              one conclusion or more"
         ),
-        ("and", Some("rule" | "hrule"), Some(":match"), false) => {
+        ("and", Some("rule"), Some(":match"), false) => {
             format!("{place} writes (and) — and takes one premise or more")
         }
-        ("and", Some("rule" | "hrule"), Some(":assert"), false) => {
+        ("and", Some("rule"), Some(":assert"), false) => {
             format!("{place} writes (and) — and takes one conclusion or more")
         }
         ("and", ..) => format!("{place} writes (and) — and takes one argument or more"),

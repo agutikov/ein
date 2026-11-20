@@ -249,7 +249,7 @@ use written::ACTIVATOR_REFUTES;
 /// diner, a seat makes a guest a diner, and the guard reads `food`, which no
 /// commitment changes. `lattice/04`'s obligation is `std.algebra`'s, whose
 /// trigger and guard read one relation, so its guard is a site too
-/// (Q-M1f.579), and so are its hrules, which read that relation (Q-M1f.574).
+/// (Q-M1f.579), and so are its hypothesis rules, which read that relation (Q-M1f.574).
 const TRIGGER_ALONE: &str = "\
 (relation guest T :why \"{?3} is a guest\")
 (relation chair T :why \"{?3} is a chair\")
@@ -260,7 +260,7 @@ const TRIGGER_ALONE: &str = "\
 (guest Ann) (chair C1) (food Soup)
 (rule seated-dines () :match (seats ?g ?c) :assert (diner ?g) :why \"{?g} is seated, so {?g} dines\")
 (rule owes-meal () :match (and (diner ?g) (absent (and (food ?f) (meal ?g ?f)))) :assert (open meal) :why \"{?g} is served no food yet\")
-(hrule seat () :match (and (guest ?g) (chair ?c)) :assert (seats ?g ?c) :why \"guess that {?g} is seated at {?c}\")
+(rule seat () :match (and (guest ?g) (chair ?c)) :assert (open (seats ?g ?c)) :why \"guess that {?g} is seated at {?c}\")
 ";
 
 /// **One fixture per cause**
@@ -335,8 +335,8 @@ const FACT_GRAIN_PROGRAMS: &[(&str, &str, bool, bool)] = &[
     (
         "derived",
         "(relation p T :why \"p holds of {?3}\") (relation s T :why \"s holds of {?3}\") (relation q T T :why \"q holds of {?3} and {?4}\") (relation r T :why \"r holds of {?3}\") (r A)
-         (hrule g1 () :match (r ?x) :assert (p ?x) :why \"r holds of {?x}, so guess that p holds of {?x}\")
-         (hrule g2 () :match (r ?x) :assert (s ?x) :why \"r holds of {?x}, so guess that s holds of {?x}\")
+         (rule g1 () :match (r ?x) :assert (open (p ?x)) :why \"r holds of {?x}, so guess that p holds of {?x}\")
+         (rule g2 () :match (r ?x) :assert (open (s ?x)) :why \"r holds of {?x}, so guess that s holds of {?x}\")
          (rule tag () :match (s ?x) :assert (q ?x Tagged) :why \"s holds of {?x}, so q holds of {?x} and Tagged\")
          (rule bad () :match (and (p ?x) (absent (q ?x Tagged))) :assert (false) :why \"p holds of {?x} and q does not hold of {?x} and Tagged, which cannot be\")",
         false,
@@ -346,8 +346,8 @@ const FACT_GRAIN_PROGRAMS: &[(&str, &str, bool, bool)] = &[
     (
         "static",
         "(relation p T :why \"p holds of {?3}\") (relation s T :why \"s holds of {?3}\") (relation q T T :why \"q holds of {?3} and {?4}\") (relation r T :why \"r holds of {?3}\") (r A)
-         (hrule g1 () :match (r ?x) :assert (p ?x) :why \"r holds of {?x}, so guess that p holds of {?x}\")
-         (hrule g2 () :match (r ?x) :assert (s ?x) :why \"r holds of {?x}, so guess that s holds of {?x}\")
+         (rule g1 () :match (r ?x) :assert (open (p ?x)) :why \"r holds of {?x}, so guess that p holds of {?x}\")
+         (rule g2 () :match (r ?x) :assert (open (s ?x)) :why \"r holds of {?x}, so guess that s holds of {?x}\")
          (rule tag () :match (s ?x) :assert (q ?x Tagged) :why \"s holds of {?x}, so q holds of {?x} and Tagged\")
          (rule bad () :match (and (p ?x) (absent (q ?x Other))) :assert (false) :why \"p holds of {?x} and q does not hold of {?x} and Other, which cannot be\")",
         true,
@@ -360,7 +360,7 @@ const FACT_GRAIN_PROGRAMS: &[(&str, &str, bool, bool)] = &[
         "even-depth",
         "(relation p T :why \"p holds of {?3}\") (relation s T :why \"s holds of {?3}\") (relation done T :why \"{?3} is done\") (relation world T :why \"{?3} is a world\")
          (relation slot T :why \"{?3} is a slot\") (world W) (s A) (slot A) (slot B)
-         (hrule g () :match (slot ?x) :assert (p ?x) :why \"{?x} is a slot, so guess that p holds of {?x}\")
+         (rule g () :match (slot ?x) :assert (open (p ?x)) :why \"{?x} is a slot, so guess that p holds of {?x}\")
          (rule all-p () :match (and (world ?w) (absent (and (s ?x) (absent (p ?x)))))
                         :assert (done ?w) :why \"p holds of everything s holds of, so world {?w} is done\")
          (rule bad () :match (and (p B) (absent (done W))) :assert (false) :why \"p holds of B while W is not done, which cannot be\")",
@@ -371,8 +371,8 @@ const FACT_GRAIN_PROGRAMS: &[(&str, &str, bool, bool)] = &[
     (
         "negative",
         "(relation p T :why \"p holds of {?3}\") (relation t T :why \"t holds of {?3}\") (relation q T :why \"q holds of {?3}\") (relation r T :why \"r holds of {?3}\") (r A)
-         (hrule g1 () :match (r ?x) :assert (p ?x) :why \"r holds of {?x}, so guess that p holds of {?x}\")
-         (hrule g2 () :match (r ?x) :assert (t ?x) :why \"r holds of {?x}, so guess that t holds of {?x}\")
+         (rule g1 () :match (r ?x) :assert (open (p ?x)) :why \"r holds of {?x}, so guess that p holds of {?x}\")
+         (rule g2 () :match (r ?x) :assert (open (t ?x)) :why \"r holds of {?x}, so guess that t holds of {?x}\")
          (rule neg () :match (p ?x) :assert (not (q ?x)) :why \"p holds of {?x}, so q does not hold of {?x}\")
          (rule bad () :match (and (t ?x) (absent (not (q ?x)))) :assert (false) :why \"t holds of {?x} and no stored fact says q does not hold of {?x}, which cannot be\")",
         false,
@@ -383,8 +383,8 @@ const FACT_GRAIN_PROGRAMS: &[(&str, &str, bool, bool)] = &[
     (
         "activator",
         "(relation p T :why \"p holds of {?3}\") (relation t T :why \"t holds of {?3}\") (relation q T :why \"q holds of {?3}\") (relation r T :why \"r holds of {?3}\") (r A)
-         (hrule g1 () :match (r ?x) :assert (p ?x) :why \"r holds of {?x}, so guess that p holds of {?x}\")
-         (hrule g2 () :match (r ?x) :assert (t ?x) :why \"r holds of {?x}, so guess that t holds of {?x}\")
+         (rule g1 () :match (r ?x) :assert (open (p ?x)) :why \"r holds of {?x}, so guess that p holds of {?x}\")
+         (rule g2 () :match (r ?x) :assert (open (t ?x)) :why \"r holds of {?x}, so guess that t holds of {?x}\")
          (rule watch (?R) :match (and (t ?x) (absent (?R ?x))) :assert (false) :why \"t holds of {?x} and {?R} does not, which cannot be\")
          (rule act () :match (p ?x) :assert (watch q) :why \"p holds of {?x}, so rule watch is switched on for q\")",
         false,
@@ -396,8 +396,8 @@ const FACT_GRAIN_PROGRAMS: &[(&str, &str, bool, bool)] = &[
         "type-constant",
         "(relation is-a T T :why \"{?3} is a {?4}\") (relation owns T T :why \"{?3} owns {?4}\")
          (is-a A Thing) (is-a B Thing) (is-a C Box) (owns A C)
-         (hrule g () :match (and (is-a ?x Thing) (is-a ?y Thing) (neq ?x ?y))
-                     :assert (is-a ?x ?y) :why \"{?x} and {?y} are two different Things, so guess that {?x} is a {?y}\")
+         (rule g () :match (and (is-a ?x Thing) (is-a ?y Thing) (neq ?x ?y))
+                     :assert (open (is-a ?x ?y)) :why \"{?x} and {?y} are two different Things, so guess that {?x} is a {?y}\")
          (rule check () :match (and (owns ?x ?y) (absent (is-a ?x Thing))) :assert (false) :why \"{?x} owns {?y} but is not a Thing, which cannot be\")",
         true,
         true,
@@ -581,7 +581,7 @@ fn fact_grain_closure_runs_where_a_site_reads_it_and_gives_up_on_the_safe_side()
          (relation amount T T :why \"there are {?4} {?3}\") (relation answer T T :why \"the answer for {?3} is {?4}\")
          (relation counted T :why \"{?3} is counted\")
          (reading one) (amount apples (n (n z 1) 3))
-         (hrule suppose () :match (reading ?m) :assert (read-as ?m) :why \"suppose the reading {?m}\")
+         (rule suppose () :match (reading ?m) :assert (open (read-as ?m)) :why \"suppose the reading {?m}\")
          (rule under () :match (and (read-as ?m) (amount ?k ?v)) :assert (answer ?k ?v) :why \"under {?m}, the answer for {?k} is {?v}\")
          (rule divide () :match (answer ?k ?v) :assert (div ?v (n z 3)) :why \"divide {?v} by 3\")";
     const SITE: &str = "(rule site () :match (and (reading ?m) (absent (quot-of ?a ?b ?q ?r))) :assert (counted ?m)
@@ -1943,7 +1943,7 @@ fn l5_is_the_oracle_on_every_monotone_program_it_reaches() {
 }
 
 /// L5's premise on the zebra family, past the oracle's limit: what the table
-/// licenses. On `zebra.ein` the hrule proposes `(co-located v House-n)` only,
+/// licenses. On `zebra.ein` the hypothesis rule proposes `(co-located v House-n)` only,
 /// and the `slot-owed-fill` debts' witnesses, `(co-located House-n v)`, are
 /// what that obligation writes beside them (Q-M1f.570): every debt is
 /// licensed.

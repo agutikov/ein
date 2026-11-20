@@ -188,7 +188,7 @@ pub(crate) fn events_load(events: &mut Events, terms: &Terms, kb: &Kb) {
     events.emit("load", |l| {
         l.num("relations", p.relations.len() as i64);
         l.num("rules", p.rules.len() as i64);
-        l.num("hrules", p.hrules.len() as i64);
+        l.num("hypothesis_rules", p.hypotheses.len() as i64);
         l.num("macros", p.macros.len() as i64);
         l.num("facts", kb.n_facts() as i64);
         l.strs("relation_names", rel_names);

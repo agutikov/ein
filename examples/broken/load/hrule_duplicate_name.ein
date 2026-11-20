@@ -1,6 +1,6 @@
-;; …the same guard reached through two hrules.
+;; …the same guard reached through two hypothesis rules.
 
-(hrule g () :match (is-a ?o House) :assert (co-located ?o ?o) :why "guess that the House {?o} is co-located with itself")
-(hrule g () :match (is-a ?o House) :assert (co-located ?o ?o) :why "guess, a second time, that the House {?o} is co-located with itself")
+(rule g () :match (is-a ?o House) :assert (open (co-located ?o ?o)) :why "guess that the House {?o} is co-located with itself")
+(rule g () :match (is-a ?o House) :assert (open (co-located ?o ?o)) :why "guess, a second time, that the House {?o} is co-located with itself")
 (relation is-a T T :why "{?3} is a {?4}")
 (relation co-located T T :why "{?3} is co-located with {?4}")

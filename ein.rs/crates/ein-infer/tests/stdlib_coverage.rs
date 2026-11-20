@@ -162,7 +162,7 @@ fn module_name(path: &Path) -> String {
     format!("std.{}", parts.join("."))
 }
 
-/// The `(rule …)` / `(hrule …)` names a form list declares — with their
+/// The `(rule …)` / a rule that concludes `(open F)` names a form list declares — with their
 /// parameter counts — and the modules it imports.
 ///
 /// Read off a file's **own** forms, before [`load_query`] resolves imports by
@@ -173,7 +173,7 @@ fn heads(ast: &Ast, forms: &[NodeId]) -> (Vec<(String, usize)>, Vec<String>) {
     for &form in forms {
         let args = ast.form_args(form).to_vec();
         match ast.head_name(form) {
-            Some("rule" | "hrule") if args.len() >= 2 => {
+            Some("rule") if args.len() >= 2 => {
                 if let Some(name) = ast.atom_name(args[0]) {
                     rules.push((name.to_string(), params_of(ast, args[1])));
                 }

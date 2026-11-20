@@ -11,9 +11,9 @@
   :match  (and (a-prop ?x) (b-prop ?y) (c-prop ?z))
   :assert (false)
   :why    "{?x} has property a, {?y} property b and {?z} property c: the three are jointly forbidden")
-(hrule guess (?R ?T)
+(rule guess (?R ?T)
   :match  (is-a ?x ?T)
-  :assert (?R ?x)
+  :assert (open (?R ?x))
   :why    "guess that {?x}, a {?T}, has the property {?R}")
 (relation is-a   T T :why "{?3} is a {?4}")
 (relation a-prop T :why "{?3} has property a")
@@ -22,8 +22,10 @@
 (is-a Item T)
 (is-a X    Item)
 
+(guess a-prop Item)
+(guess b-prop Item)
+(guess c-prop Item)
 (solve
-  :hrules (guess (a-prop Item) guess (b-prop Item) guess (c-prop Item))
   :expect (region
             ;; state 1 — ∅, root itself, on the minimal line
             (model)

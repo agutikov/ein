@@ -14,7 +14,7 @@
 ;;; `(?isa ?a ?A)` premise of `total-owed` — reads at the polarity an `absent`
 ;;; does, and a commitment that grows it can add a debt. `ein_infer::monotone`
 ;;; reports it as an `obligation-trigger` site; `ein_infer::region`'s cube
-;;; shows the hole. The two hrules make the root candidate list exactly the
+;;; shows the hole. The two hypothesis rules make the root candidate list exactly the
 ;;; two facts above.
 ;;;
 ;;; What the engine answers is not this file's question: its nodes are
@@ -35,7 +35,7 @@
 
 (total-owed meal is-a)
 
-(hrule seat () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (seats ?g ?c) :why "guess that {?g} is seated at {?c}")
-(hrule dine () :match (and (is-a ?g Guest) (is-a ?f Food))  :assert (meal ?g ?f) :why "guess that {?g} is served {?f}")
+(rule seat () :match (and (is-a ?g Guest) (is-a ?c Chair)) :assert (open (seats ?g ?c)) :why "guess that {?g} is seated at {?c}")
+(rule dine () :match (and (is-a ?g Guest) (is-a ?f Food))  :assert (open (meal ?g ?f)) :why "guess that {?g} is served {?f}")
 
 (query :goal (meal ?g ?f))

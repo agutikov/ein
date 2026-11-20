@@ -586,7 +586,7 @@ fn the_declared_control_shows_its_five_bijections_found_and_stated() {
             "{name}: {stated:?}"
         );
         assert_eq!(r["an_obligation_can_owe_it"], true, "{name}");
-        assert_eq!(r["an_active_hrule_proposes_it"], true, "{name}");
+        assert_eq!(r["a_hypothesis_rule_proposes_it"], true, "{name}");
         assert_eq!(r["candidates_in_no_group"], 0, "{name}");
         // One grid, a bijection, of this relation alone.
         let its: Vec<u64> = r["bijections"]

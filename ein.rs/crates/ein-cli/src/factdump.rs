@@ -34,7 +34,7 @@ pub fn final_state_lines(terms: &Terms, kb: &Kb, mode: Mode, targets: &[Symbol])
                 .filter(|&f| targets.contains(&terms.facts.get(f).0))
                 .collect();
             // The relations as Ein spells names, one space apart: they are
-            // the candidates', whether or not the program wrote `:hrules`.
+            // the candidates', whichever writer wrote them.
             let mut names: Vec<&str> = targets.iter().map(|&s| terms.sym(s)).collect();
             names.sort_unstable();
             let label = if names.is_empty() {

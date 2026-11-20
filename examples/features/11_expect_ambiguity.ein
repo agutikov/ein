@@ -44,13 +44,15 @@
 
 ;; The hypothesis generator's entry point: every (person, slot) pair is a
 ;; candidate commitment, and the two rules above kill the ones that collide.
-(hrule guess (?p ?s)
+(rule guess (?p ?s)
   :match  (instance ?p Person)
-  :assert (seat ?p ?s)
+  :assert (open (seat ?p ?s))
   :why    "suppose {?p} sits in {?s}")
 
-(solve
-  :hrules (guess (Ann S1) (Ann S2) (Bob S1) (Bob S2)))
+(guess Ann S1)
+(guess Ann S2)
+(guess Bob S1)
+(guess Bob S2)
 
 (query
   :goal   (seat ?who ?slot)

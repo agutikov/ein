@@ -682,8 +682,8 @@ fn a_flagged_program_spends_no_denial() {
            :match (and (p A) (absent (p B)))
            :assert (not (p B))
            :why \"p holds of A and not of B, so p of B is denied\")
-         (hrule guess () :match (item ?x) :assert (p ?x) :why \"guess p of {?x}\")
-         (solve :hrules (guess))";
+         (rule guess () :match (item ?x) :assert (open (p ?x)) :why \"guess p of {?x}\")
+         ";
     let run = |mode: Mode| {
         let mut ast = Ast::new();
         let mut terms = Terms::new();

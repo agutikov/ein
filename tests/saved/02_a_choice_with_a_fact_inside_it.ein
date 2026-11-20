@@ -4,7 +4,7 @@
 ;;; ── What the program says ──────────────────────────────────────────────────
 ;;;
 ;;; `01_a_rule_builds_a_fact.ein` with the note supposed instead of made: an
-;;; hrule proposes `(note (bad a))`, so the state that holds it rests on a
+;;; hypothesis rule proposes `(note (bad a))`, so the state that holds it rests on a
 ;;; commitment of one candidate, and a rule reads the note it holds.
 ;;;
 ;;; ── What the expectation means ─────────────────────────────────────────────
@@ -22,9 +22,9 @@
 
 (item a)
 
-(hrule guess ()
+(rule guess ()
   :match  (item ?x)
-  :assert (note (bad ?x))
+  :assert (open (note (bad ?x)))
   :why    "suppose a note about {?x}")
 
 (rule flag ()

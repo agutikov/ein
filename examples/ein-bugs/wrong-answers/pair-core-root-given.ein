@@ -5,7 +5,7 @@
 ;;;
 ;;; ── What this program is ───────────────────────────────────────────────
 ;;;
-;;; One candidate, `(q a)`, which the hrule proposes. Committed, it derives
+;;; One candidate, `(q a)`, which the hypothesis rule proposes. Committed, it derives
 ;;; `(not (p a))` by `neg`, and the program states `(p a)`: a pair
 ;;; contradiction whose positive side is root's and whose negative side the
 ;;; commitment derives.
@@ -37,6 +37,6 @@
 
 (p a)
 
-(hrule g () :match (p ?x) :assert (q ?x) :why "p holds of {?x}: guess that q holds of {?x} too")
+(rule g () :match (p ?x) :assert (open (q ?x)) :why "p holds of {?x}: guess that q holds of {?x} too")
 
 (rule neg () :match (q ?x) :assert (not (p ?x)) :why "q holds of {?x}, so p does not hold of {?x}")

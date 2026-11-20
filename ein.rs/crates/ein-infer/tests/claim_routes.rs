@@ -717,9 +717,9 @@ fn a_program_less_its_claims_keeps_everything_else() {
 #[test]
 fn the_least_question_is_read_off_the_claims_shapes() {
     const BODY: &str = "(relation p T :why \"{?3} is p\")\n(relation q T :why \"{?3} is q\")\n\
-                        (hrule guess (?R) :match (thing ?x) :assert (?R ?x) :why \"suppose {?x}\")\n\
+                        (rule guess (?R) :match (thing ?x) :assert (open (?R ?x)) :why \"suppose {?x}\")\n\
                         (relation thing T :why \"{?3} is a thing\")\n(thing a)\n(thing b)\n";
-    let solve = "(solve :hrules (guess (p)))\n";
+    let solve = "(guess p)\n";
     let mode = |which, ask| Mode { which, ask };
     let describe = mode(Which::All, Ask::Describe);
     let questions = |claims: &str| -> (Mode, Mode) {
@@ -779,13 +779,13 @@ fn the_least_question_is_read_off_the_claims_shapes() {
         ),
         // A solve claim, alone or beside a query's: the description.
         (
-            "(solve :hrules (guess (p)) :expect (false))\n".to_string(),
+            "(guess p) (solve :expect (false))\n".to_string(),
             describe,
             describe,
         ),
         (
             format!(
-                "(solve :hrules (guess (p)) :expect (region)){}",
+                "(guess p) (solve :expect (region)){}",
                 q("all", one)
             ),
             describe,

@@ -15,7 +15,7 @@
 ;;; - **"every person" is a `forall`**, `std.macro`'s sugar for
 ;;;   `(absent (and (person ?y) (absent (believes ?y C))))`: no person who
 ;;;   does not believe C. That is an `absent` over `person`, so it needs the
-;;;   people **closed**: with no hrule the blind enumerator would guess more
+;;;   people **closed**: with no hypothesis rule the blind enumerator would guess more
 ;;;   people, and a rule resting on "no person disbelieves C" could then be
 ;;;   undone by a guess. Without the closing line below the static check
 ;;;   flags both rules, each an `absent` over a relation a commitment can

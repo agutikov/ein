@@ -5,10 +5,10 @@
 //! That suite checks what a quiescent state *says* it owes; this one checks
 //! that the debt is a **choice point** — that the ladder dispatches where it
 //! should, that the branch is the obligation's own domain scan, and that the
-//! search it drives finds the same models as the hand-written `(hrule …)` it
+//! search it drives finds the same models as the hand-written a rule that concludes `(open F)` it
 //! replaces.
 //!
-//! The central claim is `the_theory_finds_what_the_hrule_finds`, and it is a
+//! The central claim is `the_theory_finds_what_the_hypothesis_rule_finds`, and it is a
 //! *model-set* comparison rather than a counter one on purpose: counters may
 //! move under a new traversal, answers may not, and a counter equality
 //! pinned as a test would be a test of the fixtures' arithmetic rather than
@@ -21,7 +21,7 @@
 //! builds H, the candidates
 //! every route commits to, so the dispatch is a claim about the one `rung`
 //! line a route narrates when it builds H at root; and the completeness claim
-//! is that the hrule path and the obligation path build the same H, so their
+//! is that the hypothesis rule path and the obligation path build the same H, so their
 //! R is one, and the maximal lines the obligation tree reaches agree.
 
 use std::collections::BTreeSet;
@@ -188,10 +188,10 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
     // (file, the modes its generation calls report)
     let (_dir, stuck) = stuck_program();
     let cases: [(&str, &[&str]); 6] = [
-        // An hrule beside the obligations: the union, which pays what root
-        // owes with the hrule's candidates, and is no stuck state.
+        // A hypothesis rule beside the obligations: the union, which pays what root
+        // owes with the hypothesis rule's candidates, and is no stuck state.
         ("examples/zebra2.ein", &["union"]),
-        // the same puzzle with the hrule deleted: the obligations alone.
+        // the same puzzle with the hypothesis rule deleted: the obligations alone.
         ("examples/zebra2-obligations.ein", &["obligations"]),
         // owes, and every candidate that would pay it is stored false. A
         // `:no-hypothesis` naming the relation it owes would be refused at
@@ -216,7 +216,7 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
         assert_eq!(uniq, want, "{rel} took the wrong rung(s)");
     }
     // zebra2 owes 36 slots at root — the same 36 `zebra2-obligations.ein`
-    // branches on — and its hrule's candidates pay them.
+    // branches on — and its hypothesis rule's candidates pay them.
     assert_eq!(
         root_owes("examples/zebra2.ein"),
         36,
@@ -286,7 +286,7 @@ fn a_discharged_state_owes_nothing_and_declines_nothing() {
 /// `zebra2-obligations` at root owes 36 instances — 36 of the 50 slots five
 /// bijections need, the other 14 already witnessed — and proposes 180
 /// candidates for them, which the filter pipeline dedups and refutes down to
-/// the 56 the hrule path emits. The numbers matter in one direction each:
+/// the 56 the hypothesis rule path emits. The numbers matter in one direction each:
 /// `branches == owed` says nothing was declined, and `candidates` well under
 /// `owed × |House|` would say a scan came back short.
 #[test]
@@ -314,7 +314,7 @@ fn the_candidates_are_what_the_guard_scans() {
 
 // ── The completeness condition ─────────────────────────────────────
 
-/// **Every state the hrule path finds, the obligation path finds.**
+/// **Every state the hypothesis rule path finds, the obligation path finds.**
 ///
 /// The ladder's central claim: it is exhaustive iff
 /// obligations and saturation between them determine every remaining open
@@ -323,18 +323,18 @@ fn the_candidates_are_what_the_guard_scans() {
 /// determinate puzzle and one genuinely under-determined one, because a
 /// comparison of two singleton sets proves much less.
 ///
-/// A route commits to H, the candidates the ladder builds at root,
-/// and R is a function of the program's rules and H. The twins differ by the
-/// `(hrule …)` and the `:hrules` clause alone, which are no rule, so **one H
-/// is one R**: that is asserted on both pairs, and the maximal lines are
+/// A route commits to H, the candidates the writers build at root, and R is
+/// a function of the program's rules and H. The twins differ by the
+/// hypothesis rule `guess` and its activators alone, which conclude no fact
+/// a state holds but `open` ones, so **one H is one R**: that is asserted on both pairs, and the maximal lines are
 /// compared on `zebra2`, where the obligation tree reaches its one state in
 /// a few dozen saturations. `zebra2-minus-15`'s 32 cost thousands a side, so
 /// `EIN_CORPUS_SLOW` compares those, the way the corpus sweep splits the same
 /// way.
 #[test]
-fn the_theory_finds_what_the_hrule_finds() {
+fn the_theory_finds_what_the_hypothesis_rule_finds() {
     let deep = std::env::var_os("EIN_CORPUS_SLOW").is_some();
-    for (hrule, obligations, k, compare) in [
+    for (rules, obligations, k, compare) in [
         (
             "examples/zebra2.ein",
             "examples/zebra2-obligations.ein",
@@ -348,17 +348,17 @@ fn the_theory_finds_what_the_hrule_finds() {
             deep,
         ),
     ] {
-        let (ha, hb) = (universe(hrule), universe(obligations));
-        assert!(!ha.is_empty(), "{hrule}: an empty H");
-        assert_eq!(ha, hb, "{obligations} built a different H than {hrule}");
+        let (ha, hb) = (universe(rules), universe(obligations));
+        assert!(!ha.is_empty(), "{rules}: an empty H");
+        assert_eq!(ha, hb, "{obligations} built a different H than {rules}");
         if !compare {
             continue;
         }
-        let (ma, mb) = (maximal(hrule), maximal(obligations));
-        assert_eq!(ma.len(), k, "{hrule} found {} states, not {k}", ma.len());
+        let (ma, mb) = (maximal(rules), maximal(obligations));
+        assert_eq!(ma.len(), k, "{rules} found {} states, not {k}", ma.len());
         assert_eq!(
             ma, mb,
-            "{obligations} found a different maximal line than {hrule}"
+            "{obligations} found a different maximal line than {rules}"
         );
     }
 }
@@ -371,7 +371,7 @@ fn the_order_and_the_modes_keep_their_names() {
     assert_eq!(Mode::default(), Mode::Blind);
     for (m, s) in [
         (Mode::Blind, "blind"),
-        (Mode::Hrules, "hrules"),
+        (Mode::HypothesisRules, "hypothesis-rules"),
         (Mode::Obligations, "obligations"),
         (Mode::Stuck, "stuck"),
         (Mode::Declined, "declined"),

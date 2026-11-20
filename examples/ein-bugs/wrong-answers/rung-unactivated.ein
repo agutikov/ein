@@ -13,9 +13,9 @@
 ;;;
 ;;; ── The answer, by hand ────────────────────────────────────────────────
 ;;;
-;;; Hypothesis generation is a ladder: the program's hrules, else what would
-;;; pay the debts of an obligation activated at root, else the blind
-;;; enumerator. Here there is no hrule and no obligation is activated, so H
+;;; H is the union of its writers: the program's hypothesis rules, what would pay
+;;; the debts of an obligation activated at root, and, where neither writes, the
+;;; blind enumerator. Here there is no hypothesis rule and no obligation is activated, so H
 ;;; is the blind enumerator's, eleven candidates of `at` and `near` over the
 ;;; program's three names, and nothing restricts them: R is the whole cube,
 ;;; 2 048 states, the control's answer.

@@ -390,12 +390,12 @@ pub fn plans_of(memo: &SharedMemo) -> Vec<Arc<Plan>> {
 /// Classify `plans` against `hypothesised` (`H`).
 ///
 /// `kb` supplies the program's registries — which rules are saturation rules,
-/// which are obligations, which have activators. A plan of an `hrule`, or of
-/// anything else the memo holds, is not read as a saturation or an
-/// obligation plan: an hrule proposes, and what it proposes is already `H`.
-/// `hypotheses` are the plans of the rules that conclude `(open F)`, hrules
-/// among them ([`crate::hrule::Hrules`]), which no memo holds: each is read
-/// for the two sites of a hypothesis, a read of `open` and a read of `D`.
+/// which are obligations, which have activators. A plan of anything else the
+/// memo holds is not read as a saturation or an obligation plan.
+/// `hypotheses` are the plans of the rules that conclude `(open F)`
+/// ([`crate::hypothesis_rules::HypothesisRules`]), which no memo holds: each
+/// is read for the two sites of a hypothesis, a read of `open` and a read of
+/// `D`; what they propose is already `H`.
 pub fn classify(
     kb: &Kb,
     terms: &Terms,

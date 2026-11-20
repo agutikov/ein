@@ -15,7 +15,7 @@
 (world W)
 (slot A) (slot B) (slot C) (slot D) (slot E)
 (need K1 A) (need K1 C)
-(hrule guess () :match (slot ?x) :assert (h ?x) :why "guess that h holds of the slot {?x}")
+(rule guess () :match (slot ?x) :assert (open (h ?x)) :why "guess that h holds of the slot {?x}")
 (rule imp-A-B () :match (h A) :assert (h B) :why "h holds of A, so h holds of B")
 (rule imp-C-D () :match (h C) :assert (h D) :why "h holds of C, so h holds of D")
 (rule dead-1 () :match (and (h A) (h C)) :assert (false) :why "h holds of both A and C, which cannot be")

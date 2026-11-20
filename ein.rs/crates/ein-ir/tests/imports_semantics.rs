@@ -267,7 +267,7 @@ impl Drop for Modules {
 /// One declaration of `name` under `decl`, as a module body.
 fn declaration(decl: &str, name: &str) -> String {
     let body = match decl {
-        "rule" | "hrule" => {
+        "rule" => {
             format!(
                 "({decl} {name} ()\n  :match (p ?x)\n  :assert (q ?x)\n  :why \"p holds of {{?x}}, so q is taken to hold of {{?x}}\")"
             )
@@ -304,7 +304,7 @@ fn declaration(decl: &str, name: &str) -> String {
 fn reserved_names_are_reserved_through_every_import_route() {
     let m = Modules::new("routes");
     let mut loaded: Vec<String> = Vec::new();
-    for decl in ["rule", "hrule", "relation", "macro"] {
+    for decl in ["rule", "relation", "macro"] {
         for name in ["open", "absent", "__closed__"] {
             let module = declaration(decl, name);
             for (route, src) in [
@@ -376,7 +376,7 @@ fn an_unreserved_name_still_qualifies_through_all_four_routes() {
 /// (`absent`, `and`, `eq`, `neq`, `open`, `or`, `relation`); the kernel's
 /// dunder, a name the grammar reads, reaches the loader and is refused there
 /// (Q-M1f.7), as are `false` and `not`, the standard library's names, which
-/// a relation, a rule, an hrule and an alias may bind and a macro may not
+/// a relation, a rule, a hypothesis rule and an alias may bind and a macro may not
 /// (a macro named after either would turn every `(false)` or `(not X)`,
 /// `std.core`'s among them, into its call). What no name may do is **load**
 /// as a macro.
@@ -414,13 +414,13 @@ fn every_ein_core_reserved_name_is_unbindable_through_a_qualified_import() {
 
 /// **`false` and `not` are the standard library's names**
 /// ([`ein_core::LIBRARY_NAMES`]): a module declares a relation, a rule and an
-/// hrule under either, and a program loads it through a qualified import,
+/// hypothesis rule under either, and a program loads it through a qualified import,
 /// each under the name itself, which no import qualifies.
 #[test]
-fn the_librarys_two_names_are_bound_by_a_relation_a_rule_and_an_hrule() {
+fn the_librarys_two_names_are_bound_by_a_relation_and_a_rule() {
     let m = Modules::new("library-names");
     for name in ein_core::LIBRARY_NAMES {
-        for decl in ["relation", "rule", "hrule"] {
+        for decl in ["relation", "rule"] {
             let module = declaration(decl, name);
             m.load(&module, "(import m)\n")
                 .unwrap_or_else(|e| panic!("{decl} {name}: must load: {e}"));

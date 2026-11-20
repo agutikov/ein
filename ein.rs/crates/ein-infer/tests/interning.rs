@@ -18,7 +18,7 @@
 //! | group | names | interned by |
 //! |---|---|---|
 //! | the engine's own | `<lookahead-dies-immediately>` (19 files), `<forced-positive>` (4), `<monotonic-unconditional>` (4) | [`ein_core::terms::ENGINE`], interned by `Terms::new` with the rest of the kernel vocabulary |
-//! | a rule's constants | `Ann`, from `(hrule guess … :assert (seat Ann ?v))` in `examples/ein-bugs/mixed-type-hypothesis.ein` — a name no fact mentions, so the compiler was the first to see it | `ein_ir::from_ir::intern_program_names`, a load pass over the registered rules and the query |
+//! | a rule's constants | `Ann`, from `(rule guess … :assert (open (seat Ann ?v)))` in `examples/ein-bugs/mixed-type-hypothesis.ein` — a name no fact mentions, so the compiler was the first to see it | `ein_ir::from_ir::intern_program_names`, a load pass over the registered rules and the query |
 //!
 //! `ENGINE` holds **five**. The other two land during *root saturation*,
 //! which is single-threaded and so never a hazard.
@@ -168,7 +168,7 @@ fn a_rule_only_constant_is_interned_at_load() {
     let forms = parse(&mut ast, &text, path.to_str()).expect("it parses");
     let mut terms = Terms::new();
     let _kb = ein_ir::load(&mut ast, &mut terms, &forms, path.parent()).expect("it loads");
-    // `Ann` is named by the `guess` hrule's `:assert` and by the query goal,
+    // `Ann` is named by the `guess` hypothesis rule's `:assert` and by the query goal,
     // and by no fact — so before `intern_program_names` it first existed when
     // the hypothesis loop compiled the rule.
     assert!(

@@ -98,10 +98,10 @@ pub fn hypotheses_text(h: &Hypotheses, terms: &Terms) -> String {
     out
 }
 
-/// **What `ein show hyps` says of `H` beside it**, one sentence: the rung of
-/// the ladder that built it, and how many candidates it holds, or, where it
-/// holds none, why, in the words of the read-out's `universe` row for a run
-/// that searches nothing.
+/// **What `ein show hyps` says of `H` beside it**, one sentence: the writers
+/// it is from, by the mode the generator reports, and how many candidates it
+/// holds, or, where it holds none, why, in the words of the read-out's
+/// `universe` row for a run that searches nothing.
 pub fn hypotheses_note(h: &Hypotheses) -> String {
     let universe = match (h.candidates.len() as u64, h.rung) {
         (0, ein_infer::oblgen::Mode::NoSearch) => {
@@ -110,7 +110,7 @@ pub fn hypotheses_note(h: &Hypotheses) -> String {
         (0, _) => "no candidate".to_string(),
         (n, _) => plural(n, "candidate", "candidates"),
     };
-    format!("H, built by the rung `{}`: {universe}", h.rung.as_str())
+    format!("H, from `{}`: {universe}", h.rung.as_str())
 }
 
 // ── The JSON's small parts ────────────────────────────────────────────
@@ -1590,8 +1590,8 @@ fn declared(w: &Whole, terms: &Terms) -> Json {
     });
     let mechanisms = match (&w.declared, &sets) {
         (Ok(m), Some((proposed, owable, closed, listed, excluded))) => Json::obj(vec![
-            ("hrules", int(m.hrules.len())),
-            ("active_hrule_plans", int(m.proposals.len())),
+            ("hypothesis_rules", int(m.hypothesis_rules.len())),
+            ("hypothesis_plans", int(m.proposals.len())),
             ("obligation_rules", int(m.obligation_rules.len())),
             ("obligation_plans", int(m.obligations.len())),
             ("proposed", strs(proposed)),
@@ -1634,7 +1634,7 @@ fn declared(w: &Whole, terms: &Terms) -> Json {
         ];
         if let Some((proposed, owable, closed, listed, excluded)) = &sets {
             let has = |v: &[String]| Json::Bool(v.contains(&name));
-            row.push(("an_active_hrule_proposes_it", has(proposed)));
+            row.push(("a_hypothesis_rule_proposes_it", has(proposed)));
             row.push(("an_obligation_can_owe_it", has(owable)));
             row.push(("closed", has(closed)));
             row.push(("listed", listed.as_ref().map_or(Json::Null, |l| has(l))));
@@ -1803,7 +1803,7 @@ pub fn summary(w: &Whole, inputs: &Inputs<'_>, graphs: &[Graph]) -> String {
     row(
         "H",
         format!(
-            "{} · {} dead alone · {} at root · built by the rung `{}`",
+            "{} · {} dead alone · {} at root · from `{}`",
             p(l.n(), "candidate", "candidates"),
             g(l.dead_alone.len()),
             g(l.at_root.len()),

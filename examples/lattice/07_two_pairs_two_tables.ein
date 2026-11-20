@@ -49,9 +49,9 @@
   :assert (false)
   :why    "{?a} and {?b} are friends and sit at different tables")
 
-(hrule seat ()
+(rule seat ()
   :match  (and (is-a ?p Friend) (is-a ?s Seat))
-  :assert (sits ?p ?s)
+  :assert (open (sits ?p ?s))
   :why    "guess that {?p} sits in seat {?s}")
 
 (query :goal (sits ?p ?s))

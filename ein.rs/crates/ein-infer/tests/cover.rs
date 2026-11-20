@@ -192,7 +192,7 @@ fn the_groups_of_a_declared_bijection_are_its_rows_and_columns() {
 
 /// **Two encodings, one cover.** `zebra.ein` proposes the same 56
 /// placements over one relation, with no relation to tell an attribute's
-/// kind by, each in both orientations: the hrule's `(co-located X House-n)`
+/// kind by, each in both orientations: the hypothesis rule's `(co-located X House-n)`
 /// and its mirror `(co-located House-n X)`, which pays what a house owes and
 /// joins `H` beside it (Q-M1f.570). Its groups, each candidate folded onto
 /// its placement, are `zebra2.ein`'s under the renaming, an attribute's

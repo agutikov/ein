@@ -1,11 +1,11 @@
-;;; An hrule's `:assert` splits a name that starts with `or` —
+;;; A hypothesis rule's `:assert` splits a name that starts with `or` —
 ;;; regression `kw-or-in-hrule` (`corpus/regressions.toml`): a reserved word is a
 ;;; keyword only as a whole token (Q-M1e2.17).
 ;;;
 ;;;
 ;;; ── What this program is ──────────────────────────────────────────────
 ;;;
-;;; One fact, `(p a)`, a relation `orz`, and an hrule, `h`, proposing `(orz
+;;; One fact, `(p a)`, a relation `orz`, and a hypothesis rule, `h`, proposing `(orz
 ;;; ?x)` for each `(p ?x)`.
 ;;;
 ;;; ── The answer, by hand ───────────────────────────────────────────────
@@ -27,4 +27,4 @@
 
 (relation p Node :why "p holds of {?3}") (relation orz Node :why "orz holds of {?3}")
 (p a)
-(hrule h () :match (p ?x) :assert (orz ?x) :why "p holds of {?x}: guess that orz holds of {?x} too")
+(rule h () :match (p ?x) :assert (open (orz ?x)) :why "p holds of {?x}: guess that orz holds of {?x} too")

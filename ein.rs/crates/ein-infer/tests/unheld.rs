@@ -479,10 +479,10 @@ fn every_question_answers_alike_with_l9_and_without() {
     }
 }
 
-/// A debt `takeaway` can pay with a fact no hrule proposes: Ann's witnesses
-/// are `(fed Ann Soup)`, the hrule's, and `(fed Ann Stew)`, which the rule
+/// A debt `takeaway` can pay with a fact no hypothesis rule proposes: Ann's witnesses
+/// are `(fed Ann Soup)`, the hypothesis rule's, and `(fed Ann Stew)`, which the rule
 /// writes from `(orders Ann)` and the obligation writes as a hypothesis
-/// beside the hrules (Q-M1f.570).
+/// beside the hypothesis rules (Q-M1f.570).
 const WRITTEN_WITNESS: &str = r#"
 (import std.algebra :symbols (total-owed))
 (relation is-a   T T        :why "{?3} is a {?4}")
@@ -494,15 +494,15 @@ const WRITTEN_WITNESS: &str = r#"
   :match  (orders Ann)
   :assert (fed Ann Stew)
   :why    "Ann's takeaway is stew")
-(hrule feed ()
+(rule feed ()
   :match  (is-a ?g Guest)
-  :assert (fed ?g Soup)
+  :assert (open (fed ?g Soup))
   :why    "suppose {?g} is fed soup")
-(hrule order ()
+(rule order ()
   :match  (is-a ?g Guest)
-  :assert (orders ?g)
+  :assert (open (orders ?g))
   :why    "suppose {?g} orders a takeaway")
-(solve :hrules (feed order))
+
 "#;
 
 /// **A witness written by a rule is a candidate too.** Under the union both

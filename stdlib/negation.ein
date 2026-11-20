@@ -42,8 +42,8 @@
 ;;; whose name the program writes as an argument (Q-M1f.42), and warns of it
 ;;; where one of those parameters names a relation: a relation is named by a
 ;;; symbol, not a fact, and such an activator activates nothing (Q-M1f.1).
-;;; The program it warns of names, in a `(solve … :hrules …)` list or in a
-;;; fact, a rule or an hrule whose parameter stands first in a pattern.
+;;; The program it warns of names, in a fact, a rule (one that concludes a
+;;; hypothesis among them) whose parameter stands first in a pattern.
 ;;; `std.algebra`'s copiers, `converse` and `imply1` among them, are read the
 ;;; same way at their counts.
 ;;;

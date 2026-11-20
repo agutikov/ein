@@ -157,7 +157,7 @@ fn the_theory_excludes_a_declared_bijections_rows_and_columns() {
 
     // What the small KB drops is the givens, the clues and the row of
     // houses; what it keeps of the candidates' objects is their types, which
-    // the hrule reads to build `H`.
+    // the hypothesis rule reads to build `H`.
     let dropped: Vec<&str> = t
         .stated
         .iter()
@@ -260,7 +260,7 @@ fn counted<T: Ord>(items: impl IntoIterator<Item = T>) -> std::collections::BTre
 /// symmetric `co-located` relation whose structure `std.slots` gives, and
 /// `zebra2.ein` over five relations declared bijective. Root proposes the
 /// same 56 placements in both: `(R-loc X House-n)` in `zebra2.ein`, and in
-/// `zebra.ein` the hrule's `(co-located X House-n)` beside its mirror
+/// `zebra.ein` the hypothesis rule's `(co-located X House-n)` beside its mirror
 /// `(co-located House-n X)`, which pays what a house owes and joins `H`
 /// beside it (Q-M1f.570), each placement twice. The theory excludes the
 /// same 128 pairs of placements, each in its four orientations, 512 pairs,
@@ -602,7 +602,7 @@ fn the_readings_agree_on_the_cryptarithms() {
 /// **A clue through a name no candidate holds.** Four friends in two groups
 /// sit at two tables: `(member Ann P1)` and `(at S1 T1)` each name one of
 /// the candidates' objects and a group or a table, and a rule joins them.
-/// The program's hrule reads `is-a` alone to build `H`, so they are the
+/// The program's hypothesis rule reads `is-a` alone to build `H`, so they are the
 /// puzzle's: the theory's pairs are a friend's two seats and a seat's two
 /// friends, 48, and the 16 pairs root excludes besides are friends at two
 /// tables.

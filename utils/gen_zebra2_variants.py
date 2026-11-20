@@ -11,12 +11,13 @@ silently drifts a variant: just re-run this script.
   examples/ein-bugs/zebra2-bad.ein — CONTRADICTIONS fixture: an extra
                                    (color-loc Green House-1), which condition
                                    (6) forbids (no house is right-of House-1).
-  examples/zebra2-obligations.ein — the `(hrule guess …)` and the
-                                   `(solve … :hrules …)` form removed, and
-                                   NOTHING else. The theory alone drives the
+  examples/zebra2-obligations.ein — the hypothesis rule `(rule guess …)`
+                                   and its five activators `(guess …)`
+                                   removed, and NOTHING else. The theory alone
+                                   drives the
                                    search — `(bijective *-loc)` fans out into
                                    `total-owed` / `surjective-owed`, and the
-                                   obligations rung branches on what they owe.
+                                   obligations write what would pay it.
                                    "Nothing else changed" is this script's
                                    claim rather than a reader's.
   examples/zebra2-minus-15-obligations.ein — both at once: the under-determined
@@ -68,57 +69,56 @@ BAD_INJECT = (
 )
 
 
-# The hypothesis-rule block, verbatim — the declaration and the comment that
+# The hypothesis-rule block, verbatim — the rule and the comment that
 # introduces it.
-HRULE_BLOCK = (
+RULE_BLOCK = (
     ";; ──── Hypothesis generation ────────────────────────────────\n"
-    ";; One hrule parameterised over (?R ?T1 ?T2); activators in the\n"
-    ";; (solve …) :hrules clause enumerate every *-loc relation with\n"
+    ";; One rule parameterised over (?R ?T1 ?T2) supposes (?R ?a ?b), a\n"
+    ";; hypothesis, for every ?a of type ?T1 and ?b of type ?T2; its\n"
+    ";; activators, after the conditions, name every *-loc relation with\n"
     ";; its (attribute-type, House) pair.\n"
-    "(hrule guess (?R ?T1 ?T2)\n"
+    "(rule guess (?R ?T1 ?T2)\n"
     "  :match  (and (is-a ?a ?T1) (is-a ?b ?T2))\n"
-    "  :assert (?R ?a ?b)\n"
+    "  :assert (open (?R ?a ?b))\n"
     '  :why    "guess: ({?R} {?a} {?b})?")\n'
 )
 
-# …and its activators, which are the whole `(solve …)` form: zebra2 states
-# nothing else there.
-HRULES_KW = (
-    "(solve\n"
-    "  ;; Hypothesis-generator activators: one (?R ?T1 ?T2) triple per\n"
-    "  ;; *-loc relation; the hrule emits (?R ?v ?h) candidates for\n"
-    "  ;; every (v, h) of the corresponding types.\n"
-    "  :hrules (guess\n"
-    "            (color-loc  Color       House)\n"
-    "            (nation-loc Nationality House)\n"
-    "            (drink-loc  Drink       House)\n"
-    "            (smoke-loc  Cigarette   House)\n"
-    "            (pet-loc    Pet         House)))\n"
+# …and its activators, facts the program writes after the conditions, with
+# the comment that introduces them.
+ACTIVATORS = (
+    ";; The hypothesis rule's activators: one (?R ?T1 ?T2) triple per\n"
+    ";; *-loc relation; `guess` supposes (?R ?v ?h) for every (v, h)\n"
+    ";; of the corresponding types.\n"
+    "(guess color-loc  Color       House)\n"
+    "(guess nation-loc Nationality House)\n"
+    "(guess drink-loc  Drink       House)\n"
+    "(guess smoke-loc  Cigarette   House)\n"
+    "(guess pet-loc    Pet         House)\n"
     "\n"
 )
 
 OBLIGATIONS_MARK = (
     ";; ──── Hypothesis generation: THERE IS NONE (generated) ──────\n"
-    ";; The canonical zebra2.ein declares an `(hrule guess (?R ?T1 ?T2))` here\n"
-    ";; and lists its activators in the `(solve … :hrules …)` form below.\n"
-    ";; This variant deletes both, and nothing else — which is a claim this\n"
-    ";; generator makes rather than a reader.\n"
+    ";; The canonical zebra2.ein declares a rule `guess (?R ?T1 ?T2)` here,\n"
+    ";; which concludes a hypothesis, and writes its activators after the\n"
+    ";; conditions. This variant deletes both, and nothing else — which is a\n"
+    ";; claim this generator makes rather than a reader.\n"
     ";;\n"
     ";; What proposes the (?R ?v ?h) candidates instead is the theory the file\n"
     ";; already states. `(bijective color-loc)` and its four siblings fan out\n"
     ";; into std.algebra's `total-owed` / `surjective-owed`, each of which\n"
-    ";; reports an unwitnessed slot as `(open ?R)`; the obligations\n"
-    ";; rung branches on exactly the facts that would discharge one. The hrule\n"
-    ";; said \"guess a (value, house) pair\"; the bijection declaration had\n"
-    ";; already said it, and now the engine hears it.\n"
+    ";; reports an unwitnessed slot as `(open ?R)`; the obligations write\n"
+    ";; exactly the facts that would discharge one. The rule said \"guess a\n"
+    ";; (value, house) pair\"; the bijection declaration had already said it,\n"
+    ";; and now the engine hears it.\n"
     ";;\n"
-    ";; This file solving is the fixture for it: no hrule is needed where the\n"
-    ";; theory (rules + ontology) already says what to guess. Generated from\n"
-    ";; zebra2.ein, not edited by hand.\n"
+    ";; This file solving is the fixture for it: no hypothesis rule is needed\n"
+    ";; where the theory (rules + ontology) already says what to guess.\n"
+    ";; Generated from zebra2.ein, not edited by hand.\n"
 )
 
 OBLIGATIONS_KW_MARK = (
-    ";; No (solve … :hrules …) (generated) — the five `(bijective *-loc)`\n"
+    ";; No `(guess …)` activator (generated) — the five `(bijective *-loc)`\n"
     ";; declarations are the hypothesis-generator activators now: one obligation\n"
     ";; per unlocated value and one per unfilled house, and the branch is that\n"
     ";; obligation's own domain scan.\n"
@@ -129,8 +129,8 @@ OBLIGATIONS_KW_MARK = (
 def _render() -> dict[Path, str]:
     src = ZEBRA2.read_text(encoding="utf-8")
     for name, block in (("condition-(15)", COND_15_BLOCK),
-                        ("hrule", HRULE_BLOCK),
-                        (":hrules", HRULES_KW)):
+                        ("hypothesis rule", RULE_BLOCK),
+                        ("activators", ACTIVATORS)):
         if src.count(block) != 1:
             sys.exit(
                 f"error: the {name} block is not in zebra2.ein exactly once — "
@@ -138,15 +138,15 @@ def _render() -> dict[Path, str]:
             )
     minus_15 = src.replace(COND_15_BLOCK, MINUS_15_MARK)
     bad = src.replace(COND_15_BLOCK, COND_15_BLOCK + "\n" + BAD_INJECT)
-    no_hrule = (src.replace(HRULE_BLOCK, OBLIGATIONS_MARK)
-                   .replace(HRULES_KW, OBLIGATIONS_KW_MARK))
-    minus_15_no_hrule = (minus_15.replace(HRULE_BLOCK, OBLIGATIONS_MARK)
-                                 .replace(HRULES_KW, OBLIGATIONS_KW_MARK))
+    no_guess = (src.replace(RULE_BLOCK, OBLIGATIONS_MARK)
+                   .replace(ACTIVATORS, OBLIGATIONS_KW_MARK))
+    minus_15_no_guess = (minus_15.replace(RULE_BLOCK, OBLIGATIONS_MARK)
+                                 .replace(ACTIVATORS, OBLIGATIONS_KW_MARK))
     return {
         MINUS_15: minus_15,
         BAD: bad,
-        OBLIGATIONS: no_hrule,
-        MINUS_15_OBLIGATIONS: minus_15_no_hrule,
+        OBLIGATIONS: no_guess,
+        MINUS_15_OBLIGATIONS: minus_15_no_guess,
     }
 
 
