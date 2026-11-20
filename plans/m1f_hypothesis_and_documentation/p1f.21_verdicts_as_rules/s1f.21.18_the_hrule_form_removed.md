@@ -248,7 +248,21 @@ otherwise.
 
 ### The gate
 
-`./run_tests.sh` runs on this record's commit; what it gives is written in the commit after it.
+`./run_tests.sh` on `c306224b`, the rebased tip, three runs:
+
+1. On `b766115a` (the record): stopped at `cargo fmt --all --check`, eleven files of the rewrite whose lines rustfmt
+   joins again (a name shortened from `hrule` to `rule`, `hypothesis_rules` sorted after `hypgen`): formatted,
+   `c306224b`.
+2. On `c306224b`, with the default workers: every static check, clippy and rustdoc green; `cargo test` stopped at
+   `corpus_cli`'s `the_slow_flag_still_describes_the_sweep` alone,
+   `examples/beyond_arith/equation_two_unknowns.ein: 4129 ms of cells and no \`slow\` flag` (V-60; the coordinator's
+   known case under load).
+3. On `c306224b`, `EIN_TEST_JOBS=4 ./run_tests.sh`: **exit 0**, the last lines the review bundle's smoke
+   (`Testing region_single/zebra2` / `Success`).
+
+On the same tip, `EIN_CORPUS_SLOW=1 cargo test --profile gate -p ein-render --test dot_wellformed`: `test result: ok.
+5 passed; 0 failed`; `EIN_CORPUS_SLOW=1 cargo test --profile gate -p ein-render --test id_order_invariance`: `test
+result: ok. 4 passed; 0 failed`.
 
 `s1f.21.16_hrules_lists_activators.md` is not deleted here, as the brief says: other plan files link it, and the
 coordinator removes it.
