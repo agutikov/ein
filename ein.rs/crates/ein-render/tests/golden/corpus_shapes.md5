@@ -14145,12 +14145,12 @@ a712723449be0b68       54L  examples/features/24_written_hypotheses.ein::dot[kb-
 8ba882c3b956ea01       54L  examples/features/24_written_hypotheses.ein::dot[kb-since]
 39d73f744dd9c6a8       24L  examples/features/24_written_hypotheses.ein::dot[constraints]
 fd58e348d905feb8       13L  examples/features/24_written_hypotheses.ein::dot[constraints-fold]
-c4f37627fe95614d       43L  examples/features/24_written_hypotheses.ein::read-out[describe]
-61ee51ebfac0212b       31L  examples/features/24_written_hypotheses.ein::read-out[maximal]
-1df7ec05d46e7592       26L  examples/features/24_written_hypotheses.ein::read-out[minimal]
-652ff69eb88561eb       30L  examples/features/24_written_hypotheses.ein::read-out[single]
-30c4d1a0eb907d56       30L  examples/features/24_written_hypotheses.ein::read-out[n2]
-05feb9c7f099767e       51L  examples/features/24_written_hypotheses.ein::region-trace
+10faf97e3c4b3428       42L  examples/features/24_written_hypotheses.ein::read-out[describe]
+3df27a984e13ac3a       30L  examples/features/24_written_hypotheses.ein::read-out[maximal]
+a44b482abf1e60ae       25L  examples/features/24_written_hypotheses.ein::read-out[minimal]
+8155e23a053abe89       29L  examples/features/24_written_hypotheses.ein::read-out[single]
+13cc67647051d212       29L  examples/features/24_written_hypotheses.ein::read-out[n2]
+03f75bc857ce5eb9       50L  examples/features/24_written_hypotheses.ein::region-trace
 e6af070467c0cc15       18L  examples/features/24_written_hypotheses.ein::states
 ff32816166ae2e65       15L  examples/features/24_written_hypotheses.ein::region-lattice
 e6f8e9c9e90a6dd6      206L  examples/features/24_written_hypotheses.ein::cores[describe]
@@ -14158,7 +14158,7 @@ ce67bfd888f55c63      163L  examples/features/24_written_hypotheses.ein::cores[m
 57e52ca40064797e       77L  examples/features/24_written_hypotheses.ein::cores[minimal]
 186c62070bed3d29      112L  examples/features/24_written_hypotheses.ein::cores[single]
 f9d5a4a3d3587bfe      113L  examples/features/24_written_hypotheses.ein::cores[n2]
-744bcb1af561147e      287L  examples/features/24_written_hypotheses.ein::oracle
+20e39af5ace59094      279L  examples/features/24_written_hypotheses.ein::oracle
 c63c1ab04aec69df       74L  examples/lattice/01_subset_pruned.ein::load
 10161dfd8b3004cb       10L  examples/lattice/01_subset_pruned.ein::saturate
 885a66cf80f45e18       18L  examples/lattice/01_subset_pruned.ein::plan

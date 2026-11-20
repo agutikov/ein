@@ -23,7 +23,8 @@
 //!    That scope is the program's own statement, and the read-out does not
 //!    repeat it (`arity3.ein` scopes `is-a` out, and only `r3` is named);
 //! 3. **the writers that built H propose none of its facts**, at relation
-//!    grain: no rule that concludes a hypothesis proposes a fact of it, no obligation owes it (one root
+//!    grain: no rule that concludes a hypothesis proposes a fact of it and
+//!    the program writes no hypothesis of it, no obligation owes it (one root
 //!    owes, or one a commitment can bring, which the rung reads too:
 //!    [`crate::oblgen`]), or, for the blind enumerator, its arity is 3 or
 //!    more (`hypgen`'s `fill_slot` enumerates arity 1 and 2).
@@ -119,7 +120,10 @@ pub(crate) fn outside(
     // Clause 3: what the rung proposes facts of.
     let proposed: FxHashSet<Symbol> = match mode {
         Mode::HypothesisRules => {
-            crate::hypothesis_rules::HypothesisRules::new(s)?.asserted_relations(s.terms)
+            let mut proposed =
+                crate::hypothesis_rules::HypothesisRules::new(s)?.asserted_relations(s.terms);
+            proposed.extend(written_relations(s));
+            proposed
         }
         Mode::Obligations | Mode::Stuck | Mode::Union => {
             let memo = s.memo.clone();
@@ -135,11 +139,7 @@ pub(crate) fn outside(
                 owed.extend(
                     crate::hypothesis_rules::HypothesisRules::new(s)?.asserted_relations(s.terms),
                 );
-                for o in crate::open::written_by_program(s.kb, s.terms) {
-                    if let Some(f) = s.terms.facts.args(o).first().and_then(|v| v.as_fact()) {
-                        owed.insert(s.terms.facts.rel(f));
-                    }
-                }
+                owed.extend(written_relations(s));
             }
             owed
         }
@@ -182,6 +182,16 @@ pub(crate) fn outside(
     out.sort_by(|a, b| a.relation.cmp(&b.relation));
     out.dedup_by(|a, b| a.relation == b.relation);
     Ok(out)
+}
+
+/// The relations of the hypotheses the program writes, `(open F)`: a writer
+/// of H beside the rules that conclude one.
+fn written_relations(s: &Session<'_>) -> Vec<Symbol> {
+    crate::open::written_by_program(s.kb, s.terms)
+        .into_iter()
+        .filter_map(|o| s.terms.facts.args(o).first().and_then(|v| v.as_fact()))
+        .map(|f| s.terms.facts.rel(f))
+        .collect()
 }
 
 #[cfg(test)]
@@ -266,6 +276,18 @@ mod tests {
                    (rule guess-a () :match (thing ?x) :assert (open (a ?x)) :why \"guess that a holds of the thing {?x}\")\n\
                    (rule from-a () :match (a ?x) :assert (p ?x) :why \"a holds of {?x}, so p holds of {?x}\")\n\
                    (query :goal (a ?x))";
+        assert_eq!(named(src), [("p".to_string(), Why::NotProposed)]);
+    }
+
+    /// The hypotheses the program writes are H's as a rule's are: a relation
+    /// a written `(open F)` is of is not outside, and one a rule concludes
+    /// from it is.
+    #[test]
+    fn a_relation_the_program_writes_hypotheses_of_is_not_outside() {
+        let src = "(relation s T :why \"s holds of {?3}\")\n(relation p T :why \"p holds of {?3}\")\n(thing a) (thing b)\n\
+                   (open (s a)) (open (s b))\n\
+                   (rule from-s () :match (s ?x) :assert (p ?x) :why \"s holds of {?x}, so p holds of {?x}\")\n\
+                   (query :goal (s ?x))";
         assert_eq!(named(src), [("p".to_string(), Why::NotProposed)]);
     }
 }
