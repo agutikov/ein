@@ -5,7 +5,9 @@
 
 **What this is.** The list task 1.1 of [S1f.21.12](../../../s1f.21.12_hypotheses_as_facts.md) asks for before
 anything is built: every corpus program whose candidates, answer, claim or flag would change under your rulings
-Q-M1f.566 to Q-M1f.579, with what it is today and what it would be.
+Q-M1f.566 to Q-M1f.579, with what it is today and what it would be. The second part is now built, and
+[On the built engine](#on-the-built-engine), at the foot of the page, takes the list again from the two binaries
+and sets this prediction beside what happened.
 
 **The answer, short.** Of the 931 programs of the corpus, **15 that load today would answer otherwise**, and **20
 that are refused today would load**:
@@ -227,3 +229,224 @@ whether or not the rule proposes; once the form is a rule, *declared* has no mea
 - **(a)** As the ruling's words: where root holds no `(open F)` and no obligation is activated, it runs, whatever
   rules the program has. **Default.** No corpus program moves: in the two where this happens it proposes nothing.
 - **(b)** A program with a rule that can conclude `(open F)` keeps it off, as a declared hypothesis rule does today.
+
+## On the built engine
+
+The second part of the phase is built ([S1f.21.12](../../../s1f.21.12_hypotheses_as_facts.md),
+[S1f.21.18](../../../s1f.21.18_the_hrule_form_removed.md), [S1f.21.13](../../../s1f.21.13_the_search_and_rules.md),
+[S1f.21.20](../../../s1f.21.20_what_the_first_uses_of_open_found.md) and the pages), so the list is taken again from
+the binaries, with no stand-in: every corpus program as the engine before the second part answers it and as the final
+engine answers it, each on the corpus of its own commit. The figures in §§ 1 to 9 above are left as they were: they
+are the prediction, taken on the stand-in engine at `edbe6c3b`.
+
+### How it was taken
+
+- **Before**: the release build of `ddf09492`, the first part's last commit (`build/costs/bin/ein-ddf09492`), on the
+  corpus and the standard library as they were at `ddf09492`: 933 programs. **After**: the final binary
+  (`build/review-bin/ein-final-7b72bd84`) on the corpus at `7b72bd84` (the commits after it change plans only): 931
+  programs. The two `--version`s are in `runs/built/version.txt`.
+- For each program, on each engine: `ein show hyps` (the set H, and the writer of H that stderr's note names),
+  `ein solve --monotone` (the static check), and a describing `ein solve FILE -T 120 --json-summary` (R's states and
+  commitments, whether R was exhausted, each claim's verdict, the flag), with the region budget at its default. No
+  run reached the 120-second wall budget on either side.
+- The programs are paired by path, and the two the build moved to another path by its record. **A program moved**
+  where it loads on one side and is refused on the other, or is refused on both with another line, or its H (as a
+  set of facts), its flag, R's counts or a claim's verdict differ. A refusal whose line changed only in its position
+  or in the word *hrule* is counted as reworded, not as a move.
+- `tools/run-built.sh` re-takes every run, with `tools/built_pass.py` (the runs) and `tools/built_compare.py` (the
+  comparison), into `runs/built/`: `old.jsonl` and `new.jsonl` (one record a program), each run's output under
+  `runs/built/old/` and `runs/built/new/`, `compare.jsonl` (one comparison a program), `corpus-log.txt` (which commit
+  changed which corpus file), and `runs/built/census.md`, which the tool writes and which holds every number below.
+- *Before* is not the page's *today*: the page ran the stand-in engine at `edbe6c3b` on the corpus at `669d7d43`, and
+  the first part's last builds came between. On every program the page names in §§ 2 to 5 and 7 the two give the
+  same figures (`runs/built/census.md`, *The page's prediction beside the built engine*, which shows both).
+
+### The two corpora
+
+| | before | after |
+|---|---:|---:|
+| programs (corpus entries) | 933 | 931 |
+| refused, at the parse or at load | 214 | 187 |
+| load | 719 | 744 |
+| flagged (not monotone) | 51 | 59 |
+| flagged, under `tests/` | 0 | 0 |
+| R not exhausted (the region budget, or a flagged program's cube past its limit): the same 15 programs | 15 | 15 |
+| a claim the describing run does not hold (failed, or not checked) | 5 | 13 |
+
+**925 programs are on both sides: 46 moved, 879 did not.** Of the 879, **124 have a text the build rewrote and
+answer as before**: 116 by S1f.21.18 (each hypothesis rule written as a rule that concludes `(open F)`, its
+activators as facts), 6 by S1f.21.12 (three witnesses refused on both sides, `stdlib/debts.ein`,
+`stdlib/macro.ein`, and `06_blind_enumeration.ein`, below), 2 by S1f.21.22 (the
+comments of `stdlib/closure.ein` and `stdlib/bool/inputs.ein`); 755 have the same text. On 29 of the 879 only the
+name of H's writer moved: `hypothesis-rules` → `union` on 25 (an obligation is activated beside the rule and proposes
+nothing the rule does not), → `blind` on 2 (`hrule-eq.ein` and `query-full.ein`, H empty on both sides), →
+`obligations` on 1 (`readings.ein`, H empty), and `declined` → `blind` on 1 (`06_blind_enumeration.ein`). The engine
+before printed `hrules` where the final one prints `hypothesis-rules`, the name S1f.21.18 gave it (Q-M1f.626); the
+census reads the two as one writer. 16 programs are refused on both sides with the line reworded (`runs/built/census.md`,
+*The refusals reworded and not moved*). Apart from the 925: 2 moved to another path, 6 removed, 4 added.
+
+**The flagged programs below** load and warn: the read-out's first row is `WARNING  THIS PROGRAM IS NOT MONOTONE:
+NOTHING IS CLAIMED OF THIS ANSWER.`, and stderr's first line `WARNING: FILE: THIS PROGRAM IS NOT MONOTONE: NOTHING IS
+CLAIMED OF THIS ANSWER (Q-M1f.564)` (each in `runs/built/new/<program>.solve.txt`). Nothing is claimed of a flagged
+program's answer: its figures are what it prints, and none is called right or wrong.
+
+### The 46 that moved
+
+*k_s / k_c* are R's states and commitments; *before → after* throughout.
+
+**By the union** (Q-M1f.570, built by S1f.21.12): an obligation's candidates join the rule's.
+
+| program | H | k_s / k_c | claim | flag | what the build wrote in the file |
+|---|---|---|---|---|---|
+| [`zebra.ein`](../../../../../../examples/zebra.ein) | 56 → 112 | 1 / 261 982 → 1 / 68 719 459 314; the one state the same | none | monotone | S1f.21.18's spelling |
+| [`13_witness_of_two.ein`](../../../../../../examples/lattice/13_witness_of_two.ein) | 3 → 4 | 5 / 5 → 8 / 13 | held → held | monotone | its claim restated to the new R (S1f.21.12); S1f.21.18's spelling |
+| [`14_seats_nothing_proposes.ein`](../../../../../../examples/lattice/14_seats_nothing_proposes.ein) | 12 → 16 | 4 / 4 → 8 / 8 | held → held | monotone | the same |
+| [`08_absent_witness_hole.ein`](../../../../../../examples/lattice/08_absent_witness_hole.ein) | 3 → 4 | 5 / 5 → 11 / 13 | none | **flagged** on both sides | S1f.21.18's spelling |
+| [`06_friends_tables_everyone_sits.ein`](../../../../../../examples/lattice/06_friends_tables_everyone_sits.ein) | 19 → 25 | 8 / 8 → 8 / 8; the states the same | none | monotone | its header restated for the union (S1f.21.12); S1f.21.18's spelling |
+| [`13_mixed_solution_and_open.ein`](../../../../../../examples/features/13_mixed_solution_and_open.ein) | 2 → 3 | 1 / 1 → 3 / 4 | held → held | monotone | its `:no-hypothesis (is-a likes)` dropped and its claim restated (S1f.21.12, item [65](../65-the-lists-and-a-closure/README.md)); S1f.21.18's spelling |
+
+**By an obligation that no longer steps aside** (Q-M1f.579, built by S1f.21.12): each obligation writes its guard's
+candidates at root, and the site `obligation-guard` flags the program. All eight are under
+`examples/ein-bugs/wrong-answers/`.
+
+| program | H | k_s / k_c | claim | flag | its corpus runs | regression row |
+|---|---|---|---|---|---|---|
+| [`oblig-derived-domain.ein`](../../../../../../examples/ein-bugs/wrong-answers/oblig-derived-domain.ein) | 6 → 1 | 1 / 1 → 0 / 0 | held → failed | monotone → **flagged** | `solve` → `solve --count` | dropped |
+| [`oblig-derived-domain-declared.ein`](../../../../../../examples/ein-bugs/wrong-answers/oblig-derived-domain-declared.ein) | 6 → 2 | 1 / 1 → 1 / 1; the state the same | held → held | monotone → **flagged** | `solve`, `test` → `solve --count` | none |
+| [`oblig-fresh-name.ein`](../../../../../../examples/ein-bugs/wrong-answers/oblig-fresh-name.ein) | 6 → 1 | 1 / 1 → 0 / 0 | held → failed | monotone → **flagged** | `solve` → `solve --count` | dropped |
+| [`oblig-fresh-name-declared.ein`](../../../../../../examples/ein-bugs/wrong-answers/oblig-fresh-name-declared.ein) | 6 → 2 | 1 / 1 → 1 / 1; the state the same | held → held | monotone → **flagged** | `solve`, `test` → `solve --count` | none |
+| [`oblig-fresh-name-two.ein`](../../../../../../examples/ein-bugs/wrong-answers/oblig-fresh-name-two.ein) | 12 → 2 | 12 / 12 → 0 / 0 | held → failed | monotone → **flagged**; in flight `(likes Ann Z)` | `solve` → `solve --count` | dropped |
+| [`oblig-fresh-name-two-declared.ein`](../../../../../../examples/ein-bugs/wrong-answers/oblig-fresh-name-two-declared.ein) | 12 → 4 | 12 / 12 → 3 / 3 | held → failed | monotone → **flagged** | `solve`, `test` → `solve --count` | none |
+| [`oblig-stdlib-total-owed.ein`](../../../../../../examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed.ein) | 6 → 1 | 16 / 16 → 0 / 0 | held → failed | **flagged** on both | `solve --count` on both | none |
+| [`oblig-stdlib-total-owed-declared.ein`](../../../../../../examples/ein-bugs/wrong-answers/oblig-stdlib-total-owed-declared.ein) | 6 → 2 | 16 / 16 → 1 / 1 | held → failed | **flagged** on both | `solve --count` on both | none |
+
+H shrinks in every row: the candidates the blind enumerator guessed once the obligation stepped aside give way to
+the ones the guard reads at root. Each claim is still written in its file; a describing run checks it for whoever
+asks, and no suite reads it (S1f.21.12's corpus commit made each `test` run and each claim-checking `solve` run a
+`solve --count`, and dropped the three rows).
+
+**`open` written elsewhere, refused before, loading now** (21, by S1f.21.12's grammar and loader): the twenty
+witnesses of § 7 that the page said would load, and one it did not list.
+
+| program (under `examples/ein-bugs/wrong-answers/`) | the page: once built | the page's stand-in (`opn`) | after: H, its writer | k_s / k_c | claim | flag |
+|---|---|---|---|---|---|---|
+| `open-claim-fact-head.ein` | loads, by the rulings | 4 / 4, exit 1 | 2, `blind` | 4 / 4 | failed | monotone |
+| `open-claim-value.ein` | loads, by the rulings | 4 / 4, exit 1 | 2, `blind` | 4 / 4 | failed | monotone |
+| `open-conclusion-value.ein` | loads, by the rulings | 16 / 16 | 2, `blind` | 4 / 4 | none | monotone |
+| `open-derived-activator.ein` | loads, by the rulings: flagged | 4 / 4 | 2, `blind` | 4 / 4 | none | **flagged** (`open-read`) |
+| `open-fact-value.ein` | loads, by the rulings | 16 / 16 | 2, `blind` | 4 / 4 | none | monotone |
+| `open-goal-pattern-head.ein` | loads, by the rulings | refused (its goal names `opn`) | 2, `blind` | 4 / 4 | none | monotone |
+| `open-goal-value.ein` | loads, by the rulings | 4 / 4 | 2, `blind` | 4 / 4 | none | monotone |
+| `open-hrule-value.ein` | loads, by the rulings | 2 / 2 | 1, `hypothesis-rules` | 2 / 2 | none | monotone |
+| `open-is-a-object.ein` | loads, by the rulings | 32 / 32 | 2, `blind` | 4 / 4 | none | monotone |
+| `open-macro-argument.ein` | loads, by the rulings | 22 / 32 | 2, `blind` | 4 / 4 | none | monotone |
+| `open-macro-value.ein` | loads, by the rulings | 22 / 32 | 2, `blind` | 4 / 4 | none | monotone |
+| `open-negation-head.ein` | loads, by the rulings | 4 / 4 | 2, `blind` | 4 / 4 | none | monotone |
+| `open-nested-fact-head.ein` | loads, by the rulings | 32 / 32 | 5, `blind` | 32 / 32 | none | monotone |
+| `open-premise-value.ein` | loads, by the rulings | 22 / 32 | 2, `blind` | 4 / 4 | none | monotone |
+| `open-signature-type.ein` | loads, by the rulings | 8 / 8 | 3, `blind` | 8 / 8 | none | monotone |
+| `open-eq-value.ein` | loads, by the default (Q-M1f.596) | 16 / 16 | 2, `blind` | 4 / 4 | none | monotone |
+| `open-fact-clause.ein` | loads, by the default | 2 / 2 | 1, `blind` | 2 / 2 | none | monotone |
+| `open-trace-step.ein` | loads, by the default | 4 / 4 | 2, `blind` | 4 / 4 | none | monotone |
+| `open-macro-unused.ein` | loads, by the default | 4 / 4 | 2, `blind` | 4 / 4 | none | monotone |
+| `open-macro-verdict.ein` | loads, by the default | 4 / 4 | 0, `stuck` | 0 / 0: every alive node owes | none | monotone |
+| [`absent-fact-nested.ein`](../../../../../../examples/ein-bugs/wrong-answers/absent-fact-nested.ein) | not listed | — | 0, `blind` | 1 / 1 | none | monotone |
+
+Eleven answer as the stand-in did. Seven answer 4 states where the stand-in answered 16, 22 or 32: `open` is no atom
+the blind enumerator guesses about (Q-M1f.617, the twelfth default of item [69](../69-S1f.21.12-defaults/README.md)),
+where `opn` was one, so H is `(p k)` and `(q k)` alone
+(`runs/built/new/examples_ein_bugs_wrong_answers_open_is_a_object.show-hyps.txt` and the six others' files of that
+form). `open-macro-verdict.ein`'s macro call expands to `(open likes)`, which is now what a state owes (Q-M1f.566):
+root owes an instance no writer gives a candidate for, and R is empty; the stand-in's `opn` was an ordinary fact and
+could not show that. `open-goal-pattern-head.ein` was refused on the stand-in for its goal's `opn`, which says
+nothing of `open`, as the page said. The two whose claim names `open` refute it, as on the stand-in: no state holds
+the fact each lists, `(p open)` or `(p (open k))`. Nineteen keep a regression row, which S1f.21.12 rewrote to
+bank the region; `open-derived-activator.ein` lost its row, being flagged. `absent-fact-nested.ein` loads because under an ordinary relation `absent` is a name
+(Q-M1f.571); S1f.21.12's record noted it (V-46).
+
+**Refused on both sides, with another line** (11):
+
+| program | before | after | why |
+|---|---|---|---|
+| `hrule-and.ein`, `hrule-and-in-and.ein` | an hrule concludes 2 or 3 facts, at load | `unexpected and`, at the parse | S1f.21.18 writes the conclusion `(open (and …))`, which the grammar refuses (Q-M1f.622) |
+| `not-name-hrule-concluded.ein` | `(not ?g)` of a name, at load | `unexpected ?g: a variable`, at the parse | `(open (not ?g))` (Q-M1f.622; S1f.21.18's V-56) |
+| `macro-eq-candidate.ein` | `(eq ?x)` takes 2 arguments | `(eq ?x)` written where a value goes | `(open (eq ?x))` (Q-M1f.622) |
+| `eq-arity-hrule.ein` | `(solve :hrules (h (eq)))` binds `?R` to `eq` | the fact `(h eq)` binds `?R` to `eq` | the same refusal; the activator is now a fact (Q-M1f.621, Q-M1f.623) |
+| `open-fact-head.ein`, `open-relation-parameter.ein` | `unexpected open`, at the parse | `(open x) is written, and x is neither a fact nor a relation`, at load | S1f.21.12's loader: refused, as the page said, by the line the build gave it |
+| `open-obligation-parameter.ein` | `unexpected open` | `(owe open) makes obligation 'owe' owe open` | the same |
+| `open-solve-list.ein` | `unexpected open` | `its :hypothesis-relations names open, and the program names no relation open` | the same |
+| [`reserved_open_symbols.ein`](../../../../../../examples/broken/load/reserved_open_symbols.ein) | its own `:symbols (open)`, at the parse | its module's line, `reserved_open_direct.ein:16:8: unexpected open` | a list of names takes `open` now; the module it lists is refused, as the comment S1f.21.12 wrote says |
+| [`closed-and-owing.ein`](../../../../../../examples/ein-bugs/closed-and-owing.ein) | an obligated relation is closed | root holds `(open r)` and `(__closed__ r)` says `r` is closed | Q-M1f.578's error, as the page said (§ 4) |
+
+The first five are under `examples/ein-bugs/wrong-answers/` and moved with the `hrule` form (S1f.21.18); the four
+`open-*` there with S1f.21.12's loader. Every refusal line, before and after, is in `runs/built/census.md`.
+
+**Moved to another path** (2), each by Q-M1f.614 (S1f.21.12):
+
+| before | after | before → after |
+|---|---|---|
+| `examples/broken/open_in_match.ein` | [`examples/features/23_a_rule_reads_open.ein`](../../../../../../examples/features/23_a_rule_reads_open.ein) | refused at the parse → loads, **flagged** (`open-read`): H 1, R 1 / 1 |
+| `examples/broken/open_mixed_assert.ein` | [`examples/broken/load/open_mixed_assert.ein`](../../../../../../examples/broken/load/open_mixed_assert.ein) | refused at the parse → refused at load: `(open ?R)` stands beside another conclusion (Q-M1f.575) |
+
+**Removed** (6, each refused before; S1f.21.18, Q-M1f.623 and Q-M1f.624): `examples/broken/hrule_reserved_name.ein`,
+`examples/broken/load/ein_on_hrule.ein`, and under `examples/ein-bugs/wrong-answers/` `macro-bare-conclusion-hrule.ein`,
+`solve-hrules-activator-arity.ein`, `solve-hrules-no-such-hrule.ein` and `solve-hrules-no-such-relation.ein`.
+
+**Added** (4): [`examples/broken/load/no_hypothesis_beside_open.ein`](../../../../../../examples/broken/load/no_hypothesis_beside_open.ein)
+(S1f.21.12: `13_mixed_solution_and_open.ein` as it was, refused at load: *its :no-hypothesis names likes, and root
+holds (open likes)*); [`examples/features/24_written_hypotheses.ein`](../../../../../../examples/features/24_written_hypotheses.ein)
+(S1f.21.20: H 2, R 3 / 3, its two claims held, monotone); [`examples/lattice/18_two_candidates.ein`](../../../../../../examples/lattice/18_two_candidates.ein)
+(S1f.21.13: H 2, R 2 / 2, two claims held) and [`18_two_candidates_as_rules.ein`](../../../../../../examples/lattice/18_two_candidates_as_rules.ein)
+(S1f.21.13: H 0, R 1 / 1, four claims held).
+
+### The prediction beside what happened
+
+Item by item of *The answer, short* (at the top of the page) and § 6:
+
+| the page said | on the built engine | |
+|---|---|---|
+| **15 that load today would answer otherwise** | 14 that load on both sides moved: the union's 5, `13_mixed_solution_and_open.ein`, and the obligations' 8. The fifteenth, `06_blind_enumeration.ein`, answers as before | **different, by two rewrites** the page's default (a) of § 10 named: see the two rows below |
+| **20 refused today would load** | the 20 load, and one more: `absent-fact-nested.ein` | **confirmed**; one not predicted |
+| **5 by the union**, with H, k_s and k_c for each | the 5, every H, k_s and k_c as the page gave them (`zebra.ein` 56 → 112 candidates and 261 982 → 68 719 459 314 commitments, its one state the same) | **confirmed** |
+| the claims of `13_witness_of_two` and `14_seats_nothing_proposes` fail | both hold: S1f.21.12 restated each claim to the new R | **not seen**, by the rewrite (a) said |
+| **8 by an obligation that no longer steps aside**, each as item [64](../64-an-obligation-that-no-longer-steps-aside/README.md)'s stand-in | the 8, every H, k_s and claim as the stand-in gave them | **confirmed** |
+| **6 become flagged**, each read by a suite today (3 by a `test` run, 3 by a regression row) | 6 newly flagged, by `obligation-guard`; each read by no suite now: runs `solve --count`, the 3 rows dropped | **confirmed** |
+| **1 becomes an error under the lists**: `13_mixed_solution_and_open.ein` | the program as it was, now `no_hypothesis_beside_open.ein`, is refused at load with Q-M1f.578's error; the file at the old path was rewritten without its `:no-hypothesis` and moves by the union (H 2 → 3, R 1 / 1 → 3 / 4, its claim restated and held) | **confirmed on the moved copy**; the path moves otherwise, by a rewrite |
+| **1 is refused for its bare `(open)`**: `06_blind_enumeration.ein` | it was rewritten with no obligation activated (Q-M1f.600's default, item [63](../63-the-bare-open/README.md)): it loads, H 16 by the blind enumerator, R 1 / 1, its claim held, as before | **not seen**, by the rewrite |
+| **20 regression witnesses of `open` load** (15 by the rulings, 5 by the default); **10 stay refused** | 15 and 5 load; of the 10, 9 stay refused (six with another line, above) and `open_in_match.ein` loads, flagged, as `23_a_rule_reads_open.ein` | **confirmed** for the 20; **one of the 10 loads**, by its move (Q-M1f.614) |
+| on the stand-in, 19 of the 20 answer, 2 to 32 states each, none flagged; `open-derived-activator` flagged once built; the two whose claim names `open` refute it | 20 of 20 answer, 0 to 32 states; one flagged, `open-derived-activator.ein`; the two refute their claim | **confirmed**, with 9 answers other than the stand-in's: 7 by Q-M1f.617, `open-macro-verdict.ein` by `(open likes)` being an obligation, and `open-goal-pattern-head.ein`, refused on the stand-in |
+| **none by a hypothesis first held above root** (Q-M1f.574): the site's 3 programs are flagged today | the site `hypothesis` on those 3, each flagged before; the check in flight, which the page did not take, finds one on 2 describing runs (`oblig-fresh-name-two.ein`, `(likes Ann Z)`; [`maximal_not_top.ein`](../../../../../../examples/lattice/synth/maximal_not_top.ein), `(h Z)`), both flagged by a site already | **confirmed**: no program newly flagged by it |
+| **none by a rule that reads `open`** (Q-M1f.569); once built `open-derived-activator.ein` | the site `open-read` on 2: `open-derived-activator.ein` and `23_a_rule_reads_open.ein` | **confirmed**, and one more by the move |
+| Q-M1f.579's site: the eight of § 3 and the same three | `obligation-guard` on those 11 | **confirmed** |
+| **no program under `tests/` becomes flagged** | 0 before, 0 after | **confirmed** |
+| Q-M1f.599: the two programs where the blind enumerator would run beside a rule propose nothing | `hrule-eq.ein` and `query-full.ein`: writer `blind`, H empty on both sides | **confirmed** |
+
+And § 8, *what a suite reads that moves*:
+
+| program | the page: the move | after | what reads it after |
+|---|---|---|---|
+| `tests/stdlib/bijection/06_blind_enumeration.ein` | refused | no move (rewritten) | as before: under `tests/`, its `test` run and `solve` run, a regression row |
+| `13_mixed_solution_and_open.ein` | an error | the union's move (rewritten) | its `test` run and its `solve` run, which hold the restated claim |
+| the three `-declared` obligation programs | flagged | flagged | no suite: each `solve --count` |
+| `oblig-derived-domain.ein`, `oblig-fresh-name.ein`, `oblig-fresh-name-two.ein` | flagged | flagged | no suite: rows dropped, each `solve --count` |
+| `13_witness_of_two.ein`, `14_seats_nothing_proposes.ein` | its claim fails | R moves, its claim restated and held | a `solve` run that checks it |
+| `zebra.ein`, `08_absent_witness_hole.ein`, `06_friends_tables_everyone_sits.ein` | another H, R for two | another H, R for two (`zebra.ein` by k_c, `08_absent_witness_hole.ein` by both; `06_…`'s R the same) | no `test` run or row; Rust tests name the files |
+| the 20 witnesses | load | load | 19 regression rows; `open-derived-activator.ein`'s dropped |
+
+**No program under `tests/` moved at all**: the page expected one, `06_blind_enumeration.ein`, which the build
+rewrote to keep its answer.
+
+### Moves the page did not predict
+
+- `absent-fact-nested.ein` loads (Q-M1f.571; S1f.21.12's record has it).
+- `open_in_match.ein` moved to `23_a_rule_reads_open.ein`, which loads, flagged (Q-M1f.614, the ninth default of
+  item [69](../69-S1f.21.12-defaults/README.md)).
+- Five refusals moved with the `hrule` form, which the page did not cover: four conclusions `(open …)` now wraps,
+  three refused at the parse and `macro-eq-candidate.ein` at load, and `eq-arity-hrule.ein`'s activator, a fact
+  (item [71](../71-S1f.21.18-defaults/README.md)); and the six programs S1f.21.18 removed with the form.
+- The four programs added by S1f.21.12, S1f.21.13 and S1f.21.20.
+- On 29 programs the writer's name moved and nothing else did: S1f.21.18's name for the hypothesis rules, and the
+  union's word where an obligation is activated beside them.
+
+Every difference between the prediction and the binaries is a ruling's, a default's, or a stage's rewrite of the
+corpus; the census found no move that none of these explains.
