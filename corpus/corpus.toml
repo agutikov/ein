@@ -757,6 +757,18 @@ runs   = ["solve --count", "saturate"]
 note   = "a flagged program that states a region claim: 04_obligation_trigger_hole.ein's program with a `(solve … :expect (region …))`. Nothing is claimed of a flagged program's answer (Q-M1f.564), so no run here checks the claim: `solve --count` reads no state, and no `test` run is declared; `ein test FILE` checks it for whoever asks."
 
 [[entry]]
+path   = "examples/lattice/18_two_candidates.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "render lattice", "oracle --dump {out}/region"]
+note   = "two candidates, a clash and a requirement, the program whose lattice 18_two_candidates_as_rules.ein writes as rules: a rule concludes each hypothesis, `(open (s a))` and `(open (s b))`; R is the two states that hold one of them, the state that holds both is the one minimal dead set, and ∅ owes. Its claims are held by `test` and by the oracle, which reads the four states of the cube."
+
+[[entry]]
+path   = "examples/lattice/18_two_candidates_as_rules.ein"
+group  = "positive"
+runs   = ["saturate", "saturate --dump", "render kb", "solve --count"]
+note   = "18_two_candidates.ein's lattice written as rules: every state a world, `(in W F)` what it holds, the whole lattice in one saturation under `(solve :no-search)`, and each verdict a fact about a world; its claims state the dead world, the one that owes and R's two as the oracle answers the object program. Its split rules read the `open` facts root holds, so the static check flags it (`open-read`, Q-M1f.569) and nothing is claimed of its answer (Q-M1f.564): no run here checks its claims, `saturate` asks its question, and `ein test FILE` checks them for whoever asks."
+
+[[entry]]
 path   = "examples/lattice/synth/local_not_global.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render lattice", "oracle --dump {out}/region"]

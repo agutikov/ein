@@ -1,0 +1,38 @@
+;;; 18_two_candidates — two candidates, a clash and a requirement: the program whose lattice
+;;; 18_two_candidates_as_rules.ein writes as rules.
+;;;
+;;; `guess` supposes `s` of each thing, so root holds two hypotheses, `(open (s a))` and
+;;; `(open (s b))`. `clash` kills a state that holds both; `some-s` requires that something be
+;;; `s`, so root owes it. R is the two states that hold one of them, the state that holds both is
+;;; the one minimal dead set, and ∅ owes: `ein oracle` reads the four states of the cube and gives
+;;; the R the claims below state.
+
+(relation s Thing :why "s holds of {?3}")
+
+(thing a) (thing b)
+
+(rule guess (?R)
+  :match  (thing ?x)
+  :assert (open (?R ?x))
+  :why    "suppose {?R} of {?x}")
+(guess s)
+
+(rule clash ()
+  :match  (and (s a) (s b))
+  :assert (false)
+  :why    "s of a and of b")
+
+(rule some-s (?R)
+  :match  (absent (?R ?x))
+  :assert (open ?R)
+  :why    "{?R} of something is owed")
+(some-s s)
+
+(solve
+  :expect (region
+            (model (s a))
+            (model (s b))))
+
+(query :goal (s ?x)
+  :expect (or (model (s a))
+              (model (s b))))
