@@ -6252,24 +6252,24 @@ mod tests {
         }
     }
 
-    /// **The verdict atom refuses every shape it cannot resolve**
+    /// **An obligation refuses every shape it cannot resolve**
     /// (`07-diagnostics.md` § 2.2's table). **The shapes a position states are
-    /// the grammar's**: an `(open …)` as a premise or beside another
-    /// conclusion, with three arguments, or with a term for its argument, and
-    /// `open` bound by a declarator, are parse errors at their place (`open`
-    /// is a word a position gives a meaning to), each a row of the grammar's
-    /// table (`ein-ir/tests/grammar_pages.rs`). **So is every other place**:
-    /// `open` is no name (Q-M1f.66), so a pattern's argument, a conclusion's,
-    /// a macro's body and a call's argument write none, and the loader has no
-    /// line for a placement. Below are the refusals a context-free grammar
+    /// the grammar's**: an `(open R)` beside another conclusion, an `(open …)`
+    /// of more than one argument or with `open` or `absent` directly under it,
+    /// and `open` bound by a declarator, are parse errors at their place
+    /// (`open` is a word a position gives a meaning to, Q-M1f.66), each a row
+    /// of the grammar's table (`ein-ir/tests/grammar_pages.rs`). Everywhere the
+    /// kernel does not read it, under an ordinary relation among them, `open`
+    /// is a name (Q-M1f.571). Below are the refusals a context-free grammar
     /// does not see: the projection's ways of not resolving, each placed where
     /// the `(open …)` is written.
     #[test]
     fn the_verdict_atom_refuses_every_shape_it_cannot_resolve() {
         let pre = "(relation is-a T T :why \"{?3} is a {?4}\")\n(relation r A B :why \"r holds of {?3} and {?4}\")\n";
-        // Nested rather than concluded, `(not (open ?R))`, is refused at the
-        // parse: the grammar writes `open` only as a rule's whole `:assert`
-        // (`grammar_pages`' table).
+        // Nested rather than concluded, `(not (open ?R))` is no obligation:
+        // the rule concludes a stored negation, and loads as any rule that
+        // does. An obligation's `(open ?R)` is its rule's whole `:assert`
+        // (Q-M1f.575).
         for (want, src) in [
             // The projection's three ways of not resolving.
             (

@@ -41,8 +41,8 @@
 //! exhaustive: some `b` must witness it, so branching over them loses no
 //! model. **What this module builds is H**, though, and H is one set: built
 //! once at root's fixpoint and read by every route and the oracle, each of
-//! whose nodes is root with a subset of it committed. So the rung proposes the
-//! **union** over the accepted instances, in report order, of which every
+//! whose nodes is root with a subset of it committed. So this module proposes
+//! the **union** over the accepted instances, in report order, of which every
 //! single instance's set is a subset. The branch is taken elsewhere: the
 //! obligation tree, which answers `-n`, `--single` and the two lines, reads
 //! each owed instance's own alternatives from `alternatives`, L5's table,
@@ -72,7 +72,7 @@
 //! H is taken once, at root, and an obligation's activator is an ordinary
 //! fact: a rule can derive one at a node. That node owes what the activator's
 //! plan matches, and root, which never held the activator, proposed nothing
-//! that pays it. So **the rung also proposes what such a debt would**
+//! that pays it. So **this module also proposes what such a debt would**
 //! (Q-M1e.11, by the static reading):
 //!
 //! 1. the **activators a commitment can derive** are read off the rules and

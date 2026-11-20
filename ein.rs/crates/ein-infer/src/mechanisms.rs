@@ -112,7 +112,7 @@ pub struct Mechanisms {
     /// Every `R` with `(__closed__ R)` at this state.
     pub closed: FxHashSet<Symbol>,
     /// `(solve :no-search)`: the program states its lattice is root alone,
-    /// so no rung runs.
+    /// so no writer of H runs.
     pub no_search: bool,
     /// The `open` facts the state holds, in the order written: at root's
     /// fixpoint, once the pass has written them ([`crate::open`]).
@@ -194,8 +194,8 @@ pub fn read(s: &mut Session<'_>) -> Result<Mechanisms, CompileError> {
 /// plan here.
 ///
 /// The one reading of O: [`read`]'s [`Mechanisms::obligations`]; the
-/// generation ladder's second rung, which is taken where this is not empty at
-/// the state H is built at, root ([`crate::hypgen`]'s `rung`). The plans are
+/// obligations write a share of H where this is not empty at the state H is
+/// built at, root ([`crate::oblgen`]). The plans are
 /// compiled into the session's memo, as every reader of obligation plans
 /// compiles them.
 pub(crate) fn obligation_plans(
@@ -582,7 +582,10 @@ impl Words<'_> {
     fn written_at(&self, fact: FactId) -> Option<String> {
         let node = self.form_of(fact)?;
         let l = self.ast.loc(node)?;
-        Some(format!("written at {}", ein_ir::loc_repr(self.ast, Some(l))))
+        Some(format!(
+            "written at {}",
+            ein_ir::loc_repr(self.ast, Some(l))
+        ))
     }
 
     /// A fact, and where it comes from: `, which rule 'r' derives,` or

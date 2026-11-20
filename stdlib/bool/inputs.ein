@@ -13,9 +13,9 @@
 ;;; *Exactly one* is two declarations of `std.algebra` over a typed relation.
 ;;; `(total-owed in is-a)` says every input owes a value, so a state with an
 ;;; input unset is not an answer; `(functional in)` says none has two. The
-;;; obligation is also what proposes the candidates, through the obligations
-;;; rung of hypothesis generation: two an input, (in w 0) and (in w 1), and no
-;;; other fact is ever guessed. `in-drives` puts an input's value on its wire,
+;;; obligation is also what proposes the candidates, the facts that would pay
+;;; what a state owes: two an input, (in w 0) and (in w 1), and no other fact
+;;; is ever guessed. `in-drives` puts an input's value on its wire,
 ;;; where `std.bool.circuit` carries it on.
 ;;;
 ;;; So R is the input assignments that contradict nothing: with no

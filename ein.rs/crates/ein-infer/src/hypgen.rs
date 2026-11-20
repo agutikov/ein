@@ -74,8 +74,8 @@ pub const HYPOTHESIS_RELATIONS: &str = "hypothesis-relations";
 /// rules on them still fire. Reserved engine string.
 pub const NO_HYPOTHESIS: &str = "no-hypothesis";
 
-/// The `(solve …)` flag that states the lattice is root alone: no rung runs,
-/// so no candidate is proposed whatever the program
+/// The `(solve …)` flag that states the lattice is root alone: no writer of
+/// `H` runs, so no candidate is proposed whatever the program
 /// also declares, and `R` is {∅} where root is alive and discharged, empty
 /// otherwise. Reserved engine string.
 pub const NO_SEARCH: &str = "no-search";

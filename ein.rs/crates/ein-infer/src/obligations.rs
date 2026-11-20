@@ -1,8 +1,8 @@
 //! The obligation pass — what a quiescent KB still **owes**.
 //!
-//! The verdict atom `(open ?R)` is reserved
+//! An obligation is a rule whose whole `:assert` is `(open ?R)`
 //! ([08-obligations.md](../../../../docs/ein/user/03-syntax-and-semantics/08-obligations.md#the-form-open-r),
-//! Q-M1d.2), and the loader routes the rules that assert it into
+//! Q-M1d.2, Q-M1f.575), and the loader routes the rules that assert it into
 //! [`ein_core::Program::obligations`]. This is what walks them.
 //!
 //! ### Not the agenda, and not a band
@@ -27,14 +27,16 @@
 //! and `absents_still_pass` goes back to being about ordinary negative
 //! premises.
 //!
-//! ### Never stored
+//! ### The tally, and the `(open R)` facts written from it
 //!
-//! `(false)` can be a fact because contradiction is extension-stable: a dead
-//! state stays dead under any addition. Openness is the opposite — it exists
-//! to be destroyed by an extension — so a stored `open` would survive its own
-//! discharge in a fork that paid it. The tally is state of the **node**
-//! (`owes` on [`crate::region`]'s node and the routes' states), beside
-//! its dead bit, which is the other per-node verdict that is not a fact.
+//! The tally is read at every state's fixpoint: what the state owes, `owes`
+//! on [`crate::region`]'s node and the routes' states, which with its dead
+//! bit decides whether the state is in R. The `(open R)` facts, one for each
+//! relation the state owes, are written from it by [`crate::open`]'s pass
+//! into the part of the state no fork inherits (Q-M1f.566): openness exists
+//! to be destroyed by an extension, so a fork that pays a debt holds no
+//! `open` fact of it, and the pass, where it runs at the fork (Q-M1f.655),
+//! writes what the fork still owes.
 //!
 //! ### What it costs
 //!

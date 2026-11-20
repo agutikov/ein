@@ -35,7 +35,8 @@
 //!   goes; a keyword each form does not take, one row a form, and a keyword
 //!   pair in each place in a term; `(and)` and `(or)`, each with the note
 //!   naming the rule and the clause, in each place a connective is written;
-//!   `open` outside a rule's whole conclusion; a character that is not ASCII
+//!   `open` where the kernel reads it and the shape is not one it takes; a
+//!   character that is not ASCII
 //!   outside a string and a comment; `absent` as a fact's, a value's and a
 //!   conclusion's relation, `false` with an argument, and `(eq …)` as a
 //!   value, each in every place the grammar takes the refusal; `:no-search`

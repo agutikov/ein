@@ -10,8 +10,8 @@
 //! ### `H`, listed
 //!
 //! [`hypotheses`] is the hypothesis set itself: the candidates root's
-//! generator proposes at root's fixpoint, on whichever rung the program is
-//! on, in the universe's canonical order, rendered-text order. It is the set
+//! writers give at root's fixpoint, whichever of them the program has, in
+//! the universe's canonical order, rendered-text order. It is the set
 //! every route searches over, and what it costs is what building `H` costs:
 //! root's saturation and the generator's pass, no node. **Every object below
 //! is over these candidates, taken by the same function**: a pair layer, the
@@ -620,7 +620,7 @@ pub struct Hypotheses {
     /// fixpoint, once, in rendered-text order. The order a [`PairLayer`]'s
     /// candidates are in, and every other object's.
     pub candidates: Vec<Candidate>,
-    /// The rung of the ladder that built it.
+    /// Which writers built it.
     pub rung: crate::oblgen::Mode,
     /// Root's own fixpoint holds a contradiction. `H` is built all the same.
     pub root_dead: bool,
@@ -1360,7 +1360,7 @@ pub struct Theory {
     /// supports were asked; empty otherwise.
     pub supports: Vec<Support>,
     pub support_work: SupportWork,
-    /// The rung of the ladder that built `H`, by its word
+    /// Which writers built `H`, by its word
     /// ([`crate::oblgen::Mode::as_str`]).
     pub rung: &'static str,
     /// The saturation rules whose text names one of the candidates' objects,

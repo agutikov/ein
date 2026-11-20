@@ -3,23 +3,23 @@
 //!
 //! [`obligation_reports.rs`](obligation_reports.rs)'s sibling.
 //! That suite checks what a quiescent state *says* it owes; this one checks
-//! that the debt is a **choice point** — that the ladder dispatches where it
-//! should, that the branch is the obligation's own domain scan, and that the
-//! search it drives finds the same models as the hand-written a rule that concludes `(open F)` it
-//! replaces.
+//! that the debt is a **choice point** — that the writers of H are the ones
+//! the program declares, that the branch is the obligation's own domain scan,
+//! and that the search it drives finds the same models as the hand-written
+//! rule that concludes `(open F)` it replaces.
 //!
 //! The central claim is `the_theory_finds_what_the_hypothesis_rule_finds`, and it is a
 //! *model-set* comparison rather than a counter one on purpose: counters may
 //! move under a new traversal, answers may not, and a counter equality
 //! pinned as a test would be a test of the fixtures' arithmetic rather than
-//! of the engine. The ladder these tests hold is [the page's].
+//! of the engine. The union these tests hold is [the page's].
 //!
 //! [the page's]: ../../../../docs/ein/reasoning/02-kb-evolution/04-hypothesis-generation.md#2-the-union
 
 //!
-//! **It reads the routes** ([`ein_infer::explore`]). The ladder is what
-//! builds H, the candidates
-//! every route commits to, so the dispatch is a claim about the one `rung`
+//! **It reads the routes** ([`ein_infer::explore`]). The writers build H,
+//! the candidates every route commits to, so which writers built it is a
+//! claim about the one `rung`
 //! line a route narrates when it builds H at root; and the completeness claim
 //! is that the hypothesis rule path and the obligation path build the same H, so their
 //! R is one, and the maximal lines the obligation tree reaches agree.
@@ -108,7 +108,7 @@ fn universe(rel: &str) -> Vec<String> {
 /// The stuck state, as a program of its own: `tests/region/04_owing.ein`
 /// with Ann's two likings stored false so that every candidate that would
 /// pay her debt is refuted, and no `(solve :no-search)`. The fixture states
-/// `:no-search`, which runs no rung; the stuck rung is this program's.
+/// `:no-search`, which runs no writer; the stuck state is this program's.
 /// Written into a scratch directory the caller
 /// holds, as an absolute path, which `repo_root().join` keeps.
 fn stuck_program() -> (Scratch, String) {
@@ -132,7 +132,7 @@ fn stuck_program() -> (Scratch, String) {
 }
 
 /// `tests/stdlib/algebra/24_total_owed_satisfied.ein`'s program with no
-/// `(solve :no-search)`: rung 2 runs and owes nothing.
+/// `(solve :no-search)`: the obligations write, and root owes nothing.
 fn discharged_program() -> (Scratch, String) {
     let dir = Scratch::new("ein-obligation-rung-discharged");
     let path = dir.path().join("discharged.ein");
@@ -175,7 +175,7 @@ fn rungs(rel: &str) -> Vec<(String, u64, u64, u64)> {
     out
 }
 
-// ── The ladder ─────────────────────────────────────────────────────
+// ── The writers ────────────────────────────────────────────────────
 
 /// **The dispatch, one file per mode.**
 ///
@@ -201,7 +201,7 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
         // `:no-hypothesis` naming the relation it owes would be refused at
         // load, and `tests/region/04_owing.ein` states `:no-search`.
         (&stuck, &["stuck"]),
-        // `(solve :no-search)`: no rung runs, and none narrates,
+        // `(solve :no-search)`: no writer runs, and none narrates,
         // though root owes.
         ("tests/region/04_owing.ein", &[]),
         // an obligation whose guard scans a relation it proposes: it does
@@ -213,7 +213,7 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
         ("examples/branching/02_one_dead_one_alive.ein", &[]),
     ];
     for (rel, want) in cases {
-        // H is built once, at root, and that is where the rung is decided.
+        // H is built once, at root, and that is where its writers are read.
         let got: Vec<String> = rungs(rel).into_iter().map(|(m, ..)| m).collect();
         let uniq: BTreeSet<&str> = got.iter().map(String::as_str).collect();
         let want: BTreeSet<&str> = want.iter().copied().collect();
@@ -231,7 +231,7 @@ fn the_ladder_dispatches_by_what_the_program_declares() {
 /// **A state that owes something it may not branch on is reported, not
 /// silently complete.**
 ///
-/// The trap the ladder's second rung opens: the generator proposes nothing, so
+/// The trap an obligation that offers nothing opens: the writers propose nothing, so
 /// `complete()` says yes, so the node would be recorded as a model — while
 /// the tally beside it says the requirement is unmet, and the `stuck` line is
 /// what tells it apart from a state that is finished. **That trap is
@@ -312,7 +312,7 @@ fn the_candidates_are_what_the_guard_scans() {
     // both types have five members.
     assert_eq!(first["candidates"], 180);
     // is-a, is-a*, right-of, next-to — the four relations no obligation names,
-    // which is the ladder's completeness condition as a number.
+    // which is the obligations' completeness condition as a number.
     assert_eq!(first["uncovered"], 4);
 }
 
@@ -320,7 +320,7 @@ fn the_candidates_are_what_the_guard_scans() {
 
 /// **Every state the hypothesis rule path finds, the obligation path finds.**
 ///
-/// The ladder's central claim: it is exhaustive iff
+/// The obligations' central claim: they are exhaustive iff
 /// obligations and saturation between them determine every remaining open
 /// fact. On the zebra family the obligated arrows *are* the decision
 /// variables, so the two paths must agree — and the pair below is one

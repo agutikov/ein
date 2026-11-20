@@ -15,15 +15,15 @@ use crate::common::load_program;
 /// the fact is written, every candidate, uncut, in the universe's canonical
 /// order ([`ein_render::structure::hypotheses_text`]).
 ///
-/// It is `H` as root's generator builds it, on whichever rung the program is
-/// on: the set every route searches over, `ein solve -H` lists by relation
+/// It is `H` as root's writers build it, whichever of them the program has:
+/// the set every route searches over, `ein solve -H` lists by relation
 /// and `ein render h-space`'s document lists with what the structure says of
 /// each ([`ein_infer::structure::hypotheses`], the one function all three
 /// take it from). **It costs what building `H` costs**: root's saturation
 /// and the generator's pass, and no node.
 ///
 /// An empty `H` prints nothing and exits 0. A `note:` on stderr says which
-/// rung built `H` and how many candidates it holds, after the `WARNING:` line
+/// writers built `H` and how many candidates it holds, after the `WARNING:` line
 /// where the static check flags the program (Q-M1f.564). A program the loader
 /// refuses is refused as every command refuses it, exit 1, and so is one the
 /// engine refuses to read.

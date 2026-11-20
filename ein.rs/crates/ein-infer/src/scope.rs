@@ -1,10 +1,10 @@
 //! What the universe leaves out (Q-M1e2.3): R is *scoped, and the
 //! read-out says so*.
 //!
-//! R is over H, the candidate list the generation ladder builds at root
+//! R is over H, the candidate list the writers of root's hypotheses build
 //! ([the universe](../../../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#14-candidate-and-universe)),
 //! so `exhausted` certifies all of R over H and nothing beyond it. Where the
-//! rung that built H proposes no fact of a relation the program **can
+//! writers that built H propose no fact of a relation the program **can
 //! conclude or ask about**, every state of R holds of that relation only what
 //! the program states and saturation derives, and the read-out says so: the
 //! `outside` row under `universe`, `root.hypgen.outside` in `--json-summary`,
@@ -25,19 +25,19 @@
 //! 3. **the writers that built H propose none of its facts**, at relation
 //!    grain: no rule that concludes a hypothesis proposes a fact of it and
 //!    the program writes no hypothesis of it, no obligation owes it (one root
-//!    owes, or one a commitment can bring, which the rung reads too:
+//!    owes, or one a commitment can bring, which the obligations read too:
 //!    [`crate::oblgen`]), or, for the blind enumerator, its arity is 3 or
 //!    more (`hypgen`'s `fill_slot` enumerates arity 1 and 2).
 //!
-//! The rule's third clause is the rung's scope and not H's contents: a
-//! relation the rung covers whose every candidate root already holds is not
+//! The rule's third clause is the writers' scope and not H's contents: a
+//! relation the writers cover whose every candidate root already holds is not
 //! outside the universe, it has nothing left to guess.
 //!
 //! **What it is not.** It is not the `rung` event's `uncovered`, the
-//! obligations rung's completeness counter, which counts every eligible
+//! obligations' completeness counter, which counts every eligible
 //! relation no obligation
 //! names, a relation no rule concludes among them (`uncovered.ein`'s `is-a`).
-//! And it is relation grain: a covered relation's facts the rung does not
+//! And it is relation grain: a covered relation's facts the writers do not
 //! propose (a self-edge, which the blind enumerator never builds; an
 //! obligation's candidates, which its guard types) are not named.
 
@@ -54,8 +54,8 @@ use crate::saturator::Session;
 /// Why the writers that built H propose no fact of a relation.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Why {
-    /// The obligations rung built H (or was stuck), and no obligation owes
-    /// the relation.
+    /// The obligations built H, alone or beside the rules (or root is
+    /// stuck), and no obligation owes the relation.
     NotOwed,
     /// The rules that conclude a hypothesis built H, and none proposes a
     /// fact of the relation.
@@ -85,10 +85,10 @@ pub struct Outside {
 
 /// The relations outside the universe, sorted by name: see the module's
 /// three clauses. `s` is root at its fixpoint with the memo its saturation
-/// compiled; `mode` is the rung the universe's generator pass took, `plans`
-/// the memo's plans, and `later` the relations of the debts root does not
-/// owe that the obligations rung read ([`crate::oblgen::LaterDebt`]): the
-/// rung proposes for those too, so none of them is named.
+/// compiled; `mode` says which writers built the universe, `plans` the
+/// memo's plans, and `later` the relations of the debts root does not owe
+/// that the obligations read ([`crate::oblgen::LaterDebt`]): they propose for
+/// those too, so none of them is named.
 pub(crate) fn outside(
     s: &mut Session<'_>,
     mode: Mode,
@@ -117,7 +117,7 @@ pub(crate) fn outside(
                 .map(move |arity| (r.name, arity))
         })
         .collect();
-    // Clause 3: what the rung proposes facts of.
+    // Clause 3: what the writers propose facts of.
     let proposed: FxHashSet<Symbol> = match mode {
         Mode::HypothesisRules => {
             let mut proposed =
@@ -178,7 +178,7 @@ pub(crate) fn outside(
         })
         .collect();
     // A relation declared at several counts (Q-M1f.447) is named once, at
-    // the count first declared; the rung proposes it where any is.
+    // the count first declared; the writers propose it where any is.
     out.sort_by(|a, b| a.relation.cmp(&b.relation));
     out.dedup_by(|a, b| a.relation == b.relation);
     Ok(out)
@@ -222,16 +222,16 @@ mod tests {
             .collect()
     }
 
-    /// `uncovered.ein`'s shape: the obligations rung owes `seats` alone.
+    /// `uncovered.ein`'s shape: the obligations owe `seats` alone.
     const OBLIGED: &str = "(import std.algebra :symbols (total-owed surjective-owed))\n\
         (relation is-a T T :why \"{?3} is a {?4}\")\n(relation seats Guest Chair :why \"{?3} is seated on {?4}\")\n(relation knows Guest Guest :why \"{?3} knows {?4}\")\n\
         (is-a Ann Guest) (is-a Bob Guest) (is-a C1 Chair) (is-a C2 Chair)\n\
         (total-owed seats is-a)\n(surjective-owed seats is-a)\n";
     const MUTUAL: &str = "(rule knows-is-mutual () :match (knows ?a ?b) :assert (knows ?b ?a) :why \"{?a} knows {?b}, so {?b} knows {?a}\")\n";
 
-    /// Clause 3 on the obligations rung, and clause 1: `knows`, which a rule
+    /// Clause 3 where the obligations write, and clause 1: `knows`, which a rule
     /// concludes and no obligation owes, is named; `is-a`, which no rule
-    /// concludes and no goal asks about, is not, though the rung proposes
+    /// concludes and no goal asks about, is not, though the obligations propose
     /// none of it either.
     #[test]
     fn a_concluded_relation_no_obligation_owes_is_outside() {

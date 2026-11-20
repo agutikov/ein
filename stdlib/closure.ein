@@ -1,6 +1,6 @@
 ;;; Ein stdlib — `std.closure`: auto-infer `(__closed__ R)`.
 ;;;
-;;; `(__closed__ R)` tells the hypothesis generator never to speculate R-facts —
+;;; `(__closed__ R)` tells the blind enumerator never to guess R-facts —
 ;;; R's extension is taken as fixed. `infer-closure` derives it from the
 ;;; operational witness **functional ∧ total**: a relation that is a total
 ;;; function has exactly one image per domain element, so (given enough
@@ -14,13 +14,16 @@
 ;;; │ `functional ∧ total` is an *operational* witness, NOT a semantic one.  │
 ;;; │ It is safe ONLY when R's extension is fully determined by saturation   │
 ;;; │ (e.g. by `std.elim`'s domain-elimination on already-given negatives).  │
-;;; │ If R needs hypothesis BRANCHING to be solved — as the bijective        │
-;;; │ attribute relations of the Zebra puzzle do — closing it prunes the     │
-;;; │ branches the search depends on, and the puzzle will fail to solve      │
-;;; │ (a COMPLETENESS hazard, not a wrong-answer one). So this is opt-in by  │
-;;; │ import and must NOT be imported into the zebra family. The strong      │
-;;; │ (semantic) sense — "the extension cannot grow" — needs a cardinality / │
-;;; │ count predicate the eq/neq matcher lacks; Ein has no numbers.          │
+;;; │ If R needs hypothesis BRANCHING to be solved, closing it is wrong.     │
+;;; │ Where root holds an `open` fact of R — a rule's hypothesis or what an  │
+;;; │ obligation owes, as for the bijective attribute relations of the       │
+;;; │ Zebra puzzle — the closure is refused at load (Q-M1f.578). Where the   │
+;;; │ blind enumerator would guess R, closing it prunes the branches the     │
+;;; │ search depends on, and the puzzle fails to solve (a COMPLETENESS       │
+;;; │ hazard, not a wrong-answer one). So this is opt-in by import and must  │
+;;; │ NOT be imported into the zebra family. The strong (semantic) sense —   │
+;;; │ "the extension cannot grow" — needs a cardinality / count predicate    │
+;;; │ the eq/neq matcher lacks; Ein has no numbers.                          │
 ;;; └────────────────────────────────────────────────────────────────────────┘
 ;;;
 ;;; Opt-in (there is no config flag — the import IS the gate):

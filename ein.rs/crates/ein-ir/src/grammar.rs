@@ -476,11 +476,11 @@ fn rule_name(tok: u32) -> Option<&'static str> {
 /// itself: at a bare `_` and at a string written as a value; at a query's
 /// keyword that belongs on `(solve …)` and a retired `(config …)` flag, whose
 /// lines the parse says before the loader could; on a string with an escape
-/// it does not read, each such escape and where it is; at an `open`, where the
-/// verdict is written ([`OPEN_NOTE`]); and at a word the value rule keeps out
-/// of a value (Q-M1f.113): an `absent` that opens a form ([`ABSENT_NOTE`]), an
-/// `eq` or a `neq` that opens a form inside another, and an argument written
-/// after `(false` ([`FALSE_NOTE`]).
+/// it does not read, each such escape and where it is; at an `open` the
+/// position does not take, what it takes ([`OPEN_NOTE`]); and at a word the
+/// value rule keeps out of a value (Q-M1f.113): an `absent` that opens a
+/// form ([`ABSENT_NOTE`]), an `eq` or a `neq` that opens a form inside
+/// another, and an argument written after `(false` ([`FALSE_NOTE`]).
 fn notes(
     lexer: &dyn NonStreamingLexer<'_, DefaultLexerTypes<u32>>,
     lines: &b::Lines,
