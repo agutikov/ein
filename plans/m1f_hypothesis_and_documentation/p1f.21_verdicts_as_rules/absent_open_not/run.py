@@ -10,7 +10,7 @@ import argparse, os, pathlib, re, subprocess, tempfile
 ROOT = pathlib.Path(__file__).resolve().parents[4]
 ap = argparse.ArgumentParser()
 ap.add_argument("--bin", default=os.environ.get("EIN_BIN", str(ROOT / "build/review-bin/ein-head-946ee788")))
-ap.add_argument("--stdlib", default=str(ROOT / "build/wt-rev-946/stdlib"))
+ap.add_argument("--stdlib", default=str(ROOT / "build/review-stdlib/946ee788"))
 args = ap.parse_args()
 env = dict(os.environ, EIN_STDLIB=args.stdlib)
 K = ["not", "absent", "open"]

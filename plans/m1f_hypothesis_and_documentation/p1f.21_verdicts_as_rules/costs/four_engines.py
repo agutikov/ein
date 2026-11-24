@@ -8,9 +8,9 @@ from pathlib import Path
 
 REPO = Path("/home/user/work/ein")
 POINTS = [  # label, binary, tree
-    ("edbe6c3b", REPO / "build/costs/bin/ein-edbe6c3b", REPO / "build/wt-cost-edbe6c3b"),
-    ("ddf09492", REPO / "build/costs/bin/ein-ddf09492", REPO / ".claude/worktrees/agent-a14b27253298efd9f"),
-    ("08ed0ce7", REPO / "build/costs/bin/ein-08ed0ce7", REPO / ".claude/worktrees/agent-a2c66846e138d68d5"),
+    ("edbe6c3b", REPO / "build/costs/bin/ein-edbe6c3b", REPO / "build/costs/tree-edbe6c3b"),
+    ("ddf09492", REPO / "build/costs/bin/ein-ddf09492", REPO / "build/costs/tree-ddf09492"),
+    ("08ed0ce7", REPO / "build/costs/bin/ein-08ed0ce7", REPO / "build/costs/tree-08ed0ce7"),
     ("1655f19d", REPO / "build/costs/bin/ein-1655f19d", REPO),
 ]
 ENTRIES = sys.argv[2:]
