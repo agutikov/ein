@@ -52,7 +52,7 @@ parse error, read where the module is.
   `(open likes)`, which the obligation `total-owed` writes.
 - **A relation variable no parameter binds**, `unbound_head.ein`, `(?R ?x)` with `?R` no parameter: the loader
   refuses it where the rule is written, so it never reaches the compiler. A relation parameter an activator binds to
-  a fact is no refusal: the program loads under a warning, and the activator activates nothing
+  a fact is no refusal: the program loads, and the activator activates nothing, in silence
   ([`07-diagnostics.md` § 2.9](../../../docs/ein/user/04-reference/07-diagnostics.md#29-a-rule-shape-that-reads-nothing);
   [`features/19_derived_activator.ein`](../../features/19_derived_activator.ein)).
 - **Imports**: a module not found, a relative path not found, a bare `std`, `:as` and `:symbols` together, a short

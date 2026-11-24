@@ -841,9 +841,9 @@
 ;; call of `std.math.positional`'s
 ;; macro with decimal's 68 relations, which derives the 96 activators of the
 ;; shared rules in this same firing. Those rules are named by their activators
-;; and not here: a rule's name written as an argument makes every
-;; parameterised conclusion of its arity a possible activator that binds a
-;; parameter to a fact, which the loader warns of on every program (Q-M1f.1).
+;; and not here: a rule's name written as an argument makes the loader read
+;; every parameterised conclusion of its arity as one that may write the
+;; rule's activator (Q-M1f.42).
 ;; `ein-infer/tests/arith_theory.rs` holds that no relation and no rule of
 ;; this file is missing here, and that the call is the macro's whole order.
 (relation arith-rule Rule

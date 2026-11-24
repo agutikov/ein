@@ -13,9 +13,9 @@
 ;;;
 ;;; A relation is named by a symbol, and a nested fact names none. The
 ;;; activator is held as the fact it is and activates nothing, so `r` never
-;;; fires and root holds no `hit`; R is {∅}. The load says so in a `warning:`
-;;; where the activator is written, and the run in another, naming `r` and
-;;; the activator (Q-M1e2.18, Q-M1f.1). Every command exits 0.
+;;; fires and root holds no `hit`; R is {∅}. Nothing says so, at the load
+;;; or at a run, as nothing says so of an activator of another count
+;;; (Q-M1e2.18, Q-M1f.1). Every command exits 0.
 ;;;
 ;;; ── What the engine answered ───────────────────────────────────────────
 ;;;
@@ -29,7 +29,7 @@
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;
 ;;; The answer above: every command loads the program, root holds no `hit`,
-;;; and stderr carries the two warnings.
+;;; and stderr carries no line of the activator.
 ;;;
 
 (relation box Node :why "{?3} is in a box") (relation c Node :why "c holds of {?3}") (relation hit Node :why "{?3} is hit") (relation a Node :why "a holds of {?3}") (relation rel Node :why "rel holds of {?3}") (relation item Node :why "{?3} is an item")

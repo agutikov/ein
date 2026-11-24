@@ -18,11 +18,11 @@
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;
-;;; Every command loads the program, exit 0, and says on stderr, in a
-;;; `warning:`, that `mk` could derive an activator binding `?R` to a fact,
-;;; which activates nothing (Q-M1f.1); no state derives one, so no run says
-;;; more. The static check flags the program, so nothing is claimed of its
-;;; answer.
+;;; Every command loads the program, exit 0, and says nothing of `mk`,
+;;; which could derive an activator binding `?R` to a fact, one that would
+;;; activate nothing (Q-M1f.1); no state derives one. The static check
+;;; flags the program, so nothing is claimed of its answer. Its twin, where
+;;; root derives one, says nothing of it either.
 ;;;
 
 (relation box Node :why "{?3} is in the box")

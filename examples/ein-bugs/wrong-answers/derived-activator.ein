@@ -22,12 +22,12 @@
 ;;;
 ;;; ── What the engine answers ────────────────────────────────────────────
 ;;;
-;;; Every command loads the program, exit 0, and says on stderr, in a
-;;; `warning:`, that `mk` could derive an activator binding `?R` to a fact,
-;;; which activates nothing (Q-M1f.1). Root derives `(r (a b))`, holds it as
-;;; the fact it is, compiles no plan of `r` for it, and a second `warning:`
-;;; names `r` and the activator. No run stops. The static check flags the
-;;; program, so nothing is claimed of its answer.
+;;; Every command loads the program, exit 0. Root derives `(r (a b))`,
+;;; holds it as the fact it is, and compiles no plan of `r` for it: the
+;;; activator activates nothing, and no command says so, at the load or at
+;;; a run, as none says so of an activator of another count (Q-M1f.1). No
+;;; run stops. The static check flags the program, so nothing is claimed of
+;;; its answer.
 ;;;
 
 (relation box Node :why "{?3} is in the box")

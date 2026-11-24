@@ -1,21 +1,21 @@
 ;;; A derived activator that binds a relation parameter to a fact: the
-;;; program loads under a warning, and the activator activates nothing. Its
+;;; program loads, and the activator activates nothing, in silence. Its
 ;;; twin, where no run derives the activator, is
 ;;; `20_derived_activator_never.ein`.
 ;;;
 ;;; `r`'s parameter `?R` names a relation, `(box (?R b))`, and `mk` derives
 ;;; `r`'s activator from `item`'s argument, which a declared relation's
 ;;; argument is: any object, a fact among them (Q-M1f.41). A relation is
-;;; named by a symbol, and a fact names none, so every command that loads
-;;; the program says so on stderr, one `warning:` line naming `mk`, its
-;;; conclusion and the premise that can bind `?f` to a fact (Q-M1f.1).
+;;; named by a symbol, and a fact names none, so such an activator names no
+;;; relation; no command says so, at the load or at a run, as none says so
+;;; of an activator of another count (Q-M1f.1, Q-M1f.115).
 ;;;
 ;;; `(item (a b))` makes `mk` derive `(r (a b))` at root. The state holds it
 ;;; as the fact it is, and it activates nothing: no plan of `r` is compiled
-;;; for it, and a second `warning:`, when the run ends, names `r` and the
-;;; activator. The static check flags the program, since a commitment can
-;;; derive an activator of `r` that root has no plan of, so nothing is
-;;; claimed of its answer (Q-M1f.564).
+;;; for it, and `r` never fires, so root holds no `hit`. The static check
+;;; flags the program, since a commitment can derive an activator of `r`
+;;; that root has no plan of, so nothing is claimed of its answer
+;;; (Q-M1f.564).
 (relation box Node :why "{?3} is in the box")
 (relation hit Node :why "{?3} is hit")
 (relation item Node :why "{?3} is an item")

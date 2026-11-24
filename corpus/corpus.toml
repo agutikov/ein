@@ -323,13 +323,13 @@ note   = "`:ein inconsistent`, a rule that ends a state, stated over its own pre
 path   = "examples/features/19_derived_activator.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "saturate --dump", "render rules"]
-note   = "a derived activator that binds a relation parameter to a fact (Q-M1f.1): `mk` derives `r`'s activator `(r ?f)` from `item`'s argument, a declared relation's, which can hold a fact, and `(item (a b))` is one. It loads under the load's `warning:`, one line naming `mk`, `r` and `?R`, and root's `(r (a b))` activates nothing, which the run's `warning:` names. Flagged, a commitment deriving an activator of `r` root has no plan of. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
+note   = "a derived activator that binds a relation parameter to a fact (Q-M1f.1): `mk` derives `r`'s activator `(r ?f)` from `item`'s argument, a declared relation's, which can hold a fact, and `(item (a b))` is one. It loads, and root's `(r (a b))` activates nothing, no plan of `r` compiled for it; no command says so. Flagged, a commitment deriving an activator of `r` root has no plan of. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/features/20_derived_activator_never.ein"
 group  = "positive"
 runs   = ["solve", "saturate", "render rules"]
-note   = "`19_derived_activator.ein` without `(item (a b))`, so no run derives the activator: the load's `warning:` all the same, the run's none (Q-M1f.1). Flagged as its twin is. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
+note   = "`19_derived_activator.ein` without `(item (a b))`, so no run derives the activator, and nothing says so here or there (Q-M1f.1). Flagged as its twin is. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/features/21_import_of_core.ein"
@@ -1835,7 +1835,7 @@ note   = "`kwpair-in-guard`: `(eq ?x :k a)`, a keyword pair as a guard's argumen
 path   = "examples/ein-bugs/wrong-answers/nested-fact-activator.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`nested-fact-activator`: `(r (a b))` binds the relation parameter `?R` of `(box (?R b))` to a nested fact (Q-M1e2.18, Q-M1f.1): the program loads, both runs exit 0, and the activator activates nothing, so root holds no `hit`; the load's `warning:` names it where it is written and the run's names `r` and the activator. `(solve :no-search)`: R is root alone."
+note   = "`nested-fact-activator`: `(r (a b))` binds the relation parameter `?R` of `(box (?R b))` to a nested fact (Q-M1e2.18, Q-M1f.1): the program loads, both runs exit 0, and the activator activates nothing, so root holds no `hit`; no command says so. `(solve :no-search)`: R is root alone."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/f07-rules-swapped.ein"
@@ -2177,13 +2177,13 @@ note   = "`parameter-nested-assert`: a value parameter its activator binds to a 
 path   = "examples/ein-bugs/wrong-answers/derived-activator.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "a rule derives an activator, `(r ?f)`, that binds `r`'s relation parameter to `item`'s argument, a fact here, where a run once stopped as `r`'s plan was compiled. It loads, every command exit 0, under the load's `warning:` naming `mk`, `r` and `?R` (Q-M1f.1), and the run's naming `r` and `(r (a b))`, which activates nothing. Flagged, a commitment deriving an activator of `r` root has no plan of. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
+note   = "a rule derives an activator, `(r ?f)`, that binds `r`'s relation parameter to `item`'s argument, a fact here, where a run once stopped as `r`'s plan was compiled. It loads, every command exit 0, and `(r (a b))` activates nothing, in silence (Q-M1f.1). Flagged, a commitment deriving an activator of `r` root has no plan of. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/derived-activator-never.ein"
 group  = "regression"
 runs   = ["solve", "saturate"]
-note   = "`derived-activator.ein` with no `item` fact, so no run derives the activator. It loads under `derived-activator.ein`'s load `warning:` (Q-M1f.1), and no run says more. Flagged as its twin is. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
+note   = "`derived-activator.ein` with no `item` fact, so no run derives the activator. It loads, and nothing says so here or there (Q-M1f.1). Flagged as its twin is. Not monotone: nothing is claimed of its answer (Q-M1f.564)."
 
 [[entry]]
 path   = "examples/ein-bugs/wrong-answers/eq-arity-premise.ein"

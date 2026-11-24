@@ -35,17 +35,15 @@
 ;;; without its activator. So a program that imports the module and writes no
 ;;; activator holds what it held.
 ;;;
-;;; One thing the import can warn of. Each rule concludes `(?R …)`, a fact
-;;; of whichever relation its activator names, and its arguments are
-;;; whatever the double negation held, a fact among them. The loader reads
-;;; such a conclusion as writing into every rule of that count of parameters
-;;; whose name the program writes as an argument (Q-M1f.42), and warns of it
-;;; where one of those parameters names a relation: a relation is named by a
-;;; symbol, not a fact, and such an activator activates nothing (Q-M1f.1).
-;;; The program it warns of names, in a fact, a rule (one that concludes a
-;;; hypothesis among them) whose parameter stands first in a pattern.
-;;; `std.algebra`'s copiers, `converse` and `imply1` among them, are read the
-;;; same way at their counts.
+;;; Each rule concludes `(?R …)`, a fact of whichever relation its activator
+;;; names, and its arguments are whatever the double negation held, a fact
+;;; among them. The loader reads such a conclusion as writing into every
+;;; rule of that count of parameters whose name the program writes as an
+;;; argument (Q-M1f.42). Where that puts a fact in a parameter that names a
+;;; relation, the activator activates nothing, and nothing says so: a
+;;; relation is named by a symbol, not a fact (Q-M1f.1). `std.algebra`'s
+;;; copiers, `converse` and `imply1` among them, conclude the same way at
+;;; their counts.
 ;;;
 ;;; ── The names this module occupies ──────────────────────────────────────────
 ;;; `eliminate-0` to `eliminate-6`.

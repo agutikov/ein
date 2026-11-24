@@ -286,17 +286,17 @@ so *any fact* is a schema: `…-0` to `…-6`, each activated a relation. A fact
 more than six arguments is out of reach, and a program writes the rule for its
 count.
 
-**They are two modules because an import is whole.** `eliminate-N` concludes
-`(?R …)` with whatever the double negation held as its arguments, and the
-loader reads such a conclusion as writing into every rule of that count of
+**They are two modules because an import is whole.** A program imports the
+one it means: the elimination of a double negation is a step of one logic, and
+the contradiction is wanted where the elimination is not
+([Q-M1f.555](../docs/decisions/stdlib/Q-M1f.555-the-rules-of-a-stored-negation-are-modules.md)).
+`eliminate-N` concludes `(?R …)` with whatever the double negation held as its
+arguments, which the loader reads as writing into every rule of that count of
 parameters whose name the program writes as an argument
-([Q-M1f.42](../docs/decisions/language/Q-M1f.42-a-conclusion-whose-relation-is-a-parameter.md)):
-a program that names such a rule, one whose parameter stands first in a
-pattern, is warned of with `std.negation` imported, as it is with
-`std.algebra` at the counts of its copiers: such an activator would activate
-nothing. `clash-N` concludes `(false)` and `clash-of-N` an
-activator whose argument is a relation's name, so `std.contradiction` loads
-wherever the program does.
+([Q-M1f.42](../docs/decisions/language/Q-M1f.42-a-conclusion-whose-relation-is-a-parameter.md));
+where that puts a fact in a parameter that names a relation, the activator
+activates nothing, and nothing says so. `clash-N` concludes `(false)` and
+`clash-of-N` an activator whose argument is a relation's name.
 
 **What an import alone does.** `eliminate-N` has a parameter and acts on
 nothing an import brings: a program that imports `std.negation` and activates
