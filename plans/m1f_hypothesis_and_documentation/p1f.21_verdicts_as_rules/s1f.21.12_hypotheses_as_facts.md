@@ -130,14 +130,14 @@ this record), and the one after it (item 58's wording).
 
 | task 1 | item | what it found |
 |---|---|---|
-| 1, and the corpus lists of 6, 7 and 8 | [58](review/part-2/58-the-corpus-under-the-rulings/README.md) | taken again on today's corpus (931 entries): 15 programs that load today move (the union 5, of which `13_witness_of_two` and `14_seats_nothing_proposes` lose their claim; an obligation that no longer steps aside 8, 6 newly flagged, each read by a `test` run or a regression row; `13_mixed_solution_and_open` an error; `06_blind_enumeration` refused); no program under `tests/` becomes flagged; no new flag from Q-M1f.574's site (its three programs are flagged today); no rule reads an `open` fact or could; 20 of the 30 regression witnesses of Q-M1f.66 and Q-M1f.86 would load (15 by the rulings, 5 by Q-M1f.596's default) |
-| 2 | [59](review/part-2/59-three-programs-as-ruled/README.md) | *zebra2* as ruled answers as today on the stand-in; the seats answer 16 candidates and 8 states by the union; a hypothesis beside a fact loads |
-| 3 | [60](review/part-2/60-a-state-with-its-open-facts/README.md) | a state's `open` facts, one program a writer, root and one state above, `-p` composed, a dump and a drawing on the stand-in |
-| 4 | [61](review/part-2/61-a-rule-that-reads-open/README.md) | the three programs of Q-M1f.569's page in the spelling ruled, refused today, each flagged once built; the warning's rows are today's, the site's row composed |
-| 5 | [62](review/part-2/62-what-a-fork-drops/README.md) | on the seats cube, by two readings that agree at every node: `(open seats)` at the nine nodes that owe, at neither state of $R$ |
-| 6 | [63](review/part-2/63-the-bare-open/README.md) | `06_blind_enumeration.ein`: its claim kept two ways; its Rust test's check on names kept by a program with no obligation activated; the check on activator facts can no longer be asked; once built no corpus program steps aside |
-| 7 | [64](review/part-2/64-an-obligation-that-no-longer-steps-aside/README.md) | the eight on the stand-in (the guard read at root): four answer an empty $R$; `oblig-derived-domain.ein` answers an empty $R$, and `(likes Ann Pie)` if Pie is a food at root or a rule proposes it, flagged either way |
-| 8 | [65](review/part-2/65-the-lists-and-a-closure/README.md) | of the ruling's page's eight, program 7 becomes an error; in the corpus `13_mixed_solution_and_open` alone |
+| 1, and the corpus lists of 6, 7 and 8 | 58 | taken again on today's corpus (931 entries): 15 programs that load today move (the union 5, of which `13_witness_of_two` and `14_seats_nothing_proposes` lose their claim; an obligation that no longer steps aside 8, 6 newly flagged, each read by a `test` run or a regression row; `13_mixed_solution_and_open` an error; `06_blind_enumeration` refused); no program under `tests/` becomes flagged; no new flag from Q-M1f.574's site (its three programs are flagged today); no rule reads an `open` fact or could; 20 of the 30 regression witnesses of Q-M1f.66 and Q-M1f.86 would load (15 by the rulings, 5 by Q-M1f.596's default) |
+| 2 | 59 | *zebra2* as ruled answers as today on the stand-in; the seats answer 16 candidates and 8 states by the union; a hypothesis beside a fact loads |
+| 3 | 60 | a state's `open` facts, one program a writer, root and one state above, `-p` composed, a dump and a drawing on the stand-in |
+| 4 | 61 | the three programs of Q-M1f.569's page in the spelling ruled, refused today, each flagged once built; the warning's rows are today's, the site's row composed |
+| 5 | 62 | on the seats cube, by two readings that agree at every node: `(open seats)` at the nine nodes that owe, at neither state of $R$ |
+| 6 | 63 | `06_blind_enumeration.ein`: its claim kept two ways; its Rust test's check on names kept by a program with no obligation activated; the check on activator facts can no longer be asked; once built no corpus program steps aside |
+| 7 | 64 | the eight on the stand-in (the guard read at root): four answer an empty $R$; `oblig-derived-domain.ein` answers an empty $R$, and `(likes Ann Pie)` if Pie is a food at root or a rule proposes it, flagged either way |
+| 8 | 65 | of the ruling's page's eight, program 7 becomes an error; in the corpus `13_mixed_solution_and_open` alone |
 
 **Questions put, each on its item with a default; ids reserved for the coordinator to file:**
 

@@ -391,17 +391,14 @@ paragraph, no register count, no measurement (the user's rule).
   short in the binary, and S1f.21.23 reads a resumed state's delta off its
   own layers; S1f.21.19 has put the review items on the built engine, and
   S1f.21.24 has fixed the wrong answer those runs found, a hypothesis
-  rule's `absent` premises. Every stage planned then is done. The user has
-  answered every item of the first part's review; the ruling on item 82,
-  an activator that names no relation activating nothing in silence, is
-  S1f.21.25, is built; its defaults are review item 87. The part's pages,
-  S1f.21.14, are written. Q-M1f.566 to
-  Q-M1f.579 are ruled and the second part's builds are planned on them,
-  S1f.21.12 and S1f.21.18. **On the user's word every stage left is run to
-  the phase's end, on the defaults of the open review items, and the phase
-  is not closed**; the items are reviewed by the user after the build, with
-  their renders on the final engine (S1f.21.19). **The phase's close waits for
-  the user's word.**
+  rule's `absent` premises. Every stage planned then is done, and so is
+  S1f.21.25, an activator that names no relation activating nothing in
+  silence. The part's pages, S1f.21.14, are written. **The user has
+  answered every item of the review, both parts**, and the bundle holds no
+  open item; two stages are planned on the answers and not started, each on
+  the user's word: S1f.21.26, the key of a state at its own size, and
+  S1f.21.27, the nine pictures of the pages drawn with root's `open` facts.
+  **The phase's close waits for the user's word.**
   The milestone's plans are deleted when it is done, and **the work stops
   after M1f** (the user's rulings); the close of M1f was started and is
   paused.

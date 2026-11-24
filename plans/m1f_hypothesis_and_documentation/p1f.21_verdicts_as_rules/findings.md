@@ -57,8 +57,8 @@ without a path is in [`design.md`](design.md), whole.
 | [V-44](#v-44--a-trace-quoted-on-a-page-is-held-by-no-test) | a trace quoted on a page is held by no test but the natural-language page's | S1f.21.2 | open |
 | [V-45](#v-45--the-binary-formats-minor-version-on-its-page-is-held-by-no-test) | the binary format's minor version on its page is held by no test | S1f.21.2 | open; the page fixed |
 | [V-46](#v-46--a-witness-of-nested-absent-loads) | a witness of nested absent loads | S1f.21.12's build | open; with Q-M1f.618 |
-| [V-47](#v-47--three-pieces-of-the-search-have-no-subject-in-the-corpus-under-the-union) | three pieces of the search have no subject in the corpus under the union | S1f.21.12's build | open; **the user's call**, review item 83 of part 2 |
-| [V-48](#v-48--the-classic-zebras-structure-under-the-union) | the classic zebra's structure under the union | S1f.21.12's build | open; **the user's call**, review item 84 of part 2 |
+| [V-47](#v-47--three-pieces-of-the-search-have-no-subject-in-the-corpus-under-the-union) | three pieces of the search have no subject in the corpus under the union | S1f.21.12's build | **ruled 2026-11-25 by the user: (a)**, review item 83 of part 2: the machinery stays, with its tests |
+| [V-48](#v-48--the-classic-zebras-structure-under-the-union) | the classic zebra's structure under the union | S1f.21.12's build | **ruled 2026-11-25 by the user: (a)**, review item 84 of part 2: as built |
 | [V-49](#v-49--a-written-open-of-a-relations-name-is-held-and-owes-nothing) | a written open of a relation's name is held and owes nothing | S1f.21.12's build | open |
 | [V-50](#v-50--a-rules-open-fact-is-held-where-its-fact-is-held) | a rule's open fact is held where its fact is held | S1f.21.12's build | open |
 | [V-51](#v-51--the-state-route-counts-one-fact-more-on-one-program) | the state route counts one fact more on one program | S1f.21.12's build | open |
@@ -68,7 +68,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-55](#v-55--a-decisions-file-name-says-what-is-no-longer-true) | a decision's file name says what is no longer true | S1f.21.12's build | **fixed** by S1f.21.14, as its class: twelve decision files renamed, ids kept, every reference moved |
 | [V-56](#v-56--a-negated-hypothesis-held-in-a-variable-cannot-be-written) | a negated hypothesis held in a variable cannot be written | S1f.21.18 | open |
 | [V-57](#v-57--an-open-of-a-variable-bound-to-a-name-writes-nothing-in-silence) | an open of a variable bound to a name writes nothing in silence | S1f.21.18 | open |
-| [V-58](#v-58--a-misspelt-activator-or-one-of-another-count-loads-in-silence) | a misspelt activator or one of another count loads in silence | S1f.21.18 | open; **the user's call**, review item 85 of part 2 |
+| [V-58](#v-58--a-misspelt-activator-or-one-of-another-count-loads-in-silence) | a misspelt activator or one of another count loads in silence | S1f.21.18 | **ruled 2026-11-25 by the user: (a)**, review item 85 of part 2: nothing is said |
 | [V-59](#v-59--the-folded-drawing-of-a-hypothesis-rule-has-a-self-loop) | the folded drawing of a hypothesis rule has a self-loop | S1f.21.18 | open |
 | [V-60](#v-60--the-per-commit-check-of-the-slow-flag-fails-under-load) | the per-commit check of the slow flag fails under load | S1f.21.18 | **done**: its cause on the gate's build fixed by S1f.21.20 (V-65), and the corpus's costs taken again on the final engine; the slow set is the same sixteen |
 | [V-61](#v-61--a-written-open-fact-breaks-the-answer-dumps-round-trip) | a program that writes an `(open F)` fact holds it at root and not at the node the run builds for ∅, so a saved ∅ does not load to the state the run saved | S1f.21.13 | **fixed** by S1f.21.20: the empty commitment's state is root's (its default Q-M1f.636) |
@@ -89,8 +89,8 @@ without a path is in [`design.md`](design.md), whole.
 | [V-79](#v-79--what-a-rule-instance-still-costs-at-a-state) | what a rule instance still costs at a state | S1f.21.21 | **left**: a part of the contradiction's cost, which the user accepted 2026-11-20; not built |
 | [V-80](#v-80--the-cost-pages-first-instruction-counts-were-taken-unpinned) | the cost page's first instruction counts were taken unpinned | S1f.21.21 | **taken up by the coordinator**: the final table takes every count one way |
 | [V-84](#v-84--two-comments-of-the-obligations-reader-name-forms-the-parser-refuses) | two comments of the obligations' reader name forms the parser refuses | S1f.21.22 | **fixed** by S1f.21.23 |
-| [V-85](#v-85--nine-pictures-of-the-pages-are-no-longer-what-the-kb-render-draws) | nine pictures of the pages are no longer what the kb render draws | S1f.21.22 | open; **the user's call first**: what a drawing of root shows, review item 77 of part 2; then the pages |
-| [V-86](#v-86--a-states-key-sorts-every-fact-the-state-holds-roots-among-them) | a state's key sorts every fact the state holds, root's among them | S1f.21.23 | open; the largest cost at a state that is left; **the user's call**, review item 78 of part 2 |
+| [V-85](#v-85--nine-pictures-of-the-pages-are-no-longer-what-the-kb-render-draws) | nine pictures of the pages are no longer what the kb render draws | S1f.21.22 | **ruled 2026-11-25 by the user: (a)**, review item 77 of part 2: the nine pictures drawn again with root's `open` facts, S1f.21.27, planned |
+| [V-86](#v-86--a-states-key-sorts-every-fact-the-state-holds-roots-among-them) | a state's key sorts every fact the state holds, root's among them | S1f.21.23 | **ruled 2026-11-25 by the user: (b)**, review item 78 of part 2: built at its own size, S1f.21.26, planned |
 | [V-87](#v-87--the-deltas-walk-was-counted-twice-in-its-finding) | the delta's walk was counted twice in its finding | S1f.21.23 | **closed**: the figure corrected |
 | [V-88](#v-88--an-obligations-relation-is-never-absent) | an obligation's relation is never absent | S1f.21.23 | open |
 | [V-89](#v-89--a-rule-that-concludes-a-hypothesis-reads-none-of-its-absent-premises) | a rule that concludes a hypothesis reads none of its absent premises | S1f.21.19 | **a wrong answer, filed and fixed** by S1f.21.24 on the coordinator's default (Q-M1f.685): a hypothesis rule's `absent` premises are read; the row is a regression, its witness in the corpus; $H$ and $R$ moved on no corpus program; review item 86 of part 2 |
@@ -804,7 +804,7 @@ taken as it is, the flags and costs re-taken, or the pair rules are made cheaper
 
 ## V-40 — Two parse witnesses of `open` write no `:why`
 
-**Found** by the examples of S1f.21.12 ([item 58](review/part-2/58-the-corpus-under-the-rulings/README.md)).
+**Found** by the examples of S1f.21.12 (item 58).
 `examples/broken/open_in_match.ein` and `examples/broken/open_mixed_assert.ein`, parse-negative witnesses of the
 rule that `open` is written only as a rule's verdict, write no `:why`. Once `open` parses where they write it, both
 are refused for the missing `:why` before they reach what their corpus notes say they witness; and the first's
@@ -848,9 +848,13 @@ is fixed; nothing holds the number to the code. **Open.**
 
 **Found** by the build of S1f.21.12. Under the union an activated obligation writes every witness its guard gives at root, so on a monotone program no instance root owes has an unproposed witness. Licence L5's last reason, licence L9 (`ein_infer::unheld`) and the coupling's unlicensed path have no subject in the corpus. The machinery stays, and the tests say that it licenses nothing today. **Open; **the user's call**: whether the machinery goes.**
 
+**Ruled 2026-11-25 by the user: (a)**, on review item 83 of part 2: *"(a)"*. The machinery stays, with the tests that say it licenses nothing today.
+
 ## V-48 — The classic zebra's structure under the union
 
 **Found** by the build of S1f.21.12. `zebra.ein`'s $H$ holds each placement beside its mirror, 112 candidates where 56. `ein render h-space` reads 352 groups and no grid where it read 36 groups and five grids, 33 305 coupling edges where 386, and a root layer of 705 808 facts where 181 088. `zebra.ein` and `zebra2.ein` have one cover and one theory only once the two orientations are folded together, which the tests now say. The cover reads two candidates that imply each other as two. **Open; **the user's call**.**
+
+**Ruled 2026-11-25 by the user: (a)**, on review item 84 of part 2: *"there are different variants of symmetry and different variants of it's application, why we would make this simple symmetric relations exceptional? So for now just (a)"*. $H$ is what the union gives, and the structure view shows it; two candidates that imply each other are not folded into one.
 
 ## V-49 — A written open of a relation's name is held and owes nothing
 
@@ -891,6 +895,8 @@ is fixed; nothing holds the number to the code. **Open.**
 ## V-58 — A misspelt activator or one of another count loads in silence
 
 **Found** by S1f.21.18. An activator is an ordinary fact now, so one of another count than its rule's parameters, or with the rule's name misspelt, loads and activates nothing, where the `:hrules` clause refused both. With no other writer the blind enumerator then writes $H$: six candidates on a probe where the program meant its rule's. The diagnostics page says so. **Open; **the user's call**: whether a note says that a rule that concludes a hypothesis has no activator.**
+
+**Ruled 2026-11-25 by the user: (a)**, on review item 85 of part 2: *"(a)"*. An activator is a fact as every rule's, and nothing is said of one misspelt or of another count.
 
 ## V-59 — The folded drawing of a hypothesis rule has a self-loop
 
@@ -1017,9 +1023,13 @@ firing of the calculator's rules is the likely cause; it is not found. **Open**;
 
 **Found** by S1f.21.22. Since `ein render kb` draws the `open` facts root holds, the blind enumerator's guesses among them, nine pictures on the pages no longer match the binary: four of the guide (the tiny program, two of the transitive and the co-located firings, the range elimination, where *zebra2*'s root holds 130 `open` facts) and five of the reasoning pages. Three sentences say a drawing draws what it no longer does. Seventeen other pictures are still what the binary draws. A page's picture is a file drawn from its own source, so no check fails. **Open; the user's call first: whether a drawing of root shows the guesses, review item 75; then the pages.**
 
+**Ruled 2026-11-25 by the user: (a)**, on review item 77 of part 2: *"(a)"*. A drawing of root shows all its `open` facts, as built, and the nine pictures are drawn again with them: [S1f.21.27](s1f.21.27_the_pictures_drawn_with_roots_open_facts.md), planned, not started.
+
 ## V-86 — A state's key sorts every fact the state holds, root's among them
 
 **Found** by S1f.21.23. At every state of a search the node function takes the state's canonical key: it collects every fact the state holds, root's whole fixpoint among them, sorts them, and then filters root's back out to keep the state's own. On `send_more_money.ein`, on the engine S1f.21.23 leaves, the key is 37.7 % of the instructions and the filter 9.3 %; on `equation_two_unknowns.ein` 10.9 % and 2.1 %. The state's own facts are above root's mark, which S1f.21.23 reads, so the part of the key above root could be read and sorted at its own size; whether anything reads the key whole is what a stage would settle first. The engine did so before the phase. **Open; the largest cost at a state that is left; the user's call.**
+
+**Ruled 2026-11-25 by the user: (b)**, on review item 78 of part 2: *"(b)"*. The key is built at its own size, a stage like S1f.21.23: [S1f.21.26](s1f.21.26_the_key_of_a_state_at_its_own_size.md), planned, not started.
 
 ## V-87 — The delta's walk was counted twice in its finding
 

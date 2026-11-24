@@ -2,52 +2,17 @@
 
 [← the bundle](../README.md) · [← the phase](../../README.md) · [your answers](ANSWERS.md)
 
-**Two questions wait for you: [77](77-what-a-drawing-of-root-shows/README.md), what a drawing of root shows, which
-nine pictures of the pages wait on, and [78](78-the-key-of-a-state/README.md), whether the key of a state is built
-at its own size.** **Three findings are yours to call beside them: [83](83-three-pieces-of-the-search-with-no-subject/README.md), [84](84-the-classic-zebras-structure-under-the-union/README.md) and [85](85-a-misspelt-activator-loads-in-silence/README.md).** **One item reports a wrong answer fixed on a default, for you to confirm: [86](86-a-hypothesis-rule-reads-its-absent/README.md).** Twenty-two items are open in all: 58 to 65, the examples of [S1f.21.12](../../s1f.21.12_hypotheses_as_facts.md), 69, the
-defaults its build took, 70, those of S1f.21.13, 71, those of S1f.21.18, 72, those of S1f.21.20, 73, those of
-S1f.21.14, and 74, those of S1f.21.21. The stage is built on the defaults, on your word.** Each is a folder with its page and its programs; each has a default
-and its section in [`ANSWERS.md`](ANSWERS.md). Every run is today's engine, the gate build at the stage's branch
-point, on the corpus at `669d7d43`; where a ruled form cannot be written today, a stand-in runs (`question` for
-`open`) and the page says what stands for what. Each item's `tools/run.sh` re-takes its `runs/` (ignored by git).
+**No item of this part is open.** You answered all twenty-two on 2026-11-25, each filed in your words in
+[the phase's README](../../README.md#the-answers-to-part-2s-items-and-item-87) and under its question in
+[the ledger](../../../open_questions.md) or its finding in [`findings.md`](../../findings.md). Two of the answers
+plan a stage, neither started: item 78's *"(b)"*,
+[S1f.21.26](../../s1f.21.26_the_key_of_a_state_at_its_own_size.md), the key of a state at its own size; and item
+77's *"(a)"*, [S1f.21.27](../../s1f.21.27_the_pictures_drawn_with_roots_open_facts.md), the nine pictures drawn with
+root's `open` facts.
 
-**Built on the defaults, on your word of 2026-11-20**: *"pick defaults, implement the phase to the end but not close;
-after implementation complete add renders with the final ein version. I will review questions after."* So nothing
-here blocks the build; each item below stays for your review, and once everything is built each gains a section
-*On the built engine*, with its renders on the final binary ([S1f.21.19](../../s1f.21.19_the_review_items_on_the_built_engine.md)).
+## The stages your rulings planned
 
-## What is left for you
-
-| # | what it shows | what it asks | the default |
-|---|---|---|---|
-| [**58**](58-the-corpus-under-the-rulings/README.md) | **the corpus under your rulings**: every program whose candidates, answer, claim or flag would change. 15 that load today move (5 by the union, 8 by an obligation that no longer steps aside, 1 an error under the lists, 1 refused for its bare `(open)`), 6 of them newly flagged, none under `tests/`; 20 regression witnesses of `open` would load | is this the list to build to; **Q-M1f.596**: where `open` may be written as a name; **Q-M1f.599**: the blind enumerator beside a rule that concludes nothing at root | (a) yes; Q-M1f.596 (a): a name where a name stands, refused where a program would declare it; Q-M1f.599 (a): it runs where root holds no `open` fact and no obligation is activated |
-| [**59**](59-three-programs-as-ruled/README.md) | three programs in the spelling ruled: *zebra2* answers as today; the seats answer otherwise, by the union; a hypothesis beside a fact loads | nothing new | (a) as written |
-| [**60**](60-a-state-with-its-open-facts/README.md) | a state with its `open` facts, one program of each writer: what `-p`, a dump and a drawing would show | nothing new | (a) as shown |
-| [**61**](61-a-rule-that-reads-open/README.md) | a rule that reads an `open` fact: the three programs of Q-M1f.569's page, all flagged once built, and the warning's rows | nothing new | (a) as shown |
-| [**62**](62-what-a-fork-drops/README.md) | what a fork drops, on the seats cube, node by node: `(open seats)` at every node that owes, at neither state of $R$ | **Q-M1f.598**: the pass at a dead state | (a) it writes there as at any state |
-| [**63**](63-the-bare-open/README.md) | `06_blind_enumeration.ein`, refused once built: its claim two other ways, and the half of its Rust test no run can ask | **Q-M1f.600**: what becomes of the file | (a) rewritten with no obligation activated, the blind enumerator running |
-| [**64**](64-an-obligation-that-no-longer-steps-aside/README.md) | the eight programs whose obligation steps aside today, and `oblig-derived-domain.ein`: on the stand-in its $R$ is empty; it answers `(likes Ann Pie)` if Pie is a food at root or a rule proposes it | build as ruled | (a) as ruled, the program shown again after the build |
-| [**65**](65-the-lists-and-a-closure/README.md) | the two lists and a closure against root's `open` facts: one corpus program becomes an error | **Q-M1f.595**: the white list's other direction; **Q-M1f.597**: what the check reads | Q-M1f.595 (a): an error too; Q-M1f.597 (a): the `open` facts root holds |
-| [**69**](69-S1f.21.12-defaults/README.md) | the fifteen defaults the build took where your rulings were silent; and what the built engine answers on `oblig-derived-domain.ein`: an empty $R$ | default 13 first: `absent` and `open` as names under `not`, in a guard's value and in `:using` | each as built |
-| [**70**](70-S1f.21.13-defaults/README.md) | the three defaults S1f.21.13 took: the example of the lattice as rules is a pair under `examples/lattice/`, monotone and held by `ein test` | whether the example is written with `open`, flagged and held by no suite | as built: not with `open` |
-| [**71**](71-S1f.21.18-defaults/README.md) | the ten defaults S1f.21.18 took, removing the `hrule` form: 120 programs written again, each answering as before | whether a misspelt activator, which now loads in silence, gets a note | as built: no note |
-| [**72**](72-S1f.21.20-defaults/README.md) | the nine defaults S1f.21.20 took: the three defects fixed, the pass where a state is used with its flag `--in-flight`, the agenda's tables kept | the flag's name and its commands; whether a printed state's finding in flight is the run's | as built |
-| [**73**](73-S1f.21.14-defaults/README.md) | the ten defaults S1f.21.14 took, writing the part's pages: every page of `docs/ein/` read against the binary | the word *unknown* for a fact held neither way; twelve decision files renamed | as written |
-| [**74**](74-S1f.21.21-defaults/README.md) | the defaults S1f.21.21 took, making the contradiction's rules cheap: a pair matched by one probe, the nested relation a key of the indexes; no firing moved. The first, the pair's rule of no argument, is ruled: it stays | the five that are left | as built |
-| [**75**](75-S1f.21.22-defaults/README.md) | the seven defaults S1f.21.22 took, building what the pages found short: the kb and constraints renders draw root's `open` facts; a written `(open …)` against the lists is a load error | the seven; its question is item 77 | as built |
-| [**76**](76-S1f.21.23-defaults/README.md) | the four defaults S1f.21.23 took: a resumed state's delta read off its own layers; no firing moved | the four; its question is item 78 | as built |
-| [**77**](77-what-a-drawing-of-root-shows/README.md) | **what a drawing of root shows**: `ein render kb` draws root's `open` facts now, the blind enumerator's guesses among them; with the pictures | **(a)** all of them, **(b)** an option leaves them out and the pages use it, **(c)** the guesses left out by default. **Nine pictures of the pages wait on it** | (a) as built |
-| [**78**](78-the-key-of-a-state/README.md) | **the key of a state**: at every state it sorts root's facts with the state's own, about 47 % of one program's instructions | built at its own size, or left; no build waits on it | not built |
-| [**83**](83-three-pieces-of-the-search-with-no-subject/README.md) | **three pieces of the search have no subject under the union** (V-47), a finding that is yours to call | **(a)** The machinery stays, with tests that say it licenses nothing today; **(b)** The machinery goes, with its tests and its pages | (a) |
-| [**84**](84-the-classic-zebras-structure-under-the-union/README.md) | **the classic zebra's structure under the union** (V-48), a finding that is yours to call | **(a)** As built; **(b)** The structure view folds two candidates that imply each other into one, so the zebra reads as it did; **(c)** `zebra.ein` is written so that one writer proposes its placements, and its $H$ is 56 again | (a) |
-| [**85**](85-a-misspelt-activator-loads-in-silence/README.md) | **a misspelt activator, or one of another count, loads in silence** (V-58), a finding that is yours to call | **(a)** As built; **(b)** A `note | (a) |
-| [**86**](86-a-hypothesis-rule-reads-its-absent/README.md) | **a wrong answer, fixed on a default**: a rule that concludes `(open F)` was matched without its `absent` premises, so on a monotone program $H$ and $R$ were wrong; found by the runs of the review items | whether the `absent` is read (built), and whether such a read under one `absent` is a site of the static check (not) | as built |
-
-Write each answer in [`ANSWERS.md`](ANSWERS.md); an item left blank keeps its default.
-
-## The stages your rulings plan
-
-Neither is built; each starts on your word, after part 1.
+Both are built.
 
 | stage | what it builds |
 |---|---|
@@ -56,7 +21,7 @@ Neither is built; each starts on your word, after part 1.
 
 ## Ruled, and out of the bundle
 
-Each item's page and programs are kept in the phase's folder.
+Items 32 to 57: each item's page and programs are kept in the phase's folder. Items 58 to 65, 69 to 78 and 83 to 86, answered 2026-11-25, are in `git log`, last at `bc5146bb`.
 
 | item | question | ruled | its page |
 |---|---|---|---|
@@ -77,3 +42,8 @@ Each item's page and programs are kept in the phase's folder.
 | 55 | Q-M1f.577 | (a): `-P` leaves out the `(open …)` facts | [`q-m1f.577_…`](../../q-m1f.577_a_view_without_the_open_facts/README.md) |
 | 56 | Q-M1f.578 | (a): the two lists and a closure are the blind enumerator's configuration; it runs only where root holds no `open` fact; beside `open` facts a disagreement is an error | [`q-m1f.578_…`](../../q-m1f.578_the_lists_and_a_closure/README.md) |
 | 57 | Q-M1f.579 | (b): an obligation whose guard or trigger reads what a commitment can change never steps aside, and the program is flagged; `oblig-derived-domain.ein` reviewed after the build | [`q-m1f.579_…`](../../q-m1f.579_an_obligation_that_steps_aside/README.md) |
+| 58 to 65 | Q-M1f.595 to .600, and the examples of S1f.21.12 | each as its default | in `git log` |
+| 69 to 76, 86 | the defaults of S1f.21.12, .13, .18, .20, .14, .21, .22, .23 and .24 | accepted, each as built | in `git log` |
+| 77 | V-85 | (a): a drawing of root shows its `open` facts; the nine pictures drawn again, S1f.21.27 | in `git log` |
+| 78 | V-86 | (b): the key built at its own size, S1f.21.26 | in `git log` |
+| 83, 84, 85 | V-47, V-48, V-58 | (a) each: the machinery stays; the zebra's structure as built; a misspelt activator in silence | in `git log` |

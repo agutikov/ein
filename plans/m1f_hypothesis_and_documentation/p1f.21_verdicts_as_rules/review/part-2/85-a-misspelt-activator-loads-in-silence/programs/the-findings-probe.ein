@@ -1,9 +1,0 @@
-;;; Item 85: the probe the finding's figure was taken on (six guesses), copied as it was from the build folder of
-;;; the stage that found it, this comment added. Its activator has the rule's name and three arguments and misspells
-;;; an argument, `Colour` for `Color` (Q-M1f.116: loads, and the rule proposes nothing), so the blind enumerator
-;;; writes H. `is-a` is no declared relation here, and its `:why` is one letter.
-
-(relation at Color House :why "{?3} at {?4}")
-(rule guess (?R ?T1 ?T2) :match (and (is-a ?a ?T1) (is-a ?b ?T2)) :assert (open (?R ?a ?b)) :why "g")
-(is-a Red Color) (is-a H1 House)
-(guess at Colour House)

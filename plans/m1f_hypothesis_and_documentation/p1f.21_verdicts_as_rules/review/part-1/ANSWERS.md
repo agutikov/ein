@@ -11,24 +11,5 @@ defaults. This file is yours.
 
 Your answers of 2026-11-24 to items 66, 67, 68, 79, 80, 81 and 82 (82 in the conversation) are filed in your words in
 [the phase's README](../../README.md#the-answers-to-part-1s-items-66-to-82), and the items are out of the bundle.
-**One item is open**: 87, the defaults the build of your ruling on 82 took.
-
-## 87 · The defaults S1f.21.25 took
-
-[The item](87-S1f.21.25-defaults/README.md)
-
-Your ruling on item 82 is built: the three lines are gone, and no corpus answer, exit or stdout moved. The five
-choices it made, each with its other reading on the item's page:
-
-1. **Q-M1f.690**: the load's warnings field and the CLI's channel go with the lines; Q-M1f.580 speaks of every line
-   a load or a run prints. Other: kept, empty.
-2. **Q-M1f.691**: Q-M1f.1 keeps its file and slug, its title starting as the old one. Other: a title led by the
-   activator, in a renamed file.
-3. **Q-M1f.692**: the test of the sixteen shapes holds them loading and the positions through the program's
-   relations. Other: the shapes alone.
-4. **Q-M1f.693**: the fixtures' headers keep their line counts. Other: any length.
-5. **Q-M1f.694**: what cites none of the lines stays, § 2.9's paragraph on the positions among it.
-
-**Your answer:**
-
-**Notes:**
+Your answer to item 87, the defaults the build of your ruling on 82 took, *"OK"* (2026-11-25), is filed in
+[the phase's README](../../README.md#the-answers-to-part-2s-items-and-item-87). **No item is open.**

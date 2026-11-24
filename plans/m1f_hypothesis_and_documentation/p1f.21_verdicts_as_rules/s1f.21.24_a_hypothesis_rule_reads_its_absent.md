@@ -11,7 +11,7 @@ oracle's listing of a node; two help texts; the pages and goldens that move.
 
 [V-89](findings.md#v-89--a-rule-that-concludes-a-hypothesis-reads-none-of-its-absent-premises), a wrong answer the renders stage found and the coordinator checked: a rule that
 concludes `(open F)` is matched without its `absent` premises. Review item 62's probe,
-[`probe-hypothesis-rule-absent.ein`](review/part-2/62-what-a-fork-drops/programs/probe-hypothesis-rule-absent.ein):
+`probe-hypothesis-rule-absent.ein`:
 one match, `(and (p ?x) (absent (q ?x)))`, under a rule that concludes a fact and under one that concludes a
 hypothesis; with `(q a)` written the first concludes `(s b)` alone and the second writes `(open (r a))` and
 `(open (r b))`. The program is monotone by the static check, so the engine claims $H$ of two and $R$ of four

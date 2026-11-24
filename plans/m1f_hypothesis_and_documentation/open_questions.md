@@ -523,100 +523,100 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.592](#q-m1f592--the-registers-rows-the-change-answers) | The register's rows the change answers | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 67 of part 1) |
 | [Q-M1f.593](#q-m1f593--not-is-a-name-everywhere-but-at-a-forms-head) | `not` is a name everywhere but at a form's head | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 67 of part 1) |
 | [Q-M1f.594](#q-m1f594--the-witnesses-of-the-count-check-and-a-relation-declared-at-several-counts) | The witnesses of the count check, and a relation declared at several counts | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 67 of part 1) |
-| [Q-M1f.595](#q-m1f595--an-open-fact-of-a-relation-the-white-list-leaves-out) | An `open` fact of a relation the white list leaves out | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
-| [Q-M1f.596](#q-m1f596--where-open-may-be-written-once-it-is-the-kernels-relation) | Where `open` may be written once it is the kernel's relation | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
-| [Q-M1f.597](#q-m1f597--whether-the-lists-and-a-closure-are-judged-against-the-open-facts-root-holds-or-the-declarations) | Whether the lists and a closure are judged against the `open` facts root holds or the declarations | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
-| [Q-M1f.598](#q-m1f598--whether-the-pass-writes-open-facts-at-a-dead-state) | Whether the pass writes `open` facts at a dead state | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
-| [Q-M1f.599](#q-m1f599--the-blind-enumerator-beside-a-rule-that-concludes-nothing-at-root) | The blind enumerator beside a rule that concludes nothing at root | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
-| [Q-M1f.600](#q-m1f600--what-becomes-of-06_blind_enumerationein) | What becomes of `06_blind_enumeration.ein` | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
+| [Q-M1f.595](#q-m1f595--an-open-fact-of-a-relation-the-white-list-leaves-out) | An `open` fact of a relation the white list leaves out | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build **Accepted 2026-11-25 by the user** (*"(a)"*, review item 65 of part 2) |
+| [Q-M1f.596](#q-m1f596--where-open-may-be-written-once-it-is-the-kernels-relation) | Where `open` may be written once it is the kernel's relation | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build **Accepted 2026-11-25 by the user** (*"OK"*, review item 58 of part 2) |
+| [Q-M1f.597](#q-m1f597--whether-the-lists-and-a-closure-are-judged-against-the-open-facts-root-holds-or-the-declarations) | Whether the lists and a closure are judged against the `open` facts root holds or the declarations | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build **Accepted 2026-11-25 by the user** (*"(a)"*, review item 65 of part 2) |
+| [Q-M1f.598](#q-m1f598--whether-the-pass-writes-open-facts-at-a-dead-state) | Whether the pass writes `open` facts at a dead state | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build **Accepted 2026-11-25 by the user** (*"(a)"*, review item 62 of part 2) |
+| [Q-M1f.599](#q-m1f599--the-blind-enumerator-beside-a-rule-that-concludes-nothing-at-root) | The blind enumerator beside a rule that concludes nothing at root | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build **Accepted 2026-11-25 by the user** (*"OK"*, review item 58 of part 2) |
+| [Q-M1f.600](#q-m1f600--what-becomes-of-06_blind_enumerationein) | What becomes of `06_blind_enumeration.ein` | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build **Accepted 2026-11-25 by the user** (*"(a)"*, review item 63 of part 2) |
 | [Q-M1f.601](#q-m1f601--which-of-the-first-parts-readings-get-a-decision-file) | Which of the first part's readings get a decision file | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 68 of part 1) |
 | [Q-M1f.602](#q-m1f602--the-reasoning-pages-notation-for-the-engines-word) | The reasoning pages' notation for the engine's word | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 68 of part 1) |
 | [Q-M1f.603](#q-m1f603--the-constraints-pages-running-program-imports-the-contradiction) | The constraints page's running program imports the contradiction | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 68 of part 1) |
 | [Q-M1f.604](#q-m1f604--how-the-words-a-module-reads-and-does-not-declare-are-listed) | How the words a module reads and does not declare are listed | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 68 of part 1) |
 | [Q-M1f.605](#q-m1f605--sentences-of-the-second-parts-pages-changed-by-the-first-parts) | Sentences of the second part's pages changed by the first part's | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 68 of part 1) |
-| [Q-M1f.606](#q-m1f606--which-reads-make-a-rule-that-concludes-a-hypothesis-a-site-of-the-static-check) | Which reads make a rule that concludes a hypothesis a site of the static check | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
-| [Q-M1f.607](#q-m1f607--the-blind-enumerator-under-no-search) | The blind enumerator under no-search | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
-| [Q-M1f.608](#q-m1f608--a-states-open-facts-within-its-own-pass) | A state's open facts within its own pass | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
-| [Q-M1f.609](#q-m1f609--what-the-blind-enumerator-and-a-later-debt-write-above-root) | What the blind enumerator and a later debt write above root | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
-| [Q-M1f.610](#q-m1f610--an-obligation-whose-witness-does-not-resolve) | An obligation whose witness does not resolve | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
-| [Q-M1f.611](#q-m1f611--whether-a-claim-may-list-an-open-fact) | Whether a claim may list an open fact | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
-| [Q-M1f.612](#q-m1f612--an-open-facts-provenance) | An open fact's provenance | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
-| [Q-M1f.613](#q-m1f613--a-variable-under-open-in-a-conclusion) | A variable under open in a conclusion | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
-| [Q-M1f.614](#q-m1f614--the-two-fixtures-of-the-old-rule-on-open) | The two fixtures of the old rule on open | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
-| [Q-M1f.615](#q-m1f615--the-warning-found-in-flight-on-stderr) | The warning found in flight, on stderr | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
-| [Q-M1f.616](#q-m1f616--whether-a-nodes-open-facts-count-as-work) | Whether a node's open facts count as work | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
-| [Q-M1f.617](#q-m1f617--whether-open-is-an-atom-the-blind-enumerator-guesses-about) | Whether open is an atom the blind enumerator guesses about | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
-| [Q-M1f.618](#q-m1f618--absent-and-open-heading-a-fact-under-not-in-a-guards-value-and-in-a-using-list) | absent and open heading a fact under not, in a guard's value and in a using list | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
-| [Q-M1f.619](#q-m1f619--the-structures-theory-share-under-the-union) | The structure's theory share under the union | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
-| [Q-M1f.620](#q-m1f620--a-hypothesis-rule-that-concludes-an-open-fact) | A hypothesis rule that concludes an open fact | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
-| [Q-M1f.621](#q-m1f621--where-a-removed-clauses-activators-are-written) | Where a removed clause's activators are written | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
-| [Q-M1f.622](#q-m1f622--how-a-hypothesis-rules-conclusion-is-written-under-open) | How a hypothesis rule's conclusion is written under open | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
-| [Q-M1f.623](#q-m1f623--the-checks-the-hrules-clause-made-of-its-activators) | The checks the hrules clause made of its activators | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
-| [Q-M1f.624](#q-m1f624--a-fixture-or-witness-whose-subject-was-the-form-itself) | A fixture or witness whose subject was the form itself | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
-| [Q-M1f.625](#q-m1f625--file-names-test-names-and-regression-ids-that-contain-hrule) | File names, test names and regression ids that contain hrule | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
-| [Q-M1f.626](#q-m1f626--the-words-for-a-hypothesis-rule-as-a-writer-of-h) | The words for a hypothesis rule as a writer of H | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
-| [Q-M1f.627](#q-m1f627--what-reads-a-hypothesis-rule-where-a-check-read-an-hrule) | What reads a hypothesis rule where a check read an hrule | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
-| [Q-M1f.628](#q-m1f628--two-decisions-whose-questions-the-clause-asked) | Two decisions whose questions the clause asked | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
-| [Q-M1f.629](#q-m1f629--the-witness-of-a-hypothesis-rule-that-concludes-eq) | The witness of a hypothesis rule that concludes eq | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
-| [Q-M1f.630](#q-m1f630--the-saturated-dumps-section-of-hypothesis-rules) | The saturated dump's section of hypothesis rules | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 |
-| [Q-M1f.631](#q-m1f631--where-the-example-of-the-lattice-as-rules-goes-and-its-name) | Where the example of the lattice as rules goes, and its name | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 |
-| [Q-M1f.632](#q-m1f632--how-the-program-as-rules-writes-its-candidates) | How the program as rules writes its candidates | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 |
-| [Q-M1f.633](#q-m1f633--what-the-program-as-rules-states-beside-the-surveys) | What the program as rules states beside the survey's | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 |
-| [Q-M1f.636](#q-m1f636--which-state-is-the-empty-commitments-where-a-program-writes-open-facts) | Which state is the empty commitment's where a program writes open facts | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
-| [Q-M1f.637](#q-m1f637--the-rungs-word-where-a-rules-candidates-stand-beside-an-obligation-that-offers-none) | The rung's word where a rule's candidates stand beside an obligation that offers none | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
-| [Q-M1f.638](#q-m1f638--a-core-above-the-empty-commitment-that-read-a-written-open-fact) | A core above the empty commitment that read a written open fact | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
-| [Q-M1f.639](#q-m1f639--the-saturate-commands-events-and-the-firings-after-roots-open-facts) | The saturate command's events and the firings after root's open facts | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
-| [Q-M1f.640](#q-m1f640--when-a-loads-note-is-said) | When a load's note is said | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
-| [Q-M1f.641](#q-m1f641--the-name-of-the-flag-that-runs-the-pass-at-every-state) | The name of the flag that runs the pass at every state | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
-| [Q-M1f.642](#q-m1f642--how-what-a-printed-state-finds-in-flight-reaches-the-surfaces) | How what a printed state finds in flight reaches the surfaces | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
-| [Q-M1f.643](#q-m1f643--which-states-are-printed-or-saved) | Which states are printed or saved | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
-| [Q-M1f.644](#q-m1f644--the-cheaper-form-of-the-check-the-gates-build-made-at-every-step) | The cheaper form of the check the gate's build made at every step | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 |
-| [Q-M1f.645](#q-m1f645--which-decision-files-are-renamed-for-a-name-that-is-no-longer-true) | Which decision files are renamed for a name that is no longer true | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
-| [Q-M1f.646](#q-m1f646--the-word-for-a-fact-held-neither-way-once-open-names-the-facts-of-open) | The word for a fact held neither way, once open names the facts of open | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
-| [Q-M1f.647](#q-m1f647--where-the-remark-on-what-a-state-owes-stands-and-how-it-is-worded) | Where the remark on what a state owes stands and how it is worded | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
-| [Q-M1f.648](#q-m1f648--what-stuck-means-under-the-union) | What stuck means under the union | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
-| [Q-M1f.649](#q-m1f649--where-r-with-no-search-is-written) | Where R with no search is written | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
-| [Q-M1f.650](#q-m1f650--where-open-is-shown-four-ways-on-the-users-pages) | Where open is shown four ways on the user's pages | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
-| [Q-M1f.651](#q-m1f651--what-the-decision-of-the-hypotheses-as-facts-carries) | What the decision of the hypotheses as facts carries | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
-| [Q-M1f.652](#q-m1f652--which-program-shows-the-requirement-and-the-payment-as-facts) | Which program shows the requirement and the payment as facts | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
-| [Q-M1f.653](#q-m1f653--two-decisions-written-to-the-rulings-on-where-the-pass-runs) | Two decisions written to the rulings on where the pass runs | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
-| [Q-M1f.654](#q-m1f654--the-reserved-names-pages-heading-for-open) | The reserved names page's heading for open | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 |
+| [Q-M1f.606](#q-m1f606--which-reads-make-a-rule-that-concludes-a-hypothesis-a-site-of-the-static-check) | Which reads make a rule that concludes a hypothesis a site of the static check | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 69 of part 2) |
+| [Q-M1f.607](#q-m1f607--the-blind-enumerator-under-no-search) | The blind enumerator under no-search | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 69 of part 2) |
+| [Q-M1f.608](#q-m1f608--a-states-open-facts-within-its-own-pass) | A state's open facts within its own pass | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 69 of part 2) |
+| [Q-M1f.609](#q-m1f609--what-the-blind-enumerator-and-a-later-debt-write-above-root) | What the blind enumerator and a later debt write above root | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 69 of part 2) |
+| [Q-M1f.610](#q-m1f610--an-obligation-whose-witness-does-not-resolve) | An obligation whose witness does not resolve | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 69 of part 2) |
+| [Q-M1f.611](#q-m1f611--whether-a-claim-may-list-an-open-fact) | Whether a claim may list an open fact | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 69 of part 2) |
+| [Q-M1f.612](#q-m1f612--an-open-facts-provenance) | An open fact's provenance | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 69 of part 2) |
+| [Q-M1f.613](#q-m1f613--a-variable-under-open-in-a-conclusion) | A variable under open in a conclusion | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 69 of part 2) |
+| [Q-M1f.614](#q-m1f614--the-two-fixtures-of-the-old-rule-on-open) | The two fixtures of the old rule on open | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 69 of part 2) |
+| [Q-M1f.615](#q-m1f615--the-warning-found-in-flight-on-stderr) | The warning found in flight, on stderr | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 69 of part 2) |
+| [Q-M1f.616](#q-m1f616--whether-a-nodes-open-facts-count-as-work) | Whether a node's open facts count as work | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 69 of part 2) |
+| [Q-M1f.617](#q-m1f617--whether-open-is-an-atom-the-blind-enumerator-guesses-about) | Whether open is an atom the blind enumerator guesses about | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 69 of part 2) |
+| [Q-M1f.618](#q-m1f618--absent-and-open-heading-a-fact-under-not-in-a-guards-value-and-in-a-using-list) | absent and open heading a fact under not, in a guard's value and in a using list | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 69 of part 2) |
+| [Q-M1f.619](#q-m1f619--the-structures-theory-share-under-the-union) | The structure's theory share under the union | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 69 of part 2) |
+| [Q-M1f.620](#q-m1f620--a-hypothesis-rule-that-concludes-an-open-fact) | A hypothesis rule that concludes an open fact | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 69 of part 2) |
+| [Q-M1f.621](#q-m1f621--where-a-removed-clauses-activators-are-written) | Where a removed clause's activators are written | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 71 of part 2) |
+| [Q-M1f.622](#q-m1f622--how-a-hypothesis-rules-conclusion-is-written-under-open) | How a hypothesis rule's conclusion is written under open | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 71 of part 2) |
+| [Q-M1f.623](#q-m1f623--the-checks-the-hrules-clause-made-of-its-activators) | The checks the hrules clause made of its activators | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 71 of part 2) |
+| [Q-M1f.624](#q-m1f624--a-fixture-or-witness-whose-subject-was-the-form-itself) | A fixture or witness whose subject was the form itself | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 71 of part 2) |
+| [Q-M1f.625](#q-m1f625--file-names-test-names-and-regression-ids-that-contain-hrule) | File names, test names and regression ids that contain hrule | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 71 of part 2) |
+| [Q-M1f.626](#q-m1f626--the-words-for-a-hypothesis-rule-as-a-writer-of-h) | The words for a hypothesis rule as a writer of H | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 71 of part 2) |
+| [Q-M1f.627](#q-m1f627--what-reads-a-hypothesis-rule-where-a-check-read-an-hrule) | What reads a hypothesis rule where a check read an hrule | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 71 of part 2) |
+| [Q-M1f.628](#q-m1f628--two-decisions-whose-questions-the-clause-asked) | Two decisions whose questions the clause asked | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 71 of part 2) |
+| [Q-M1f.629](#q-m1f629--the-witness-of-a-hypothesis-rule-that-concludes-eq) | The witness of a hypothesis rule that concludes eq | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 71 of part 2) |
+| [Q-M1f.630](#q-m1f630--the-saturated-dumps-section-of-hypothesis-rules) | The saturated dump's section of hypothesis rules | **defaulted 2026-11-20** (P1f.21's S1f.21.18); review item 71 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 71 of part 2) |
+| [Q-M1f.631](#q-m1f631--where-the-example-of-the-lattice-as-rules-goes-and-its-name) | Where the example of the lattice as rules goes, and its name | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 70 of part 2) |
+| [Q-M1f.632](#q-m1f632--how-the-program-as-rules-writes-its-candidates) | How the program as rules writes its candidates | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 70 of part 2) |
+| [Q-M1f.633](#q-m1f633--what-the-program-as-rules-states-beside-the-surveys) | What the program as rules states beside the survey's | **defaulted 2026-11-20** (P1f.21's S1f.21.13); review item 70 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 70 of part 2) |
+| [Q-M1f.636](#q-m1f636--which-state-is-the-empty-commitments-where-a-program-writes-open-facts) | Which state is the empty commitment's where a program writes open facts | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 72 of part 2) |
+| [Q-M1f.637](#q-m1f637--the-rungs-word-where-a-rules-candidates-stand-beside-an-obligation-that-offers-none) | The rung's word where a rule's candidates stand beside an obligation that offers none | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 72 of part 2) |
+| [Q-M1f.638](#q-m1f638--a-core-above-the-empty-commitment-that-read-a-written-open-fact) | A core above the empty commitment that read a written open fact | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 72 of part 2) |
+| [Q-M1f.639](#q-m1f639--the-saturate-commands-events-and-the-firings-after-roots-open-facts) | The saturate command's events and the firings after root's open facts | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 72 of part 2) |
+| [Q-M1f.640](#q-m1f640--when-a-loads-note-is-said) | When a load's note is said | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 72 of part 2) |
+| [Q-M1f.641](#q-m1f641--the-name-of-the-flag-that-runs-the-pass-at-every-state) | The name of the flag that runs the pass at every state | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 72 of part 2) |
+| [Q-M1f.642](#q-m1f642--how-what-a-printed-state-finds-in-flight-reaches-the-surfaces) | How what a printed state finds in flight reaches the surfaces | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 72 of part 2) |
+| [Q-M1f.643](#q-m1f643--which-states-are-printed-or-saved) | Which states are printed or saved | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 72 of part 2) |
+| [Q-M1f.644](#q-m1f644--the-cheaper-form-of-the-check-the-gates-build-made-at-every-step) | The cheaper form of the check the gate's build made at every step | **defaulted 2026-11-20** (P1f.21's S1f.21.20); review item 72 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 72 of part 2) |
+| [Q-M1f.645](#q-m1f645--which-decision-files-are-renamed-for-a-name-that-is-no-longer-true) | Which decision files are renamed for a name that is no longer true | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 73 of part 2) |
+| [Q-M1f.646](#q-m1f646--the-word-for-a-fact-held-neither-way-once-open-names-the-facts-of-open) | The word for a fact held neither way, once open names the facts of open | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 73 of part 2) |
+| [Q-M1f.647](#q-m1f647--where-the-remark-on-what-a-state-owes-stands-and-how-it-is-worded) | Where the remark on what a state owes stands and how it is worded | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 73 of part 2) |
+| [Q-M1f.648](#q-m1f648--what-stuck-means-under-the-union) | What stuck means under the union | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 73 of part 2) |
+| [Q-M1f.649](#q-m1f649--where-r-with-no-search-is-written) | Where R with no search is written | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 73 of part 2) |
+| [Q-M1f.650](#q-m1f650--where-open-is-shown-four-ways-on-the-users-pages) | Where open is shown four ways on the user's pages | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 73 of part 2) |
+| [Q-M1f.651](#q-m1f651--what-the-decision-of-the-hypotheses-as-facts-carries) | What the decision of the hypotheses as facts carries | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 73 of part 2) |
+| [Q-M1f.652](#q-m1f652--which-program-shows-the-requirement-and-the-payment-as-facts) | Which program shows the requirement and the payment as facts | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 73 of part 2) |
+| [Q-M1f.653](#q-m1f653--two-decisions-written-to-the-rulings-on-where-the-pass-runs) | Two decisions written to the rulings on where the pass runs | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 73 of part 2) |
+| [Q-M1f.654](#q-m1f654--the-reserved-names-pages-heading-for-open) | The reserved names page's heading for open | **defaulted 2026-11-20** (P1f.21's S1f.21.14); review item 73 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 73 of part 2) |
 | [Q-M1f.655](#q-m1f655--where-the-pass-that-writes-a-states-open-facts-runs) | Where the pass that writes a state's `open` facts runs | **ruled 2026-11-20 by the user**: at root, to make $H$, and then only at a state that is printed, saved or used; P1f.21's S1f.21.20 builds it |
 | [Q-M1f.656](#q-m1f656--the-check-in-flight-once-the-pass-runs-only-where-a-state-is-used) | The check in flight, once the pass runs only where a state is used | **ruled 2026-11-20 by the user**: it is made where the pass runs, and a command-line flag runs the pass at every state, to detect in flight; P1f.21's S1f.21.20 builds it |
 | [Q-M1f.657](#q-m1f657--the-cost-of-the-contradiction-as-rules-what-is-built) | The cost of the contradiction as rules: what is built | **ruled 2026-11-20 by the user**: everything recommended is built, and the cost measured again in a table of three columns; P1f.21's S1f.21.20 (task 7) and S1f.21.21 |
 | [Q-M1f.658](#q-m1f658--the-pairs-rule-of-no-argument-for-a-relation-declared-with-labels) | The pair's rule of no argument for a relation declared with labels | **ruled 2026-11-20 by the user**: the instance stays, its cost accepted; [the decision](../../docs/decisions/stdlib/Q-M1f.658-a-declared-relation-takes-the-contradictions.md) |
-| [Q-M1f.659](#q-m1f659--how-a-pairs-probe-asks-whether-the-state-holds-the-other-side) | How a pair's probe asks whether the state holds the other side | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 |
-| [Q-M1f.660](#q-m1f660--which-rules-take-the-probe) | Which rules take the probe | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 |
-| [Q-M1f.661](#q-m1f661--the-key-of-a-nested-facts-relation) | The key of a nested fact's relation | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 |
-| [Q-M1f.662](#q-m1f662--what-a-rule-instance-costs-at-every-state-beside-the-two-tasks) | What a rule instance costs at every state beside the two tasks | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 |
-| [Q-M1f.663](#q-m1f663--a-position-inside-a-nested-fact-that-has-the-relation-keys-number) | A position inside a nested fact that has the relation key's number | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 |
-| [Q-M1f.666](#q-m1f666--what-the-claim-row-prints-where-a-class-lists-an-open-fact) | What the claim row prints where a class lists an open fact | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 |
-| [Q-M1f.667](#q-m1f667--which-of-roots-open-facts-the-constraints-view-keeps) | Which of root's open facts the constraints view keeps | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 |
-| [Q-M1f.668](#q-m1f668--a-drawing-without-its-open-facts) | A drawing without its open facts | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 |
-| [Q-M1f.669](#q-m1f669--the-shape-goldens-view-of-roots-fixpoint-against-the-loaded-root) | The shape golden's view of root's fixpoint against the loaded root | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 |
-| [Q-M1f.670](#q-m1f670--where-the-load-error-places-a-written-open-fact) | Where the load error places a written open fact | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 |
-| [Q-M1f.671](#q-m1f671--when-a-workers-finding-in-flight-is-said-on-stderr) | When a worker's finding in flight is said on stderr | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 |
-| [Q-M1f.672](#q-m1f672--the-rendering-pages-layers-picture) | The rendering page's layers picture | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 |
+| [Q-M1f.659](#q-m1f659--how-a-pairs-probe-asks-whether-the-state-holds-the-other-side) | How a pair's probe asks whether the state holds the other side | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 74 of part 2) |
+| [Q-M1f.660](#q-m1f660--which-rules-take-the-probe) | Which rules take the probe | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 74 of part 2) |
+| [Q-M1f.661](#q-m1f661--the-key-of-a-nested-facts-relation) | The key of a nested fact's relation | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 74 of part 2) |
+| [Q-M1f.662](#q-m1f662--what-a-rule-instance-costs-at-every-state-beside-the-two-tasks) | What a rule instance costs at every state beside the two tasks | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 74 of part 2) |
+| [Q-M1f.663](#q-m1f663--a-position-inside-a-nested-fact-that-has-the-relation-keys-number) | A position inside a nested fact that has the relation key's number | **defaulted 2026-11-20** (P1f.21's S1f.21.21); review item 74 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 74 of part 2) |
+| [Q-M1f.666](#q-m1f666--what-the-claim-row-prints-where-a-class-lists-an-open-fact) | What the claim row prints where a class lists an open fact | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 75 of part 2) |
+| [Q-M1f.667](#q-m1f667--which-of-roots-open-facts-the-constraints-view-keeps) | Which of root's open facts the constraints view keeps | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 75 of part 2) |
+| [Q-M1f.668](#q-m1f668--a-drawing-without-its-open-facts) | A drawing without its open facts | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 75 of part 2) |
+| [Q-M1f.669](#q-m1f669--the-shape-goldens-view-of-roots-fixpoint-against-the-loaded-root) | The shape golden's view of root's fixpoint against the loaded root | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 75 of part 2) |
+| [Q-M1f.670](#q-m1f670--where-the-load-error-places-a-written-open-fact) | Where the load error places a written open fact | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 75 of part 2) |
+| [Q-M1f.671](#q-m1f671--when-a-workers-finding-in-flight-is-said-on-stderr) | When a worker's finding in flight is said on stderr | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 75 of part 2) |
+| [Q-M1f.672](#q-m1f672--the-rendering-pages-layers-picture) | The rendering page's layers picture | **defaulted 2026-11-20** (P1f.21's S1f.21.22); review item 75 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 75 of part 2) |
 | [Q-M1f.674](#q-m1f674--the-facts-a-resumed-state-added-read-off-its-own-layers) | The facts a resumed state added, read off its own layers | **ruled 2026-11-20 by the user**: built; P1f.21's S1f.21.23 |
-| [Q-M1f.675](#q-m1f675--how-a-knowledge-base-grown-from-the-snapshots-is-recognised) | How a knowledge base grown from the snapshot's is recognised | **defaulted 2026-11-20** (P1f.21's S1f.21.23); review item 76 of part 2 |
-| [Q-M1f.676](#q-m1f676--whether-the-snapshot-keeps-its-set-of-facts) | Whether the snapshot keeps its set of facts | **defaulted 2026-11-20** (P1f.21's S1f.21.23); review item 76 of part 2 |
-| [Q-M1f.677](#q-m1f677--what-a-knowledge-base-that-did-not-grow-from-the-snapshots-gets) | What a knowledge base that did not grow from the snapshot's gets | **defaulted 2026-11-20** (P1f.21's S1f.21.23); review item 76 of part 2 |
-| [Q-M1f.678](#q-m1f678--where-a-layers-stamp-comes-from) | Where a layer's stamp comes from | **defaulted 2026-11-20** (P1f.21's S1f.21.23); review item 76 of part 2 |
+| [Q-M1f.675](#q-m1f675--how-a-knowledge-base-grown-from-the-snapshots-is-recognised) | How a knowledge base grown from the snapshot's is recognised | **defaulted 2026-11-20** (P1f.21's S1f.21.23); review item 76 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 76 of part 2) |
+| [Q-M1f.676](#q-m1f676--whether-the-snapshot-keeps-its-set-of-facts) | Whether the snapshot keeps its set of facts | **defaulted 2026-11-20** (P1f.21's S1f.21.23); review item 76 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 76 of part 2) |
+| [Q-M1f.677](#q-m1f677--what-a-knowledge-base-that-did-not-grow-from-the-snapshots-gets) | What a knowledge base that did not grow from the snapshot's gets | **defaulted 2026-11-20** (P1f.21's S1f.21.23); review item 76 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 76 of part 2) |
+| [Q-M1f.678](#q-m1f678--where-a-layers-stamp-comes-from) | Where a layer's stamp comes from | **defaulted 2026-11-20** (P1f.21's S1f.21.23); review item 76 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 76 of part 2) |
 | [Q-M1f.680](#q-m1f680--a-stand-in-program-and-its-built-spelling-in-a-review-item) | A stand-in program and its built spelling in a review item | **defaulted 2026-11-20** (P1f.21's S1f.21.19): how the review items show a thing; no item of its own |
 | [Q-M1f.681](#q-m1f681--how-a-states-open-facts-are-read-where-no-command-prints-them) | How a state's open facts are read where no command prints them | **defaulted 2026-11-20** (P1f.21's S1f.21.19): how the review items show a thing; no item of its own |
 | [Q-M1f.682](#q-m1f682--what-counts-as-a-program-that-moved-in-the-reviews-list) | What counts as a program that moved in the review's list | **defaulted 2026-11-20** (P1f.21's S1f.21.19): how the review items show a thing; no item of its own |
 | [Q-M1f.683](#q-m1f683--how-a-drawing-an-option-would-give-is-composed) | How a drawing an option would give is composed | **defaulted 2026-11-20** (P1f.21's S1f.21.19): how the review items show a thing; no item of its own |
 | [Q-M1f.684](#q-m1f684--which-variants-and-dumps-a-review-item-keeps) | Which variants and dumps a review item keeps | **defaulted 2026-11-20** (P1f.21's S1f.21.19): how the review items show a thing; no item of its own |
-| [Q-M1f.685](#q-m1f685--a-rule-that-concludes-a-hypothesis-reads-its-absent-premises) | A rule that concludes a hypothesis reads its `absent` premises | **defaulted 2026-11-20** by the coordinator: it does, as every rule; a wrong answer found by S1f.21.19, filed and fixed by S1f.21.24; review item 86 of part 2 |
-| [Q-M1f.686](#q-m1f686--whether-a-hypothesis-rules-read-under-one-absent-is-a-site-of-the-static-check) | Whether a hypothesis rule's read under one absent is a site of the static check | **defaulted 2026-11-20** (P1f.21's S1f.21.24); review item 86 of part 2 |
-| [Q-M1f.687](#q-m1f687--what-the-oracles-listing-of-a-node-shows) | What the oracle's listing of a node shows | **defaulted 2026-11-20** (P1f.21's S1f.21.24); review item 86 of part 2 |
-| [Q-M1f.688](#q-m1f688--whether-a-defaults-decision-file-is-written-before-the-user-rules-it) | Whether a default's decision file is written before the user rules it | **defaulted 2026-11-20** (P1f.21's S1f.21.24); review item 86 of part 2 |
-| [Q-M1f.689](#q-m1f689--what-the-moved-witness-of-the-hypothesis-rules-absent-states) | What the moved witness of the hypothesis rule's absent states | **defaulted 2026-11-20** (P1f.21's S1f.21.24); review item 86 of part 2 |
-| [Q-M1f.690](#q-m1f690--the-loads-warnings-and-the-clis-channel-go-with-the-lines) | The load's warnings and the CLI's channel go with the lines | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `a117e80a`); review item 87 of part 1 |
-| [Q-M1f.691](#q-m1f691--q-m1f1-keeps-its-file-and-its-slug) | Q-M1f.1 keeps its file and its slug | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `e802c611`); review item 87 of part 1 |
-| [Q-M1f.692](#q-m1f692--what-the-test-of-the-sixteen-shapes-holds-now) | What the test of the sixteen shapes holds now | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `a117e80a`); review item 87 of part 1 |
-| [Q-M1f.693](#q-m1f693--the-fixtures-headers-keep-their-line-counts) | The fixtures' headers keep their line counts | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `02bcddc3`); review item 87 of part 1 |
-| [Q-M1f.694](#q-m1f694--what-cites-no-line-stays) | What cites no line stays | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `e802c611`); review item 87 of part 1 |
+| [Q-M1f.685](#q-m1f685--a-rule-that-concludes-a-hypothesis-reads-its-absent-premises) | A rule that concludes a hypothesis reads its `absent` premises | **defaulted 2026-11-20** by the coordinator: it does, as every rule; a wrong answer found by S1f.21.19, filed and fixed by S1f.21.24; review item 86 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 86 of part 2) |
+| [Q-M1f.686](#q-m1f686--whether-a-hypothesis-rules-read-under-one-absent-is-a-site-of-the-static-check) | Whether a hypothesis rule's read under one absent is a site of the static check | **defaulted 2026-11-20** (P1f.21's S1f.21.24); review item 86 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 86 of part 2) |
+| [Q-M1f.687](#q-m1f687--what-the-oracles-listing-of-a-node-shows) | What the oracle's listing of a node shows | **defaulted 2026-11-20** (P1f.21's S1f.21.24); review item 86 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 86 of part 2) |
+| [Q-M1f.688](#q-m1f688--whether-a-defaults-decision-file-is-written-before-the-user-rules-it) | Whether a default's decision file is written before the user rules it | **defaulted 2026-11-20** (P1f.21's S1f.21.24); review item 86 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 86 of part 2) |
+| [Q-M1f.689](#q-m1f689--what-the-moved-witness-of-the-hypothesis-rules-absent-states) | What the moved witness of the hypothesis rule's absent states | **defaulted 2026-11-20** (P1f.21's S1f.21.24); review item 86 of part 2 **Accepted 2026-11-25 by the user** (*"OK"*, review item 86 of part 2) |
+| [Q-M1f.690](#q-m1f690--the-loads-warnings-and-the-clis-channel-go-with-the-lines) | The load's warnings and the CLI's channel go with the lines | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `a117e80a`); review item 87 of part 1 **Accepted 2026-11-25 by the user** (*"OK"*, review item 87 of part 1) |
+| [Q-M1f.691](#q-m1f691--q-m1f1-keeps-its-file-and-its-slug) | Q-M1f.1 keeps its file and its slug | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `e802c611`); review item 87 of part 1 **Accepted 2026-11-25 by the user** (*"OK"*, review item 87 of part 1) |
+| [Q-M1f.692](#q-m1f692--what-the-test-of-the-sixteen-shapes-holds-now) | What the test of the sixteen shapes holds now | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `a117e80a`); review item 87 of part 1 **Accepted 2026-11-25 by the user** (*"OK"*, review item 87 of part 1) |
+| [Q-M1f.693](#q-m1f693--the-fixtures-headers-keep-their-line-counts) | The fixtures' headers keep their line counts | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `02bcddc3`); review item 87 of part 1 **Accepted 2026-11-25 by the user** (*"OK"*, review item 87 of part 1) |
+| [Q-M1f.694](#q-m1f694--what-cites-no-line-stays) | What cites no line stays | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `e802c611`); review item 87 of part 1 **Accepted 2026-11-25 by the user** (*"OK"*, review item 87 of part 1) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -11564,62 +11564,74 @@ review item 67.
 ### Q-M1f.595 — An `open` fact of a relation the white list leaves out
 
 **Raised** 2026-11-20 by the examples of P1f.21's S1f.21.12, on runs,
-[review item 65](p1f.21_verdicts_as_rules/review/part-2/65-the-lists-and-a-closure/README.md). The user's ruling of Q-M1f.578 names one direction of a disagreement with `:hypothesis-relations`, a relation it lists that no `open` fact is of. The other direction, an `open` fact of a relation the list leaves out, is not named.
+review item 65. The user's ruling of Q-M1f.578 names one direction of a disagreement with `:hypothesis-relations`, a relation it lists that no `open` fact is of. The other direction, an `open` fact of a relation the list leaves out, is not named.
 
 (a) An error too: a white list beside `open` facts names exactly their relations. (b) No error: the fact is held and is no candidate. **Default (a).**
 
 **Default (a) taken, 2026-11-20, on the user's word**: *"plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/review/part-2 - pick defaults, implement the phase to the end but not close; after implementation complete add renders with the final ein version. I will review questions after."* It is no ruling: the user reviews the
 question after the build, and the review item stays in the bundle until then.
 
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 65: *"(a)"*.
+
 ### Q-M1f.596 — Where `open` may be written once it is the kernel's relation
 
 **Raised** 2026-11-20 by the examples of P1f.21's S1f.21.12, on runs,
-[review item 58](p1f.21_verdicts_as_rules/review/part-2/58-the-corpus-under-the-rulings/README.md). Thirty corpus witnesses under `examples/ein-bugs/wrong-answers/` are refused today because `open` is a reserved word. The rulings say where 15 of them would load. Fifteen write `open` in a place the rulings do not name: as a value, in a macro, in a list.
+review item 58. Thirty corpus witnesses under `examples/ein-bugs/wrong-answers/` are refused today because `open` is a reserved word. The rulings say where 15 of them would load. Fifteen write `open` in a place the rulings do not name: as a value, in a macro, in a list.
 
 (a) `open` is a name where a name stands, and a macro's body may write `(open ?R)`; it is refused where a program would declare it, write `(open x)` with `x` no fact and no relation, make an obligation owe it, or name it in a list. Five more of the thirty then load and ten stay refused. **Default (a).**
 
 **Default (a) taken, 2026-11-20, on the user's word**: *"plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/review/part-2 - pick defaults, implement the phase to the end but not close; after implementation complete add renders with the final ein version. I will review questions after."* It is no ruling: the user reviews the
 question after the build, and the review item stays in the bundle until then.
 
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 58: *"OK"*.
+
 ### Q-M1f.597 — Whether the lists and a closure are judged against the `open` facts root holds or the declarations
 
 **Raised** 2026-11-20 by the examples of P1f.21's S1f.21.12, on runs,
-[review item 65](p1f.21_verdicts_as_rules/review/part-2/65-the-lists-and-a-closure/README.md). The ruling of Q-M1f.578 says *open facts*. Today the conflicts are read off what the program declares and root's fixpoint.
+review item 65. The ruling of Q-M1f.578 says *open facts*. Today the conflicts are read off what the program declares and root's fixpoint.
 
 (a) Against the `open` facts root holds, as the ruling's words. (b) Against what could be proposed, read off the rules. **Default (a).**
 
 **Default (a) taken, 2026-11-20, on the user's word**: *"plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/review/part-2 - pick defaults, implement the phase to the end but not close; after implementation complete add renders with the final ein version. I will review questions after."* It is no ruling: the user reviews the
 question after the build, and the review item stays in the bundle until then.
 
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 65: *"(a)"*.
+
 ### Q-M1f.598 — Whether the pass writes `open` facts at a dead state
 
 **Raised** 2026-11-20 by the examples of P1f.21's S1f.21.12, on runs,
-[review item 62](p1f.21_verdicts_as_rules/review/part-2/62-what-a-fork-drops/README.md). A dead state's saturation ends where it dies. On the seats cube four dead nodes owe one instance each today.
+review item 62. A dead state's saturation ends where it dies. On the seats cube four dead nodes owe one instance each today.
 
 (a) Yes, as at any state, where it owes: the count at a dead node is as today. (b) No: a dead state holds no `open` fact. **Default (a).**
 
 **Default (a) taken, 2026-11-20, on the user's word**: *"plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/review/part-2 - pick defaults, implement the phase to the end but not close; after implementation complete add renders with the final ein version. I will review questions after."* It is no ruling: the user reviews the
 question after the build, and the review item stays in the bundle until then.
 
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 62: *"(a)"*.
+
 ### Q-M1f.599 — The blind enumerator beside a rule that concludes nothing at root
 
 **Raised** 2026-11-20 by the examples of P1f.21's S1f.21.12, on runs,
-[review item 58](p1f.21_verdicts_as_rules/review/part-2/58-the-corpus-under-the-rulings/README.md). The ruling of Q-M1f.578: the blind enumerator runs only where root's fixpoint holds no `open` fact. A program may write a rule that concludes `(open F)` and that fires nowhere at root.
+review item 58. The ruling of Q-M1f.578: the blind enumerator runs only where root's fixpoint holds no `open` fact. A program may write a rule that concludes `(open F)` and that fires nowhere at root.
 
 (a) It runs where root holds no `open` fact and no obligation is activated, whatever rules the program writes. No corpus program moves by it. (b) A rule that could conclude `(open F)` switches it off, fired or not. **Default (a).**
 
 **Default (a) taken, 2026-11-20, on the user's word**: *"plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/review/part-2 - pick defaults, implement the phase to the end but not close; after implementation complete add renders with the final ein version. I will review questions after."* It is no ruling: the user reviews the
 question after the build, and the review item stays in the bundle until then.
 
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 58: *"OK"*.
+
 ### Q-M1f.600 — What becomes of `06_blind_enumeration.ein`
 
 **Raised** 2026-11-20 by the examples of P1f.21's S1f.21.12, on runs,
-[review item 63](p1f.21_verdicts_as_rules/review/part-2/63-the-bare-open/README.md). `tests/stdlib/bijection/06_blind_enumeration.ein` writes the bare `(open)`, which is refused once built, to make the obligations rung decline so that the blind enumerator runs. Its claim holds two other ways. One half of its Rust test, that the blind enumerator never proposes an obligation's activator, can no longer be asked: a held activator switches the blind enumerator off.
+review item 63. `tests/stdlib/bijection/06_blind_enumeration.ein` writes the bare `(open)`, which is refused once built, to make the obligations rung decline so that the blind enumerator runs. Its claim holds two other ways. One half of its Rust test, that the blind enumerator never proposes an obligation's activator, can no longer be asked: a held activator switches the blind enumerator off.
 
 (a) Rewritten with no obligation activated, the blind enumerator running; the half of the test that can no longer be asked is dropped. (b) Rewritten with a named `(open R)`, so the obligation proposes and the file tests another thing. **Default (a).**
 
 **Default (a) taken, 2026-11-20, on the user's word**: *"plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/review/part-2 - pick defaults, implement the phase to the end but not close; after implementation complete add renders with the final ein version. I will review questions after."* It is no ruling: the user reviews the
 question after the build, and the review item stays in the bundle until then.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 63: *"(a)"*.
 
 ### Q-M1f.601 — Which of the first part's readings get a decision file
 
@@ -11681,175 +11693,225 @@ review item 68.
 **Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
 which reads of a rule that concludes `(open F)` are the `hypothesis` site. **The default taken**: a read of `D` outside an `absent` or inside an even number of them, as a saturation rule's monotone reads; the literal reading of Q-M1f.574 (any depth) flagged `hrule-reads-unknown.ein` and its kin for an `unknown` probe.
 
-The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+The user reviews it in review item 69.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 69: *"OK"*.
 
 ### Q-M1f.607 — The blind enumerator under no-search
 
 **Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
 the blind enumerator under `(solve :no-search)`. **The default taken**: it writes nothing: no candidate, as no writer runs.
 
-The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+The user reviews it in review item 69.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 69: *"OK"*.
 
 ### Q-M1f.608 — A state's open facts within its own pass
 
 **Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
 a state's `open` facts within its own pass. **The default taken**: written once at the fixpoint and only added to while a rule that reads `open` derives (the pass, then such rules, until nothing changes); none is withdrawn within a state.
 
-The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+The user reviews it in review item 69.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 69: *"OK"*.
 
 ### Q-M1f.609 — What the blind enumerator and a later debt write above root
 
 **Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
 what the blind enumerator and a later debt write above root. **The default taken**: what root read: the blind enumerator's raw list at root and the later debts' candidates, less what the state holds or denies.
 
-The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+The user reviews it in review item 69.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 69: *"OK"*.
 
 ### Q-M1f.610 — An obligation whose witness does not resolve
 
 **Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
 an obligation whose witness step does not resolve under an activator. **The default taken**: the call is declined: nothing is written for any obligation, and the blind enumerator does not run beside an activated obligation (`rung` mode `declined`).
 
-The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+The user reviews it in review item 69.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 69: *"OK"*.
 
 ### Q-M1f.611 — Whether a claim may list an open fact
 
 **Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
 may a claim list an `open` fact. **The default taken**: no: a claim lists facts of the program's relations (`ein.y`'s `ClaimNested`); `(model (open k))` is a parse error.
 
-The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+The user reviews it in review item 69.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 69: *"OK"*.
 
 ### Q-M1f.612 — An open fact's provenance
 
 **Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
 an `open` fact's provenance. **The default taken**: a pass-written one carries a rule's provenance naming its writer (the obligation, the rule, or `open` for the blind enumerator), printed *which rule … writes*; a written one the loader's source provenance.
 
-The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+The user reviews it in review item 69.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 69: *"OK"*.
 
 ### Q-M1f.613 — A variable under open in a conclusion
 
 **Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
 `(open ?x)` in a conclusion. **The default taken**: `?x` a parameter of the rule names a relation (what a state owes); a variable the `:match` binds is a hypothesis.
 
-The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+The user reviews it in review item 69.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 69: *"OK"*.
 
 ### Q-M1f.614 — The two fixtures of the old rule on open
 
 **Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
 the two parse-negative fixtures Q-M1f.66's old shape made. **The default taken**: `open_in_match.ein` moves to `examples/features/23_a_rule_reads_open.ein` (its subject, a rule that reads `open`, is legal and flagged); `open_mixed_assert.ein` moves to `examples/broken/load/` with `:why`s, refused at load.
 
-The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+The user reviews it in review item 69.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 69: *"OK"*.
 
 ### Q-M1f.615 — The warning found in flight, on stderr
 
 **Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
 the in-flight warning on stderr. **The default taken**: once per file, at once, and only where the static check did not already flag the program (a flagged program's warning is already printed).
 
-The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+The user reviews it in review item 69.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 69: *"OK"*.
 
 ### Q-M1f.616 — Whether a node's open facts count as work
 
 **Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
 does a node's `open` facts count as work and against `--region-budget`. **The default taken**: no: `region::NodeOut::work` counts the facts saturation built beyond root, the `open` facts aside, in every route's `facts`.
 
-The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+The user reviews it in review item 69.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 69: *"OK"*.
 
 ### Q-M1f.617 — Whether open is an atom the blind enumerator guesses about
 
 **Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
 is `open` a guessable atom where a program writes it as a name. **The default taken**: no: the kernel's word, left out of the blind enumerator's atoms as `absent` is (`hypgen::candidate_objects`).
 
-The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+The user reviews it in review item 69.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 69: *"OK"*.
 
 ### Q-M1f.618 — absent and open heading a fact under not, in a guard's value and in a using list
 
 **Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
 `open` and `absent` heading a fact under `not`, in a guard's value and in a `:using` list. **The default taken**: names, as under an ordinary relation (Q-M1f.571 read where it is silent): `(not (absent k))`, `(neq ?x (absent k))`, `(q (absent ?x))` load; directly under `open` or `absent`, written at the top and concluded they stay refused.
 
-The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+The user reviews it in review item 69.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 69: *"OK"*.
 
 ### Q-M1f.619 — The structure's theory share under the union
 
 **Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
 the structure's theory share under the union. **The default taken**: the program's own writers built H (`structure.rs`' `declared`), and the relations they read, the rules' and the obligations', are what the universe is made of.
 
-The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+The user reviews it in review item 69.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 69: *"OK"*.
 
 ### Q-M1f.620 — A hypothesis rule that concludes an open fact
 
 **Raised and defaulted** 2026-11-20 by the build of P1f.21's S1f.21.12 ([its record](p1f.21_verdicts_as_rules/s1f.21.12_hypotheses_as_facts.md#record)). The question:
 an hrule whose `:assert` concludes `(open …)`. **The default taken**: refused at load: an hrule proposes a fact, a hypothesis already; a rule that concludes `(open …)` is written instead.
 
-The user reviews it in [review item 69](p1f.21_verdicts_as_rules/review/part-2/69-S1f.21.12-defaults/README.md).
+The user reviews it in review item 69.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 69: *"OK"*.
 
 ### Q-M1f.621 — Where a removed clause's activators are written
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: where a removed `:hrules` clause's activators are written.
 **The default taken**: where the `(solve …)` stood when it empties (the empty solve goes), else just before it, with the comment lines that stood before the clause inside it; a bare name in the clause activates nothing and goes.
 
-The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
+The user reviews it in review item 71.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 71: *"OK"*.
 
 ### Q-M1f.622 — How a hypothesis rule's conclusion is written under open
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: how an hrule's `:assert X` is written.
 **The default taken**: `(open X)`, the whole conclusion: what was no fact stays no fact, and is refused, now at the parse: `(open (and …))`, `(open (absent …))`, `(open (not ?g))`, `(open (eq …))`.
 
-The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
+The user reviews it in review item 71.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 71: *"OK"*.
 
 ### Q-M1f.623 — The checks the hrules clause made of its activators
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: the `:hrules` list's own checks (a listed name is a declared hrule, an activator's count, an argument at a relation parameter a relation of the program).
 **The default taken**: they go with the clause: an activator is a fact as every rule's (Q-M1f.567's *a rule like any other*); a wrong count activates nothing, a misspelt one is a fact of another relation; their three witnesses (`solve-hrules-*`) and rows deleted. No refusal is added for rules.
 
-The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
+The user reviews it in review item 71.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 71: *"OK"*.
 
 ### Q-M1f.624 — A fixture or witness whose subject was the form itself
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: a fixture or witness whose subject is the form itself.
 **The default taken**: deleted with its entry and row: `ein_on_hrule` (its refusal goes), `hrule_reserved_name` (it became `rule_reserved_name`'s program), `macro-bare-conclusion-hrule` (`(open (id ?x))` expands to `(open ?x)`, a form, and loads).
 
-The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
+The user reviews it in review item 71.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 71: *"OK"*.
 
 ### Q-M1f.625 — File names, test names and regression ids that contain hrule
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: file names, test names and regression ids that contain `hrule`.
 **The default taken**: kept as identifiers: plan files the stage may not edit link them, and decision slugs are kept (V-55).
 
-The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
+The user reviews it in review item 71.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 71: *"OK"*.
 
 ### Q-M1f.626 — The words for a hypothesis rule as a writer of H
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: the words for the writer (V-53).
 **The default taken**: the mode `hypothesis-rules`; the note *H, from \`MODE\`: …*; the h-space H row *· from \`MODE\`*; JSON `hypothesis_rules`, `hypothesis_plans`, `a_hypothesis_rule_proposes_it`; the `load` event's `hypothesis_rules`; the outside reason `not-proposed`, *no hypothesis rule proposes it*. The `rung` event and `Mode` keep their names.
 
-The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
+The user reviews it in review item 71.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 71: *"OK"*.
 
 ### Q-M1f.627 — What reads a hypothesis rule where a check read an hrule
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: what reads a rule that concludes a hypothesis where a check read an hrule.
 **The default taken**: every loader check, `F` under `open` read as `F` where a check reads what a state can hold, and the names index; an `eq`/`neq` instance of a hypothesis template is none (Q-M1f.32).
 
-The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
+The user reviews it in review item 71.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 71: *"OK"*.
 
 ### Q-M1f.628 — Two decisions whose questions the clause asked
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: Q-M1f.115 and Q-M1f.116, whose questions the clause asked.
 **The default taken**: rewritten in place under their ids for activator facts, not deleted: `open_questions.md` links both.
 
-The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
+The user reviews it in review item 71.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 71: *"OK"*.
 
 ### Q-M1f.629 — The witness of a hypothesis rule that concludes eq
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: `hrule-eq.ein`, whose shape `(open (eq …))` the grammar refuses.
 **The default taken**: written through a parameter, `(h eq)`, so the witness keeps its subject and its answer, H empty and R {∅}.
 
-The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
+The user reviews it in review item 71.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 71: *"OK"*.
 
 ### Q-M1f.630 — The saturated dump's section of hypothesis rules
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.18 ([its record](p1f.21_verdicts_as_rules/s1f.21.18_the_hrule_form_removed.md#record)). The question: `ein saturate --dump`'s hypothesis rules.
 **The default taken**: the hypothesis registry under *;; Hypothesis rules (N)*, each with the activators the knowledge base holds; a rule that concludes facts beside its hypotheses stands in the agenda's section too.
 
-The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/71-S1f.21.18-defaults/README.md).
+The user reviews it in review item 71.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 71: *"OK"*.
 
 ### Q-M1f.631 — Where the example of the lattice as rules goes, and its name
 
@@ -11858,7 +11920,9 @@ The user reviews it in [review item 71](p1f.21_verdicts_as_rules/review/part-2/7
 The other reading: one file, the program as rules alone.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 70](p1f.21_verdicts_as_rules/review/part-2/70-S1f.21.13-defaults/README.md).
+review item 70.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 70: *"OK"*.
 
 ### Q-M1f.632 — How the program as rules writes its candidates
 
@@ -11867,7 +11931,9 @@ The other reading: one file, the program as rules alone.
 The other reading: the example in the language's form, flagged, with no claim held, once the two defects are fixed.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 70](p1f.21_verdicts_as_rules/review/part-2/70-S1f.21.13-defaults/README.md).
+review item 70.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 70: *"OK"*.
 
 ### Q-M1f.633 — What the program as rules states beside the survey's
 
@@ -11876,130 +11942,170 @@ The other reading: the example in the language's form, flagged, with no claim he
 The other reading: the survey's program as it stood, two verdicts.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 70](p1f.21_verdicts_as_rules/review/part-2/70-S1f.21.13-defaults/README.md).
+review item 70.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 70: *"OK"*.
 
 ### Q-M1f.636 — Which state is the empty commitment's where a program writes open facts
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.20 ([its record](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md#record)). The question: which state is ∅'s where the program writes `(open F)`.
 **The default taken**: the plan's: ∅'s state is root's, the written facts among it; a node that commits a fact holds none. The other reading: root too drops a written one once it is read into H, so no state holds it.
 
-The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/72-S1f.21.20-defaults/README.md).
+The user reviews it in review item 72.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 72: *"OK"*.
 
 ### Q-M1f.637 — The rung's word where a rule's candidates stand beside an obligation that offers none
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.20 ([its record](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md#record)). The question: the rung's word where a rule's candidates survive beside an obligation that offers none.
 **The default taken**: `union`: the rules wrote beside an activated obligation, and H is the union, the obligations' share empty; `stuck` is a state that owes and to which no writer gave a candidate. The other reading: `hypothesis-rules`, the writer that built H, though an obligation is activated.
 
-The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/72-S1f.21.20-defaults/README.md).
+The user reviews it in review item 72.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 72: *"OK"*.
 
 ### Q-M1f.638 — A core above the empty commitment that read a written open fact
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.20 ([its record](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md#record)). The question: a core above ∅ whose derivation, made at root, read a written `(open F)`.
 **The default taken**: it lists what the state holds: a fork holds no written `open` fact (Q-M1f.569), and the explanation grounds out a premise the state does not hold, as it does any; at ∅ the state holds them and the core lists them (`build/s20/core-above.ein`: the core of `{(s b)}` is `(s b)`). The other reading: list the written fact, a premise the derivation read, though the state does not hold it.
 
-The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/72-S1f.21.20-defaults/README.md).
+The user reviews it in review item 72.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 72: *"OK"*.
 
 ### Q-M1f.639 — The saturate command's events and the firings after root's open facts
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.20 ([its record](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md#record)). The question: `ein saturate --events` and the firings after root's `open` facts.
 **The default taken**: counted and listed by the read-out, not narrated: the stream of `ein saturate` stays the first three states of `05-events.md`'s machine, and its root pass narrates nothing, as before. The other reading: narrate them as `fire` lines after root's saturation.
 
-The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/72-S1f.21.20-defaults/README.md).
+The user reviews it in review item 72.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 72: *"OK"*.
 
 ### Q-M1f.640 — When a load's note is said
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.20 ([its record](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md#record)). The question: when a load's `note:` is said.
 **The default taken**: when the run ends, before the load's `warning:` lines, on every command. The other reading: before the run but after the `WARNING`, which needs the static check's verdict before any note.
 
-The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/72-S1f.21.20-defaults/README.md).
+The user reviews it in review item 72.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 72: *"OK"*.
 
 ### Q-M1f.641 — The name of the flag that runs the pass at every state
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.20 ([its record](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md#record)). The question: the flag's name and its commands.
 **The default taken**: `--in-flight`, on `ein solve`, `ein test`, `ein oracle` and `ein render lattice`, every command that builds the states of a search; no `(config …)` field. The other reading: `--open-every-state`, the mechanism's name; or a config flag.
 
-The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/72-S1f.21.20-defaults/README.md).
+The user reviews it in review item 72.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 72: *"OK"*.
 
 ### Q-M1f.642 — How what a printed state finds in flight reaches the surfaces
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.20 ([its record](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md#record)). The question: how what a printed state finds in flight reaches the run's surfaces.
 **The default taken**: the read-out folds the finding of the states it prints into its answer's verdict, where the search found nothing; `ein oracle --dump` writes `region.json` after the read-out, with it; its stderr line is said at once, as every finding's. The other reading: each surface reports what the search alone found, and a printed state's finding is the stderr line alone.
 
-The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/72-S1f.21.20-defaults/README.md).
+The user reviews it in review item 72.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 72: *"OK"*.
 
 ### Q-M1f.643 — Which states are printed or saved
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.20 ([its record](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md#record)). The question: which states are printed or saved.
 **The default taken**: every `region::Nodes` reader (the read-out's states and forms, the dumps' state files, the trace, a member of N's core, `EIN_LEFTOVER`), `ein oracle --states`' nodes and a saved file's node; a state printed only as a count or a verdict, `--dump-lattice`'s nodes, `--events`' `enter` lines, `--count`, writes none; `ein test` as `ein solve`, a claim listing no `open` fact. The other reading: every state a dump or a render names, `--dump-lattice`'s among them.
 
-The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/72-S1f.21.20-defaults/README.md).
+The user reviews it in review item 72.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 72: *"OK"*.
 
 ### Q-M1f.644 — The cheaper form of the check the gate's build made at every step
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.20 ([its record](p1f.21_verdicts_as_rules/s1f.21.20_what_the_first_uses_of_open_found.md#record)). The question: the cheaper form of task 6's check.
 **The default taken**: count the rules' facts by relation, and walk only where the count moved: no call the full walk would refuse passes, where `Kb::n_facts_of` agrees with the rule-application index, which `Kb::index_fact` keeps together. The other reading: ask the full walk once a state, at the state's fixpoint, which misses a skip a later walk repairs.
 
-The user reviews it in [review item 72](p1f.21_verdicts_as_rules/review/part-2/72-S1f.21.20-defaults/README.md).
+The user reviews it in review item 72.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 72: *"OK"*.
 
 ### Q-M1f.645 — Which decision files are renamed for a name that is no longer true
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: V-55 read as its class: every decision file whose name the part made untrue is renamed, twelve, and every reference moves with it, the ledger's link targets among them. The other reading: Q-M1f.66's file alone; or no rename that touches the ledger.
 
-The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
+The user reviews it in review item 73.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 73: *"OK"*.
 
 ### Q-M1f.646 — The word for a fact held neither way, once open names the facts of open
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: the status of a fact neither held nor negated is *unknown*, as the library's `unknown` tests it, on every page and in Q-M1f.394, so that *open* names the facts of `open`. The other reading: *open* kept for the status on the reasoning pages, the user's page saying *unknown*.
 
-The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
+The user reviews it in review item 73.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 73: *"OK"*.
 
 ### Q-M1f.647 — Where the remark on what a state owes stands and how it is worded
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: the remark on `(open R)` (item 11) on satisfiability § 1.1, hypothesis generation § 4.1 and the obligations page, worded under Q-M1f.390: one fact however many instances, the count beside it, the instance the engine's record; held by the state alone, no rule removing it. The other reading: the remark on one page; or worded as a property of a verdict that is no fact.
 
-The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
+The user reviews it in review item 73.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 73: *"OK"*.
 
 ### Q-M1f.648 — What stuck means under the union
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: *stuck* on hypothesis generation § 4.5 is what the engine reads since S1f.21.20 (its Q-M1f.637): root owes and $H$ is empty, whoever the writers; beside it, as a proposition, an owed instance whose payments root all settles empties $R$ whatever another writer proposes. The first wording of this stage, the second alone, was replaced after the merge (V-67). The other reading: $H_{\mathrm{ob}} = \emptyset$ kept, which the union makes false: `18_two_candidates.ein` has it and a non-empty $R$.
 
-The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
+The user reviews it in review item 73.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 73: *"OK"*.
 
 ### Q-M1f.649 — Where R with no search is written
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: $R$ with no search is solution semantics § 2.6, with a pointer from finding R § 2; its example drawn as four worlds, its program named on no reasoning page, since no user page spells it. The other reading: a page of its own, renumbering the folder.
 
-The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
+The user reviews it in review item 73.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 73: *"OK"*.
 
 ### Q-M1f.650 — Where open is shown four ways on the user's pages
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: `open` as a core notion is a section of the user's hypotheses page, its graph drawn by hand from `ein saturate --dump`'s facts, since `ein render kb` draws none (V-72). The other reading: a page of its own under `03-syntax-and-semantics/`, renumbering the folder.
 
-The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
+The user reviews it in review item 73.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 73: *"OK"*.
 
 ### Q-M1f.651 — What the decision of the hypotheses as facts carries
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: Q-M1f.549's file states the user's main call and what Q-M1f.566, .570, .573 and .574 carry; the two uses, search control from inside Ein and facts inferred from the search, declined by S1f.21.13 under the recommendation, are a default and no decision. The other reading: the declines written into the decision.
 
-The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
+The user reviews it in review item 73.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 73: *"OK"*.
 
 ### Q-M1f.652 — Which program shows the requirement and the payment as facts
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: item 10's program restates the page's own obligation by three rules of the program, in `std.debts`' words, rather than importing `std.debts` beside a library obligation, which its page already shows. The other reading: the library's `total-owed` with `(import std.debts)`.
 
-The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
+The user reviews it in review item 73.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 73: *"OK"*.
 
 ### Q-M1f.653 — Two decisions written to the rulings on where the pass runs
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: Q-M1f.566 and Q-M1f.574 rewritten to the relayed rulings on where the pass runs, without the ids, as the pages are. The other reading: left to S1f.21.20, whose build amends them.
 
-The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
+The user reviews it in review item 73.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 73: *"OK"*.
 
 ### Q-M1f.654 — The reserved names page's heading for open
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.14 ([its record](p1f.21_verdicts_as_rules/s1f.21.14_the_pages_of_open.md#record)). **The default taken**: the reserved-names heading *The verdict — `open`* is *`open` — what a state owes and supposes*, its links moved. The other reading: the heading kept, since `open` is more than a verdict.
 
-The user reviews it in [review item 73](p1f.21_verdicts_as_rules/review/part-2/73-S1f.21.14-defaults/README.md).
+The user reviews it in review item 73.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 73: *"OK"*.
 
 ### Q-M1f.655 — Where the pass that writes a state's open facts runs
 
@@ -12077,84 +12183,108 @@ resumed state's facts is no part of it and is not ruled (finding V-78 of P1f.21)
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.21 ([its record](p1f.21_verdicts_as_rules/s1f.21.21_the_contradictions_cost.md#record)). The question: how a pair's probe asks whether the state holds the other side.
 **The default taken**: the fact store's own probe of `(W, [f])`, then `Kb::contains`; `Kb::is_negated`, its set and the dump's `NEG` rows go. The other reading: a set of the facts a state holds under a wrapper, by wrapper relation: measured 0.1 to 0.4 % cheaper in the form specific to `not`, which reads a kernel name.
 
-The user reviews it in [review item 74](p1f.21_verdicts_as_rules/review/part-2/74-S1f.21.21-defaults/README.md).
+The user reviews it in review item 74.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 74: *"OK"*.
 
 ### Q-M1f.660 — Which rules take the probe
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.21 ([its record](p1f.21_verdicts_as_rules/s1f.21.21_the_contradictions_cost.md#record)). The question: which plans take the probe.
 **The default taken**: a plan whose whole match is one pair, one disjunct of two premises, and whose firing ends a state, by stating the key or concluding what a rule that does matches alone: `clash-N` and a program's own pair rule either way; a rule that states `:ein inconsistent` over anything but a pair, `std.core`'s, and a pair inside one of several disjuncts stay seeded. The other reading: probe the pair's disjunct of a plan of several and seed the rest.
 
-The user reviews it in [review item 74](p1f.21_verdicts_as_rules/review/part-2/74-S1f.21.21-defaults/README.md).
+The user reviews it in review item 74.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 74: *"OK"*.
 
 ### Q-M1f.661 — The key of a nested fact's relation
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.21 ([its record](p1f.21_verdicts_as_rules/s1f.21.21_the_contradictions_cost.md#record)). The question: the nested relation's key.
 **The default taken**: `(context, argument, RELATION, relation)`, the argument part of the key; a plan keyed by its premise's first nested pattern; the probe last, after every argument that can be bound, and not listed after a constant. The other reading: `(context, relation)` without the argument; or the relation's key before a later argument.
 
-The user reviews it in [review item 74](p1f.21_verdicts_as_rules/review/part-2/74-S1f.21.21-defaults/README.md).
+The user reviews it in review item 74.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 74: *"OK"*.
 
 ### Q-M1f.662 — What a rule instance costs at every state beside the two tasks
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.21 ([its record](p1f.21_verdicts_as_rules/s1f.21.21_the_contradictions_cost.md#record)). The question: the costs of a plan at a state beside the two tasks.
 **The default taken**: built: the watermark for the plan never matched, and the shared plan list. The other reading: leave them for a stage of their own.
 
-The user reviews it in [review item 74](p1f.21_verdicts_as_rules/review/part-2/74-S1f.21.21-defaults/README.md).
+The user reviews it in review item 74.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 74: *"OK"*.
 
 ### Q-M1f.663 — A position inside a nested fact that has the relation key's number
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.21 ([its record](p1f.21_verdicts_as_rules/s1f.21.21_the_contradictions_cost.md#record)). The question: a position inside a nested fact that is `RELATION`'s number (the last of a fact of 65 535 arguments).
 **The default taken**: not keyed, by the scan, the compiled list and the index alike (`SlotKey::keys_inner`), so a position's key and a relation's never share a bucket. The other reading: a field of its own in `SlotKey`, past its 12 bytes.
 
-The user reviews it in [review item 74](p1f.21_verdicts_as_rules/review/part-2/74-S1f.21.21-defaults/README.md).
+The user reviews it in review item 74.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 74: *"OK"*.
 
 ### Q-M1f.666 — What the claim row prints where a class lists an open fact
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.22 ([its record](p1f.21_verdicts_as_rules/s1f.21.22_what_the_pages_found_in_the_build.md#record)). The question: what `as :expect` prints where a class lists an `open` fact, or the absence of one.
 **The default taken**: *not printed: these classes list an open fact, which no claim lists*, the first of the reasons a claim is not printed; an `open` under an ordinary relation is a name, and the claim is printed. The other reading: no row at all; or a claim grammar that takes `open`, which the standing rule that no claim lists one refuses.
 
-The user reviews it in [review item 75](p1f.21_verdicts_as_rules/review/part-2/75-S1f.21.22-defaults/README.md).
+The user reviews it in review item 75.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 75: *"OK"*.
 
 ### Q-M1f.667 — Which of root's open facts the constraints view keeps
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.22 ([its record](p1f.21_verdicts_as_rules/s1f.21.22_what_the_pages_found_in_the_build.md#record)). The question: which of root's `open` facts `ein render constraints` keeps.
 **The default taken**: `(open R)`, a fact about a relation by the slice's own definition (Q-M1f.523), and no `(open F)`, whose argument is a fact. The other reading: every `open` fact root holds, outside the slice's definition.
 
-The user reviews it in [review item 75](p1f.21_verdicts_as_rules/review/part-2/75-S1f.21.22-defaults/README.md).
+The user reviews it in review item 75.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 75: *"OK"*.
 
 ### Q-M1f.668 — A drawing without its open facts
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.22 ([its record](p1f.21_verdicts_as_rules/s1f.21.22_what_the_pages_found_in_the_build.md#record)). The question: a view of a drawing without its `open` facts.
 **The default taken**: none: `ein render kb` has no option that leaves them out; `-P` is a listing's (Q-M1f.577). The other reading: a `-P`-like option on `ein render kb`, positive facts alone.
 
-The user reviews it in [review item 75](p1f.21_verdicts_as_rules/review/part-2/75-S1f.21.22-defaults/README.md).
+The user reviews it in review item 75.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 75: *"OK"*.
 
 ### Q-M1f.669 — The shape golden's view of root's fixpoint against the loaded root
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.22 ([its record](p1f.21_verdicts_as_rules/s1f.21.22_what_the_pages_found_in_the_build.md#record)). The question: the shape golden's `kb-since` view, root's fixpoint against the loaded root.
 **The default taken**: drawn with root's `open` facts, as the commands draw root, so its lines move with the two renders'. The other reading: a bare saturation, so only the constraint views' lines move.
 
-The user reviews it in [review item 75](p1f.21_verdicts_as_rules/review/part-2/75-S1f.21.22-defaults/README.md).
+The user reviews it in review item 75.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 75: *"OK"*.
 
 ### Q-M1f.670 — Where the load error places a written open fact
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.22 ([its record](p1f.21_verdicts_as_rules/s1f.21.22_what_the_pages_found_in_the_build.md#record)). The question: where the load error places a written `open` fact.
 **The default taken**: *written at FILE:L:C*, the position of its head's word, a top-level fact keeping none of its own (07-diagnostics.md § 1.5), as a written closure is placed; a closure conflict at the closure where it is written, else at the written fact. The other reading: the list's position alone, with no word on where the fact is.
 
-The user reviews it in [review item 75](p1f.21_verdicts_as_rules/review/part-2/75-S1f.21.22-defaults/README.md).
+The user reviews it in review item 75.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 75: *"OK"*.
 
 ### Q-M1f.671 — When a worker's finding in flight is said on stderr
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.22 ([its record](p1f.21_verdicts_as_rules/s1f.21.22_what_the_pages_found_in_the_build.md#record)). The question: when a worker's in-flight finding is said on stderr.
 **The default taken**: when the fan-out reads its node back, in order, with the hypothesis recorded; a node computed on the caller says it at once, as before. The other reading: said by the worker at once, the hypothesis alone recorded in order.
 
-The user reviews it in [review item 75](p1f.21_verdicts_as_rules/review/part-2/75-S1f.21.22-defaults/README.md).
+The user reviews it in review item 75.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 75: *"OK"*.
 
 ### Q-M1f.672 — The rendering page's layers picture
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.22 ([its record](p1f.21_verdicts_as_rules/s1f.21.22_what_the_pages_found_in_the_build.md#record)). The question: `12-rendering.md`'s layers picture, whose program's root holds 56 guesses of the blind enumerator.
 **The default taken**: the program states `(solve :no-search)`, so the picture is still what the binary draws, byte for byte. The other reading: the picture redrawn with the 56 hypotheses.
 
-The user reviews it in [review item 75](p1f.21_verdicts_as_rules/review/part-2/75-S1f.21.22-defaults/README.md).
+The user reviews it in review item 75.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 75: *"OK"*.
 
 ### Q-M1f.674 — The facts a resumed state added, read off its own layers
 
@@ -12175,28 +12305,36 @@ what is V-78"*, and the coordinator explained it and asked: build it or leave it
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.23 ([its record](p1f.21_verdicts_as_rules/s1f.21.23_the_delta_of_a_resumed_state.md#record)). The question: how a KB grown from the snapshot's is recognised.
 **The default taken**: a stamp a layer, fresh where a layer is made or copied and kept where it is moved, and a mark of stamps and lengths, compared at every read (the count of root's layers). The other reading: a fact count alone, `Kb::facts_from(n)`, trusting every caller to hand a fork of the snapshot's KB (a copy of root would read a wrong delta, in silence); or root sealed when the snapshot is taken and its layers compared by `Arc`.
 
-The user reviews it in [review item 76](p1f.21_verdicts_as_rules/review/part-2/76-S1f.21.23-defaults/README.md).
+The user reviews it in review item 76.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 76: *"OK"*.
 
 ### Q-M1f.676 — Whether the snapshot keeps its set of facts
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.23 ([its record](p1f.21_verdicts_as_rules/s1f.21.23_the_delta_of_a_resumed_state.md#record)). The question: whether the snapshot keeps its fact set.
 **The default taken**: kept: the facts above the mark are asked of it, so the `open` facts the empty commitment's fork holds as root did, and any fact root held in its `open` layer that a fork writes into its stack, stay out exactly as the walk had them; the set is built once a run and copied with the snapshot, as before. The other reading: the set dropped and root's `open` facts kept apart, the read above the mark taken as it stands.
 
-The user reviews it in [review item 76](p1f.21_verdicts_as_rules/review/part-2/76-S1f.21.23-defaults/README.md).
+The user reviews it in review item 76.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 76: *"OK"*.
 
 ### Q-M1f.677 — What a knowledge base that did not grow from the snapshot's gets
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.23 ([its record](p1f.21_verdicts_as_rules/s1f.21.23_the_delta_of_a_resumed_state.md#record)). The question: what a KB that did not grow from the snapshot's gets.
 **The default taken**: the walk, as before: no engine path in the corpus takes it (§ 1), the tests' copy does. The other reading: refused, a panic: a caller legal today would fail.
 
-The user reviews it in [review item 76](p1f.21_verdicts_as_rules/review/part-2/76-S1f.21.23-defaults/README.md).
+The user reviews it in review item 76.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 76: *"OK"*.
 
 ### Q-M1f.678 — Where a layer's stamp comes from
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.23 ([its record](p1f.21_verdicts_as_rules/s1f.21.23_the_delta_of_a_resumed_state.md#record)). The question: where a stamp comes from.
 **The default taken**: a process-wide atomic counter, relaxed: two draws where a KB branches, one where a layer is sealed; a stamp is compared and nothing else, and its debug form is a constant, so no output reads the number. The other reading: a counter per thread with the thread's id; or the stamps kept by the KB beside each `Arc`.
 
-The user reviews it in [review item 76](p1f.21_verdicts_as_rules/review/part-2/76-S1f.21.23-defaults/README.md).
+The user reviews it in review item 76.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 76: *"OK"*.
 
 ### Q-M1f.680 — A stand-in program and its built spelling in a review item
 
@@ -12236,35 +12374,45 @@ pages say so.
 
 **Built 2026-11-20** by S1f.21.24: the row filed, the fix, the row moved to the regressions. **Decision file**,
 written on the default: [Q-M1f.685](../../docs/decisions/hypotheses/Q-M1f.685-a-rule-that-concludes-a-hypothesis-reads-its.md).
-The user reviews it in [review item 86](p1f.21_verdicts_as_rules/review/part-2/86-a-hypothesis-rule-reads-its-absent/README.md).
+The user reviews it in review item 86.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 86: *"OK"*.
 
 ### Q-M1f.686 — Whether a hypothesis rule's read under one absent is a site of the static check
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.24 ([its record](p1f.21_verdicts_as_rules/s1f.21.24_a_hypothesis_rule_reads_its_absent.md#record)). The question: is a site owed for a hypothesis rule that reads, under an odd number of `absent`s, a relation a commitment can change.
 **The default taken**: no: such a read takes a hypothesis away above root and adds none, so nothing is first held above root (Q-M1f.574), and R, over root's H, reads nothing a state above root proposes; the check is left as it is. The other reading: a site, `hypothesis` at every depth: a program whose states above root propose other than root did is flagged, and nothing is claimed of its answer.
 
-The user reviews it in [review item 86](p1f.21_verdicts_as_rules/review/part-2/86-a-hypothesis-rule-reads-its-absent/README.md).
+The user reviews it in review item 86.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 86: *"OK"*.
 
 ### Q-M1f.687 — What the oracle's listing of a node shows
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.24 ([its record](p1f.21_verdicts_as_rules/s1f.21.24_a_hypothesis_rule_reads_its_absent.md#record)). The question: what the oracle's listing of a node shows, and `-P` beside it.
 **The default taken**: `--states` lists the node's facts beyond root's and every `open` fact it holds, root's node included; `-P` keeps leaving them out of the states of R it lists, and no positive form of `--states` is added. The other reading: the listing keeps to what is beyond root, an `open` fact listed only where root does not hold it; or `-P` beside `--states` drops the `open` and `(not …)` facts from every node's listing.
 
-The user reviews it in [review item 86](p1f.21_verdicts_as_rules/review/part-2/86-a-hypothesis-rule-reads-its-absent/README.md).
+The user reviews it in review item 86.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 86: *"OK"*.
 
 ### Q-M1f.688 — Whether a default's decision file is written before the user rules it
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.24 ([its record](p1f.21_verdicts_as_rules/s1f.21.24_a_hypothesis_rule_reads_its_absent.md#record)). The question: whether Q-M1f.685, a default, gets a decision file now.
 **The default taken**: yes, in the fixing commit, as Q-M1f.590, a default, has one: the regression's `decisions`, a code comment and the pages cite it, and a decision taken by default and one ruled are alike (the decisions' README). The other reading: it stays in `open_questions.md` until the user rules it, and the project cites Q-M1f.129 and Q-M1f.567 alone.
 
-The user reviews it in [review item 86](p1f.21_verdicts_as_rules/review/part-2/86-a-hypothesis-rule-reads-its-absent/README.md).
+The user reviews it in review item 86.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 86: *"OK"*.
 
 ### Q-M1f.689 — What the moved witness of the hypothesis rule's absent states
 
 **Raised and defaulted** 2026-11-20 by P1f.21's S1f.21.24 ([its record](p1f.21_verdicts_as_rules/s1f.21.24_a_hypothesis_rule_reads_its_absent.md#record)). The question: what the moved witness states.
 **The default taken**: a `(solve :expect (region (model) (model (r b))))`, the row's answer, with a `test` run; none while the row was open, so the register's `solve` run exited 0. The other reading: no `:expect`, the row alone holding the answer.
 
-The user reviews it in [review item 86](p1f.21_verdicts_as_rules/review/part-2/86-a-hypothesis-rule-reads-its-absent/README.md).
+The user reviews it in review item 86.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 2 answers file, item 86: *"OK"*.
 
 ### Q-M1f.690 — The load's warnings and the CLI's channel go with the lines
 
@@ -12272,7 +12420,9 @@ The user reviews it in [review item 86](p1f.21_verdicts_as_rules/review/part-2/8
 
 The other reading: keep the field and the channel, empty, for a later load warning.
 
-The user reviews it in [review item 87](p1f.21_verdicts_as_rules/review/part-1/87-S1f.21.25-defaults/README.md).
+The user reviews it in review item 87.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 1 answers file, item 87: *"OK"*.
 
 ### Q-M1f.691 — Q-M1f.1 keeps its file and its slug
 
@@ -12280,7 +12430,9 @@ The user reviews it in [review item 87](p1f.21_verdicts_as_rules/review/part-1/8
 
 The other reading: a title led by the activator, *An activator that binds a relation parameter to a fact activates nothing, and nothing says so*, in a file of that slug, every link moved with it.
 
-The user reviews it in [review item 87](p1f.21_verdicts_as_rules/review/part-1/87-S1f.21.25-defaults/README.md).
+The user reviews it in review item 87.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 1 answers file, item 87: *"OK"*.
 
 ### Q-M1f.692 — What the test of the sixteen shapes holds now
 
@@ -12288,7 +12440,9 @@ The user reviews it in [review item 87](p1f.21_verdicts_as_rules/review/part-1/8
 
 The other reading: the sixteen shapes alone, loading.
 
-The user reviews it in [review item 87](p1f.21_verdicts_as_rules/review/part-1/87-S1f.21.25-defaults/README.md).
+The user reviews it in review item 87.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 1 answers file, item 87: *"OK"*.
 
 ### Q-M1f.693 — The fixtures' headers keep their line counts
 
@@ -12296,10 +12450,14 @@ The user reviews it in [review item 87](p1f.21_verdicts_as_rules/review/part-1/8
 
 The other reading: headers of any length.
 
-The user reviews it in [review item 87](p1f.21_verdicts_as_rules/review/part-1/87-S1f.21.25-defaults/README.md).
+The user reviews it in review item 87.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 1 answers file, item 87: *"OK"*.
 
 ### Q-M1f.694 — What cites no line stays
 
 **Raised and defaulted** 2026-11-24 by P1f.21's S1f.21.25 ([its record](p1f.21_verdicts_as_rules/s1f.21.25_an_activator_that_names_no_relation_in_silence.md#record)), built as `e802c611`. What cites none of the three lines stays as it is: the diagnostics page's § 2.9 keeps its paragraph on the positions, which § 2.14 and § 2.20 read, retitled *Which positions hold relation names*; the reasoning pages `02-rewriting-rules.md` and `02-saturation.md`, Q-M1f.115, Q-M1f.567, Q-M1e2.26, Q-M1f.46, `entities.rs`, `plan.rs`, `corpus/regressions.toml` and `activator_arity.expected` are unchanged; the reasoning-in-code row *a variable in a relation's place is a parameter* names `refuse_no_fact_holds` for the removed `validate_relation_parameters`.
 
-The user reviews it in [review item 87](p1f.21_verdicts_as_rules/review/part-1/87-S1f.21.25-defaults/README.md).
+The user reviews it in review item 87.
+
+**Accepted 2026-11-25.** The user, in P1f.21's part 1 answers file, item 87: *"OK"*.

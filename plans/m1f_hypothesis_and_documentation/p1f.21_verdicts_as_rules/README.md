@@ -590,6 +590,43 @@ holds go with it (*All three go (Recommended)*, *Only the load's line*, *Load's 
 
 **Built by [S1f.21.25](s1f.21.25_an_activator_that_names_no_relation_in_silence.md)**, 2026-11-24, on the user's word (*"any new stages planned? - run in subagents"*): `a117e80a`, `e802c611`, `02bcddc3`. Its five defaults are review item 87 of part 1.
 
+## The answers to part 2's items, and item 87
+
+The user, 2026-11-25 (*"process …/review/part-2/ANSWERS.md"*, then *"and …/review/part-1/ANSWERS.md"*), each
+verbatim, each filed under its question in [the ledger](../open_questions.md) or its finding in
+[`findings.md`](findings.md). **With them no item of the bundle is open**, and the items are out of it, their pages
+and programs in `git log` at `bc5146bb`.
+
+| item | what | the user, verbatim | what it rules |
+|---|---|---|---|
+| 58 | the corpus under the rulings; Q-M1f.596, Q-M1f.599 | *"OK"* | the list as built to; both defaults (a) |
+| 59 | three programs in the spelling ruled | *"(a)"* | the spelling stands |
+| 60 | a state with its `open` facts | *"(a)"* | as shown |
+| 61 | a rule that reads an `open` fact | *"(a)"* | as shown |
+| 62 | what a fork drops; Q-M1f.598 | *"(a)"* | the pass writes at a dead state as at any |
+| 63 | the bare `(open)`; Q-M1f.600 | *"(a)"* | `06_blind_enumeration.ein` rewritten with no obligation activated |
+| 64 | an obligation that no longer steps aside | *"(a)"* | built as ruled; `oblig-derived-domain.ein` was shown after the build (an empty $R$, flagged) |
+| 65 | the lists and a closure; Q-M1f.595, Q-M1f.597 | *"(a)"* | both defaults |
+| 69 | S1f.21.12's defaults, Q-M1f.606 to .620 | *"OK"* | each as built |
+| 70 | S1f.21.13's, Q-M1f.631 to .633 | *"OK"* | each as built |
+| 71 | S1f.21.18's, Q-M1f.621 to .630 | *"OK"* | each as built |
+| 72 | S1f.21.20's, Q-M1f.636 to .644 | *"OK"* | each as built |
+| 73 | S1f.21.14's, Q-M1f.645 to .654 | *"OK"* | each as written |
+| 74 | S1f.21.21's, Q-M1f.659 to .663 | *"OK"* | each as built |
+| 75 | S1f.21.22's, Q-M1f.666 to .672 | *"OK"* | each as built |
+| 76 | S1f.21.23's, Q-M1f.675 to .678 | *"OK"* | each as built |
+| 77 | what a drawing of root shows (V-85) | *"(a)"* | as built: a drawing of root shows all its `open` facts; **the nine pictures of the pages are drawn again with them**, [S1f.21.27](s1f.21.27_the_pictures_drawn_with_roots_open_facts.md) |
+| 78 | the key of a state (V-86) | *"(b)"* | **built at its own size**, a stage like S1f.21.23: [S1f.21.26](s1f.21.26_the_key_of_a_state_at_its_own_size.md) |
+| 83 | three pieces of the search with no subject (V-47) | *"(a)"* | the machinery stays, with tests that say it licenses nothing today |
+| 84 | the classic zebra's structure under the union (V-48) | *"there are different variants of symmetry and different variants of it's application, why we would make this simple symmetric relations exceptional? So for now just (a)"* | as built: $H$ is what the union gives, and the structure view shows it; no fold of two candidates that imply each other |
+| 85 | a misspelt activator loads in silence (V-58) | *"(a)"* | as built: nothing is said |
+| 86 | a hypothesis rule reads its `absent`; Q-M1f.685 to .689 | *"OK"* | each as built |
+| 87, part 1 | S1f.21.25's defaults, Q-M1f.690 to .694 | *"OK"* | each as built |
+
+**Two stages are planned on them, not started**: [S1f.21.26](s1f.21.26_the_key_of_a_state_at_its_own_size.md), the
+key of a state at its own size, and [S1f.21.27](s1f.21.27_the_pictures_drawn_with_roots_open_facts.md), the nine
+pictures drawn with root's `open` facts.
+
 ## What it is
 
 Three things the kernel decides by itself, each a verdict about a state, none written anywhere as a rule:
@@ -655,6 +692,8 @@ Q-M1f.390 and Q-M1f.549, wait with it.
 | [S1f.21.14](s1f.21.14_the_pages_of_open.md) | B | **The pages of the second part.** *Owed* and *discharged* as rules, the remark on `(open R)`, $R$ with no search, what a hypothesis is; the part's rulings as decisions | **done 2026-11-20**: nine commits, cherry-picked onto master as `fc9173c6..903e1779`; the gate green on its tip with four test workers, after its rebase onto S1f.21.20. The four items on their pages; every page of `docs/ein/` and the READMEs audited against the binary; two decisions written, 27 rewritten, twelve files renamed (V-55); Q-M1f.655 and Q-M1f.656 cited and `--in-flight` named; V-76, V-67 and V-68 fixed. Ten defaults (Q-M1f.645 to .654, review item 73 of part 2); V-72 to V-77 |
 | [S1f.21.19](s1f.21.19_the_review_items_on_the_built_engine.md) | | **The review items on the built engine.** Items 58 to 65 run again on the final binary, in the spelling ruled, with their renders, for the user's review of the questions | **done 2026-11-20**: nine commits to `2ed5bfb1`, plan files only. Every item of the bundle has its programs in the spelling built, its runs and renders on the final binary, and a section *On the built engine*: 58 to 65, the seven findings' items, item 77's nine pictures with what each option would draw, item 78's profile. Item 58's list taken again: 46 corpus programs moved, as the rulings said but for four the build rewrote. `oblig-derived-domain.ein` answers an empty $R$, flagged. Five defaults of presentation (Q-M1f.680 to .684); **V-89, a wrong answer**, and V-90 to V-94 |
 | [S1f.21.24](s1f.21.24_a_hypothesis_rule_reads_its_absent.md) | H | **A hypothesis rule reads its `absent` premises.** V-89, a wrong answer on a monotone program: a rule that concludes `(open F)` is matched without its `absent` premises, so $H$ holds candidates the match excludes. Filed in the register and fixed; the oracle's listing of a node lists its `open` facts (V-91); two help texts and a test (V-93, V-94) | **done 2026-11-20**: `1f14f270` (the row filed), `21115a70` (the fix, the row moved), `1f19de58`, `4bcfd718`, `c37287f1`, `5e3d80e7`, records to `9df992eb`; the gate green at sixteen workers on `5e3d80e7`, the two slow render sweeps green. A hypothesis rule's `absent` premises are judged against the state, as a rule's that concludes a fact; a test holds $H$ to the match by the rule that concludes a fact of it, a route the oracle cannot give. **$H$ and $R$ moved on no corpus program**; two programs' states hold fewer `open` facts. The oracle's listing of a node lists its `open` facts. Four defaults (Q-M1f.686 to .689) and the reading Q-M1f.685, review item 86 of part 2; V-95 to V-97 |
+| [S1f.21.26](s1f.21.26_the_key_of_a_state_at_its_own_size.md) | H | **The key of a state at its own size.** The user's answer to review item 78, *"(b)"*: the node function reads a state's own facts above root's mark and sorts those, the filter gone; the same key, held as S1f.21.23's | **planned 2026-11-25**, not started |
+| [S1f.21.27](s1f.21.27_the_pictures_drawn_with_roots_open_facts.md) | B | **The nine pictures drawn with root's `open` facts.** The user's answer to review item 77, *"(a)"*: V-85's nine pictures and three sentences | **planned 2026-11-25**, not started |
 | S1f.21.5 | | **The close.** | last |
 
 Folded, their ids kept:
