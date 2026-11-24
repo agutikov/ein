@@ -105,11 +105,17 @@ is a **guard** — a built-in predicate that only matches when the two differ
 ![The rule transitive: what it matches and what it asserts, the guard a dotted link](diagrams/02-rule-transitive.svg)
 
 **The facts once it has fired**, from `ein render kb` on that file, cut to
-the facts of `is-a`. The program states the two facts of the chain; the
-third, of `Cat` and `Animal`, dashed, is the one `transitive` added. `is-a`
-is drawn as any relation is, and every name is a box:
+the facts of `is-a` and the facts of `open` that point at them. The program
+states the two facts of the chain; the third, of `Cat` and `Animal`, dashed,
+is the one `transitive` added. `is-a` is drawn as any relation is, and every
+name is a box. The three `is-a` facts in the frame `open ctx` are ones the
+knowledge base does not hold, each a hypothesis, a fact Ein may guess
+([Chapter 1](01-objects-and-relations.md#three-kinds-of-fact)): the dashed
+octagon over each, `by open`, is `(open (is-a Animal Cat))`,
+`(open (is-a Animal Mammal))` or `(open (is-a Mammal Cat))`, as
+`ein saturate examples/saturation/transitive/taxonomy.ein --dump` lists them:
 
-![The is-a chain once transitive has fired: two facts stated, the third added, dashed](diagrams/02-transitive-fired.svg)
+![The is-a chain once transitive has fired: two facts stated, the third added, dashed; and three is-a facts in the frame open ctx, each pointed at by a dashed fact of open](diagrams/02-transitive-fired.svg)
 
 **Run it:**
 
@@ -153,11 +159,18 @@ a drink and a pet into one equivalence class, and a `guess` *hypothesis
 rule* proposes the cross-attribute pairings the facts don't pin directly.
 
 **graph** — the `co-located` facts the knowledge base holds, from
-`ein render kb` on that file, cut to them: the two the program states,
-solid, with the number of their clue, and the four the two rules add,
-dashed, each with the rule that added it.
+`ein render kb` on that file, cut to them and to the facts of `open` that
+point at a `co-located` fact: the two the program states, solid, with the
+number of their clue, and the four the two rules add, dashed, each with the
+rule that added it; and the twelve hypotheses the rule `guess` writes,
+dashed, `by guess`, each pointing at a `co-located` fact Ein may suppose.
+Nine of those the knowledge base does not hold, and they stand in the frame
+`open ctx`, as `(co-located Bob Coffee)`; the other three it holds already,
+`(co-located Alice Tea)`, `(co-located Alice Cat)` and `(co-located Tea Cat)`,
+and they stand outside it. `ein saturate examples/branching/05_mini_zebra.ein --dump`
+lists the twelve, `(open (co-located Alice Tea) :rule guess)` first.
 
-![The co-located facts: two the program states, four the two rules add, every octagon's arrow 1 at the one co-located box](diagrams/02-co-located-fired.svg)
+![The co-located facts: two the program states, four the two rules add, every co-located octagon's arrow 1 at the one co-located box; and the twelve dashed facts of open the rule guess writes, nine pointing into the frame open ctx](diagrams/02-co-located-fired.svg)
 
 **Run it** (its header documents the unique answer):
 

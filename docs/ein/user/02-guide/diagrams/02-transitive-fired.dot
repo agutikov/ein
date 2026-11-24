@@ -14,12 +14,40 @@ digraph kb {
   "is-a" -> f_aea40ae2c2 [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
   f_aea40ae2c2 -> "Cat" [xlabel="2", color="#7f7f7f", style=dashed];
   f_aea40ae2c2 -> "Animal" [xlabel="3", color="#7f7f7f", style=dashed];
+  f_0b92da2fed [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", fontcolor="#2ca02c", style=dashed, xlabel="by open"];
+  "open" -> f_0b92da2fed [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+  f_0b92da2fed -> f_f72ad3be41 [xlabel="2", color="#2ca02c", style=dashed];
+  f_046154a8cb [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", fontcolor="#2ca02c", style=dashed, xlabel="by open"];
+  "open" -> f_046154a8cb [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+  f_046154a8cb -> f_1ed3c92881 [xlabel="2", color="#2ca02c", style=dashed];
+  f_1f58b68afc [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", fontcolor="#2ca02c", style=dashed, xlabel="by open"];
+  "open" -> f_1f58b68afc [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+  f_1f58b68afc -> f_4688de649d [xlabel="2", color="#2ca02c", style=dashed];
+  newrank=true;
+  subgraph cluster_ctx_0 {
+    label="open ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    f_f72ad3be41 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+    f_1ed3c92881 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+    f_4688de649d [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  }
+  "is-a" -> f_f72ad3be41 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_f72ad3be41 -> "Animal" [xlabel="2", color="#7f7f7f", style=solid];
+  f_f72ad3be41 -> "Cat" [xlabel="3", color="#7f7f7f", style=solid];
+  "is-a" -> f_1ed3c92881 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_1ed3c92881 -> "Animal" [xlabel="2", color="#7f7f7f", style=solid];
+  f_1ed3c92881 -> "Mammal" [xlabel="3", color="#7f7f7f", style=solid];
+  "is-a" -> f_4688de649d [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_4688de649d -> "Mammal" [xlabel="2", color="#7f7f7f", style=solid];
+  f_4688de649d -> "Cat" [xlabel="3", color="#7f7f7f", style=solid];
   "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
   "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
   "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 3" [style=invis, label="", width=0, height=0, fixedsize=true];
   "layer 0" -> "layer 1" [style=invis];
   "layer 1" -> "layer 2" [style=invis];
-  { rank=same; "layer 0"; "is-a"; }
-  { rank=same; "layer 1"; f_076d37da67; f_cb25df6f56; f_aea40ae2c2; }
-  { rank=same; "layer 2"; "Cat"; "Mammal"; "Animal"; }
+  "layer 2" -> "layer 3" [style=invis];
+  { rank=same; "layer 0"; "is-a"; "open"; }
+  { rank=same; "layer 1"; f_076d37da67; f_cb25df6f56; f_aea40ae2c2; f_0b92da2fed; f_046154a8cb; f_1f58b68afc; }
+  { rank=same; "layer 2"; f_f72ad3be41; f_1ed3c92881; f_4688de649d; }
+  { rank=same; "layer 3"; "Cat"; "Mammal"; "Animal"; }
 }

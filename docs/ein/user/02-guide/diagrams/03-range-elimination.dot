@@ -14,13 +14,28 @@ digraph kb {
   f_9dda0bf33f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=dashed, xlabel="by adjacent-via-fwd-negative"];
   "not" -> f_9dda0bf33f [xlabel="1", dir=back, color="#d62728", style=dashed];
   f_9dda0bf33f -> f_0469eb9213 [xlabel="2", color="#d62728", style=dashed];
-  f_921117f58b [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=dashed, xlabel="by std.bijection.range-elimination"];
-  "color-loc" -> f_921117f58b [xlabel="1", dir=back, color="#8c564b", style=dashed];
-  f_921117f58b -> "Yellow" [xlabel="2", color="#8c564b", style=dashed];
-  f_921117f58b -> "House-1" [xlabel="3", color="#8c564b", style=dashed];
+  f_f81b93697a [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", fontcolor="#2ca02c", style=dashed, xlabel="by std.algebra.total-owed"];
+  "open" -> f_f81b93697a [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+  f_f81b93697a -> "color-loc" [xlabel="2", color="#2ca02c", style=dashed];
+  f_e999b3512a [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", fontcolor="#2ca02c", style=dashed, xlabel="by guess"];
+  "open" -> f_e999b3512a [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+  f_e999b3512a -> f_65909e78a6 [xlabel="2", color="#2ca02c", style=dashed];
+  f_f0952bfc1d [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", fontcolor="#2ca02c", style=dashed, xlabel="by guess"];
+  "open" -> f_f0952bfc1d [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+  f_f0952bfc1d -> f_4165af95ef [xlabel="2", color="#2ca02c", style=dashed];
+  f_2d45bccdeb [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", fontcolor="#2ca02c", style=dashed, xlabel="by guess"];
+  "open" -> f_2d45bccdeb [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+  f_2d45bccdeb -> f_0469eb9213 [xlabel="2", color="#2ca02c", style=dashed];
+  f_e514d428bc [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", fontcolor="#2ca02c", style=dashed, xlabel="by guess"];
+  "open" -> f_e514d428bc [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+  f_e514d428bc -> f_921117f58b [xlabel="2", color="#2ca02c", style=dashed];
+  f_025366124b [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", fontcolor="#2ca02c", style=dashed, xlabel="by guess"];
+  "open" -> f_025366124b [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+  f_025366124b -> f_78a5ae1544 [xlabel="2", color="#2ca02c", style=dashed];
   newrank=true;
+  f_921117f58b [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=dashed, xlabel="by std.bijection.range-elimination"];
   subgraph cluster_ctx_0 {
-    label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    label="not, open ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
     f_65909e78a6 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
     f_78a5ae1544 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
     f_4165af95ef [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
@@ -38,15 +53,21 @@ digraph kb {
   "color-loc" -> f_0469eb9213 [xlabel="1", dir=back, color="#8c564b", style=solid];
   f_0469eb9213 -> "Ivory" [xlabel="2", color="#8c564b", style=solid];
   f_0469eb9213 -> "House-1" [xlabel="3", color="#8c564b", style=solid];
+  "color-loc" -> f_921117f58b [xlabel="1", dir=back, color="#8c564b", style=dashed];
+  f_921117f58b -> "Yellow" [xlabel="2", color="#8c564b", style=dashed];
+  f_921117f58b -> "House-1" [xlabel="3", color="#8c564b", style=dashed];
   "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
   "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
   "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
   "layer 3" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 4" [style=invis, label="", width=0, height=0, fixedsize=true];
   "layer 0" -> "layer 1" [style=invis];
   "layer 1" -> "layer 2" [style=invis];
   "layer 2" -> "layer 3" [style=invis];
-  { rank=same; "layer 0"; "not"; "color-loc"; }
-  { rank=same; "layer 1"; f_2ead296350; f_24c4d48dc3; f_01f7072e42; f_9dda0bf33f; f_921117f58b; }
-  { rank=same; "layer 2"; f_65909e78a6; f_78a5ae1544; f_4165af95ef; f_0469eb9213; }
-  { rank=same; "layer 3"; "Yellow"; "House-1"; "Red"; "Blue"; "Green"; "Ivory"; }
+  "layer 3" -> "layer 4" [style=invis];
+  { rank=same; "layer 0"; "not"; "open"; }
+  { rank=same; "layer 1"; f_2ead296350; f_24c4d48dc3; f_01f7072e42; f_9dda0bf33f; f_f81b93697a; f_e999b3512a; f_f0952bfc1d; f_2d45bccdeb; f_e514d428bc; f_025366124b; }
+  { rank=same; "layer 2"; "color-loc"; }
+  { rank=same; "layer 3"; f_65909e78a6; f_78a5ae1544; f_4165af95ef; f_0469eb9213; f_921117f58b; }
+  { rank=same; "layer 4"; "Red"; "House-1"; "Blue"; "Green"; "Ivory"; "Yellow"; }
 }

@@ -65,12 +65,21 @@ four colours excluded from House-1, and the survivor, forced.
 ```
 
 As a graph, the same five facts as `ein render kb examples/zebra2.ein` draws
-them, cut to them: each stored negation a fact of `not`, its arrow `2` at the
-fact it denies, which stands in the frame `not ctx` because the knowledge
-base does not hold it; every fact here derived, so dashed, with the rule
-beside it:
+them, cut to them and to the facts of `open` that point at what it draws:
+each stored negation a fact of `not`, its arrow `2` at the fact it denies,
+which stands in the frame `not, open ctx` because the knowledge base does not
+hold it; every fact here derived, so dashed, with the rule beside it. Root
+holds 130 facts of `open` (`ein saturate examples/zebra2.ein --dump` lists
+them), and six of them point here. Five are hypotheses the rule `guess`
+writes ([Chapter 4](04-solving-the-whole-puzzle.md#what-zebra2ein-is-made-of)),
+one for each `color-loc` fact of `House-1`, `(open (color-loc Red House-1))`
+and the rest; root already holds the one of `Yellow`, which stands outside
+the frame. The sixth, `(open color-loc)`, `by std.algebra.total-owed`, is
+what root owes: `(bijective color-loc)` brings the obligation that every
+colour has a house, and root has a colour with none yet
+([obligations](../03-syntax-and-semantics/08-obligations.md)):
 
-![Range elimination: four facts of not, each pointing at a framed color-loc fact of House-1, and the derived color-loc Yellow House-1](diagrams/03-range-elimination.svg)
+![Range elimination: four facts of not, each pointing at a color-loc fact of House-1 in the frame not, open ctx, the derived color-loc Yellow House-1, and the six dashed facts of open that point at them and at the box color-loc](diagrams/03-range-elimination.svg)
 
 Elimination needs negatives to eat, which is where the next family comes in.
 

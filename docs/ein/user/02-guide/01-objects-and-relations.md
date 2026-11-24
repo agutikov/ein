@@ -131,16 +131,38 @@ That's the whole vocabulary. Put together, a tiny model reads:
 (nation-loc Norwegian House-1 :source "condition (10)")   ; a clue
 ```
 
-Save it as `tiny.ein`, and `ein render kb tiny.ein` draws all of it as one graph, every atom once:
+Save it as `tiny.ein`, and `ein render kb tiny.ein` draws all of it as one graph, every atom once, and beside it the
+facts Ein may guess:
 
-![The program tiny.ein as one graph: the two declaration facts, the two is-a facts and the clue, each an octagon, every atom a box](diagrams/01-tiny-program.svg)
+![The program tiny.ein as one graph: the two declaration facts, the two is-a facts and the clue, each an octagon, every atom a box; and five dashed facts of open, each pointing at a nation-loc fact in the frame open ctx](diagrams/01-tiny-program.svg)
 
 Every atom is a box, `Nationality` and `Norwegian` alike, and every fact an octagon, the `is-a` facts and the
 declaration's two among them: no relation is drawn otherwise than another
 ([rendering](../04-reference/12-rendering.md)). The clue's octagon has its source beside it, `(10)`.
 
-So far nothing is *derived*: these are all things we stated. In [Chapter 2](02-first-rules.md) we add **rules**, and
-Ein starts producing new facts on its own.
+The five dashed octagons whose arrow `1` is at the box `open` are **hypotheses**: each is a fact of `open`, and its
+arrow `2` is at a fact Ein may suppose when it looks for the answers, a `nation-loc` fact the program does not state.
+Those stand in the dashed frame `open ctx` because the knowledge base does not hold them. Nothing in this program says
+what to guess, so Ein guesses every `nation-loc` fact of two different names of the program that are neither a
+relation nor a label, `Norwegian`, `Englishman` and `House-1`, but the one it states; it reads no label, so
+`(nation-loc House-1 Norwegian)` is one ([the blind enumerator](../03-syntax-and-semantics/09-hypotheses.md#the-blind-enumerator)),
+and `by open` beside each says so. `ein saturate tiny.ein --dump` lists them last, as Ein facts:
+
+```text
+;;   open (5)
+  (open (nation-loc Norwegian Englishman) :rule open)
+  (open (nation-loc Englishman Norwegian) :rule open)
+  (open (nation-loc House-1 Norwegian) :rule open)
+  (open (nation-loc Englishman House-1) :rule open)
+  (open (nation-loc House-1 Englishman) :rule open)
+```
+
+[Chapter 4](04-solving-the-whole-puzzle.md) says what to guess with a rule, and
+[hypotheses](../03-syntax-and-semantics/09-hypotheses.md#open-what-a-state-supposes-and-what-it-owes) has the whole of
+`open`.
+
+So far nothing else is *derived*: every other fact is one we stated. In [Chapter 2](02-first-rules.md) we add
+**rules**, and Ein starts producing new facts on its own.
 
 > **Reference:** every form, `relation`, `rule`, `query` and the rest, is
 > [the syntax reference](../04-reference/02-syntax.md); the names the language reserves are

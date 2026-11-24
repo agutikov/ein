@@ -22,6 +22,45 @@ digraph kb {
   "nation-loc" -> f_481b793602 [xlabel="1", dir=back, color="#d62728", style=solid];
   f_481b793602 -> "Norwegian" [xlabel="2", color="#d62728", style=solid];
   f_481b793602 -> "House-1" [xlabel="3", color="#d62728", style=solid];
+  f_374891ea75 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", fontcolor="#2ca02c", style=dashed, xlabel="by open"];
+  "open" -> f_374891ea75 [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+  f_374891ea75 -> f_d228cde63d [xlabel="2", color="#2ca02c", style=dashed];
+  f_f9036aba08 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", fontcolor="#2ca02c", style=dashed, xlabel="by open"];
+  "open" -> f_f9036aba08 [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+  f_f9036aba08 -> f_bf98a26254 [xlabel="2", color="#2ca02c", style=dashed];
+  f_e83371a4e0 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", fontcolor="#2ca02c", style=dashed, xlabel="by open"];
+  "open" -> f_e83371a4e0 [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+  f_e83371a4e0 -> f_6d169d0f33 [xlabel="2", color="#2ca02c", style=dashed];
+  f_c248605de8 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", fontcolor="#2ca02c", style=dashed, xlabel="by open"];
+  "open" -> f_c248605de8 [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+  f_c248605de8 -> f_91818d591b [xlabel="2", color="#2ca02c", style=dashed];
+  f_e8f94f7316 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", fontcolor="#2ca02c", style=dashed, xlabel="by open"];
+  "open" -> f_e8f94f7316 [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+  f_e8f94f7316 -> f_6dcc2cb354 [xlabel="2", color="#2ca02c", style=dashed];
+  newrank=true;
+  subgraph cluster_ctx_0 {
+    label="open ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    f_d228cde63d [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=solid];
+    f_bf98a26254 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=solid];
+    f_6d169d0f33 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=solid];
+    f_91818d591b [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=solid];
+    f_6dcc2cb354 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=solid];
+  }
+  "nation-loc" -> f_d228cde63d [xlabel="1", dir=back, color="#d62728", style=solid];
+  f_d228cde63d -> "Norwegian" [xlabel="2", color="#d62728", style=solid];
+  f_d228cde63d -> "Englishman" [xlabel="3", color="#d62728", style=solid];
+  "nation-loc" -> f_bf98a26254 [xlabel="1", dir=back, color="#d62728", style=solid];
+  f_bf98a26254 -> "Englishman" [xlabel="2", color="#d62728", style=solid];
+  f_bf98a26254 -> "Norwegian" [xlabel="3", color="#d62728", style=solid];
+  "nation-loc" -> f_6d169d0f33 [xlabel="1", dir=back, color="#d62728", style=solid];
+  f_6d169d0f33 -> "House-1" [xlabel="2", color="#d62728", style=solid];
+  f_6d169d0f33 -> "Norwegian" [xlabel="3", color="#d62728", style=solid];
+  "nation-loc" -> f_91818d591b [xlabel="1", dir=back, color="#d62728", style=solid];
+  f_91818d591b -> "Englishman" [xlabel="2", color="#d62728", style=solid];
+  f_91818d591b -> "House-1" [xlabel="3", color="#d62728", style=solid];
+  "nation-loc" -> f_6dcc2cb354 [xlabel="1", dir=back, color="#d62728", style=solid];
+  f_6dcc2cb354 -> "House-1" [xlabel="2", color="#d62728", style=solid];
+  f_6dcc2cb354 -> "Englishman" [xlabel="3", color="#d62728", style=solid];
   "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
   "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
   "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
@@ -31,9 +70,9 @@ digraph kb {
   "layer 1" -> "layer 2" [style=invis];
   "layer 2" -> "layer 3" [style=invis];
   "layer 3" -> "layer 4" [style=invis];
-  { rank=same; "layer 0"; "relation"; "is-a"; }
-  { rank=same; "layer 1"; f_4405c3d64e; f_c3d57f8713; f_dc6eb765fe; f_44a51b0731; }
-  { rank=same; "layer 2"; "nation-loc"; "Nationality"; "House"; "Englishman"; }
-  { rank=same; "layer 3"; f_481b793602; }
-  { rank=same; "layer 4"; "Norwegian"; "House-1"; }
+  { rank=same; "layer 0"; "relation"; "is-a"; "open"; }
+  { rank=same; "layer 1"; f_4405c3d64e; f_c3d57f8713; f_dc6eb765fe; f_44a51b0731; f_374891ea75; f_f9036aba08; f_e83371a4e0; f_c248605de8; f_e8f94f7316; }
+  { rank=same; "layer 2"; "nation-loc"; "Nationality"; "House"; }
+  { rank=same; "layer 3"; f_481b793602; f_d228cde63d; f_bf98a26254; f_6d169d0f33; f_91818d591b; f_6dcc2cb354; }
+  { rank=same; "layer 4"; "Norwegian"; "Englishman"; "House-1"; }
 }
