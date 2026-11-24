@@ -1,9 +1,0 @@
-;;; Item 49, cell 3: `absent` under an ordinary relation, in a rule's :match.
-;;; Refused today at load. Read as a plain fact it would match a stored
-;;; (think Ann (absent (p A))) and nothing else: no negation.
-
-(q A)
-(rule r ()
-  :match  (and (q ?x) (think Ann (absent (p ?x))))
-  :assert (hit ?x)
-  :why    "Ann thinks (p {?x}) is absent")

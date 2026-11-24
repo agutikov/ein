@@ -102,12 +102,12 @@ filed. N-18 is part of N-50, L-107. N-13's third sentence, Q-M1f.41's *type*, we
 |---|---|
 | N-15, *everybody's thoughts are false* written over `absent` answers dead with one person not confused, under a monotone verdict: `W8/fifo-gap-root` met at a dead root | [F21 § Met again by P1f.22](../m1n_non_monotone_programs/f21_non_monotone_programs_decided.md#met-again-by-p1f22-everybodys-thoughts-are-false-at-a-dead-root), **the user's call**: a twin of that row, or a row of its own |
 | N-20's message half, the goal refusal's line leaving out a fact's argument among the ways a relation is the program's | [F23](../followups/f23_diagnostics_in_eins_words.md#the-items)'s D-23; the decision's half is L-94 here |
-| N-22, a rule whose conclusion's relation is a parameter concludes a fact of a relation the program does not count | [P1f.21's V-7](p1f.21_verdicts_as_rules/findings.md#v-7--a-rule-can-conclude-a-fact-of-a-relation-the-program-does-not-count), **the user's call**, with its § 8's `relation` |
+| N-22, a rule whose conclusion's relation is a parameter concludes a fact of a relation the program does not count | P1f.21's V-7, **the user's call**, with its § 8's `relation`; ruled 2026-11-19 (Q-M1f.522: any atom first in a tuple is a relation), built by P1f.23 |
 | N-39, the note on a carried standard-library module where the binary cannot read its own | [F23](../followups/f23_diagnostics_in_eins_words.md#the-items)'s D-24, **the user's call** |
 
-What P1f.21 reads of P1f.22's page on the user's notes (the notes verbatim, a contradiction in a context, the double
-negation's elimination as a rule, the names of `(false)` and `(open)`, questions as facts) is copied to
-[its `open_facts.md` § 10](p1f.21_verdicts_as_rules/open_facts.md#10-what-p1f22-worked-out-that-this-phase-reads).
+What P1f.21 read of P1f.22's page on the user's notes (the notes verbatim, a contradiction in a context, the double
+negation's elimination as a rule, the names of `(false)` and `(open)`, questions as facts) was copied to its
+`open_facts.md` § 10, and went with P1f.21's folder (its V-5, resolved at its close by the rulings it waited on).
 
 **P1f.23's, R-1 to R-45.** **Closed, and gone with the folder**: R-1 and R-3 (ended with `--models`' code,
 Q-M1f.450); R-2 (built by the kernel reading no theory's name, Q-M1f.436, its two refusals' texts fixed); R-4, R-12,

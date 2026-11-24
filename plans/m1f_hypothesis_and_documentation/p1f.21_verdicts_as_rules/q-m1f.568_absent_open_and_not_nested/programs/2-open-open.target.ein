@@ -1,4 +1,0 @@
-;;; Cell 2 of Q-M1f.568 as it would be written: a hypothesis that P may be
-;;; supposed. Refused today at the parse, as every `open` over a fact is.
-
-(open (open (p A)))

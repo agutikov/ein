@@ -3,8 +3,14 @@
 **Milestone:** [M1h](../README.md)
 **Status:** created 2026-11-18 on the user's instruction (below). **Not started**; no stage file yet, the phase is this
 README and the note it promotes.
-**Depends on:** M1f's [P1f.21](../../m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/README.md) for what an
-open fact is (`(open F J)`, the hypothesis itself, its § 4 and § 10.8 on questions as facts); the hypothesis space's
+**Depends on:** M1f's P1f.21 for what an open fact is, **closed** on 2026-11-25 and its rulings decisions: `(open F)`
+is a hypothesis, one fact whoever writes it, and `(open R)` what a state owes, held at a state's fixpoint; a rule may
+read one, and its program is flagged
+([Q-M1f.549](../../../docs/decisions/hypotheses/Q-M1f.549-a-hypothesis-is-a-fact-open-f-whoever-writes.md),
+[Q-M1f.566](../../../docs/decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md),
+[Q-M1f.569](../../../docs/decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md)); its
+working page on questions as facts, `open_facts.md` § 10.8, is in that phase's deleted folder
+(`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules`); the hypothesis space's
 structure as M1f's P1f.10 built it (`ein show hyps`, `ein render h-space`,
 [`05-hypothesis-space.md`](../../../docs/ein/reasoning/02-kb-evolution/05-hypothesis-space.md)).
 

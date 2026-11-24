@@ -1,5 +1,0 @@
-;;; Cell 4 of Q-M1f.568 as it would be written: a candidate a program gives by
-;;; hand, with no rule. Refused today at the parse.
-
-(open (p A))
-(open (p B))

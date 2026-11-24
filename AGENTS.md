@@ -378,30 +378,11 @@ paragraph, no register count, no measurement (the user's rule).
 
 - **Current milestone: M1f**,
   [`plans/m1f_hypothesis_and_documentation/`](plans/m1f_hypothesis_and_documentation/README.md).
-  One phase is left: **P1f.21, the kernel's verdicts as rules**
-  ([its README](plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/README.md)),
-  run in two parts on the user's word, what does not touch `open` or the
-  hypotheses first, and that part is built and its pages written:
-  S1f.21.6, S1f.21.8, S1f.21.10, S1f.21.15, S1f.21.17, S1f.21.11 and
-  S1f.21.2 done. Of the second part, S1f.21.12, `open` facts, is built, and
-  S1f.21.13, the lattice written as rules, is in the corpus, and S1f.21.18
-  has removed the `hrule` form and the keyword `:hrules`, and S1f.21.20 has
-  fixed what the first uses of `open` found, and S1f.21.21 has made the
-  contradiction's rules cheap; S1f.21.22 has built what the pages found
-  short in the binary, and S1f.21.23 reads a resumed state's delta off its
-  own layers; S1f.21.19 has put the review items on the built engine, and
-  S1f.21.24 has fixed the wrong answer those runs found, a hypothesis
-  rule's `absent` premises. Every stage planned then is done, and so is
-  S1f.21.25, an activator that names no relation activating nothing in
-  silence. The part's pages, S1f.21.14, are written. **The user has
-  answered every item of the review, both parts**, and the bundle holds no
-  open item but the defaults of the two stages built on them: S1f.21.27,
-  the nine pictures of the pages drawn with root's `open` facts (review
-  item 88), and S1f.21.26, the key of a state at its own size (item 89).
-  **The phase's close waits for the user's word.**
-  The milestone's plans are deleted when it is done, and **the work stops
-  after M1f** (the user's rulings); the close of M1f was started and is
-  paused.
+  **No phase of it is left**: the last, P1f.21, the kernel's verdicts as
+  rules, is closed on the user's word and its folder deleted. The close of
+  M1f was started and is paused, and **resumes only on the user's word**;
+  the milestone's plans are deleted when it is done, and **the work stops
+  after M1f** (the user's rulings).
 - **A finished plan is deleted.** A milestone or phase whose README says
   *closed* or *done*, and a followup that says *done*, goes with its folder once
   what still reads it is re-aimed and what it still owns has moved to its owner;
@@ -416,8 +397,9 @@ paragraph, no register count, no measurement (the user's rule).
   phases found and left, the user's calls among it marked, and the defaults
   they took, are the milestone's
   [`findings.md`](plans/m1f_hypothesis_and_documentation/findings.md) (L-n).
-  A phase keeps what it finds outside its scope in a findings page of its own
-  and shows it: P1f.21's (V-n), beside its README.
+  A phase keeps what it finds outside its scope in a findings page of its own,
+  beside its README, and shows it; at the phase's close what is open moves to
+  the milestone's page or to its owner.
 - **The wrong-answer register** is
   [`plans/wrong_answers/register.toml`](plans/wrong_answers/register.toml), the
   open wrong answers, with its rules in [its README](plans/wrong_answers/README.md);

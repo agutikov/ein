@@ -1,9 +1,0 @@
-;;; Item 53: a hypothesis rule that concludes two facts. Refused today: a
-;;; hypothesis rule proposes one fact a match.
-
-(thing A)
-(hrule guess ()
-  :match  (thing ?x)
-  :assert (and (p ?x) (q ?x))
-  :why    "is {?x} a p and a q?")
-(solve :hrules (guess))
