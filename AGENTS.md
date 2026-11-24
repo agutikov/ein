@@ -395,9 +395,9 @@ paragraph, no register count, no measurement (the user's rule).
   S1f.21.25, an activator that names no relation activating nothing in
   silence. The part's pages, S1f.21.14, are written. **The user has
   answered every item of the review, both parts**, and the bundle holds no
-  open item; two stages are planned on the answers and not started, each on
-  the user's word: S1f.21.26, the key of a state at its own size, and
-  S1f.21.27, the nine pictures of the pages drawn with root's `open` facts.
+  open item but the default of a stage built on them: S1f.21.27, the nine
+  pictures of the pages drawn with root's `open` facts, is built (review
+  item 88), and S1f.21.26, the key of a state at its own size, is building.
   **The phase's close waits for the user's word.**
   The milestone's plans are deleted when it is done, and **the work stops
   after M1f** (the user's rulings); the close of M1f was started and is

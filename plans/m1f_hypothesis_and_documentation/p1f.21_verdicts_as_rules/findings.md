@@ -89,7 +89,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-79](#v-79--what-a-rule-instance-still-costs-at-a-state) | what a rule instance still costs at a state | S1f.21.21 | **left**: a part of the contradiction's cost, which the user accepted 2026-11-20; not built |
 | [V-80](#v-80--the-cost-pages-first-instruction-counts-were-taken-unpinned) | the cost page's first instruction counts were taken unpinned | S1f.21.21 | **taken up by the coordinator**: the final table takes every count one way |
 | [V-84](#v-84--two-comments-of-the-obligations-reader-name-forms-the-parser-refuses) | two comments of the obligations' reader name forms the parser refuses | S1f.21.22 | **fixed** by S1f.21.23 |
-| [V-85](#v-85--nine-pictures-of-the-pages-are-no-longer-what-the-kb-render-draws) | nine pictures of the pages are no longer what the kb render draws | S1f.21.22 | **ruled 2026-11-25 by the user: (a)**, review item 77 of part 2: the nine pictures drawn again with root's `open` facts, S1f.21.27, planned |
+| [V-85](#v-85--nine-pictures-of-the-pages-are-no-longer-what-the-kb-render-draws) | nine pictures of the pages are no longer what the kb render draws | S1f.21.22 | **ruled 2026-11-25 by the user: (a)**, review item 77 of part 2; **fixed** by S1f.21.27 (`41ef4922`, `f9bb5e54`, `6a3ae275`): the nine pictures drawn again with root's `open` facts, the three sentences written again |
 | [V-86](#v-86--a-states-key-sorts-every-fact-the-state-holds-roots-among-them) | a state's key sorts every fact the state holds, root's among them | S1f.21.23 | **ruled 2026-11-25 by the user: (b)**, review item 78 of part 2: built at its own size, S1f.21.26, planned |
 | [V-87](#v-87--the-deltas-walk-was-counted-twice-in-its-finding) | the delta's walk was counted twice in its finding | S1f.21.23 | **closed**: the figure corrected |
 | [V-88](#v-88--an-obligations-relation-is-never-absent) | an obligation's relation is never absent | S1f.21.23 | open |
@@ -97,7 +97,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-90](#v-90--the-agendas-first-half-reads-the-contradictions-activators-as-written-not-as-derived) | the agenda's first half reads the contradiction's activators as written, not as derived | S1f.21.19 | open; of the register's case W8, with review item 79 of part 1 |
 | [V-91](#v-91--no-command-prints-the-open-facts-of-a-state-above-root-outside-r) | no command prints the open facts of a state above root outside R | S1f.21.19 | **fixed** by S1f.21.24: the oracle's listing of a node lists every `open` fact it holds |
 | [V-92](#v-92--what-the-runs-correct-in-the-findings-the-review-items-were-written-from) | what the runs correct in the findings the review items were written from | S1f.21.19 | **closed**: corrected on the items' pages |
-| [V-93](#v-93--pages-and-help-texts-that-say-what-the-binary-does-not) | pages and help texts that say what the binary does not | S1f.21.19 | the help texts and the read-out page's sentence **fixed** by S1f.21.24; the two pictures go with the nine of review item 77 |
+| [V-93](#v-93--pages-and-help-texts-that-say-what-the-binary-does-not) | pages and help texts that say what the binary does not | S1f.21.19 | the help texts and the read-out page's sentence **fixed** by S1f.21.24; the two pictures **fixed** by S1f.21.27 |
 | [V-94](#v-94--a-test-of-the-obligations-reports-checks-proposals-by-short-names-only) | a test of the obligations' reports checks proposals by short names only | S1f.21.19 | **fixed** by S1f.21.24 |
 | [V-95](#v-95--a-review-items-stand-in-program-moved-with-the-fix-of-the-hypothesis-rules-absent) | a review item's stand-in program moved with the fix of the hypothesis rule's absent | S1f.21.24 | **closed**: the coordinator ran the item again on the fixed engine and kept the runs from before beside them |
 | [V-96](#v-96--a-comment-of-a-test-still-says-rung) | a comment of a test still says rung | S1f.21.24 | open |
@@ -108,6 +108,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-103](#v-103--a-test-cites-q-m1f1-for-what-q-m1f1-does-not-decide) | `cli_semantics.rs`' `a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling` cites Q-M1f.1 for a refusal at the parse | S1f.21.25 | open; a comment, with the next code batch |
 | [V-104](#v-104--a-function-stays-public-with-one-caller-in-its-crate) | `binds_a_relation_to_a_fact` stays `pub` and re-exported by `ein_infer`, with `activators_into` its one caller | S1f.21.25 | open; with the next code batch |
 | [V-105](#v-105--the-ledgers-entry-for-q-m1f1-against-the-decisions-new-title) | the ledger's Q-M1f.1 entry is the coordinator's to read again against the decision's title | S1f.21.25 | **fixed** by the coordinator's filing of S1f.21.25 |
+| [V-111](#v-111--nothing-holds-a-pages-picture-of-a-knowledge-base-to-what-ein-render-kb-draws) | nothing holds a page's picture of a knowledge base to what `ein render kb` draws: `render_diagrams.py --check` holds a picture to its own source only | S1f.21.27 | open; a process check |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -1025,6 +1026,8 @@ firing of the calculator's rules is the likely cause; it is not found. **Open**;
 
 **Ruled 2026-11-25 by the user: (a)**, on review item 77 of part 2: *"(a)"*. A drawing of root shows all its `open` facts, as built, and the nine pictures are drawn again with them: [S1f.21.27](s1f.21.27_the_pictures_drawn_with_roots_open_facts.md), planned, not started.
 
+**Fixed** 2026-11-25 by S1f.21.27 (`41ef4922`, `f9bb5e54`, `6a3ae275`), on the user's ruling: the nine pictures are drawn again with root's `open` facts, a cut keeping those about what it draws (Q-M1f.700, a default), and the three sentences say what the drawing draws; each picture's every line is a line of today's `ein render kb` drawing (the stage's record).
+
 ## V-86 — A state's key sorts every fact the state holds, root's among them
 
 **Found** by S1f.21.23. At every state of a search the node function takes the state's canonical key: it collects every fact the state holds, root's whole fixpoint among them, sorts them, and then filters root's back out to keep the state's own. On `send_more_money.ein`, on the engine S1f.21.23 leaves, the key is 37.7 % of the instructions and the filter 9.3 %; on `equation_two_unknowns.ein` 10.9 % and 2.1 %. The state's own facts are above root's mark, which S1f.21.23 reads, so the part of the key above root could be read and sorted at its own size; whether anything reads the key whole is what a stage would settle first. The engine did so before the phase. **Open; the largest cost at a state that is left; the user's call.**
@@ -1058,6 +1061,8 @@ firing of the calculator's rules is the likely cause; it is not found. **Open**;
 ## V-93 — Pages and help texts that say what the binary does not
 
 **Found** by S1f.21.19, running the review items on the final engine. The guide's `02-co-located-fired` picture notes two derived facts with the other rule than the binary draws; the reasoning pages' `01-instance-of-instance` lacks four activators of the contradiction's rules; `08-read-out.md` says of one licence that its relation is one *the kernel does not mirror*, and the kernel mirrors none; `ein show --help` and `ein show hyps --help` still say *rung*. **Open; the help texts are S1f.21.24's, the two pictures go with the nine of review item 77.**
+
+**The two pictures fixed** 2026-11-25 by S1f.21.27, drawn again with the nine of review item 77.
 
 ## V-94 — A test of the obligations' reports checks proposals by short names only
 
@@ -1114,3 +1119,11 @@ run on that commit; the whole nightly is run again on the phase's last commit.
 ## V-105 — The ledger's entry for Q-M1f.1 against the decision's new title
 
 **Found** by S1f.21.25: the ledger's entry for Q-M1f.1 links the decision file, whose title is now Q-M1f.691's, and the stage does not edit the ledger. **Fixed** by the coordinator's filing of the stage: the entry says the decision is built and names its title.
+
+## V-111 — Nothing holds a page's picture of a knowledge base to what `ein render kb` draws
+
+**Found** by S1f.21.27. `utils/render_diagrams.py --check` holds a picture to its own source, by the stamp, and
+nothing holds the source to what `ein render kb` draws for the page's program: a picture goes stale in silence when
+the view changes, as V-85 and V-93 found. A whole picture could be held by diffing its source against the page's
+command's output, a cut one by the line-containment the stage ran by hand (every line of the cut a line of the full
+drawing). A check of the process, outside the stage. **Open.**

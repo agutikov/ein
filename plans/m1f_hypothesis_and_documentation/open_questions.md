@@ -617,6 +617,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.692](#q-m1f692--what-the-test-of-the-sixteen-shapes-holds-now) | What the test of the sixteen shapes holds now | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `a117e80a`); review item 87 of part 1 **Accepted 2026-11-25 by the user** (*"OK"*, review item 87 of part 1) |
 | [Q-M1f.693](#q-m1f693--the-fixtures-headers-keep-their-line-counts) | The fixtures' headers keep their line counts | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `02bcddc3`); review item 87 of part 1 **Accepted 2026-11-25 by the user** (*"OK"*, review item 87 of part 1) |
 | [Q-M1f.694](#q-m1f694--what-cites-no-line-stays) | What cites no line stays | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `e802c611`); review item 87 of part 1 **Accepted 2026-11-25 by the user** (*"OK"*, review item 87 of part 1) |
+| [Q-M1f.700](#q-m1f700--a-cut-picture-keeps-the-open-facts-about-what-it-draws) | A cut picture keeps the open facts about what it draws | **defaulted 2026-11-25** (P1f.21's S1f.21.27, `41ef4922`, `f9bb5e54`); review item 88 of part 2 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -12461,3 +12462,9 @@ The user reviews it in review item 87.
 The user reviews it in review item 87.
 
 **Accepted 2026-11-25.** The user, in P1f.21's part 1 answers file, item 87: *"OK"*.
+
+### Q-M1f.700 — A cut picture keeps the open facts about what it draws
+
+**Raised and defaulted** 2026-11-25 by P1f.21's S1f.21.27 ([its record](p1f.21_verdicts_as_rules/s1f.21.27_the_pictures_drawn_with_roots_open_facts.md#record)), built as `41ef4922` and `f9bb5e54`. The question: what a picture a page cuts from `ein render kb`'s drawing keeps of root's `open` facts, once the user ruled that a drawing of root shows them and the nine pictures are drawn again with them (review item 77, *"(a)"*). **The default taken**: a cut keeps every `open` fact root holds whose arrow 2 is at something the cut draws, a fact it keeps (held or denied), a relation's box, or a fact of the relation it is cut to, drawn in its `open ctx` frame; a cut that only leaves out a kind of fact (the declarations', the activators) keeps every `open` fact; the page says so where it cuts; a whole picture is what `ein render kb` draws. On *zebra2*'s cut it keeps 6 of root's 130, `(open color-loc)` among them; every other cut keeps all of its program's. The other reading: a cut keeps none of them, or all.
+
+The user reviews it in review item 88 of part 2.

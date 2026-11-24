@@ -2,7 +2,7 @@
 
 [← the bundle](../README.md) · [← the phase](../../README.md) · [your answers](ANSWERS.md)
 
-**No item of this part is open.** You answered all twenty-two on 2026-11-25, each filed in your words in
+**One item is open for your review: [88](88-S1f.21.27-defaults/README.md)**, the default S1f.21.27 took, what a cut picture keeps of root's `open` facts. You answered the twenty-two before it on 2026-11-25, each filed in your words in
 [the phase's README](../../README.md#the-answers-to-part-2s-items-and-item-87) and under its question in
 [the ledger](../../../open_questions.md) or its finding in [`findings.md`](../../findings.md). Two of the answers
 plan a stage, neither started: item 78's *"(b)"*,
