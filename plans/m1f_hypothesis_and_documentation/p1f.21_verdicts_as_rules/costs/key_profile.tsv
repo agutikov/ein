@@ -1,0 +1,13 @@
+report	instructions	state_key	filter	read_above	sort_factid_self	node_in_region
+send_more_money.before.1.perf-report.txt	10436063372	38.84	9.37	0.18	31.91	90.51
+send_more_money.before.2.perf-report.txt	10438213110	38.46	9.08	0.10	31.47	89.77
+send_more_money.before.3.perf-report.txt	10438248000	38.17	9.60	0.10	29.68	89.84
+send_more_money.after.1.perf-report.txt	5538480000	0.00	0.00	0.50	0.00	81.83
+send_more_money.after.2.perf-report.txt	5536817783	0.00	0.00	0.29	0.00	82.37
+send_more_money.after.3.perf-report.txt	5534643201	0.00	0.00	0.81	0.00	81.35
+equation_two_unknowns.before.1.perf-report.txt	3290706854	10.08	2.77	0.00	7.63	55.68
+equation_two_unknowns.before.2.perf-report.txt	3290520647	9.93	3.04	0.00	8.42	55.62
+equation_two_unknowns.before.3.perf-report.txt	3287732284	10.65	2.18	0.00	8.86	55.93
+equation_two_unknowns.after.1.perf-report.txt	2865340607	0.00	0.00	0.20	0.20	49.10
+equation_two_unknowns.after.2.perf-report.txt	2860200497	0.00	0.00	0.20	0.30	49.35
+equation_two_unknowns.after.3.perf-report.txt	2855514485	0.00	0.00	0.25	0.20	48.76

@@ -41,71 +41,111 @@ agent running, on AC.
 | **before** | `edbe6c3b` | the engine before the contradiction became rules: point A above |
 | **after** | `1655f19d` | the engine after the phase's builds and before any of the fixes: point D above |
 | **improved after** | `fa2c2914` | the engine with the fixes in: the pass where a state is used and the agenda's tables kept (S1f.21.20), a pair matched by a probe and the index over contexts (S1f.21.21), a resumed state's delta read off its own layers (S1f.21.23) |
+| **key** | `24aeebbe` | after [S1f.21.26](../s1f.21.26_the_key_of_a_state_at_its_own_size.md), on the user's answer to item 78: a state's key read above root's mark and sorted at its own size |
 
-Each engine runs the corpus and the standard library of its own commit. The script is
-[`three_engines.py`](three_engines.py), its rows [`three_engines.json`](three_engines.json), run as the four
-engines' was. The machine, as `bench_env.sh` printed it, the load what a build that had just ended left:
+Each engine runs the corpus and the standard library of its own commit: the old commits' trees unpacked by `git
+archive` into `build/costs/tree-<hash>`, *improved after* among them since this table was first taken (it read the
+main checkout then), and the key's the checkout of its branch. The script is [`three_engines.py`](three_engines.py),
+its rows [`three_engines.json`](three_engines.json), run as the four engines' was. Taken first 2026-11-20 with three
+columns, and **again 2026-11-25 with the fourth**, every column re-taken, no agent running, the machine as
+`bench_env.sh` printed it:
 
 ```text
   cpu             Intel(R) Core(TM) i9-14900HX
+  pinned to       cpu0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 — 16 cpu(s), 8 physical core(s), all P
   core spec       --cores PT
   governor        powersave (epp balance_performance)
   turbo           on (no_turbo=0)
-  power           AC (ACAD online=1); BAT1 Not charging 100 %
-  loadavg         4.16 5.85 7.38
+  power           AC (ACAD online=1); BAT1 Full 100 %
+  loadavg         1.46 3.69 6.12
 ```
 
 ### Time
 
-Milliseconds, an entry's declared runs summed. *Work* is the count of saturations `ein solve` reports, one figure
-where the three engines agree.
+Milliseconds, an entry's declared runs summed, each run four times and the first discarded under two seconds.
+*Work* is the count of saturations `ein solve` reports, one figure where the four engines agree.
 
-| entry | before | after | improved after | improved / before | improved / after | work |
-|---|---:|---:|---:|---:|---:|---|
-| `zebra.ein` | 364 | 876 | 774 | 2.13× | 0.88× | 120 → 353 |
-| `features/04_open.ein` | 506 | 1 589 | 560 | 1.11× | 0.35× |  |
-| `beyond_arith/equation_two_unknowns.ein` | 460 | 772 | 495 | 1.08× | 0.64× | 1 191 |
-| `beyond_arith/send_more_money.ein` | 2 098 | 4 302 | 2 111 | 1.01× | 0.49× | 18 129 |
-| `beyond_arith/send_more_money_written.ein` | 1 398 | 2 851 | 1 408 | 1.01× | 0.49× |  |
-| `features/01_not_and_absent.ein` | 2 356 | 3 848 | 2 951 | 1.25× | 0.77× | 65 299 |
-| `lattice/06_friends_tables.ein` | 4 856 | 7 263 | 4 993 | 1.03× | 0.69× | 65 299 |
-| `lattice/07_two_pairs_two_tables.ein` | 4 173 | 5 014 | 4 325 | 1.04× | 0.86× | 149 |
-| `lattice/14_seats_nothing_proposes.ein` | 259 | 5 052 | 4 378 | 16.92× | 0.87× | 69 → 149 |
-| `zebra2.ein` | 1 866 | 1 985 | 1 896 | 1.02× | 0.96× | 120 |
-| `zebra2-obligations.ein` | 1 752 | 1 819 | 1 765 | 1.01× | 0.97× | 120 |
-| `zebra2-hints.ein` | 495 | 512 | 515 | 1.04× | 1.01× | 62 |
-| `saturation/square-fwd/meetings.ein` | 1 642 | 1 896 | 1 606 | 0.98× | 0.85× |  |
-| `saturation/square-fwd/houses.ein` | 1 591 | 1 856 | 1 573 | 0.99× | 0.85× |  |
-| `branching/06_lookahead_on.ein` | 29 | 55 | 41 | 1.42× | 0.75× | 133 |
-| `branching/07_lookahead_off.ein` | 48 | 52 | 48 | 0.99× | 0.93× | 133 |
-| `arith/rat.ein` | 659 | 666 | 662 | 1.00× | 0.99× | 1 |
-| `saturation/type-exclusivity/pets.ein` | 413 | 638 | 479 | 1.16× | 0.75× | 11 339 |
-| `zebra2-minus-15.ein` | 10 873 | 13 575 | 10 886 | 1.00× | 0.80× | 11 222 |
+| entry | before | after | improved after | key | key / before | key / improved | work |
+|---|---:|---:|---:|---:|---:|---:|---|
+| `zebra.ein` | 366 | 885 | 782 | 764 | 2.09× | 0.98× | 120 → 353 |
+| `features/04_open.ein` | 515 | 1 608 | 560 | 556 | 1.08× | 0.99× |  |
+| `beyond_arith/equation_two_unknowns.ein` | 461 | 774 | 491 | 439 | 0.95× | 0.89× | 1 191 |
+| `beyond_arith/send_more_money.ein` | 2 090 | 4 298 | 2 112 | 1 238 | 0.59× | 0.59× | 18 129 |
+| `beyond_arith/send_more_money_written.ein` | 1 404 | 2 866 | 1 410 | 819 | 0.58× | 0.58× |  |
+| `features/01_not_and_absent.ein` | 2 376 | 3 869 | 2 952 | 2 995 | 1.26× | 1.01× | 65 299 |
+| `lattice/06_friends_tables.ein` | 4 847 | 7 212 | 4 960 | 4 881 | 1.01× | 0.98× | 65 299 |
+| `lattice/07_two_pairs_two_tables.ein` | 4 168 | 4 993 | 4 289 | 4 263 | 1.02× | 0.99× | 149 |
+| `lattice/14_seats_nothing_proposes.ein` | 257 | 5 022 | 4 356 | 4 300 | 16.73× | 0.99× | 69 → 149 |
+| `zebra2.ein` | 1 837 | 1 965 | 1 874 | 1 821 | 0.99× | 0.97× | 120 |
+| `zebra2-obligations.ein` | 1 733 | 1 804 | 1 752 | 1 691 | 0.98× | 0.97× | 120 |
+| `zebra2-hints.ein` | 491 | 506 | 505 | 492 | 1.00× | 0.97× | 62 |
+| `saturation/square-fwd/meetings.ein` | 1 596 | 1 872 | 1 594 | 1 588 | 1.00× | 1.00× |  |
+| `saturation/square-fwd/houses.ein` | 1 576 | 1 833 | 1 560 | 1 568 | 1.00× | 1.01× |  |
+| `branching/06_lookahead_on.ein` | 31 | 62 | 39 | 39 | 1.25× | 1.01× | 133 |
+| `branching/07_lookahead_off.ein` | 45 | 57 | 47 | 45 | 1.00× | 0.96× | 133 |
+| `arith/rat.ein` | 655 | 652 | 656 | 651 | 0.99× | 0.99× | 1 |
+| `saturation/type-exclusivity/pets.ein` | 404 | 632 | 474 | 471 | 1.17× | 0.99× | 11 339 |
+| `zebra2-minus-15.ein` | 10 933 | 13 482 | 10 737 | 10 728 | 0.98× | 1.00× | 11 222 |
 
-- **At the same work the engine is back where it was**: 0.98 to 1.08 times its time before the phase on thirteen
-  of the nineteen entries.
+- **The key at its own size takes 41 to 42 % off the two `send_more_money` programs**, which build 18 129 states of
+  1 867 facts at root: 0.59 and 0.58 times their time before the phase; and 11 % off `equation_two_unknowns.ein`.
+  Everywhere else it is within 4 % of *improved after*, in either direction.
+- **At the same work the engine is at or below where it was**: 0.95 to 1.02 times its time before the phase on
+  eleven of the nineteen entries, and 0.58 and 0.59 on the two `send_more_money` programs.
 - **Two entries do more work, by the union the user ruled** (Q-M1f.570): `zebra.ein` describes $R$ in 353
   saturations where it took 120, and `14_seats_nothing_proposes.ein`'s oracle enumerates a cube of 16 candidates
   where it had 12. Their time is the union's and no fix's to take back.
-- **Three are left above**: `01_not_and_absent.ein` at 1.25, `pets.ein` at 1.16 and `04_open.ein` at 1.11. The
+- **Three are left above**: `01_not_and_absent.ein` at 1.26, `pets.ein` at 1.17 and `04_open.ein` at 1.08. The
   first two build many small states, 65 299 and 11 339, of a program with few facts, where what a rule instance
-  costs at a state is most of a state's cost: the contradiction's cost that is left, which the user accepted.
-  `branching/06_lookahead_on.ein`'s 1.42 is twelve milliseconds over six runs.
+  costs at a state is most of a state's cost and the key was little of it: the contradiction's cost that is left,
+  which the user accepted. `branching/06_lookahead_on.ein`'s 1.25 is eight milliseconds over six runs.
 
 ### Instructions executed
 
 User space, `perf stat -e instructions:u`, one `ein solve` with one worker, pinned to the performance cores, in
-millions. The counts of [the section above](#why-the-contradiction-as-rules-costs) were taken at the default
-count of workers and are not to be set beside these (V-80). The rows are
-[`three_engines_instructions.tsv`](three_engines_instructions.tsv).
+millions, the mean of three runs, which agree to within 0.03 %. The counts of [the section
+above](#why-the-contradiction-as-rules-costs) were taken at the default count of workers and are not to be set
+beside these (V-80). The script is [`instructions.py`](instructions.py), its rows
+[`three_engines_instructions.tsv`](three_engines_instructions.tsv), taken 2026-11-25 with the time above: each
+engine on its own commit's tree, and **master**, `9994ac94`, the engine just before the key's stage, on the same tree
+as the key's, so that *key / master* is that stage's own effect.
 
-| program | before | after | improved after | improved / before | improved / after |
-|---|---:|---:|---:|---:|---:|
-| `beyond_arith/equation_two_unknowns.ein` | 3 144 | 5 037 | 3 305 | 1.05× | 0.66× |
-| `saturation/type-exclusivity/pets.ein` | 3 050 | 4 854 | 3 930 | 1.29× | 0.81× |
-| `features/01_not_and_absent.ein` | 20 299 | 32 574 | 27 084 | 1.33× | 0.83× |
-| `beyond_arith/send_more_money.ein` | 10 666 | 19 841 | 10 480 | 0.98× | 0.53× |
-| `zebra2.ein` | 1 118 | 1 343 | 1 115 | 1.00× | 0.83× |
+| program | before | after | improved after | master | key | key / master | key / before | key / improved |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `beyond_arith/equation_two_unknowns.ein` | 3 143 | 5 036 | 3 304 | 3 292 | 2 867 | 0.871 | 0.91× | 0.87× |
+| `saturation/type-exclusivity/pets.ein` | 2 629 | 4 432 | 3 509 | 3 517 | 3 495 | 0.994 | 1.33× | 1.00× |
+| `features/01_not_and_absent.ein` | 17 118 | 29 391 | 23 900 | 23 928 | 23 776 | 0.994 | 1.39× | 0.99× |
+| `beyond_arith/send_more_money.ein` | 10 665 | 19 840 | 10 479 | 10 441 | 5 539 | 0.531 | 0.52× | 0.53× |
+| `zebra2.ein` | 1 117 | 1 342 | 1 114 | 1 112 | 1 105 | 0.994 | 0.99× | 0.99× |
+
+- **The key at its own size takes 47 % off `send_more_money.ein`** and 13 % off `equation_two_unknowns.ein`, 0.6 %
+  off the other three, which build few facts at a state: `send_more_money.ein` now executes half what it did before
+  the phase.
+- **`pets.ein` and `01_not_and_absent.ein` count less on every engine than the rows taken 2026-11-20** (in
+  `git log`), by about the same amount on each, 420 M and 3 180 M, where the other three programs agree to 0.1 %:
+  the count of a program of many small states moves with how it is run, not only with the engine and the input
+  (V-107). Rows taken in one session by one script, as these are, stand beside each other.
+
+### The key's profile
+
+Review item 78's profile taken again, before and after the key's stage: [`key_profile.sh`](key_profile.sh), three
+`perf record --call-graph lbr -e instructions:u` of `taskset -c 0-15 ein solve FILE --jobs 1` a program and an
+engine, `9994ac94` and `24aeebbe`, each reported with `perf report --stdio --children --sort symbol -F
+overhead_children,overhead,symbol -g none`; [`key_profile_figures.py`](key_profile_figures.py) reads the shares of
+the P-core instructions off each report, its rows [`key_profile.tsv`](key_profile.tsv). *The key* is
+`ein_infer::canon::state_key` with what it calls; *the filter* the vector the node function built of the key's facts
+root does not hold, its self time; *the read above the mark* the vectors `Snapshot::new_facts_of` builds, with what
+they call, both its calls (a resumed state's delta and the key). Taken on AC, the load 2.3 as it started; a share is
+of instructions, which the load does not move.
+
+| program | instructions, before → after | the key, before | the filter, before | the read above the mark, after |
+|---|---:|---:|---:|---:|
+| `send_more_money.ein` | 10 438 M → 5 537 M | 38.8 %, 38.5 %, 38.2 % | 9.4 %, 9.1 %, 9.6 % | 0.5 %, 0.3 %, 0.8 % |
+| `equation_two_unknowns.ein` | 3 290 M → 2 860 M | 10.1 %, 9.9 %, 10.7 % | 2.8 %, 3.0 %, 2.2 % | 0.2 %, 0.2 %, 0.3 % |
+
+The key and its filter were 47.5 to 48.2 % of `send_more_money.ein` and 12.8 to 13.0 % of
+`equation_two_unknowns.ein`, as item 78 had them; after, the key has no symbol of its own, and the sort of the few
+facts a state adds is no symbol on `send_more_money.ein` and 0.2 to 0.3 % on `equation_two_unknowns.ein`.
 
 ## The four engines: the entries
 

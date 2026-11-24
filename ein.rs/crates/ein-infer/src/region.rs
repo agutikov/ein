@@ -1292,6 +1292,10 @@ fn above(
 /// What a node's fixpoint is read against: root's facts and the cube's axes.
 #[derive(Clone)]
 pub(crate) struct Axes {
+    /// Root's facts, its `open` facts among them: what a node's listing is
+    /// read against ([`Axes::keep_states`]), and its whole key on a build
+    /// with debug assertions. A node's key is read above root's mark, at its
+    /// own size, and asks none of them.
     root_facts: FxHashSet<FactId>,
     /// The candidates in bit order.
     candidates: Vec<FactId>,
@@ -1426,7 +1430,9 @@ pub(crate) struct NodeOut {
     pub work: u64,
     /// Its fixpoint's facts **beyond root's**, sorted by id — the state's key.
     /// Every fixpoint holds root's, since a fork only adds, so two keys are
-    /// equal exactly when the two states are.
+    /// equal exactly when the two states are. Read above root's mark
+    /// ([`Snapshot::new_facts_of`]), so it costs its own size and not root's
+    /// fixpoint.
     pub state: Box<[FactId]>,
     /// The candidates its fixpoint holds, as bit indices.
     pub closure: Vec<u32>,
@@ -2270,12 +2276,37 @@ fn node_in_region(
         Some(check) => detector::stale_facts(&fork, terms, ast, check),
         None => Vec::new(),
     };
-    let state = crate::canon::state_key(&fork);
-    let delta: Vec<FactId> = state
-        .iter()
-        .copied()
-        .filter(|f| !axes.root_facts.contains(f))
-        .collect();
+    // The node's key: its facts beyond root's, read above root's mark at
+    // their own size (`Snapshot::new_facts_of`, which leaves out an `open`
+    // fact the node holds as root did) and sorted by id, as
+    // `canon::state_key` sorts, since two commitments that reach one state
+    // derive its facts in different orders. Every fixpoint holds root's
+    // facts, so this tells states apart as the whole key does; on a build
+    // with debug assertions (the gate's) it is held to the whole key less
+    // root's facts.
+    let mut delta = snapshot.new_facts_of(&fork);
+    // determinism-ok: identity order, a key compared and never rendered.
+    delta.sort_unstable();
+    debug_assert_eq!(
+        delta,
+        whole_key_beyond_root(&fork, axes),
+        "a node's key above root's mark is its whole key less root's facts"
+    );
+    // The node's listing: its facts beyond root's, and every `open` fact it
+    // holds, root's too, since a listing of a state lists them (Q-M1f.572)
+    // and a fork holds none of root's. Read over every fact the node holds,
+    // in any order, since the text sorts them: the oracle's `--states` alone
+    // asks it, and renders each fact it lists.
+    let listed = if axes.keep_states {
+        let open = terms.kernel.open;
+        let listed: Vec<FactId> = fork
+            .facts()
+            .filter(|&f| terms.facts.rel(f) == open || !axes.root_facts.contains(&f))
+            .collect();
+        sorted_text(terms, &listed)
+    } else {
+        Vec::new()
+    };
     // A saved file's commitment is H's, as a route's own candidates are.
     let floor = snapshot.floor();
     let is_candidate =
@@ -2330,19 +2361,7 @@ fn node_in_region(
         dead,
         owes: node.owes,
         node,
-        // The node's listing: its facts beyond root's, and every `open` fact
-        // it holds, root's too, since a listing of a state lists them
-        // (Q-M1f.572) and a fork holds none of root's.
-        delta: if axes.keep_states {
-            let listed: Vec<FactId> = state
-                .iter()
-                .copied()
-                .filter(|&f| terms.facts.rel(f) == open || !axes.root_facts.contains(&f))
-                .collect();
-            sorted_text(terms, &listed)
-        } else {
-            Vec::new()
-        },
+        delta: listed,
         work: delta
             .iter()
             .filter(|&&f| terms.facts.rel(f) != terms.kernel.open)
@@ -2478,6 +2497,18 @@ pub(crate) fn core_of_fixpoint(
         crate::explain::CoreStatus::of(&e),
         rules_of(terms, &e.steps),
     ))
+}
+
+/// A node's key read the long way: every fact its fixpoint holds, root's
+/// among them, sorted ([`crate::canon::state_key`]), and root's filtered
+/// back out. What the node function's key above root's mark is held to on a
+/// build with debug assertions.
+fn whole_key_beyond_root(fork: &Kb, axes: &Axes) -> Vec<FactId> {
+    crate::canon::state_key(fork)
+        .iter()
+        .copied()
+        .filter(|f| !axes.root_facts.contains(f))
+        .collect()
 }
 
 fn sorted_text(terms: &Terms, facts: &[FactId]) -> Vec<String> {

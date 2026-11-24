@@ -289,8 +289,8 @@ fn a_stored_solution_reconstitutes_the_model_it_was_taken_from() {
     let back = opened.solutions.clone().expect("a SOLUTIONS section");
     assert_eq!(back, stored, "the stored solve moved");
 
-    // base.fork() + the delta is the model again — same state key, which is
-    // the identity the search itself dedups nodes by.
+    // base.fork() + the delta is the model again — same state key, the
+    // identity whose part beyond root's the search keys a node by.
     let model = back.nodes[0].reconstitute(&mut opened.kb);
     assert_eq!(ein_infer::state_key(&model), models[0]);
     assert!(model.n_facts() > opened.kb.n_facts());

@@ -10,6 +10,13 @@
 //! depend on hash quality — a collision costs a comparison, not a wrong answer.
 //! [`state_digest`] exists only for display and is *never* identity.
 //!
+//! **A search's node is keyed by the part of that list beyond root's facts**,
+//! read above root's mark at its own size and sorted the same way (`region`'s
+//! node function): every state holds root's facts, so it tells two states
+//! apart exactly as the whole list does, and a build with debug assertions
+//! holds the one to the other at every node. The whole list is read where a
+//! state is compared with one reached another way.
+//!
 //! For **identity** any total order is equivalent
 //! ([03-design/01-determinism-and-order.md § 5](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#5-where-order-does-not-matter)),
 //! so this sorts by `FactId` — a `u32` sort and a `memcmp` equality instead of

@@ -202,7 +202,10 @@ Stated so that the engine does not constrain itself where nothing is observable:
 - **State identity.** `canon::state_key` is a KB's facts as a sorted `FactId` vector, and identity is that vector
   itself, never a hash of it. For identity any total order gives the same equivalence classes, so the key sorts by
   `FactId`, a `u32` sort with a `memcmp` equality, and needs no content order; where a state is displayed it is
-  rendered and sorted by text. `Value::cmp_identity` and `FactId`'s derived `Ord` exist for exactly these keys.
+  rendered and sorted by text. A search's node is keyed by its facts beyond root's, read above root's mark in the
+  order the fork derived them, which differs between two commitments that reach one state, and sorted the same way
+  ([`07-search.md` § 5](07-search.md#5-a-states-identity)). `Value::cmp_identity` and `FactId`'s derived `Ord` exist
+  for exactly these keys.
 - **Binding keys**: `fired` and `seen` are hashed and compared, never iterated.
 - **Membership sets**: root's facts, the candidate set and the hypothesised relations a node is read against
   (`region::Axes`), the KB's belief and negation bitsets.
