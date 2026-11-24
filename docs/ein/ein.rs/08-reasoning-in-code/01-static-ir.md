@@ -306,5 +306,7 @@ are L0; `(color-loc Red House-1)` is L1 and names both; `(relation color-loc Col
 `(bijective color-loc)` are L2; the rules `std.bijection` brings are L3, applied to `color-loc` through the
 activators its setup rule derives from `(bijective color-loc)`, and reading L1 `color-loc` facts.
 `ein render constraints examples/zebra2.ein` draws the L2 facts of the saturated root, the facts about relations,
-every fact with a relation of the program under an argument arrow (`ein_infer::slice::about_relations`), and `ein
-render kb` the L0 and L1 with them.
+every fact with a relation of the program under an argument arrow (`ein_infer::slice::about_relations`), root's five
+`(open R)` facts among them, what it owes, one for each relation `std.algebra.total-owed` owes; and `ein render kb`
+the L0 and L1 with them, and root's 125 hypotheses, `(open F)` facts the rule `guess` writes, each pointing at an L1
+fact. `ein saturate examples/zebra2.ein --dump` lists the 130 `open` facts.
