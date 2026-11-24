@@ -1,6 +1,6 @@
-# The node census — 2026-11-02
+# The node census — 2026-11-25
 
-**S1e2.1b.2's measurement** (the stage), the
+**S1e2.1b.2's measurement** (the stage), re-taken, the
 evidence for [Q-M1e2.2](../../docs/decisions/answer/Q-M1e2.2-a-node-is-a-fork-of-root-an-assumption-on.md)
 asked of every node. A node's state is built two ways, and the two are
 compared node for node on every cube the oracle reaches:
@@ -16,53 +16,61 @@ compared node for node on every cube the oracle reaches:
 Both are read the same way: the two status bits (dead, owing), every fact of
 the fixpoint, and the facts that are **stale** (§ 4).
 
+**What holds today.** A flagged program loads, every command answers it by the
+cube, today's fork, under a `WARNING` that it is not monotone, and nothing is
+claimed of its answer
+([Q-M1f.564](../../docs/decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)):
+no program is refused for an `absent`. F21's D2 option (D), *refuse a cycle
+through an odd `absent`*, is a refusal and is ruled out by that decision; the
+census still measures the cycles (§ 5), which is what a stratified reading
+reads. **A state holds `open` facts** (Q-M1f.566): the fork read here holds
+the ones root holds, what root supposes and what it owes, and scratch holds
+none, so on every node of a program with a candidate the two differ by those
+facts. Every comparison below says whether it counts them; *beyond the `open`
+facts* is the comparison the stage made.
+
 ```sh
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census                  # § 2, the flagged cubes, 0.1 s
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --control      # § 3, the monotone cubes, 59 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census                  # § 2, the flagged cubes, 11 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --control      # § 3, the monotone cubes, 507 s
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- \
-    plans/m1n_non_monotone_programs/f21_probes/*.ein                                                                     # § 2.2, S1e2.4.1's probes
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --written      # § 2.3, three programs written into it
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --strata       # § 5, every program that loads, 0.1 s
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance   # § 7, the levers, 0.9 s
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cost         # § 8
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths        # § 11, every split and chain (S1e2.1b.7)
-cargo test --release --manifest-path ein.rs/Cargo.toml -p ein-cli --test region_dump the_oracle_and_the_per_subset_route_agree_node_for_node
+    plans/m1n_non_monotone_programs/f21_probes/*.ein                                                                     # § 2.2, S1e2.4.1's probes: none loads today
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --written      # § 2.3, six programs written into it, 0.6 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --strata       # § 5, every program that loads, 11 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance   # § 7, the levers, 20 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cost         # § 8, 11 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths        # § 11, every split and chain (S1e2.1b.7), 12 s
+cargo test --release --manifest-path ein.rs/Cargo.toml -p ein-cli --test region_dump the_oracle_and_the_per_subset_route_agree_node_for_node   # 0 tests: gone
 ```
 
-Every command takes `--json` for one row per program. Taken 2026-11-02 at
-`bc1dff73` (T1e2.1b.2.1), which adds this stage's
-[`node_census`](../../ein.rs/crates/ein-infer/examples/node_census.rs) and
-its fix to `utils/region.py`, release build, stdlib = the
-checkout, 16 jobs on a 32-thread machine. Every number on this page is from
-those commands unless it names another.
+Every command takes `--json` for one row per program. Taken 2026-11-25 at
+`213e8a92`, which this census's re-take adds nothing to but the four programs
+§ 2.3 writes, rewritten in today's spelling (each relation and rule with its
+`:why`, no `:priority`); release build, stdlib = the checkout, 16 jobs on a
+32-thread machine, each command through `utils/bench_env.sh --cores 0-31` on
+AC. Every number on this page is from those commands unless it names another.
 
 **What it selects.** With no file, the programs of `site_census`'s selection
-(`corpus_files()` and the register's witnesses, 271 files, 208 of which load
+(`corpus_files()` and the regressions' witnesses, 933 files, 748 of which load
 and saturate) that the static check flags and whose cube is within
-`--region-limit 16`: **18**. That is site census § 3's
-14, plus the four fixtures S1e2.1b.6 banked after it (`lattice/08`,
-`lattice/09`, `synth/maximal_not_top`, `synth/local_not_global`). `--control`
-takes the 155 that the check calls monotone. S1e2.4.1's probes get their own
-run, as in the site census, because no test may point into `plans/`.
+`--region-limit 16`: **52**, [`hole_census.md`](hole-census.md)'s selection.
+`--control` takes the ones the check calls monotone: **650**.
+**S1e2.4.1's 14 probes are not re-taken**: each is written in a form the
+parser refuses today (`hrule`, `:priority`, no `:why`), and none loads.
 
 **Why a library prototype and not `region.py`.** The stage chose
 `region.py` first, to be overruled only by a measurement that said it was too
-slow. It is not too slow: 5–27 ms a node, two processes each, and 2.3 s for
-all 256 flagged nodes. It was overruled for two other reasons:
+slow. It was overruled for two other reasons, which stand:
 
 - **It was wrong on one program.** It called a node dead only when the dump
   held a `false` fact. A pair contradiction, `X` beside `(not X)`, derives
-  none, and on [`d3-unsat-core.ein`](../../corpus/fuzz_findings/d3-unsat-core.ein)
-  12 of the 32 nodes die that way. `region.py` called those 12 alive, while the
-  oracle and both library routes call them dead. The stage fixed it: a node
-  is dead also when `--json-summary`'s `region.root` says so, which is the
-  engine's own test. `region_dump.rs::the_oracle_and_the_per_subset_route_agree_node_for_node`
-  now runs it on `d3-unsat-core` as well, and fails on the old line. After
-  the fix `region.py` and the library scratch agree on all 256 flagged nodes
-  and all 206 probe nodes (a scratch script over the census's `--json` rows,
-  2026-11-02).
+  none, and on [`d3-unsat-core.ein`](../../examples/ein-bugs/d3-unsat-core.ein)
+  12 of the 32 nodes die that way. The stage fixed it: a node is dead also
+  when `--json-summary`'s `region.root` says so, which is the engine's own
+  test. `region_dump.rs::the_oracle_and_the_per_subset_route_agree_node_for_node`,
+  which ran it on `d3-unsat-core` as well, is gone: the command at the head
+  runs 0 tests today (1.8 s).
 - **Staleness needs provenance**, which no CLI output carries, and the
-  control's 268 213 nodes need a process-free node.
+  control's 428 639 nodes need a process-free node.
 
 So both routes are read in process, and `region.py` is the check that the
 library's scratch route is `region.py`'s. No flag reaches the prototype, and
@@ -74,123 +82,140 @@ no command reaches it.
 
 | | count |
 |---|---:|
-| flagged cubes within the limit | 18, **256 nodes** |
-| … nodes where fork and scratch give a different status | **2** |
-| … nodes where they hold different facts | **4**, the two above among them |
+| flagged cubes within the limit | 52, **656 nodes** |
+| … nodes where fork and scratch give a different status | **17** |
+| … nodes where they hold different facts | 621; **34 beyond the `open` facts**, the 17 above among them |
 | … programs on which the fork read here is not the oracle's node | 0 |
-| S1e2.4.1's flagged probes | 5, 174 nodes: 0 statuses differ, **1** state |
-| monotone cubes within the limit (the control) | 155, **268 213 nodes**: 0 statuses differ, 0 states |
+| S1e2.4.1's probes | not re-taken: none loads |
+| monotone cubes within the limit (the control) | 650, **428 639 nodes**: 0 statuses differ; 361 858 differ in their facts, not split by kind (§ 3) |
 | facts only scratch holds, on any node of any cube | **0** |
-| nodes holding a stale fact, by fork | 4 flagged, 1 probe, 0 monotone: **the nodes above** |
-| … from scratch | **0** on every corpus and probe node |
-| programs (D) would refuse, of the 208 that load and saturate | **3**: `features/07`, `f07-fpoff`, `d3-unsat-core` |
-| nodes where `-y`'s parent path and the direct fork differ | 10 corpus, 1 probe; the direct fork is scratch's node on all of them |
-| `features/12`, n = 20: scratch nodes that are not dead | 0 of 1 048 576 |
-| levers that move either route: `--jobs`, 8 interners, every flag | **none**, on 183 cubes |
-| … equal-priority rule order | moves **both** routes' universe on `features/07` and `f07-fpoff` |
-| a scratch node's saturation against a fork node | ×0.2–5.6; root re-derived at every node |
+| nodes holding a stale fact, by fork | 29 flagged, 0 monotone |
+| … from scratch | **1** flagged (`10_fifo_gap`), **1** monotone (`11_fifo_gap_static`) |
+| programs with a cycle through an odd `absent` over D (F21 D2's (D)), of the 748 that load and saturate | **4**: `features/07`, `f07-fpoff`, `f07-rules-swapped`, `d3-unsat-core` |
+| `features/12` | n = 0 today: root alone, dead by fork and from scratch |
+| levers that move either route: `--jobs`, 8 interners, every flag | **none**, on 52 flagged cubes and the 357 programs of the cut control (§ 7) |
+| … equal-priority rule order | moves **both** routes' universe on `features/07`, `f07-fpoff` and `f07-rules-swapped`, and a state on `10_fifo_gap` |
+| a scratch node's saturation against a fork node | ×0.8–20; with its parse and load ×31–677 |
 
 ## 2. The flagged cubes
 
 ### 2.1 The corpus
 
-| program | n | nodes | status differs | state differs |
-|---|---:|---:|---:|---:|
-| [`corpus/fuzz_findings/d3-unsat-core.ein`](../../corpus/fuzz_findings/d3-unsat-core.ein) | 5 | 32 | 0 | 0 |
-| [`branching/13_lookahead_naf_world.ein`](../../examples/branching/13_lookahead_naf_world.ein) | 2 | 4 | 0 | 0 |
-| [`branching/14_lookahead_unjudgeable.ein`](../../examples/branching/14_lookahead_unjudgeable.ein) | 2 | 4 | 0 | 0 |
-| [`ein-bugs/alive-empty-interlayer.ein`](../../examples/ein-bugs/alive-empty-interlayer.ein) | 3 | 8 | 0 | 0 |
-| [`ein-bugs/naf-upward-closure.ein`](../../examples/ein-bugs/naf-upward-closure.ein) | 2 | 4 | 0 | 0 |
-| [`ein-bugs/wrong-answers/f07-fpoff.ein`](../../examples/ein-bugs/wrong-answers/f07-fpoff.ein) | 1 | 2 | 0 | **1** |
-| [`ein-bugs/wrong-answers/naf-nowb.ein`](../../examples/ein-bugs/wrong-answers/naf-nowb.ein) | 2 | 4 | 0 | 0 |
-| [`ein-bugs/wrong-answers/stale-naf-fork-warn.ein`](../../examples/ein-bugs/wrong-answers/stale-naf-fork-warn.ein) | 1 | 2 | **1** | **1** |
-| [`ein-bugs/wrong-answers/stale-naf-fork.ein`](../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein) | 1 | 2 | **1** | **1** |
-| [`features/07_unstratifiable.ein`](../../examples/features/07_unstratifiable.ein) | 1 | 2 | 0 | **1** |
-| [`lattice/04_obligation_trigger_hole.ein`](../../examples/lattice/04_obligation_trigger_hole.ein) | 2 | 4 | 0 | 0 |
-| [`lattice/08_absent_witness_hole.ein`](../../examples/lattice/08_absent_witness_hole.ein) | 3 | 8 | 0 | 0 |
-| [`lattice/09_activator_hole.ein`](../../examples/lattice/09_activator_hole.ein) | 2 | 4 | 0 | 0 |
-| [`lattice/synth/local_not_global.ein`](../../examples/lattice/synth/local_not_global.ein) | 2 | 4 | 0 | 0 |
-| [`lattice/synth/maximal_not_top.ein`](../../examples/lattice/synth/maximal_not_top.ein) | 3 | 8 | 0 | 0 |
-| [`lattice/synth/three_components.ein`](../../examples/lattice/synth/three_components.ein) | 7 | 128 | 0 | 0 |
-| [`lattice/synth/trigger_hole.ein`](../../examples/lattice/synth/trigger_hole.ein) | 5 | 32 | 0 | 0 |
-| [`examples/lattice/17_flagged_region_claim.ein`](../../examples/lattice/17_flagged_region_claim.ein) (then `tests/region/07_cube.ein`) | 2 | 4 | 0 | 0 |
+*Facts differ* counts every node whose two states differ; *beyond `open`*
+leaves out the `open` facts the fork holds and scratch does not.
 
-**Every node where the two differ**, with the facts that differ and the rule
-that derived each:
+| program | n | nodes | status differs | facts differ | … beyond `open` |
+|---|---:|---:|---:|---:|---:|
+| `branching/13_lookahead_naf_world` | 2 | 4 | 0 | 2 | 0 |
+| `branching/14_lookahead_unjudgeable` | 2 | 4 | 0 | 2 | 0 |
+| `ein-bugs/activator-all-int`, `-nested`, `-symbol` | 1 | 2 each | **1** each | 2 each | **1** each |
+| `ein-bugs/alive-empty-interlayer` | 3 | 8 | 0 | 8 | 0 |
+| [`ein-bugs/d3-unsat-core`](../../examples/ein-bugs/d3-unsat-core.ein) | 5 | 32 | 0 | 31 | 0 |
+| `ein-bugs/naf-upward-closure`, `wrong-answers/naf-nowb` | 2 | 4 each | 0 | 3 each | 0 |
+| the seven `wrong-answers/activator-chain-*` and two `core-activator-*` witnesses | 2 | 4 each | 0 | 4 each | 0 |
+| `wrong-answers/derived-activator`, `-never`; `features/19`, `/20` | 6 | 64 each | 0 | 63 each | 0 |
+| [`wrong-answers/f07-fpoff`](../../examples/ein-bugs/wrong-answers/f07-fpoff.ein), `f07-rules-swapped` | 1 | 2 each | 0 | 2 each | **1** each |
+| `wrong-answers/kw-neq-in-absent`, `-twin` | 3 | 8 each | 0 | 8 each | **4** each |
+| the ten `wrong-answers/oblig-*` witnesses | 1–4 | 2–16 | 0 | 1–7 | 0 |
+| `wrong-answers/open-derived-activator` | 2 | 4 | 0 | 4 | **4** |
+| `wrong-answers/rung-connex-import` | 4 | 16 | **12** | 16 | **12** |
+| [`wrong-answers/stale-naf-fork`](../../examples/ein-bugs/wrong-answers/stale-naf-fork.ein), `-warn` | 1 | 2 each | **1** each | 2 each | **1** each |
+| [`features/07_unstratifiable`](../../examples/features/07_unstratifiable.ein) | 1 | 2 | 0 | 2 | **1** |
+| `features/23_a_rule_reads_open` | 1 | 2 | 0 | 2 | **2** |
+| `lattice/04`, `08`, `09`, `10_fifo_gap`, `12`, `17`; `synth/local_not_global`, `maximal_not_top`, `three_components`, `trigger_hole` | 2–7 | 4–128 | 0 | all | 0 |
 
-| program | node | fork | scratch | facts only fork holds |
+**Every node where the two differ beyond the `open` facts**, 34 on 13
+programs, with the facts only the fork holds and the rule that derived each:
+
+| program | nodes | fork | scratch | facts only fork holds, beyond `open` |
 |---|---|---|---|---|
-| `stale-naf-fork` | `{(q one)}` | dead, refuted by `p-and-q-clash` | in R | `(p one)` ← `derive-p`, a site's rule; `(false)` ← `p-and-q-clash` |
-| `stale-naf-fork-warn` | `{(q one)}` | dead, refuted by `p-and-q-clash` | in R | the same |
-| `features/07` | `{(q one)}` | in R, state `{(p one), (q one)}` | in R, state `{(q one)}` | `(p one)` ← `derive-p`, a site's rule |
-| `f07-fpoff` | `{(q one)}` | in R, the same | in R, the same | the same |
+| `stale-naf-fork`, `-warn` | `{(q one)}` | dead, refuted by `p-and-q-clash` | in R | `(p one)` ← `derive-p`, a site's rule; `(false)` ← `p-and-q-clash` |
+| `features/07`, `f07-fpoff` | `{(q one)}` | in R | in R | `(p one)` ← `derive-p`, a site's rule |
+| `f07-rules-swapped` | `{(p one)}` | in R | in R | `(q one)` ← `derive-q`, a site's rule |
+| `kw-neq-in-absent`, `-twin` | the 4 nodes holding `(neqw a)` (`(nneqw a)`) | in R | in R | `(hit a)` ← `r`, a site's rule |
+| `open-derived-activator` | all 4 | in R | in R | `(q (p k))`, `(q (q k))` ← `copy`, a site's rule |
+| `features/23_a_rule_reads_open` | ∅ (owing), `{(r a b)}` | as scratch | as fork | `(seen r)`, `(seen (r a b))` ← `noted`, a rule that reads an `open` fact |
+| `activator-all-int`, `-nested`, `-symbol` | the one candidate's node | dead | in R | `(watch …)` ← `flag`, `(alarm …)` ← `watch`, `(false)` ← `alarm` |
+| `rung-connex-import` | 12 of 16 | dead | in R | `(false)` ← `connex`, a site's rule |
 
-**Why each differs.** It is one mechanism four times. Root derives
-`(p one)` by `derive-p`, under `(absent (q one))`. The commitment `{(q one)}`
-falsifies that guard. The fork starts from root's fixpoint, so it holds
-`(p one)` and never withdraws it. Scratch writes `(q one)` before the boundary
-judges any guard, so `derive-p` never fires. On `stale-naf-fork` the stale
-`(p one)` meets `(q one)` in `p-and-q-clash`, and the node dies. On
-`features/07` and its twin nothing refutes the pair, and the node is in R on
-both routes, holding a different state.
+**Why each differs.** It is one mechanism every time. Root derives a fact by
+a rule under an `absent`, and the commitment falsifies that guard. The fork
+starts from root's fixpoint, so it holds the fact and never withdraws it.
+Scratch writes the commitment before the boundary judges any guard, so the
+rule never fires. On `stale-naf-fork` the stale `(p one)` meets `(q one)` in
+`p-and-q-clash`, and the node dies. On `activator-all-*` and
+`rung-connex-import` **root itself is dead** on such a fact (a chain of
+activators from `flag`'s `(absent (checked ?x))`; `std.algebra`'s `connex`
+over `(absent (lt A C))` and `(absent (lt C A))`), so every fork is dead and
+scratch, with the commitment given, is alive. Elsewhere nothing refutes, and
+the node is in R on both routes, holding a different state. On
+`features/23` the fork's extra facts are read off root's `open` facts, which
+scratch does not hold: a rule that reads `open` flags its program
+(Q-M1f.569).
 
-These are the four programs site census § 2
-names as the only ones within the limit where a site's rule fires at root.
-The census called that an argument for where the routes *can* differ. Here
-the routes differ there, on one node each, and nowhere else.
-
-**Where they agree.** On the other 14 programs every node agrees in its
-status and in every fact it holds. That includes the nine with a hole, so the
-holes S1e2.1b.3 reads are the same holes under either route. No node on any
-cube holds a fact that only scratch holds.
+**Where they agree.** On the other 39 programs every node agrees in its status
+and, beyond the `open` facts, in every fact it holds. That includes the 16
+with a hole, so the holes [`hole_census`](hole-census.md) reads are the same
+holes under either route. No node on any cube holds a fact that only scratch
+holds.
 
 ### 2.2 S1e2.4.1's probes
 
-14 files: 13 within the limit and compared, 206 nodes; `features05_scoped`
-(n = 26) is past it. Of the 13, five are flagged (`naf_open_hrules`,
-`not_conclusion`, `three_components_owe`, `trigger_hole_owe`, `via_hole`,
-174 nodes). **One node differs**, in its state only:
+Not re-taken: the 14 files are written with `hrule`, `:priority` and no
+`:why`, and none parses today. On 2026-11-02 one node of 206 differed, in its
+state only: `not_conclusion`'s `{(q A)}`, by fork holding `(not (p A))` ←
+`exclude` under `(absent (q A))`, the same mechanism with a stored negative.
+`kw-neq-in-absent` and `open-derived-activator` show the mechanism on the
+corpus today.
 
-| probe | node | fork | scratch | facts only fork holds |
-|---|---|---|---|---|
-| `not_conclusion` | `{(q A)}` | in R, state `{(not (p A)), (q A)}` | in R, state `{(q A)}` | `(not (p A))` ← `exclude`, under `(absent (q A))` |
+### 2.3 Programs written into the census
 
-It is the same mechanism, with a stored negative as the fact root derived. The
-other eight probes are monotone and agree everywhere.
-
-### 2.3 Three programs written into the census
-
-`--written` runs three programs the census carries as text, for readings no
-corpus program within the limit shows. No corpus file is added.
+`--written` runs six programs the census carries as text, for readings no
+corpus program within the limit shows: four of its own, rewritten in today's
+spelling for this re-take, and the two of
+[`examples/shared/written.rs`](../../ein.rs/crates/ein-infer/examples/shared/written.rs).
+No corpus file is added.
 
 | program | what it is | fork | scratch |
 |---|---|---|---|
-| `dead_root` | `region_synth.py`'s refused target: ∅ dead, `{(h A)}` alive. One rule, `(and (thing ?x) (absent (h ?x))) → (false)` | R = ∅: root is dead, so every fork is | R = `{(h A)}`: committed, `(h A)` blocks the refutation |
+| `dead_root` | the target `region_synth.py` declines (`RootDead`): ∅ dead, `{(h A)}` alive. One rule, `(and (thing ?x) (absent (h ?x))) → (false)` | R = ∅: root is dead, so every fork is | R = `{(h A)}`: committed, `(h A)` blocks the refutation |
 | `dead_root_via` | the same through a derived positive, S1e2.4.1's `via` class: `p ← ¬h`, `p → ⊥` | R = ∅ | R = `{(h A)}` |
-| `stratified_stale` | `p ← ¬q` and `q ← ¬r`, at one priority, `derive-p` written first. **Stratified** | R = {∅, `{(r one)}`}; `{(r one)}` holds `(p one), (q one), (r one)` | R the same; `{(r one)}` holds `(p one), (r one)` |
+| `stratified_stale` | `p ← ¬q` and `q ← ¬r`, `derive-p` written first. **Stratified** | R = {∅, `{(r one)}`}; `{(r one)}` holds `(p one), (q one), (r one)` | R the same; `{(r one)}` holds `(p one), (r one)` |
+| `fifo_gap_static` | § 12.2's program as written into the census before it was banked; monotone | R = {∅, `{(b one)}`}; `{(b one)}` holds `(b one) (q one)` | R the same; `{(b one)}` holds `(b one) (p one) (q one)`, `(p one)` stale |
+| `activator_refutes`, `activator_under_absent` | `written.rs`'s, each with a dead hole ([hole census § 2](hole-census.md#2-by-cause-and-kind)) | R of 3 and of 7 states | the same, node for node, beyond the `open` facts |
 
 The first two are § 6.3's reading of the synthesizer. The third is § 4's: on a
-stratified program, scratch's own root holds a stale fact.
+stratified program, scratch's own root holds a stale fact. Every row is the
+stage's, unmoved.
 
 ## 3. The control: the monotone cubes
 
 On a program the static check calls monotone, fork and scratch build the same
-state by the theorem (phase README § What non-monotone means).
-`--control` checks that premise node for node, on every fact; `region_dump.rs`
-checks the statuses and closures of nine programs:
+state by the theorem
+([`08-monotonicity.md` § 8.2](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#82-path-independent-if-and-only-if-monotone-given-cumulativity)).
+`--control` checks that premise node for node:
 
 | | |
 |---|---:|
-| monotone cubes within the limit | 155 |
-| nodes | 268 213 |
+| monotone cubes within the limit | 650 |
+| nodes | 428 639 |
 | nodes whose status differs | **0** |
-| nodes whose facts differ | **0** |
+| nodes whose facts differ | 361 858 |
+| … beyond the `open` facts | not split: the control keeps no node's facts |
 | programs on which the fork read here is not the oracle's node | 0 |
-| wall, 16 jobs | 59 s |
+| wall, 16 jobs | 507 s |
 
-So on the corpus the two routes are one route wherever the static check says
-they must be, and the comparison over monotone cubes is evidence for no
-option, as the stage expected.
+On the control the census keeps no node's facts, only a digest, so the
+361 858 nodes whose facts differ are not split by kind as § 2.1's are: what
+they hold beyond the `open` facts is not read here. What does read facts says
+the two routes agree. The stale check, run on every node, finds **one** stale
+node, from scratch: `11_fifo_gap_static`'s `{(b one)}` (§ 12.2), the FIFO race
+over a static read; none by fork. The path census's control (§ 11.4) finds
+that node path-dependent and no other of 19 041. **So on the corpus the two
+routes agree in status wherever the static check says they must**, and the
+comparison over monotone cubes is evidence for no option, as the stage
+expected; the one state that differs is the race, which a *monotone* verdict
+does not exclude.
 
 ## 4. The staleness census
 
@@ -203,27 +228,28 @@ disjunct that record exactly those patterns, rebuilding the saturator's
 `negative_premises` from the provenance's bindings. Then it asks the engine's
 matcher (`Matcher::holds`) whether that guard's query now has a match in the
 node's fixpoint. Where no plan reproduces the recorded patterns, it falls back
-to the patterns and counts the fact *inexact*: **0** inexact checks on every
-run below.
+to the patterns and counts the fact *inexact*: **0** inexact checks on the
+corpus, 1 on the written `activator_refutes`.
 
 | run | nodes | stale nodes by fork | … of them in R | … dead, the death resting on it | stale nodes from scratch |
 |---|---:|---:|---:|---:|---:|
-| the flagged cubes (§ 2.1) | 256 | **4** | 2 | 2 | **0** |
-| S1e2.4.1's probes (§ 2.2) | 206 | **1** | 1 | 0 | **0** |
-| the control (§ 3) | 268 213 | 0 | 0 | 0 | **0** |
-| the written programs (§ 2.3) | 6 | 4 | 2 | 2 | **1** |
+| the flagged cubes (§ 2.1) | 656 | **29** | 12 | 14 | **1** |
+| the control (§ 3) | 428 639 | 0 | 0 | 0 | **1** |
+| the written programs (§ 2.3) | 20 | **4** (`dead_root`, `dead_root_via`, `stratified_stale` 2) | 2 | 2 | **2** (`stratified_stale`'s ∅, `fifo_gap_static`'s `{(b one)}`) |
 
-Each stale node holds one stale fact, except `stratified_stale`'s `{(r one)}`
-by fork, which holds two.
-
-- **By fork, the stale nodes are exactly the nodes where the routes differ.**
-  On `stale-naf-fork` and its twin, `{(q one)}` holds `(p one)` ←
-  `derive-p (absent (q one))`, and the node's `(false)` rests on it. On
-  `features/07` and `f07-fpoff`, `{(q one)}` holds the same stale `(p one)` and
-  is in R. On the probe `not_conclusion`, `{(q A)}` holds `(not (p A))` ←
-  `exclude (absent (q A))` and is in R.
-- **From scratch, no corpus node is stale.** That is every node of the 18
-  flagged cubes, the 13 probes and the 155 monotone cubes.
+- **By fork, the stale nodes are the nodes where the routes differ, less six,
+  and one more.** 28 of the 34 nodes of § 2.1 that differ beyond `open` hold a
+  stale fact; `open-derived-activator`'s 4 and `features/23`'s 2 hold none,
+  their extra facts resting on no falsified guard. The 29th is `10_fifo_gap`'s
+  `{(a one), (b one)}`, stale on both routes alike (§ 12.1). By program:
+  `rung-connex-import` 12 (dead on it), `kw-neq-in-absent` and its twin 4 each
+  (in R), `activator-all-*` 1 each (dead, its death not resting on it: root is
+  dead), `stale-naf-fork` and its twin 1 each (dead on it), `features/07`,
+  `f07-fpoff`, `f07-rules-swapped` 1 each (in R), `10_fifo_gap` 1 (in R).
+- **From scratch, one corpus node is stale on each side**: `10_fifo_gap`'s
+  `{(a one), (b one)}`, and the control's `11_fifo_gap_static` `{(b one)}`
+  (§ 12.2), the FIFO race inside a node; no other node of the 52 flagged cubes
+  or the 650 monotone ones.
 
 **What a stale fact means.** This is an argument, not a test, and the census
 checks its premise on every node. Take a fixpoint the engine reaches that
@@ -243,148 +269,106 @@ stale-free state is one stable model of several (`features/07` has two,
 **Scratch alone does not make a stratified program stale-free.** The written
 `stratified_stale` is stratified (`r` < `q` < `p`), and its scratch root holds
 `(p one)` ← `derive-p (absent (q one))` beside `(q one)`. The boundary admits
-one candidate a round in (priority, FIFO) order, not in stratum order. Both
-candidates wait at root's first boundary at priority 200, and `derive-p`,
-written first, goes first. The program's perfect model at ∅ is `{(q one)}`.
-Swapping the two rules' text gives that model and a different universe
-(§ 7.1). No corpus program shows this: scratch is stale-free on every corpus
-node. It is what (B) leaves open on a stratified program until admission
-follows the strata.
+rules in the agenda's order, FIFO in written order within each half
+(Q-M1f.313), not in stratum order: both wait at root's first boundary in the
+same half, and `derive-p`, written first, goes first. The program's perfect
+model at ∅ is `{(q one)}`. Swapping the two rules' text gives that model and a
+different universe (§ 7.1). On the corpus it is `10_fifo_gap` and
+`11_fifo_gap_static` (§ 12). It is what (B) leaves open on a stratified
+program until admission follows the strata.
 
 ## 5. The stratification check
 
 **The graph.** Its nodes are relations as the static check names them, `R` or
-`(not R)`, taken from the saturation plans root compiled. Each plan gives an
-edge from every relation it reads to every relation it writes, **negative**
-when the read is at odd `absent` depth. A rule with an activator adds a
-positive edge from its activator relation. A **cycle through an odd `absent`**
-is a strongly connected component that holds a negative edge. *Over D* keeps
-only the edges between relations in D. The census also says whether some
-cycle in the component has an **odd** number of negative edges, where a
-stable model need not exist, or every cycle an even number, where there can
-be several.
+`not` (a stored negation's relation is `not`), taken from the saturation plans
+root compiled. Each plan gives an edge from every relation it reads to every
+relation it writes, **negative** when the read is at odd `absent` depth. A
+rule with an activator adds a positive edge from its activator relation. A
+**cycle through an odd `absent`** is a strongly connected component that holds
+a negative edge. *Over D* keeps only the edges between relations in D. The
+census also says whether some cycle in the component has an **odd** number of
+negative edges, where a stable model need not exist, or every cycle an even
+number, where there can be several.
 
 ```sh
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --strata    # 0.1 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --strata    # 11 s
 ```
 
-Over the 208 programs of the selection that load and saturate:
+Over the 748 programs of the selection that load and saturate:
 
 | scope | programs with a cycle through an odd `absent` |
 |---|---:|
-| **over D**, what option (D) refuses | **3** |
-| over all relations | 6 |
+| **over D**, what F21's D2 option (D) would read | **4** |
+| over all relations | 7 |
 
 | program | n | flagged | over D | the cycle | parity |
 |---|---:|---|---|---|---|
-| [`corpus/fuzz_findings/d3-unsat-core.ein`](../../corpus/fuzz_findings/d3-unsat-core.ein) | 5 | yes | **yes** | `fire-1` reads `(not r1)` under `absent` and writes `r1`; `fire-0` reads `r1` and writes `(not r1)` | odd |
+| [`ein-bugs/d3-unsat-core.ein`](../../examples/ein-bugs/d3-unsat-core.ein) | 5 | yes | **yes** | `fire-1` reads `not` under `absent` and writes `r1` (`not` →¬ `r1`) | odd |
 | [`features/07_unstratifiable.ein`](../../examples/features/07_unstratifiable.ein) | 1 | yes | **yes** | `derive-p`: `q` →¬ `p`; `derive-q`: `p` →¬ `q` | even |
 | [`ein-bugs/wrong-answers/f07-fpoff.ein`](../../examples/ein-bugs/wrong-answers/f07-fpoff.ein) | 1 | yes | **yes** | the same | even |
-| [`syntax/rule-forall-and-not.ein`](../../examples/syntax/rule-forall-and-not.ein) | 0 | no | no | `f` reads `r` under a `forall` and writes `r` and `(not r)` | odd |
+| `ein-bugs/wrong-answers/f07-rules-swapped.ein` | 1 | yes | **yes** | the same, the two rules written the other way | even |
+| [`syntax/rule-forall-and-not.ein`](../../examples/syntax/rule-forall-and-not.ein) | 0 | no | no | `f` reads `r` under a `forall` and writes `r` and `not` | odd |
 | [`syntax/rule-guards.ein`](../../examples/syntax/rule-guards.ein) | 0 | no | no | `g`: `s` →¬ `s` | odd |
 | [`syntax/rule-shared-guard-var.ein`](../../examples/syntax/rule-shared-guard-var.ein) | 0 | no | no | `sh`: `r` →¬ `r` | odd |
 
-**What (D) would refuse, and what that costs, by name.**
-
-- **`features/07`**: its corpus entry's goldens, 6 lines of `corpus_exits.txt`
-  and 35 of `corpus_shapes.md5`, and the register row `W8/features-07`. The
-  fixture exists to pin S1.21.8's *at most one admission per round*, whose
-  soundness argument is this program. That discipline still matters on a
-  stratified program (§ 4's written case), but no corpus program would then
-  show it.
-- **`f07-fpoff`**: 1 line of `corpus_exits.txt` and 35 of `corpus_shapes.md5`,
-  and its place as `W8/features-07`'s twin.
-- **`d3-unsat-core`**: no corpus entry and no golden line. It is the witness
-  of `W1/d3-unsat-core` and `W11/d3-unsat-core`, both `fixed`, and both
-  would be re-stated with a refusal as `right`.
-
-Two of the three are W8's own witnesses, so whether "refused" is a right
-answer for them is the ruling itself. The third is a fuzz finding kept for two
-rows the switch fixed. `stale-naf-fork` is stratified (`q` is no rule's
+**(D) as a refusal is ruled out** (Q-M1f.564): the four programs load,
+flagged, and are answered under the warning. What the count still says is
+where a stratified reading has no stratum order: those four, and no other
+program of the 748. Three of the four are W8's witnesses, `features/07` and
+its two twins, whose right answer is what D2 rules; the fourth is
+`d3-unsat-core`, a fuzz finding. `stale-naf-fork` is stratified (`q` is no rule's
 conclusion), and (D) does not reach it, as the stage said.
 
-**Over all relations** a classical check would also refuse three syntax
-fixtures. Each states no fact, so nothing fires, n = 0 and D is empty. That
-is the case for reading (D) over D, as the stage does.
+**Over all relations** three syntax fixtures add a cycle. Each states no
+candidate, n = 0, and D is empty. That is the case for reading (D) over D, as
+the stage does.
 
 **What the graph does not see.** A rule with an activator that no fact
-activates at root has no plan, so it has no edges. 9 programs have one: the
-five stdlib modules loaded as programs (`algebra`, `bijection`, `elim`, `slots`, `typing`), `domain_elim/b_branch`,
-`syntax/rule-nary-and-or`, `broken/compile/activator_arity` and
-`tests/stdlib/closure/01_infer_closure`. All 9 are monotone, so no commitment
-can derive an activator there and no node compiles a plan root lacks. On the
-corpus the graph is complete. A program whose node can compile a refutation
-through an activator (`region.rs`'s `ACTIVATOR_REFUTES`) would need the check
-re-run on the node's plans. That is S1f.5.15's to design, or this phase's if
-(D) is ruled.
+activates at root has no plan, so it has no edges. A program whose node can
+compile a plan root lacks (the activator chains of
+[`hole_census.md` § 2](hole-census.md#2-by-cause-and-kind),
+`activator-chain-node-writes` of [`taint_census.md` § 3](taint-census.md#3-the-readings-of-tainted-side-by-side))
+would need the check re-run on the node's plans, which the census does not
+do.
 
 ## 6. The three known cases
 
 ### 6.1 The `-y` abort on `d3-unsat-core`
 
 Before the switch, `-y` (`lattice-sanity-check`) aborted on
-`d3-unsat-core.ein` with *"Saturation commutativity violated"*. The census
-runs the library function `-y` ran, `sanity::check_commutativity`, on every
-node of two facts or more of every flagged cube and probe: 192 corpus nodes
-and 162 probe nodes. It asks whether a parent path reaches the same state as
-the direct one.
-
-| program | nodes checked | a parent path differs | the path's extra fact | stale on the path |
-|---|---:|---:|---|---|
-| `d3-unsat-core` | 26 | **8** | `(r1 o2 o2)` on 4, `(r1 o3 o3)` on 4 | `(r1 o2 o2)` ← `fire-1 (absent (not (r1 o3 o3)))` on the 4; the other 4 are dead nodes whose fixpoints differ by a fact that is not stale |
-| `lattice/08_absent_witness_hole` | 4 | **2** | `(meal Ann Soup)` | yes, ← `soup-unless-allergic (absent (allergic Ann))` |
-| probe `via_hole` | 4 | **1** | `(p one)` | yes, ← `derive-p (absent (q one))` |
-| every other flagged cube and probe | 320 | 0 | | |
-
-The census rebuilds each path state as `-y` built it (the parent's fixpoint,
-the last fact written, a full saturation) and reads it for staleness. **The
-direct fork is scratch's node on every one of these nodes** (§ 2). What
-differs is the path: a parent derives a fact under an `absent` that the last
-fact falsifies, and the path keeps it. On an odd loop, `d3-unsat-core`'s four
-dead nodes, which facts a dead fixpoint holds also depends on the order of
-admission. **Corrected by § 11.2 (S1e2.1b.7)**: those four were `-y`'s direct
-path, `try_commitment_set` under `enable-fail-fast-fork`, stopping at its first
-contradiction; built to quiescence, as the oracle builds a node, they agree.
-
-- **(A)**: no shipped route meets this. The oracle, route 1 and route 2 build
-  every node from root at once. But the node is *root plus the commitment at
-  once*, so a search that extends a parent's fixpoint builds a different node
-  on a flagged program. `lattice/08` is stratified, so (D) does not remove the
-  case. That constrains P1e2.1c's
-  search.
-- **(B)**: a node has no path, and the direct node already is scratch's. The
-  abort says nothing against (B).
-- **(C)**: the 7 path states that differ by a stale fact are caught by it.
-  The other 4 are dead under every option.
-- **(D)**: refuses `d3-unsat-core`. `lattice/08` and `via_hole` stay.
+`d3-unsat-core.ein` with *"Saturation commutativity violated"*. The stage's
+census ran the library function `-y` ran on every node of two facts or more,
+one-step parents as `-y` built them, and found 8 nodes of `d3-unsat-core`, 2
+of `lattice/08` and 1 of the probe `via_hole` where a parent path reached
+another state. **§ 11.2 corrected it**: `d3-unsat-core`'s four dead nodes were
+`-y`'s direct path stopping at its first contradiction, and built to
+quiescence they agree. That check is no column of this census today: it is the
+read-out's `paths` row, the detector's spot check, which on `lattice/08` prints
+*path-dependent — 1 of 20 parent paths checked reaches another state*. § 11
+reads every path.
 
 ### 6.2 L0 on `features/12`
 
-Root is dead by `no-room`, and n = 20, past the oracle. By fork, L0 decides
-every node: `explore::Licence::ForkOnlyAdds`, *"the node function's own
-construction, not a theorem about the program"*. From scratch, the census runs
-the whole cube:
+On 2026-11-02 `features/12_expect_false.ein` had 20 candidates, past the
+oracle, and a dead root, and the stage ran its whole scratch cube (all
+1 048 576 nodes dead, 23 s). **Today it has none**: the static check calls it
+monotone, `ein solve` prints *no candidate: R is {∅} or empty, decided by root
+alone*, and the cube is root alone, dead by fork and from scratch:
 
 ```sh
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- \
-    --scratch-cube --jobs 16 examples/features/12_expect_false.ein                                          # 23 s
+    --scratch-cube --jobs 16 examples/features/12_expect_false.ein                                          # 0.6 s, 1 node
 ```
 
-**All 1 048 576 nodes are dead** (23.3 s at 16 jobs). So `features/12`'s
-answer, R = ∅, is the same under (B). L0's *reason* is not: under scratch a
-dead root does not kill its supersets, as `dead_root` (§ 2.3) shows with
-`{(h A)}` in R above a dead ∅. Under (B), a flagged program with a dead root
-needs another licence, or the cube. On `features/12` the arguments that exist
-are fact grain (its reads are static at fact grain, site census § 5.3)
-and S1e2.2.5's refusal under *forbid*. (C) would change nothing, by the same
-fact-grain argument and not by a run: the guard root's `(false)` rests on reads
-`(instance ?h Hole)`, which no candidate and no fact derived from one
-matches, so no node falsifies it. (D) does not reach it: `features/12` is
-stratified.
+L0's *reason* is the stage's: under scratch a dead root does not kill its
+supersets, as `dead_root` (§ 2.3) shows with `{(h A)}` in R above a dead ∅,
+and as `activator-all-*` and `rung-connex-import` now show on the corpus
+(§ 2.1). Under (B), a flagged program with a dead root needs another licence,
+or the cube.
 
 ### 6.3 The synthesizer's dead ∅
 
-`region_synth.py` refuses a target with ∅ dead under a non-empty R
+`region_synth.py` declines a target with ∅ dead under a non-empty R
 (`RootDead`), because every fork of a dead root is dead. The census's
 `dead_root` and `dead_root_via` are that target, written by hand, one
 directly and one through a derived positive:
@@ -395,21 +379,20 @@ directly and one through a derived positive:
 | (B) | R = `{(h A)}`. The target can be written |
 | (C) over (A) | R = ∅; `{(h A)}` is the third outcome, dead with its death resting on a stale fact |
 | (C) over (B) | as (B) |
-| (D) | both are stratified, and neither is refused |
+| (D) | both are stratified, and a cycle check finds nothing |
 
-Under *forbid*, `dead_root` is the shape S1e2.2.5 refuses: a `(false)` from an
-`absent` over a relation a commitment can extend. `dead_root_via` is the `via`
-class its F2 decides. So under (B) the synthesizer could write the target, and
-under *forbid* the program it writes would be refused.
+Under the stage's *forbid*, `dead_root` was the shape refused at load; today
+it loads, flagged (Q-M1f.564). So under (B) the synthesizer could write the
+target. The corpus has the shape today: `activator-all-int`, `-nested`, `-symbol` and
+`rung-connex-import` are dead at root by fork and alive from scratch above it.
+No program is refused for it (Q-M1f.564).
 
 ## 7. Invariance
 
 ```sh
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance                         # the flagged cubes, 0.9 s
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance --written
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance \
-    plans/m1n_non_monotone_programs/f21_probes/*.ein
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance --control --max-n 9    # 149 monotone cubes, 10 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance                         # the flagged cubes, 20 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance --written                # 1.1 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --invariance --control --max-n 9    # cut: see below
 ```
 
 Each route is re-run under four levers, and each run is compared with the
@@ -421,8 +404,8 @@ route's own default run, node by node, keyed by the commitment's text:
   route is rebuilt on a `Terms` whose id space is a permutation of the default
   run's, by that test's `permuted`, copied into the census.
 - **Equal-priority rule orders.** Every order of the program's `(rule …)`
-  forms within each priority: all of them where there are at most 24, else
-  the reverse and 8 seeded shuffles.
+  forms within each half of the agenda: all of them where there are at most
+  24, else the reverse and 8 seeded shuffles.
 - **Every `(config …)` flag** flipped from its default. A flag the program
   already sets is skipped.
 
@@ -432,108 +415,133 @@ the two routes moved on the same runs, so one count stands for both:
 
 | run | cubes | `--jobs` | interners | rule orders | flags |
 |---|---:|---|---|---|---|
-| the flagged cubes | 18 | 0 of 18 | 0 of 144 | **2 of 17** move the universe | 0 of 121 |
-| S1e2.4.1's probes | 13 | 0 of 13 | 0 of 104 | 0 of 13 | 0 of 89 |
-| the written programs | 3 | 0 of 3 | 0 of 24 | **1 of 1** moves the universe | 0 of 21 |
-| monotone, n ≤ 9 | 149 | 0 of 149 | 0 of 1 192 | 0 of 117 | 0 of 1 036 |
+| the flagged cubes | 52 | 0 of 52 | 0 of 416 | **3 of 448** move the universe (`features/07`, `f07-fpoff`, `f07-rules-swapped`); **12** move a state (`10_fifo_gap`) | 0 of 104 |
+| the written programs | 6 | 0 of 6 | 0 of 48 | **1 of 39** moves the universe (`stratified_stale`); **3** move a state from scratch alone (`fifo_gap_static`) | 0 of 12 |
+| the control, **cut**: 357 programs of the selection read | 357 | 0 of 357 | 0 of 2 856 | 2 of 1 004 move the universe (`features/07`, `f07-fpoff`); 12 a state on both routes (`10_fifo_gap`); **3 a state from scratch alone** (`11_fifo_gap_static`) | 0 of 711 |
+
+**The control was not taken whole.** Run as the stage ran it, one thread,
+`--invariance --control --max-n 9` read 29 programs in its first 5 minutes,
+where the stage's read 149 in 10 s. It was cut and run again in eight shards
+of the selection's 933 files at once; a shard given its files explicitly
+filters none, so the shards read flagged programs and cubes past n = 9 as
+well. Two shards ended on `stdlib/math/int.ein` and
+`stdlib/math/positional.ein`, read as programs, past 24 GB of memory; four
+were cut after 21 minutes on cubes larger than the stage's bound
+(`binary_logic/` and others). The 357 programs read, 83 of them under
+`stdlib/` and `tests/stdlib/`, move nothing but the four above. What is not
+read is the rest of the 650 monotone cubes; machine time spent, about 5 CPU-hours.
 
 ### 7.1 What rule order moves
 
-**`features/07` and `f07-fpoff`.** Write `derive-q` before `derive-p`, and
-root derives `(q one)` where it derived `(p one)`. The candidate list becomes
-`{(p one)}`, and R is `{∅, {(p one)}}`, the mirror image of today's. That
-happens **on both routes**. The oracle's own R on `features/07` depends on
-which of two rules at priority 200 is written first, which is the config
-principle's *stable* ([`08-monotonicity.md` § 11.1](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#111-three-words):
+**`features/07`, `f07-fpoff` and `f07-rules-swapped`.** Write `derive-q`
+before `derive-p`, and root derives `(q one)` where it derived `(p one)`. The
+candidate list becomes `{(p one)}`, and R is `{∅, {(p one)}}`, the mirror image.
+That happens **on both routes**; `f07-rules-swapped` is the program written in
+the other order. The oracle's own R on `features/07` depends on which of two rules in one half
+of the agenda is written first, which is the config principle's *stable*
+([`08-monotonicity.md` § 11.1](../../docs/ein/reasoning/02-kb-evolution/08-monotonicity.md#111-three-words):
 *"it does not depend … on rule order"*) broken by today's node, not only by
-scratch.
+scratch. The program is flagged, so nothing is claimed of either answer.
+
+**`10_fifo_gap`.** Of 23 orders, 12 move the state of `{(a one), (b one)}` on
+both routes, and none moves a status or the universe: the FIFO race of § 12.1.
 
 **`stratified_stale`**, written. With `derive-q` first, root is `{(q one)}`,
-the program's perfect model, and the universe grows to `{(p one), (r one)}`.
-This one is stratified, so (D) does not reach it (§ 4).
+the program's perfect model, and the universe grows to `{(p one), (r one)}`:
+R is ∅, `{(p one)}`, `{(r one)}` and both, on both routes. This one is
+stratified, so a stratification check does not reach it (§ 4).
+**`fifo_gap_static`**, written, and `11_fifo_gap_static` in the control: the
+three orders that put `r1` before `r2` move scratch's state of `{(b one)}`, and
+nothing of the fork's.
 
 ### 7.2 What settles it
 
-- **(D)** refuses `features/07` and `f07-fpoff`. Of the 167 cubes
-  this run reorders (18 flagged, 149 monotone), they are the only ones whose
-  answer depends on rule order.
+- **A stratification check** reads `features/07` and its two twins: of the
+  52 flagged cubes and 357 programs of the control this run reorders, they are
+  the only ones whose universe
+  depends on rule order. As a refusal, (D), it is ruled out (Q-M1f.564).
 - **(C) does not settle it.** Over (A), R is `{∅}` in both orders, but ∅'s state
   is `{(p one)}` in one and `{(q one)}` in the other. Over (B), both orders keep
   both stable models, under different universes. (C) removes stale states, and
   each order's states are stale-free.
-- **On a stratified program**, what settles it is admitting candidates in
-  stratum order. Then scratch's root is the perfect model in every order
-  (§ 4's argument), and on the corpus no node moves, because every scratch
-  node there is already stale-free.
+- **On a stratified program**, what settles it is admitting rules in stratum
+  order. Then scratch's root is the perfect model in every order (§ 4's
+  argument); on the corpus that moved `10_fifo_gap`'s one state under the
+  stage's emulation (§ 12.4, not re-taken).
 
 ## 8. Cost
 
 ```sh
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cost              # the flagged cubes, 0.1 s
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cost --control    # the six monotone cubes with n ≥ 12, 4 096 nodes each, 7.6 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cost              # the flagged cubes, 11 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cost --control    # the ten monotone cubes with n ≥ 12, 4 096 nodes each, 128 s
 ```
 
 One thread, each node read to its two bits only. **Fork**: branch root, write
 the commitment, resume, saturate, detect, tally. **Scratch**: parse and load
 the text with the commitment, saturate, detect, tally, with the saturation's
 share (from the end of the load) shown on its own. **Derived** is the facts
-the node's own saturation adds. For fork that is beyond root and beyond the
-commitment. For scratch it is beyond the load, which re-derives root's.
+the node's own saturation adds. For scratch it is beyond the load, which
+re-derives root's. **For fork the column is not read today**: it is the
+node's facts less root's and the commitment's, and root's count includes the
+`open` facts its pass writes in a layer no fork inherits, so where a fork
+holds fewer facts than that sum the census's count wraps below zero and
+prints a number near 2⁶⁴ divided by the nodes timed (`4.6e18` on a cube of 4
+nodes). It is printed as `—` below.
 
-| program | n | fork µs | scratch µs | ×  | saturation alone µs | × | derived: fork | scratch | root |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| `d3-unsat-core` | 5 | 6.6 | 57.3 | 8.7 | 10.5 | 1.6 | 1.4 | 1.4 | 0 |
-| `branching/13` | 2 | 4.1 | 58.0 | 14.1 | 8.3 | 2.0 | 0.3 | 1.3 | 1 |
-| `branching/14` | 2 | 3.4 | 59.2 | 17.3 | 7.1 | 2.1 | 0.3 | 0.3 | 0 |
-| `alive-empty-interlayer` | 3 | 3.0 | 70.6 | 23.7 | 6.8 | 2.3 | 1.0 | 1.0 | 0 |
-| `naf-upward-closure` | 2 | 2.9 | 51.9 | 17.8 | 4.4 | 1.5 | 0.3 | 0.3 | 0 |
-| `f07-fpoff` | 1 | 1.5 | 50.1 | 33.0 | 7.8 | 5.1 | 0.0 | 0.5 | 1 |
-| `naf-nowb` | 2 | 2.3 | 40.2 | 17.3 | 3.7 | 1.6 | 0.3 | 0.3 | 0 |
-| `stale-naf-fork-warn` | 1 | 2.8 | 50.3 | 17.7 | 6.2 | 2.2 | 0.5 | 0.5 | 1 |
-| `stale-naf-fork` | 1 | 2.7 | 46.3 | 17.4 | 5.7 | 2.2 | 0.5 | 0.5 | 1 |
-| `features/07` | 1 | 1.4 | 50.6 | 36.9 | 7.5 | 5.4 | 0.0 | 0.5 | 1 |
-| `lattice/04` | 2 | 8.2 | 303.9 | 37.0 | 10.0 | 1.2 | 0.5 | 0.5 | 0 |
-| `lattice/08` | 3 | 7.0 | 306.7 | 44.1 | 12.5 | 1.8 | 0.3 | 0.3 | 0 |
-| `lattice/09` | 2 | 6.8 | 290.1 | 42.6 | 7.5 | 1.1 | 0.5 | 0.5 | 0 |
-| `synth/local_not_global` | 2 | 5.2 | 59.2 | 11.4 | 5.0 | 1.0 | 0.0 | 0.0 | 0 |
-| `synth/maximal_not_top` | 3 | 5.6 | 57.0 | 10.2 | 5.2 | 0.9 | 0.0 | 0.0 | 0 |
-| `synth/three_components` | 7 | 7.8 | 104.3 | 13.3 | 14.4 | 1.8 | 0.8 | 0.8 | 0 |
-| `synth/trigger_hole` | 5 | 6.8 | 74.8 | 11.0 | 9.3 | 1.4 | 0.1 | 0.1 | 0 |
-| `tests/region/07_cube` | 2 | 8.5 | 308.7 | 36.3 | 9.8 | 1.2 | 0.5 | 0.5 | 0 |
-| **control**, monotone | | | | | | | | | |
-| `branching/01_saturate_only` | 16 | 45.9 | 137.0 | 3.0 | 58.9 | 1.3 | 10.1 | 18.1 | 8 |
-| `features/02_star_in_identifiers` | 15 | 47.6 | 111.9 | 2.4 | 58.8 | 1.2 | 6.7 | 16.7 | 10 |
-| `lattice/07_two_pairs_two_tables` | 16 | 54.2 | 391.1 | 7.2 | 53.9 | 1.0 | 1.0 | 1.0 | 0 |
-| `type-exclusivity/pets` | 15 | 8.5 | 53.4 | 6.3 | 12.4 | 1.5 | 2.6 | 8.6 | 6 |
-| `syntax/constraint-scopes` | 12 | 2.0 | 33.2 | 16.9 | 0.4 | 0.2 | 0.0 | 0.0 | 0 |
-| `tests/stdlib/bijection/06_blind_enumeration` | 16 | 101.2 | 792.0 | 7.8 | 204.8 | 2.0 | 15.6 | 36.6 | 21 |
+| program | n | fork µs | scratch µs | × | saturation alone µs | × | derived: scratch | root |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `activator-all-int` | 1 | 3.8 | 368.6 | 95.8 | 20.2 | 5.3 | 1.5 | 4 |
+| `d3-unsat-core` | 5 | 11.7 | 1053.9 | 90.1 | 92.8 | 7.9 | 7.8 | 11 |
+| `naf-upward-closure` | 2 | 4.8 | 252.1 | 52.1 | 8.1 | 1.7 | 0.3 | 2 |
+| `oblig-stdlib-total-owed` | 1 | 18.7 | 3625.2 | 193.9 | 114.5 | 6.1 | 5.0 | 6 |
+| `rung-connex-import` | 4 | 4.7 | 3154.1 | 677.3 | 93.9 | 20.2 | 2.3 | 7 |
+| `stale-naf-fork` | 1 | 5.2 | 279.6 | 54.2 | 10.6 | 2.1 | 0.5 | 2 |
+| `features/07_unstratifiable` | 1 | 2.5 | 281.6 | 112.2 | 12.7 | 5.0 | 0.5 | 2 |
+| `lattice/04_obligation_trigger_hole` | 2 | 16.0 | 3334.3 | 208.5 | 128.6 | 8.0 | 6.5 | 8 |
+| `lattice/08_absent_witness_hole` | 4 | 14.6 | 3414.3 | 234.5 | 151.7 | 10.4 | 8.1 | 13 |
+| `lattice/10_fifo_gap` | 2 | 6.5 | 388.6 | 59.7 | 12.6 | 1.9 | 0.8 | 2 |
+| `lattice/synth/three_components` | 7 | 13.9 | 713.0 | 51.2 | 27.7 | 2.0 | 0.8 | 8 |
+| `lattice/synth/trigger_hole` | 5 | 12.9 | 485.6 | 37.6 | 15.8 | 1.2 | 0.1 | 6 |
+| the other 40 flagged | 1–6 | 2.4–24.8 | 217.5–3636.7 | 31.8–243.7 | 5.7–156.6 | 0.8–8.3 | | |
+| **control**, monotone, n ≥ 12 | | | | | | | | |
+| `binary_logic/synthesis` | 16 | 145.8 | 8145.5 | 55.9 | 1966.7 | 13.5 | 254.9 | 255 |
+| `branching/01_saturate_only` | 16 | 60.9 | 1289.1 | 21.2 | 155.6 | 2.6 | 22.1 | 28 |
+| `underscore-core-two-ways-twin` | 14 | 7.9 | 401.7 | 51.0 | 18.9 | 2.4 | 4.3 | 18 |
+| `features/02_star_in_identifiers` | 15 | 57.5 | 420.7 | 7.3 | 74.3 | 1.3 | 16.7 | 25 |
+| `lattice/07_two_pairs_two_tables` | 16 | 73.7 | 3613.5 | 49.0 | 211.2 | 2.9 | 9.0 | 25 |
+| `lattice/14_seats_nothing_proposes` | 16 | 73.2 | 3934.8 | 53.8 | 236.0 | 3.2 | 11.0 | 27 |
+| `saturation/type-exclusivity/pets` | 15 | 14.5 | 990.4 | 68.2 | 76.9 | 5.3 | 13.2 | 25 |
+| `syntax/constraint-scopes` | 12 | 4.5 | 214.6 | 48.0 | 1.6 | 0.4 | 0.0 | 12 |
+| `syntax/equality` | 12 | 4.3 | 189.2 | 44.1 | 1.6 | 0.4 | 0.0 | 12 |
+| `tests/stdlib/bijection/06_blind_enumeration` | 16 | 114.4 | 6300.9 | 55.1 | 410.7 | 3.6 | 30.6 | 31 |
 
 The µs are means over every node, or over 4 096 nodes spread evenly over the
-cube where it has more. Three runs on 2026-11-02: on the six control cubes no mean
-moved by more than 1 %; on the flagged cubes, a few µs each over 2–128 nodes,
-a mean moved by up to 17 % and a ratio by up to 22 %. The table is the first
-run, and the ranges in the text cover all three.
+cube where it has more. Two runs of the flagged cubes, 2026-11-25: a mean moved
+by up to 23 % and a ratio by up to 33 % between them, a few µs each over 2–128
+nodes; the table is the first run. The control was run once, in 128 s.
 
-- **The saturation scratch adds is small**: ×0.2–5.6 of the fork's whole
-  node. It re-derives root at every node, which is the "derived" columns:
-  scratch = fork + root, to the rounding (`bijection/06`: 15.6 + 21 ≈ 36.6).
-  The biggest factors are on the smallest programs, where a fork derives
-  nothing and costs a branch.
-- **Parse and load dominate the prototype**: ×2.4–44 with them, about 290 µs
-  for any program that imports the stdlib (`lattice/04`, `08`, `09`,
-  `07_cube`). A build of (B) inside the engine would branch a loaded,
-  unsaturated program as the fork branches root, and would not pay them per
-  node. That is an argument; this prototype does not measure it.
-- `region.py`, two processes a node: 5–27 ms (§ Why a library prototype).
+- **The saturation scratch adds is small**: ×0.8–20 of the fork's whole node
+  on the flagged cubes, ×0.4–13.5 on the control. It re-derives root at every node:
+  scratch's derived column is root's and the node's own.
+- **Parse and load dominate the prototype**, and more than on 2026-11-02:
+  ×31–677 with them on the flagged cubes, ×7.3–68 on the control. A program that imports a module of the standard library
+  pays about 3.2 ms a node (`lattice/04`, `08`, `09`, `12`, `17`, the `oblig-*`
+  witnesses over `std.algebra`), and every program about 0.25 ms, since every
+  load carries `std.core`. A build of (B) inside the engine would branch a
+  loaded, unsaturated program as the fork branches root, and would not pay
+  them per node. That is an argument; this prototype does not measure it.
 
-## 9. W8's two rows, computed
+## 9. W8's two witnesses, computed
 
 Each option's R, from the route that option defines, on the two witnesses and
-their twins. Both twins give their witness's answer on every option (§ 2.1).
-The node census prints these as `A_fork`, `B_scratch`, `C_over_A` and
-`C_over_B`. "State" is the facts beyond the program's own.
+their twins. W8's rows left the register with Q-M1f.564 and are F21's; the
+witnesses are corpus programs. Both twins give their witness's answer on every
+option (§ 2.1). The node census prints these as `A_fork`, `B_scratch`,
+`C_over_A` and `C_over_B`. "State" is the facts beyond the program's own and
+beyond the `open` facts.
 
-**`W8/features-07`** (`features/07_unstratifiable.ein`, twin `f07-fpoff`):
+**`features/07_unstratifiable.ein`** (twins `f07-fpoff`, and `f07-rules-swapped`
+in the mirror):
 
 | option | R | k_s | maximal line | its state |
 |---|---|---:|---|---|
@@ -541,9 +549,9 @@ The node census prints these as `A_fork`, `B_scratch`, `C_over_A` and
 | (B) scratch | ∅, `{(q one)}` | 2 | `{(q one)}` | `(q one)`. ∅'s state is `(p one)`: the program's two stable models, one per node |
 | (C) over (A) | ∅ | 1 | ∅ | `(p one)`; `{(q one)}` is the third outcome, alive and holding a stale fact |
 | (C) over (B) | as (B) | | | |
-| (D) | — | | | refused at load, exit 1 |
+| (D) | — | | | a refusal, ruled out (Q-M1f.564) |
 
-**`W8/stale-naf-fork`** (`stale-naf-fork.ein`, twin `stale-naf-fork-warn`):
+**`stale-naf-fork.ein`** (twin `stale-naf-fork-warn`):
 
 | option | R | k_s | maximal line | its state |
 |---|---|---:|---|---|
@@ -551,76 +559,45 @@ The node census prints these as `A_fork`, `B_scratch`, `C_over_A` and
 | (B) scratch | ∅, `{(q one)}` | 2 | `{(q one)}` | `(q one)` |
 | (C) over (A) | ∅ | 1 | ∅ | `(p one)`; `{(q one)}` is the third outcome, dead with its death resting on a stale fact |
 | (C) over (B) | as (B) | | | |
-| (D) | not refused: stratified | | | (A), (B) or (C), as composed |
+| (D) | not reached: stratified | | | (A), (B) or (C), as composed |
 
-**The register's hand derivation is (B)'s answer, not (C)'s over (A).** Both
-rows' `right` block is labelled *guards are premises*, and both put
+**The rows' hand derivation was (B)'s answer, not (C)'s over (A).** Both
+rows' `right` block was labelled *guards are premises*, and both put
 `{(q one)}` in R with the state `(q one)`: *"committing (q one) withdraws (p
 one)"*. That is retraction, and computed it is (B), or (C) over (B). (C) over
 the fork does not withdraw `(p one)`. It disqualifies the state that holds
 it, and gives R = {∅} on both programs. So *guards are premises* names two
-different answers, depending on which node it is read over. The `[case.now]`
-of `W8/features-07` (`solve --maximal`, projected on `q`) reads
-`[["(q one)"]]` under (A) and (B) alike, and `[[]]` under (C) over (A).
+different answers, depending on which node it is read over. The rows are
+F21's to rule; every number above is the stage's, unmoved.
 
 ## 10. The options against the evidence
 
 | option | what moves, measured | stable under rule order | cost |
 |---|---|---|---|
-| **(A) fork** | nothing. W8's rows close `not-wrong` with the reason | **no** on `features/07`, `f07-fpoff` (§ 7.1) | as today |
-| **(B) scratch** | `stale-naf-fork` and `-warn`: R gains `{(q one)}`, k_s 1 → 2. `features/07` and `f07-fpoff`: `{(q one)}`'s state loses `(p one)`. The probe `not_conclusion`: `{(q A)}` loses `(not (p A))`. No other node of the 18 flagged and 155 monotone cubes. L0 is no longer the node's construction on a flagged program with a dead root, and `features/12` keeps R = ∅ by measurement (§ 6.2). The guard split agrees with it on all 21 cubes S1e2.1b.6 split, by that stage's run and § 2: its two disagreements with the oracle are (B)'s two extra nodes | no on `features/07`, `f07-fpoff`; no on the written `stratified_stale` until admission follows the strata | saturation ×0.2–5.6 a node; root re-derived at every node |
-| **(C) guards are premises** | over (A): `features/07` and `f07-fpoff` lose `{(q one)}` from R, k_s 2 → 1; `stale-naf-fork`'s `{(q one)}` becomes the third outcome; the probe's `{(q A)}` leaves R. Over (B): nothing on the corpus | does not settle it (§ 7.2) | a matcher call per fact with an `absent` premise |
-| **(D) refuse** | `features/07`, `f07-fpoff`, `d3-unsat-core` become load errors: 7 lines of `corpus_exits.txt`, 70 of `corpus_shapes.md5`, rows `W8/features-07`, `W1/d3-unsat-core`, `W11/d3-unsat-core` | settles it on the corpus | a graph pass at load |
-
-The goldens (B) touches are those of its four programs:
-`stale-naf-fork.ein` and `stale-naf-fork-warn.ein` (1 line of
-`corpus_exits.txt` and 35 of `corpus_shapes.md5` each), `features/07` (6 and
-35) and `f07-fpoff` (1 and 35). Which of those lines move is the build's to
-say (S1e2.1b.5).
+| **(A) fork** | nothing | **no** on `features/07` and its twins (§ 7.1) | as today |
+| **(B) scratch** | the 17 nodes of § 2.1 whose status differs: `stale-naf-fork` and `-warn` gain `{(q one)}` in R; `activator-all-*` gain their one candidate's node and `rung-connex-import` 12 of its 16, above a root dead by fork; and 17 more nodes change their state beyond `open` (`features/07` and its twins, `kw-neq-in-absent` and its twin, `open-derived-activator`, `features/23`). No node of the 650 monotone cubes but `11_fifo_gap_static`'s `{(b one)}` (§ 12.2). L0 is no longer the node's construction on a flagged program with a dead root | no on `features/07` and its twins; no on `10_fifo_gap` and the written `stratified_stale` until admission follows the strata | saturation ×0.8–20 a node; root re-derived at every node |
+| **(C) guards are premises** | over (A): `features/07` and its twins lose `{(q one)}` (`{(p one)}`) from R; `stale-naf-fork`'s `{(q one)}` becomes the third outcome; the in-R stale nodes of `kw-neq-in-absent` and its twin and `10_fifo_gap` leave R. Over (B): `10_fifo_gap`'s `{(a one), (b one)}` and `11_fifo_gap_static`'s `{(b one)}` | does not settle it (§ 7.2) | a matcher call per fact with an `absent` premise |
+| **(D) refuse** | ruled out: Q-M1f.564 | — | — |
 
 ### The stage's recommendation, re-examined (mine)
 
-The stage recommended **(B) with (D)**, on two conditions: the stratification
-check refuses no program the corpus needs, and scratch is invariant on every
-stratified flagged cube.
+The stage recommended **(B) with (D)**, amended to admit candidates in stratum
+order. Q-M1f.564 rules out (D) as a refusal: a program with a cycle through an
+odd `absent` loads, flagged. What stands of the rest:
 
-- **The second condition holds on the corpus**: every stratified flagged cube
-  and probe is unmoved by every lever on both routes (§ 7). It **fails on a
-  program written to break it**, `stratified_stale`. The reason is not
-  scratch. The boundary admits candidates in (priority, FIFO) order, not in
-  stratum order.
-- **The first is the user's to judge.** (D) refuses three programs: W8's two
-  witnesses, whose right answer is what is being ruled, and a fuzz finding
-  that witnesses two fixed rows. It refuses no puzzle, no stdlib test, and
-  nothing a monotone program uses.
-
-**So I keep it, amended.** (B) with (D), and the boundary admits candidates
-in stratum order. Under that order a stratified program's node is its perfect
-model, the one stable model, whatever order its rules are written in. By § 4's
-argument, no corpus node moves beyond the five listed above, because every
-corpus scratch node is already stale-free. The staleness check then stays as
-an assertion, not as an option: a stale fact in a node of a stratified program
-would be an engine defect. Two things favour it beyond the conditions:
-
-- it is **the reading the guard split already computes**, since a cell builds
-  its nodes from scratch. On all 21 cubes S1e2.1b.6 split, the split's R is
-  (B)'s node for node: its two disagreements with today's oracle are (B)'s two
-  extra nodes, and everywhere else (B) is the oracle (§ 2);
-- it is the only reading under which **a node is a function of its
-  commitment**, with no path (§ 6.1).
-
-**What it costs.** Root is re-derived inside every node: ×0.2–5.6 a node in
-saturation. L0 stops being a construction on a flagged program with a dead
-root. Building stratum-ordered admission is a change to the saturator, and
-whether it goes into S1e2.1b.5's build is part of the ruling.
-
-**If the user would rather not change the saturator**, (B) with (D) still
-holds on every corpus program. The written case then stays a known gap, and
-(C) over (B) would mark its ∅ *not a solution*, which is wrong under the
-stratified reading. **If the user would rather keep the fork**, (A) with (D)
-gives the same corpus as today minus the three refused, and W8's
-`stale-naf-fork` rows close `not-wrong`. The guard split, though, then needs
-a fork-aware cell, which S1e2.1c.3 would have to design.
+- **(B) with admission in stratum order** makes a stratified program's node
+  its perfect model, whatever order its rules are written in (§ 4's argument,
+  measured under the stage's emulation, § 12.4), and a node a function of its
+  commitment, with no path (§ 6.1, § 11).
+- **What it moves on the corpus** is § 10's (B) row: 17 statuses, all on
+  flagged programs, 15 of them above a root that is dead by fork. That every
+  corpus scratch node is stale-free but the FIFO race's two still holds.
+- **What it costs**: root re-derived inside every node, ×0.8–20 a node in
+  saturation; L0 stops being a construction on a flagged program with a dead
+  root.
+- **On an unstratifiable program** (`features/07` and its twins,
+  `d3-unsat-core`), no option above gives one answer, and nothing is claimed
+  of one today.
 
 ## 11. The path census — S1e2.1b.7
 
@@ -631,20 +608,10 @@ path DAG and (F)'s per-node counts, and the premise that a step is a function
 of the KB's contents. § 6.1 above read one-step parents, as `-y` built them.
 
 ```sh
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths                    # § 11.2, the flagged cubes, 1.3 s
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths \
-    plans/m1n_non_monotone_programs/f21_probes/*.ein                                                                                # § 11.3, 1.1 s
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths --written          # § 11.3
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths --control --max-n 12   # § 11.4, 36 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths                    # § 11.2, the flagged cubes, 12 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths --written          # § 11.3, 0.6 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths --control --max-n 12   # § 11.4, 62 s
 ```
-
-Taken 2026-11-02 at `8a2dffe3` (the parent of the commit that adds `--paths`),
-release build, stdlib = the checkout, 16 jobs on a 32-thread machine, one
-program a job. `--written` carries six programs since this stage: § 2.3's
-three and the two of
-[`examples/shared/written.rs`](../../ein.rs/crates/ein-infer/examples/shared/written.rs)
-(`activator_refutes`, `activator_under_absent`), and § 12's `fifo_gap_static`
-from T1e2.1b.7.3 on.
 
 ### 11.1 What it builds
 
@@ -666,152 +633,141 @@ sat(sat(P) ∪ C). Every KB of a program shares one `Terms` and one memo.
   Σ_{j ≤ k} n!/(n − j)! nodes to depth k. **The bound** is 13 700 tree nodes
   (`--chain-bound`, which is ⌊e·7!⌋): every maximal chain of every C on a cube
   with n ≤ 7, and of every C with |C| ≤ k on a larger one, k the deepest
-  level within the bound (5 at n = 8, 4 at n = 9 and at n = 12). Within the
-  limit no flagged cube has n > 7, so on them every maximal chain is read.
+  level within the bound. Within the limit no flagged cube has n > 7, so on
+  them every maximal chain is read.
 - **The premise**: every step any construction takes is keyed by *(its
   parent's facts, what it adds)*. A key met twice is a step from the same
-  contents with another history: a chain against another chain, a split from
-  scratch's KB against the DAG's representative, a scratch load against a
-  fork when root derived nothing. Two that differ in their result would be a
+  contents with another history. Two that differ in their result would be a
   **conflict**.
-- **The checks on the route**: the fork built here is `region::Nodes`' fork,
-  the oracle's node, fact for fact and bit for bit, and scratch built here is
-  § 2's text load, fact for fact, on every node read.
+- **The checks on the route**: whether the fork built here is `region::Nodes`'
+  fork, the oracle's node, fact for fact and bit for bit, and whether scratch
+  built here is § 2's text load, fact for fact, on every node read.
 
 Per node it counts the distinct states the constructions reach. A node is
 **path-dependent** when there are two or more. *Alive paths* keeps the states
 reached through no dead intermediate state, root included, which is what a
 route that never extends a dead node meets. *From root* keeps the paths that
-start at sat(P), the path tree as F21 states it, which never builds from P
-with a commitment written in. (F) is read both ways: the states of the node
-whose facts are not stale, from P and from root.
+start at sat(P), the path tree as F21 states it. (F) is read both ways: the
+states of the node whose facts are not stale, from P and from root.
 
 ### 11.2 The flagged cubes
 
-18 programs, 256 nodes, 19 910 steps, 14 448 chain-tree nodes:
+52 programs, 656 nodes, 34 411 steps, 22 593 chain-tree nodes:
 
 | | count |
 |---|---:|
-| the fork here is the oracle's node, on every node | **18 of 18** programs |
-| scratch here is the text load, on every node | **18 of 18** |
-| steps from contents met before (the premise checked) | 17 243 |
+| the fork here is the oracle's node, on every node | **0 of 52** programs: see below |
+| scratch here is the text load, on every node | **52 of 52** |
+| steps from contents met before (the premise checked) | 28 466 |
 | … with another result (a conflict) | **0** |
-| path-dependent nodes | **20**, on 10 programs |
-| … through alive paths only | 10 |
-| … reaching a state that is neither the fork's nor scratch's | 16 |
-| nodes whose status depends on the path | 13 |
-| … through alive paths only | **3**: `lattice/08`'s hole, and `stale-naf-fork`'s and its twin's `{(q one)}` |
-| distinct states at one node, at most | 2 |
-| (F) from P: stale-free states per node | **exactly 1 on all 256** |
-| (F) from root | 1 on 252; **0 on 4**: `{(q one)}` of `features/07`, `f07-fpoff`, `stale-naf-fork`, `stale-naf-fork-warn` |
+| path-dependent nodes | **51**, on 24 programs |
+| … through alive paths only | 20 |
+| … reaching a state that is neither the fork's nor scratch's | 23 |
+| nodes whose status depends on the path | 34 |
+| … through alive paths only | **3** |
+| (F) from P: stale-free states per node | **exactly 1 on all 656** |
+| (F) from root | 1 on 628; **0 on 28** |
+
+**The fork here is not the oracle's node on any program**, where it was on 18
+of 18: the comparison is of the two forks' facts, and `region::Nodes`' fork
+holds the `open` facts root holds, which a step of this census (`Saturator`
+alone, no pass) does not write. Its statuses and every other count are of the
+census's own constructions, each built the same way, so they compare with one
+another as the stage's did.
 
 | program | n | nodes | path-dependent (alive paths) | beyond fork and scratch | status differs (alive paths) | splits differ | chains differ | what differs |
 |---|---:|---:|---:|---:|---:|---:|---:|---|
 | `d3-unsat-core` | 5 | 32 | 4 (4) | 4 | 0 (0) | 4 | 4 of 32 | `(r1 o2 o2)` ← `fire-1 (absent (not (r1 o3 o3)))`, kept by way of a parent without `(r1 o3 o2)`, and stale there |
 | `naf-upward-closure`, `naf-nowb` | 2 | 4 | 1 (0) | 1 | 1 (0) | 1 | 1 of 4 | `{(p A), (q A)}` is dead by way of the dead `{(p A)}`, which keeps `(false)` ← `bad (absent (q A))` |
-| `features/07`, `f07-fpoff` | 1 | 2 | 1 (1) | 0 | 0 (0) | 1 | 0 of 2 | `{(q one)}`: the fork's stale `(p one)` against scratch (§ 2.1) |
-| `stale-naf-fork`, `-warn` | 1 | 2 | 1 (1) | 0 | 1 (1) | 1 | 0 of 2 | `{(q one)}`: dead by fork, in R by scratch (§ 2.1) |
-| `lattice/08_absent_witness_hole` | 3 | 8 | 2 (2) | 2 | **1 (1)** | 2 | 2 of 8 | by way of `{(seats Ann C1)}` a node keeps `(meal Ann Soup)`, stale. **The hole `{(allergic Ann), (seats Ann C1)}` is in R that way**, owing by fork and from scratch |
+| the six `activator-chain` witnesses with a dead hole | 2 | 4 | 1 (0) | 1 | 1 (0) | 1 | 1 of 4 | `{(p a), (p2 a)}` is dead by way of the dead `{(p a)}`, which keeps the chain's first fact, `(q a)` ← `mk (absent (p2 a))` |
+| `activator-all-int`, `-nested`, `-symbol` | 1 | 2 | 1 (0) | 0 | 1 (0) | 1 | 0 of 2 | the one candidate's node: dead by way of the dead root, in R from scratch and by a split |
+| `rung-connex-import` | 4 | 16 | 12 (0) | 0 | 12 (0) | 12 | 0 of 16 | the same, 12 nodes: `(false)` ← `connex` kept from the dead root |
+| `features/07`, `f07-fpoff`, `f07-rules-swapped` | 1 | 2 | 1 (1) | 0 | 0 (0) | 1 | 0 of 2 | the one node: the fork's stale fact against scratch (§ 2.1) |
+| `stale-naf-fork`, `-warn` | 1 | 2 | 1 (1) | 0 | **1 (1)** | 1 | 0 of 2 | `{(q one)}`: dead by fork, in R by scratch (§ 2.1) |
+| `kw-neq-in-absent`, `-twin` | 3 | 8 | 4 (4) | 0 | 0 (0) | 4 | 0 of 8 | the four nodes holding `(neqw a)`: the fork's stale `(hit a)` against scratch |
+| `lattice/08_absent_witness_hole` | 4 | 16 | 2 (2) | 2 | **1 (1)** | 2 | 2 of 16 | by way of a parent without `(allergic Ann)` a node keeps `(meal Ann Soup)`, stale. **The hole `{(allergic Ann), (seats Ann C1)}` is in R that way**, owing by fork and from scratch |
+| `lattice/10_fifo_gap` | 2 | 4 | 1 (1) | 1 | 0 (0) | 1 | 1 of 4 | `{(a one), (b one)}`: fork and scratch hold the stale `(p one)`; by way of `{(a one)}` it is not derived (§ 12.1) |
 | `synth/three_components` | 7 | 128 | 3 (0) | 3 | 3 (0) | 3 | 3 of 128 | three nodes of R are dead by way of a dead hole, `(false)` ← `dead-3` or `dead-7` kept |
 | `synth/trigger_hole` | 5 | 32 | 5 (0) | 5 | 5 (0) | 5 | 5 of 32 | the same, through `dead-1`'s holes |
-| the other 8 | | 64 | 0 | 0 | 0 | 0 | 0 | `lattice/04`, `lattice/09`, `synth/local_not_global`, `synth/maximal_not_top`, `tests/region/07_cube`, `branching/13`, `/14`, `alive-empty-interlayer`: one state per node by every construction |
+| the other 28 | | | 0 | 0 | 0 | 0 | 0 | one state per node by every construction |
 
 **What it adds to § 6.1.**
 
-- **Longer paths add what a one-step parent misses in two ways.** A path
-  through a dead parent, which `-y` skips (next item). And a chain through an
-  alive parent that is itself path-dependent: on the probe `via_hole` and the
-  written `activator_under_absent` (§ 11.3) the second node is reached that
-  way, and § 6.1 and the proposal's spot check, reading one-step parents,
-  each saw one node of the two. No node reaches a third state.
 - **`d3-unsat-core`'s four dead nodes of § 6.1 do not depend on the path.**
-  Built to quiescence by every construction, each has one state. `-y`'s
-  direct path ran `commitment::try_commitment_set`, which under
-  `enable-fail-fast-fork` (the default) stops at the first contradiction
-  (`saturate_until_dead`), and the facts it had not yet derived, `(r1 o3 o3)`,
-  were § 6.1's difference. The oracle's node saturates to quiescence, and the
-  four agree with it.
-- **A path through a dead parent** is where `naf-upward-closure`,
-  `three_components` and `trigger_hole` depend on the path: a dead node keeps
-  its `(false)` when the fact that would lift it is added. A route that never
-  extends a dead node does not meet it. A route that learns from a dead node
-  meets exactly it, which is W3.
+  Built to quiescence by every construction, each has one state. Its four
+  path-dependent nodes are nodes of R, reached with a stale `(r1 o2 o2)` by
+  way of a parent.
+- **A path through a dead parent** is where `naf-upward-closure`, the six
+  `activator-chain` witnesses, `three_components` and `trigger_hole` depend
+  on the path: a dead node keeps its `(false)` when the fact that would lift
+  it is added. A route that never extends a dead node does not meet it. A
+  route that learns from a dead node meets exactly it, which is W3.
+  **A dead root** is the same at ∅: on `activator-all-*` and
+  `rung-connex-import` every path from root is dead, and scratch and a split
+  are alive.
 - **Along alive paths the status moves both ways.** On `lattice/08` an owing
   hole is in R by way of its parent, so a route that extends parents would
-  report a node of R the oracle calls owing. On the probe `via_hole` and the
-  written `activator_under_absent` (§ 11.3) a node of R is dead by way of an
-  alive parent, so the same route would lose a node of R.
+  report a node of R the oracle calls owing; on `stale-naf-fork` a node of R
+  by scratch is dead by fork. On the written `activator_under_absent` (§ 11.3) a
+  node of R is dead by way of an alive parent, so the same route would lose a
+  node of R.
 
-### 11.3 S1e2.4.1's probes and the written programs
+### 11.3 The written programs
 
 | program | n | nodes | path-dependent (alive paths) | beyond fork and scratch | status differs (alive paths) | (F) from P · from root | what differs |
 |---|---:|---:|---:|---:|---:|---|---|
-| probe `via_hole` | 3 | 8 | 2 (2) | 2 | **1 (1)** | 1 on all · 1 on all | by way of `{(s one)}`, which derives `(p one)` under `(absent (q one))`, `{(q one), (r one), (s one)}` keeps it and `clash` refutes: **a node of R dead by way of an alive parent** |
-| probe `not_conclusion` | 1 | 2 | 1 (1) | 0 | 0 (0) | 1 on all · 0 on 1 | `{(q A)}`: the fork's stale `(not (p A))` (§ 2.2) |
-| the other 11 within the limit | | 196 | 0 | 0 | 0 | 1 on all | `three_components_owe` and `trigger_hole_owe`, the rewrites of the two synthetic programs with dead holes, depend on no path: their holes owe, and an owing parent keeps no `(false)` |
-| written `dead_root`, `dead_root_via` | 1 | 2 | 1 (0) | 0 | 1 (0) | 1 on all · 0 on 1 | `{(h A)}`: dead by fork, through the dead root; in R from scratch (§ 6.3) |
-| written `stratified_stale` | 1 | 2 | 1 (1) | 0 | 0 (0) | **0 on ∅** · 0 on both | ∅ has one state, scratch's root, and it holds the stale `(p one)` (§ 4); `{(r one)}` by fork holds two stale facts |
-| written `activator_refutes` | 2 | 4 | 1 (0) | 1 | 1 (0) | 1 on all | `{(p A), (q A)}` is dead by way of the dead `{(p A)}`, through the plan `watch` compiled for `(watch q)` |
-| written `activator_under_absent` | 3 | 8 | 2 (2) | 2 | **1 (1)** | 1 on all | by way of `{(p A)}` a node keeps `(watch r)` ← `act (absent (q A))`; `{(p A), (q A), (r A)}`, in R, is dead that way |
+| `dead_root`, `dead_root_via` | 1 | 2 | 1 (0) | 0 | 1 (0) | 1 on all · 0 on 1 | `{(h A)}`: dead by fork, through the dead root; in R from scratch (§ 6.3) |
+| `stratified_stale` | 1 | 2 | 1 (1) | 0 | 0 (0) | **0 on ∅** · 0 on both | ∅ has one state, scratch's root, and it holds the stale `(p one)` (§ 4); `{(r one)}` by fork holds two stale facts |
+| `fifo_gap_static` | 1 | 2 | 1 (1) | 0 | 0 (0) | 1 on all | `{(b one)}`: the fork's `(q one)` against scratch's stale `(p one)` (§ 12.2) |
+| `activator_refutes` | 2 | 4 | 1 (0) | 1 | 1 (0) | 1 on all | `{(p A), (q A)}` is dead by way of the dead `{(p A)}`, through the plan `watch` compiled for `(watch q)` |
+| `activator_under_absent` | 3 | 8 | 2 (2) | 2 | **1 (1)** | 1 on all | by way of `{(p A)}` a node keeps `(watch r)` ← `act (absent (q A))`; `{(p A), (q A), (r A)}`, in R, is dead that way |
 
-The premise is met on all of them: 16 625 repeated keys over the probes and 59
-over the written programs, 0 conflicts. `features05_scoped` (n = 26) is past
-the limit.
+The premise is met on all of them: 61 repeated keys, 0 conflicts. Every row is
+the stage's, unmoved.
 
 ### 11.4 The control: the monotone cubes
 
 ```sh
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths --control --max-n 12 --json
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths --control --max-n 12   # 62 s
 ```
 
-**The bound is n ≤ 12**, where the DAG and the splits cost 3ⁿ ≤ 531 441
-steps a program: 150 of the 155 monotone cubes within the limit.
-`syntax/constraint-scopes` (n = 12) takes 36 s of the 36 s wall, 1 072 130
-steps. The five at n = 15 and 16 would take 14 to 43 million steps each and
-are not read.
+**The bound is n ≤ 12**, where the DAG and the splits cost 3ⁿ ≤ 531 441 steps
+a program: 643 of the 650 monotone cubes within the limit; the seven at n = 13
+to 16 are not read.
 
 | | count |
 |---|---:|
-| monotone cubes, n ≤ 12 | 150 |
-| nodes | 6 069 |
-| steps | 1 207 419 |
-| chain-tree nodes | 68 458; every maximal chain on 2 437 nodes |
-| steps from contents met before | 654 882 |
+| monotone cubes, n ≤ 12 | 643 |
+| nodes | 19 041 |
+| steps | 3 391 231 |
+| chain-tree nodes | 161 461; 7 492 nodes' chains checked |
+| steps from contents met before | 1 794 060 |
 | … a conflict | **0** |
-| path-dependent nodes | **0** |
-| the fork here is the oracle's node · scratch here is the text load | 150 of 150 · 150 of 150 |
+| path-dependent nodes | **1**: `11_fifo_gap_static`'s `{(b one)}` (§ 12.2) |
+| the fork here is the oracle's node | 463 of 643; not on 180, as on § 11.2's flagged cubes |
+| scratch here is the text load | 641 of 643 |
 | (F) from P and from root | 1 stale-free state on every node |
 
 ### 11.5 What it settles, and what it does not
 
 - **The premise holds where it was read**: a step is a function of the KB's
-  contents on 688 809 steps from contents met before, flagged and monotone,
-  with no conflict. So memoizing the path tree by the state is sound on every
-  cube read here, and the DAG's states at a node are every path's.
+  contents on 1 822 587 steps from contents met before, flagged, written and
+  monotone, with no conflict. So memoizing the path tree by the state is sound
+  on every cube read here, and the DAG's states at a node are every path's.
 - **Path dependence is bounded by two states** on every node read. It occurs
-  on 10 of the 18 flagged cubes, on 2 of the 13 probes within the limit and
-  on all 5 written programs, and on no monotone cube read. Each of the 21
-  states a path reaches beyond fork and scratch holds a stale fact: a fact
-  derived under an `absent` the node's commitment falsifies, `(false)` kept
-  from a dead parent among them.
-- **(F)'s counts are not § 7.2's.** § 7.2 argued 0 stale-free states on an
-  odd cycle, 1 on a stratified program and several on an even one. Measured:
-  - on the odd cycle, `d3-unsat-core`, 1 on every node, from P and from root:
-    its contradictions are not stale, and its dead states are stale-free;
-  - on the even cycle, `features/07` and `f07-fpoff`, 1 from P on both nodes,
-    and **0 on `{(q one)}` from root**: no path reaches the program's second
-    stable model at ∅, because the boundary admits `derive-p` first in the
-    written order, and from root every path to `{(q one)}` keeps root's
-    `(p one)`;
-  - on the stratified `stale-naf-fork`, 0 on `{(q one)}` from root, for the
-    same reason; on the written stratified `stratified_stale`, **0 on ∅ from
-    P as well**, because the FIFO gap reaches root itself.
-  So under (F) a node's count is a property of the admission order as much as
-  of the program, and from root it is 0 on every node read here where root
-  derived a fact the commitment falsifies. No node of any cube read here
+  on 24 of the 52 flagged cubes, on all 6 written programs, and on one
+  monotone cube, `11_fifo_gap_static`, the FIFO race.
+- **(F)'s counts.** From P, exactly 1 stale-free state on every node of every
+  corpus cube read, flagged or monotone; 0 on the written `stratified_stale`'s
+  ∅, because the FIFO gap reaches root itself. From root, 0 on 28 flagged
+  nodes: wherever root derived a fact the commitment falsifies
+  (`features/07` and its twins, `stale-naf-fork` and its twin,
+  `kw-neq-in-absent` and its twin) or root is dead (`activator-all-*`,
+  `rung-connex-import`). So under (F) a node's count is a property of the
+  admission order as much as of the program. No node of any cube read here
   reaches two stale-free states.
-- **What it does not read**: the five monotone cubes at n = 15–16, the
-  flagged programs past the limit, and chains past depth 7.
+- **What it does not read**: the seven monotone cubes at n = 13 to 16, the
+  flagged programs past the limit, chains past depth 7, and S1e2.4.1's probes.
 
 ## 12. The cumulativity census, and the FIFO gap — S1e2.1b.7
 
@@ -822,135 +778,107 @@ example is path-dependent in the engine as written*, and *a Monotone verdict
 can leave scratch ≠ fork through a FIFO race over a static read*.
 
 ```sh
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cumulative                      # § 12.3, the flagged cubes, 0.1 s
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cumulative --written
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cumulative \
-    plans/m1n_non_monotone_programs/f21_probes/*.ein
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cumulative --control --max-n 12   # § 12.3, 6.7 s
-cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --stratum-order --jobs 4            # § 12.4, 0.3 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cumulative                      # § 12.3, the flagged cubes, 11 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cumulative --written            # 0.6 s
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --cumulative --control --max-n 12   # § 12.3: stopped at 20 GB after 1 248 s, no row
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --stratum-order --jobs 4            # § 12.4: its rewrite no longer loads
+cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --stratum-order --jobs 4 --written  # § 12.4: the same
 cargo run --release --manifest-path ein.rs/Cargo.toml -p ein-infer --example node_census -- --paths --invariance \
-    examples/lattice/10_fifo_gap.ein examples/lattice/11_fifo_gap_static.ein                                                    # § 12.1–12.2
+    examples/lattice/10_fifo_gap.ein examples/lattice/11_fifo_gap_static.ein                                                    # § 12.1–12.2, 0.6 s
 ```
 
-Taken 2026-11-02 at `a3ac7d6f` (the parent of the commit that adds the two
-fixtures and the two flags), release build, stdlib = the checkout, 16 jobs on
-a 32-thread machine. With the two fixtures banked the flagged selection is
-**19** programs, 260 nodes (§ 11's 18 and `10_fifo_gap`), and the monotone
-one **156** (§ 3's 155 and `11_fifo_gap_static`).
+Taken 2026-11-25 at `213e8a92`, as above. The two fixtures are banked: the
+flagged selection holds `10_fifo_gap` among its 52, and the monotone one
+`11_fifo_gap_static` among its 650.
 
 ### 12.1 The FIFO gap, banked
 
 [`examples/lattice/10_fifo_gap.ein`](../../examples/lattice/10_fifo_gap.ein)
-is § 7.3's counter-example as written: r2 `a ∧ b ∧ absent(q) → p` before r1
-`a ∧ absent(z) → q`, both at priority 200, `a` and `b` the two candidates as
-hrules. It is stratified (z < q < p), flagged (r2's `absent` reads `q`, which
-`a` makes dynamic), and every node is in R. **The engine reproduces the gap as
-written**, first try:
+is the counter-example as written: r2 `a ∧ b ∧ absent(q) → p` before r1
+`a ∧ absent(z) → q`, in one half of the agenda, `a` and `b` the two candidates.
+It is stratified (z < q < p), flagged (r2's `absent` reads `q`, which `a`
+makes dynamic), and every node is in R. **The engine reproduces the gap as
+written**:
 
 | node | built at once (fork; scratch is the same, root derives nothing) | by way of `{(a one)}` |
 |---|---|---|
 | `{(a one), (b one)}` | `(a one) (b one) (p one) (q one)`, with `(p one) ← r2 (absent (q one))` **stale** | `(a one) (b one) (q one)` |
 
-- **`--paths`**: 1 of 4 nodes depends on the path, through an alive parent
-  (every split and chain through `{(a one)}` reaches the second state); the
-  premise holds (12 repeated keys, 0 conflicts).
+- **`--paths`**: 1 of 4 nodes depends on the path, through an alive parent;
+  the premise holds (0 conflicts).
 - **`--cumulative`**: at `{(a one), (b one)}`, adding the derived `(q one)`
   before saturating takes `(p one)` away, by fork and from scratch: X ⊆ Y ⊆
-  sat(X) and sat(Y) ≠ sat(X). It is the one node of the 19 flagged cubes where
+  sat(X) and sat(Y) ≠ sat(X). It is the one node of the 52 flagged cubes where
   cumulativity fails (§ 12.3).
-- **`--invariance`**: writing r1 before r2 moves the state of `{(a one), (b
-  one)}` on both routes and moves no status, no universe.
-- **The reader at an earlier priority**, the proposal's scratch copy
-  `fifo_gap_priority.ein` (r2 at
-  100), reads the same under `--paths` and `--cumulative`, and `--invariance`
-  finds no equal-priority pair to reorder. It is not banked: it is the same
-  gap, and the order check that tells the two apart is S1e2.1b.5's.
+- **`--invariance`**: of 23 orders, 12 move the state of `{(a one), (b one)}`
+  on both routes, and none moves a status or the universe (§ 7.1).
 
 ### 12.2 The static variant, banked
 
 [`examples/lattice/11_fifo_gap_static.ein`](../../examples/lattice/11_fifo_gap_static.ein)
 is the same program with `(a one)` given and only `b` a candidate. `q` is no
 relation a commitment can change, so r2's `absent` is static and **the static
-check calls the program monotone**: `ein solve` takes route 1, *"L1 dead is
-upward-closed"*.
+check calls the program monotone**.
 
 | node | by fork from root | from scratch |
 |---|---|---|
 | ∅ | `(a one) (q one)` | the same |
 | `{(b one)}` | `(a one) (b one) (q one)` | `(a one) (b one) (p one) (q one)`, `(p one)` **stale** |
 
-**§ 7.6's argument holds as measured.** Root settles the race before `b`
-exists, and a fork inherits `(q one)`. Scratch re-derives root inside the node,
-where r2 and r1 wait at one boundary and r2 is admitted first. `--cumulative`
-fails from scratch at `{(b one)}` and has nothing to test by fork (the fork
-derives nothing beyond root and the commitment there). The program was written
-into the census first, as `fifo_gap_static` in `--written`, and banked once it
-held. **So a *Monotone* verdict does not make fork and scratch one route**:
-§ 3's *0 of 268 213 monotone nodes* was a property of the corpus. Re-taken
-with the fixture banked (`node_census -- --control`, 60 s, the same commit):
-156 monotone cubes, 268 215 nodes, 0 statuses differ and **1 state**, this
-node, which holds the one stale fact from scratch. The path census's control
-(`--paths --control --max-n 12`, 36 s) finds the same one node of 6 071, and
-no other.
+Root settles the race before `b` exists, and a fork inherits `(q one)`.
+Scratch re-derives root inside the node, where r2 and r1 wait at one boundary
+and r2 is admitted first. **So a *monotone* verdict does not make fork and
+scratch one route**: the control's one stale node (§ 3), the path census's
+one path-dependent monotone node (§ 11.4), the invariance's three scratch
+states that move by rule order (§ 7) and the stage's cumulativity control,
+which failed from scratch on it alone, are this node.
 
 ### 12.3 The cumulativity census
 
 For every node, each construction's X (scratch: P ∪ C; fork: sat(P) ∪ C), and
 every fact f its fixpoint derived beyond X: is sat(X ∪ {f}) = sat(X)? One fact
-at a time, so it reads the single-fact case of X ⊆ Y ⊆ sat(X). Each node's
-provenance is reclaimed when it is done.
+at a time, so it reads the single-fact case of X ⊆ Y ⊆ sat(X).
 
 | run | programs (stratified) | nodes | tests: scratch · fork | change the fixpoint: scratch · fork | where |
 |---|---:|---:|---:|---:|---|
-| the flagged cubes | 19 (16) | 260 | 177 · 171 | **1 · 1** | `10_fifo_gap`'s `{(a one), (b one)}` + `(q one)` |
-| S1e2.4.1's probes | 13 (13) | 206 | 129 · 113 | 0 · 0 | |
+| the flagged cubes | 52 (48) | 656 | 1 204 · 504 | **1 · 1** | `10_fifo_gap`'s `{(a one), (b one)}` + `(q one)` |
 | the written programs | 6 (6) | 20 | 15 · 6 | **2** · 0 | `stratified_stale`'s ∅ + `(q one)`; `fifo_gap_static`'s `{(b one)}` + `(q one)` |
-| the monotone cubes, n ≤ 12 | 151 (148) | 6 071 | 25 124 · 12 135 | **1** · 0 | `11_fifo_gap_static`'s `{(b one)}` + `(q one)`, from scratch |
+| the monotone cubes, n ≤ 12 | **not taken**: the run was stopped at 20 GB of memory after 1 248 s (5.4 CPU-hours), before it printed a row; the stage's took 6.7 s | | | | |
 
-**The bound** is n ≤ 12, as § 11.4's: 151 of the 156 monotone cubes within the
-limit. A run to n ≤ 16 did not finish in 10 minutes (one `--cumulative
---control --max-n 16`, cut at 600 s, 2026-11-02), so the five cubes at n = 15
-and 16 are not read.
+S1e2.4.1's probes are not read (none loads).
 
 - **Every failure is a FIFO race on a stratified program**: two `absent` rules
   waiting at one boundary, the reader of the other's conclusion admitted
-  first. No failure on an unstratifiable program: `features/07`, `f07-fpoff`
+  first. No failure on an unstratifiable program: `features/07` and its twins
   and `d3-unsat-core` are cumulative on every node, one fact at a time. Their
   path dependence (§ 11) comes from a commitment that falsifies a guard, a
   state function that is not monotone, and not from cumulativity.
 - **The engine's saturation is not cumulative on a stratified program in
-  general**: it fails on every program read where the FIFO race reaches,
-  `10_fifo_gap`, `fifo_gap_priority`, `stratified_stale` and
-  `fifo_gap_static`, and on no other node, flagged or monotone.
+  general**: it fails where the FIFO race reaches, `10_fifo_gap`,
+  `stratified_stale` and `fifo_gap_static`, and on no other node read; the
+  monotone cubes were not read today (above), and on 2026-11-02 they failed
+  on `11_fifo_gap_static`'s `{(b one)}` alone.
 
 ### 12.4 Admission in stratum order, emulated
 
-F21's D2 names *admission in stratum order* as what closes the gap, and § 7.3
-argues a stratified program evaluated stratum by stratum is cumulative.
+F21's D2 names *admission in stratum order* as what closes the gap.
 `--stratum-order` emulates it without changing the engine: it rewrites the
-program's text so that every saturation rule reading under an `absent` gets
-the priority 10 + its stratum, and the boundary, which admits the lowest
-priority first, then admits in stratum order. A relation's stratum is the
-most `absent` edges on a path into it over `strata`'s graph, an edge counting
-at any `absent` depth; a cycle through one has no stratum order. Only rules
-written in the program's own text move. It is an emulation, with one gap it
-does not close: a candidate whose guard fails now and passes later, at an
-earlier stratum, is not waited for. No program read here has one.
+program's text so that every saturation rule reading under an `absent` is
+admitted in the order of its stratum, and reads every node again. A relation's
+stratum is the most `absent` edges on a path into it over `strata`'s graph; a
+cycle through one has no stratum order. Only rules written in the program's
+own text move. It is an emulation, with one gap it does not close: a
+candidate whose guard fails now and passes later, at an earlier stratum, is
+not waited for.
 
-| run | no stratum order | text moved | R moves | a state moves | cumulative under it | stale nodes under it: scratch · fork |
-|---|---:|---:|---:|---:|---|---|
-| the flagged cubes, 19 | 3: `d3-unsat-core`, `features/07`, `f07-fpoff` | 11 | **0** | **1**: `10_fifo_gap`'s `{(a one), (b one)}`, fork and scratch, to `(a one) (b one) (q one)` | every node | **0** · 2 (`stale-naf-fork`, `-warn`: `{(q one)}`) |
-| the written programs, 6 | 0 | 5 | `stratified_stale`: its universe, on both routes (root becomes `{(q one)}`, the candidates `(p one)` and `(r one)`, as in § 7.1) | `fifo_gap_static`: scratch's `{(b one)}`, to the fork's | every node | **0** · 4 (`dead_root`, `dead_root_via`, `stratified_stale` 2) |
-| S1e2.4.1's probes, 13 within the limit | 1: `features12_scoped` (n = 0, a cycle over static relations) | 3 | 0 | 0 | every node | **0** · 1 (`not_conclusion`) |
-| `fifo_gap_priority` | | yes | 0 | `{(a one), (b one)}`, both routes | every node | 0 · 0 |
-
-- **Under it, every stratified program read is cumulative on every node**, and
-  **every node built from scratch is stale-free**: the perfect model, by § 4's
-  argument, now measured. That is § 7.3's premise measured under the
-  emulation.
-- **The fork is not repaired by it.** A fork keeps root's facts, so a fact root
-  derived under a guard a commitment falsifies stays stale: W8's `{(q one)}`,
-  `not_conclusion`'s `{(q A)}`, the written `dead_root`s. Stratum order closes
-  the FIFO gap, not the fork's staleness; (B) or (C) is what reaches that.
-- **On the corpus it moves one state**, the fixture's. No R, no universe, no
-  corpus program's answer besides the fixture written to show it.
+**Not re-taken: the emulation no longer runs.** It gives each rule the
+priority of its stratum, `:priority 10 + its stratum`, and the parser refuses
+`:priority` since the agenda took its place (Q-M1f.313): on `10_fifo_gap` the
+rewrite moves `r1` to 11 and `r2` to 12, and the text it writes does not load,
+so every row reads `null`, on every program. On 2026-11-02, under the
+emulation, every stratified program read was cumulative on every node and
+every node built from scratch was stale-free; the fork was not repaired by it
+(a fork keeps root's facts, so a fact root derived under a guard a commitment
+falsifies stays stale); and on the corpus it moved one state, the fixture's.
+An emulation today would order rules within the agenda's halves by stratum,
+which the census does not do.

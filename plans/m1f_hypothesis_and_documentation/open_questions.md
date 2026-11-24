@@ -617,12 +617,12 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.692](#q-m1f692--what-the-test-of-the-sixteen-shapes-holds-now) | What the test of the sixteen shapes holds now | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `a117e80a`); review item 87 of part 1 **Accepted 2026-11-25 by the user** (*"OK"*, review item 87 of part 1) |
 | [Q-M1f.693](#q-m1f693--the-fixtures-headers-keep-their-line-counts) | The fixtures' headers keep their line counts | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `02bcddc3`); review item 87 of part 1 **Accepted 2026-11-25 by the user** (*"OK"*, review item 87 of part 1) |
 | [Q-M1f.694](#q-m1f694--what-cites-no-line-stays) | What cites no line stays | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `e802c611`); review item 87 of part 1 **Accepted 2026-11-25 by the user** (*"OK"*, review item 87 of part 1) |
-| [Q-M1f.695](#q-m1f695--the-oracles-listing-of-a-node-is-read-over-every-fact-it-holds) | The oracle's listing of a node is read over every fact it holds | **defaulted 2026-11-25** (P1f.21's S1f.21.26, `24aeebbe`); review item 89 of part 2 |
-| [Q-M1f.696](#q-m1f696--the-read-outs-check-of-paths-keeps-the-whole-key) | The read-out's check of paths keeps the whole key | **defaulted 2026-11-25** (P1f.21's S1f.21.26, `24aeebbe`); review item 89 of part 2 |
-| [Q-M1f.697](#q-m1f697--the-stored-key-of-a-saved-solution-stays-whole) | The stored key of a saved solution stays whole | **defaulted 2026-11-25** (P1f.21's S1f.21.26, `24aeebbe`); review item 89 of part 2 |
-| [Q-M1f.698](#q-m1f698--the-axes-keep-roots-facts) | The axes keep root's facts | **defaulted 2026-11-25** (P1f.21's S1f.21.26, `24aeebbe`); review item 89 of part 2 |
-| [Q-M1f.699](#q-m1f699--a-function-with-no-caller-is-left-as-it-is) | A function with no caller is left as it is | **defaulted 2026-11-25** (P1f.21's S1f.21.26, `24aeebbe`); review item 89 of part 2 |
-| [Q-M1f.700](#q-m1f700--a-cut-picture-keeps-the-open-facts-about-what-it-draws) | A cut picture keeps the open facts about what it draws | **defaulted 2026-11-25** (P1f.21's S1f.21.27, `41ef4922`, `f9bb5e54`); review item 88 of part 2 |
+| [Q-M1f.695](#q-m1f695--the-oracles-listing-of-a-node-is-read-over-every-fact-it-holds) | The oracle's listing of a node is read over every fact it holds | **defaulted 2026-11-25** (P1f.21's S1f.21.26, `24aeebbe`); review item 89 of part 2; **default stands, 2026-11-25**: review item 89 left blank at the phase's close (the user: *"close"*) |
+| [Q-M1f.696](#q-m1f696--the-read-outs-check-of-paths-keeps-the-whole-key) | The read-out's check of paths keeps the whole key | **defaulted 2026-11-25** (P1f.21's S1f.21.26, `24aeebbe`); review item 89 of part 2; **default stands, 2026-11-25**: review item 89 left blank at the phase's close (the user: *"close"*) |
+| [Q-M1f.697](#q-m1f697--the-stored-key-of-a-saved-solution-stays-whole) | The stored key of a saved solution stays whole | **defaulted 2026-11-25** (P1f.21's S1f.21.26, `24aeebbe`); review item 89 of part 2; **default stands, 2026-11-25**: review item 89 left blank at the phase's close (the user: *"close"*) |
+| [Q-M1f.698](#q-m1f698--the-axes-keep-roots-facts) | The axes keep root's facts | **defaulted 2026-11-25** (P1f.21's S1f.21.26, `24aeebbe`); review item 89 of part 2; **default stands, 2026-11-25**: review item 89 left blank at the phase's close (the user: *"close"*) |
+| [Q-M1f.699](#q-m1f699--a-function-with-no-caller-is-left-as-it-is) | A function with no caller is left as it is | **defaulted 2026-11-25** (P1f.21's S1f.21.26, `24aeebbe`); review item 89 of part 2; **default stands, 2026-11-25**: review item 89 left blank at the phase's close (the user: *"close"*) |
+| [Q-M1f.700](#q-m1f700--a-cut-picture-keeps-the-open-facts-about-what-it-draws) | A cut picture keeps the open facts about what it draws | **defaulted 2026-11-25** (P1f.21's S1f.21.27, `41ef4922`, `f9bb5e54`); review item 88 of part 2; **default stands, 2026-11-25**: review item 88 left blank at the phase's close (the user: *"close"*) |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -12476,6 +12476,8 @@ The other reading: read above root's mark, with root's `open` facts the node hol
 
 The user reviews it in review item 89 of part 2.
 
+**Default stands, 2026-11-25**: review item 89 of part 2 left blank at the phase's close (the user: *"close"*).
+
 ### Q-M1f.696 — The read-out's check of paths keeps the whole key
 
 **Raised and defaulted** 2026-11-25 by P1f.21's S1f.21.26 ([its record](p1f.21_verdicts_as_rules/s1f.21.26_the_key_of_a_state_at_its_own_size.md#record)), built as `24aeebbe`. The read-out's check of a printed state's parent paths and `Nodes::by_parent`/`by_split` keep the whole key, root's facts in it: each runs once a path of a printed state, beside a fresh saturation over the whole knowledge base, and compares with a state built from scratch, which has no mark.
@@ -12483,6 +12485,8 @@ The user reviews it in review item 89 of part 2.
 The other reading: both sides of the comparison read above root's mark.
 
 The user reviews it in review item 89 of part 2.
+
+**Default stands, 2026-11-25**: review item 89 of part 2 left blank at the phase's close (the user: *"close"*).
 
 ### Q-M1f.697 — The stored key of a saved solution stays whole
 
@@ -12492,6 +12496,8 @@ The other reading: the part beyond root's, the format moved.
 
 The user reviews it in review item 89 of part 2.
 
+**Default stands, 2026-11-25**: review item 89 of part 2 left blank at the phase's close (the user: *"close"*).
+
 ### Q-M1f.698 — The axes keep root's facts
 
 **Raised and defaulted** 2026-11-25 by P1f.21's S1f.21.26 ([its record](p1f.21_verdicts_as_rules/s1f.21.26_the_key_of_a_state_at_its_own_size.md#record)), built as `24aeebbe`. `Axes::root_facts` stays, for the oracle's listing and the gate build's check of the new key against the old at every node.
@@ -12499,6 +12505,8 @@ The user reviews it in review item 89 of part 2.
 The other reading: dropped, and root's facts read at each state where the check needs them.
 
 The user reviews it in review item 89 of part 2.
+
+**Default stands, 2026-11-25**: review item 89 of part 2 left blank at the phase's close (the user: *"close"*).
 
 ### Q-M1f.699 — A function with no caller is left as it is
 
@@ -12508,8 +12516,12 @@ The other reading: removed.
 
 The user reviews it in review item 89 of part 2.
 
+**Default stands, 2026-11-25**: review item 89 of part 2 left blank at the phase's close (the user: *"close"*).
+
 ### Q-M1f.700 — A cut picture keeps the open facts about what it draws
 
 **Raised and defaulted** 2026-11-25 by P1f.21's S1f.21.27 ([its record](p1f.21_verdicts_as_rules/s1f.21.27_the_pictures_drawn_with_roots_open_facts.md#record)), built as `41ef4922` and `f9bb5e54`. The question: what a picture a page cuts from `ein render kb`'s drawing keeps of root's `open` facts, once the user ruled that a drawing of root shows them and the nine pictures are drawn again with them (review item 77, *"(a)"*). **The default taken**: a cut keeps every `open` fact root holds whose arrow 2 is at something the cut draws, a fact it keeps (held or denied), a relation's box, or a fact of the relation it is cut to, drawn in its `open ctx` frame; a cut that only leaves out a kind of fact (the declarations', the activators) keeps every `open` fact; the page says so where it cuts; a whole picture is what `ein render kb` draws. On *zebra2*'s cut it keeps 6 of root's 130, `(open color-loc)` among them; every other cut keeps all of its program's. The other reading: a cut keeps none of them, or all.
 
 The user reviews it in review item 88 of part 2.
+
+**Default stands, 2026-11-25**: review item 88 of part 2 left blank at the phase's close (the user: *"close"*).

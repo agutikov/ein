@@ -22,8 +22,9 @@
 //! - with `--drafts`, each way a flagged program's holes could be reported,
 //!   drafted as read-out
 //!   rows on the program: (a) R, its lines and its holes named, (b) R as
-//!   convex pieces, (c) a qualifier, (d) a refusal. **Drafted**: no command
-//!   prints them.
+//!   convex pieces, (c) a qualifier. **Drafted**: no command prints them. A
+//!   refusal is no way: a flagged program loads, and nothing is claimed of
+//!   its answer (Q-M1f.564).
 //!
 //! ```sh
 //! cargo run --release -p ein-infer --example hole_census                         # the flagged cubes within --region-limit 16
@@ -292,11 +293,10 @@ fn repairs_of(r: &Region, h: u64) -> Vec<(String, String)> {
         .collect()
 }
 
-/// The four ways a flagged program's holes could be reported, drafted as
-/// the rows each would print.
+/// The three ways a flagged program's holes could be reported, drafted as
+/// the rows each would print, beside today's.
 fn drafts(
     r: &Region,
-    src: &Source,
     sites: &[SiteText],
     minimal: &[&Hole],
     holes: &[Hole],
@@ -441,17 +441,7 @@ fn drafts(
         ),
     )];
     c.extend(today.iter().skip(1).cloned());
-    // (d) A refusal: a load error naming the sites.
-    let d = vec![format!(
-        "error: {}: not monotone, so R can have a hole — refused: {}",
-        src.name,
-        sites
-            .iter()
-            .map(|s| s.text.as_str())
-            .collect::<Vec<_>>()
-            .join("; ")
-    )];
-    json!({ "today": today, "a": a, "b": b, "c": c, "d_stderr": d })
+    json!({ "today": today, "a": a, "b": b, "c": c })
 }
 
 /// The census of one program, or `None` when it does not load, does not
@@ -590,7 +580,7 @@ fn row(src: &Source, limit: u32, jobs: usize, scratch: bool, with_drafts: bool) 
         })
     });
 
-    let drafted = with_drafts.then(|| drafts(&r, src, &sites, &minimal, &holes, ps.as_deref()));
+    let drafted = with_drafts.then(|| drafts(&r, &sites, &minimal, &holes, ps.as_deref()));
 
     json!({
         "path": src.name,
@@ -745,7 +735,6 @@ fn print_block(row: &Json) {
             ("a", "(a) R, its lines and its holes named — drafted"),
             ("b", "(b) R as convex pieces — drafted"),
             ("c", "(c) a qualifier — drafted"),
-            ("d_stderr", "(d) a refusal, on stderr — drafted"),
         ] {
             let rows = list(&d[k]);
             println!("  {title}: {}", plural(rows.len(), "line", "lines"));

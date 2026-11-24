@@ -29,7 +29,9 @@ deferred are taken, each on the user's word.
   root, `W8/fifo-gap-root`, with the user's three calls; P1f.22's N-15, *everybody's thoughts are false*, with the
   user's answer of 2026-11-19 and the idea it carries). The name F21 is kept for the document.
 - [`f21_probes/`](f21_probes/): its fourteen probe programs, which the hole, node and taint censuses
-  (`utils/censuses/`) run.
+  (`utils/censuses/`) run. **None of them loads on today's parser** (an `hrule`, a `:priority`, a relation or rule
+  with no `:why`), found re-taking the three censuses at the close of M1f's P1f.21 (2026-11-25), whose pages say so
+  where they name the probes: writing them again in today's language is this milestone's, with the rows they fed.
 - **The register's rows**: of the five rows of `W8` that F21 owned, **one is left, `W8/fifo-gap-root`**, owned by
   **S1n.2.1** ([`register.toml`](../wrong_answers/register.toml), `owner = "S1n.2.1"`; `python3
   utils/wrong_answers.py` holds it to what the binary answers today). Its program is not flagged: it has no
@@ -42,9 +44,18 @@ deferred are taken, each on the user's word.
   - the 27 rows of `corpus/regressions.toml` whose witness is a flagged program or whose right answer was the
     refusal, and the 20 programs the refusal kept from loading, which load now;
   - the lists, by file, in
-    [that stage's record](../m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules/s1f.21.15_forbid_becomes_a_warning.md#task-2-what-no-longer-validates-a-flagged-programs-answer);
+    that stage's record, S1f.21.15's § *Task 2: what no longer validates a flagged program's answer* (in `git log
+    --diff-filter=D -- plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules`);
   - and what it found: **a program with no candidate is never flagged**, whatever its rules read by `absent`
     (P1f.21's finding V-22).
+- **Handed over on 2026-11-25 at the close of M1f's P1f.21**, the kernel's verdicts as rules (its folder deleted,
+  `git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules`):
+  - its findings V-8, the search written as rules answering wrong at its third stratum, **a twin of
+    `W8/fifo-gap-root`** (its disposition, accepted by the user), with its witness whole, and V-90, the agenda's
+    first half reading the contradiction's activators as written, of that row's second twin; and the three things
+    its S1f.21.13 declined, each with what would reopen it: [F21 § Met again by
+    P1f.21](f21_non_monotone_programs_decided.md#met-again-by-p1f21-the-search-written-as-rules-and-the-contradictions-activators-at-root);
+  - its V-21, the user's note on dependent hypotheses: [idea 3](#the-users-ideas) below.
 
 **Read here, owned elsewhere** (each stays where it is; M1n reads the named part):
 
@@ -115,6 +126,25 @@ What the idea adds:
     stratum-order admission.
   - The strategy follows from the program, never from a flag, so no option changes R (AGENTS.md § The answer).
     For a non-monotone program it changes what the answer is, which is D2's question and the user's.
+
+**3. Dependent hypotheses: a candidate proposed above root** (2026-11-19, on the second part of M1f's P1f.21,
+verbatim): *"regarding part 2: all hypotheses generation engines should emit (open H) facts and add them into KB? I
+think yes. Now already possible to emit new hypotheses at L1+ (dependent hypotheses) of search making search space
+still been lattice but not hypercube anymore. But it is non-monotone program by definition, so not to be decided in
+this phase."* Parked on those words, and handed here at that phase's close (its finding V-21).
+
+What exists today, which the idea starts from: every writer of $H$ writes its candidates as facts `(open F)`, and a
+rule may conclude one
+([Q-M1f.566](../../docs/decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md),
+[Q-M1f.570](../../docs/decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md)). $H$ is root's:
+a rule that concludes `(open F)` is read on root's fixpoint, and what a commitment can bring a state to owe is read off
+the rules at root. A rule that fires in a state above root can conclude an `(open F)` root does not hold, a hypothesis
+that exists only above some commitment; it is held there and is no candidate, and a hypothesis first held above root
+flags its program, found by the static check and in flight
+([Q-M1f.574](../../docs/decisions/answer/Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md)). Were such a
+hypothesis a candidate, the commitments would no longer be the subsets of one set: the search space would be a
+lattice that is no cube, and $R$ as a region of the cube over root's candidates, the oracle's $2^{n}$ and each licence
+stated on it would be restated.
 
 ## The phases
 

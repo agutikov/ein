@@ -19,9 +19,10 @@
 //! fact as *inexact*.
 //!
 //! Per program it also takes the rule dependency graph and its cycles through
-//! an odd `absent`, over all relations and over `D` (what a refusal of such
-//! cycles would read). The parent-path check is the detector's spot check,
-//! `-y` (`read_out.rs`), and no column of this census.
+//! an odd `absent`, over all relations and over `D`, the relations a
+//! commitment can change: where no such cycle is, the program is
+//! stratified. The parent-path check is the detector's spot check, `-y`
+//! (`read_out.rs`), and no column of this census.
 //! `--invariance` runs both routes under `--jobs`, permuted interners
 //! (`id_order_invariance`'s permutation), every order of equal-priority rules
 //! and every `(config …)` flag flipped. `--cost` times both routes per node.
@@ -29,7 +30,7 @@
 //! ```sh
 //! cargo run --release -p ein-infer --example node_census                     # the flagged cubes within the limit
 //! cargo run --release -p ein-infer --example node_census -- --control        # the monotone cubes: the theorem's premise
-//! cargo run --release -p ein-infer --example node_census -- --strata         # (D): every program that loads and saturates
+//! cargo run --release -p ein-infer --example node_census -- --strata         # the cycles through an odd absent: every program that loads and saturates
 //! cargo run --release -p ein-infer --example node_census -- --written        # the programs written into this file
 //! cargo run --release -p ein-infer --example node_census -- --invariance     # the levers, on the flagged cubes
 //! cargo run --release -p ein-infer --example node_census -- --cost [--control]
@@ -122,12 +123,13 @@ impl Source {
 /// Programs written into the census, for the readings no corpus program
 /// within the limit shows.
 const WRITTEN: &[(&str, &str)] = &[
-    // The synthesizer's refusal (`region_synth.py`'s `RootDead`): ∅ dead and
-    // R not empty. Written by hand in its shape: one dead implicant, ¬A.
+    // The target the synthesizer declines (`region_synth.py`'s `RootDead`):
+    // ∅ dead and R not empty. Written by hand in its shape: one dead
+    // implicant, ¬A.
     (
         "dead_root",
-        "(relation thing T)\n(relation h T)\n(thing A)\n\
-         (rule dead-0 () :match (and (thing ?x) (absent (h ?x))) :assert (false) :priority 300)\n\
+        "(relation thing T :why \"{?3} is a thing\")\n(relation h T :why \"h holds of {?3}\")\n(thing A)\n\
+         (rule dead-0 () :match (and (thing ?x) (absent (h ?x))) :assert (false) :why \"{?x} is a thing and h does not hold of it, which cannot be\")\n\
          (query :goal (h ?x))\n",
     ),
     // The same, through a derived positive (*via*): `p ← ¬h`,
@@ -135,18 +137,19 @@ const WRITTEN: &[(&str, &str)] = &[
     // premise did.
     (
         "dead_root_via",
-        "(relation thing T)\n(relation h T)\n(relation p T)\n(thing A)\n\
-         (rule derive-p () :match (and (thing ?x) (absent (h ?x))) :assert (p ?x) :priority 200)\n\
-         (rule p-dead () :match (p ?x) :assert (false) :priority 300)\n\
+        "(relation thing T :why \"{?3} is a thing\")\n(relation h T :why \"h holds of {?3}\")\n(relation p T :why \"p holds of {?3}\")\n(thing A)\n\
+         (rule derive-p () :match (and (thing ?x) (absent (h ?x))) :assert (p ?x) :why \"{?x} is a thing and h does not hold of it, so p does\")\n\
+         (rule p-dead () :match (p ?x) :assert (false) :why \"p holds of {?x}, which cannot be\")\n\
          (query :goal (h ?x))\n",
     ),
     // Stratified, and still stale from scratch: `q ← ¬r` and `p ← ¬q` wait at
-    // one boundary, and the earlier-written one is admitted first.
+    // one boundary, in one half of the agenda, and the earlier-written one is
+    // admitted first.
     (
         "stratified_stale",
-        "(relation thing T)\n(relation p T)\n(relation q T)\n(relation r T)\n(thing one)\n\
-         (rule derive-p () :match (and (thing ?x) (absent (q ?x))) :assert (p ?x) :priority 200)\n\
-         (rule derive-q () :match (and (thing ?x) (absent (r ?x))) :assert (q ?x) :priority 200)\n\
+        "(relation thing T :why \"{?3} is a thing\")\n(relation p T :why \"p holds of {?3}\")\n(relation q T :why \"q holds of {?3}\")\n(relation r T :why \"r holds of {?3}\")\n(thing one)\n\
+         (rule derive-p () :match (and (thing ?x) (absent (q ?x))) :assert (p ?x) :why \"q does not hold of {?x}, so p does\")\n\
+         (rule derive-q () :match (and (thing ?x) (absent (r ?x))) :assert (q ?x) :why \"r does not hold of {?x}, so q does\")\n\
          (query :goal (r ?x))\n",
     ),
     // The FIFO gap over a static read (`08-monotonicity.md` § 3.4):
@@ -156,11 +159,11 @@ const WRITTEN: &[(&str, &str)] = &[
     // root inside the node, where r2 is admitted first.
     (
         "fifo_gap_static",
-        "(relation thing T)\n(relation a T)\n(relation b T)\n(relation p T)\n(relation q T)\n(relation z T)\n\
+        "(relation thing T :why \"{?3} is a thing\")\n(relation a T :why \"a holds of {?3}\")\n(relation b T :why \"b holds of {?3}\")\n(relation p T :why \"p holds of {?3}\")\n(relation q T :why \"q holds of {?3}\")\n(relation z T :why \"z holds of {?3}\")\n\
          (thing one)\n(a one)\n\
-         (rule guess-b () :match (thing ?x) :assert (open (b ?x)))\n\
-         (rule r2 () :match (and (a ?x) (b ?x) (absent (q ?x))) :assert (p ?x) :priority 200)\n\
-         (rule r1 () :match (and (a ?x) (absent (z ?x))) :assert (q ?x) :priority 200)\n\
+         (rule guess-b () :match (thing ?x) :assert (open (b ?x)) :why \"guess that b holds of {?x}\")\n\
+         (rule r2 () :match (and (a ?x) (b ?x) (absent (q ?x))) :assert (p ?x) :why \"a and b hold of {?x} and q does not, so p does\")\n\
+         (rule r1 () :match (and (a ?x) (absent (z ?x))) :assert (q ?x) :why \"a holds of {?x} and z does not, so q does\")\n\
          (query :goal (p ?x))\n",
     ),
 ];
@@ -2638,7 +2641,7 @@ fn main() {
     }
 
     if strata_only {
-        let (mut loads, mut refused, mut refused_d) = (0, Vec::new(), Vec::new());
+        let (mut loads, mut odd, mut odd_d) = (0, Vec::new(), Vec::new());
         for src in &sources {
             let Some(fork) = fork_route_with(src, Terms::new(), false, false) else {
                 continue;
@@ -2655,19 +2658,19 @@ fn main() {
                 println!("{row}");
             }
             if !s["stratified"].as_bool().unwrap_or(true) {
-                refused.push(row.clone());
+                odd.push(row.clone());
             }
             if !s["stratified_over_d"].as_bool().unwrap_or(true) {
-                refused_d.push(row);
+                odd_d.push(row);
             }
         }
         if !as_json {
             println!("programs that load and saturate: {loads}");
             println!(
                 "a cycle through an odd absent, over all relations: {}",
-                refused.len()
+                odd.len()
             );
-            for r in &refused {
+            for r in &odd {
                 println!(
                     "  {}  n {}  {}",
                     r["path"].as_str().unwrap_or("?"),
@@ -2691,8 +2694,11 @@ fn main() {
                     );
                 }
             }
-            println!("… over D, which (D) refuses: {}", refused_d.len());
-            for r in &refused_d {
+            println!(
+                "… over D, the relations a commitment can change: {}",
+                odd_d.len()
+            );
+            for r in &odd_d {
                 println!("  {}", r["path"].as_str().unwrap_or("?"));
                 for c in r["strata"]["cycles_over_d"]
                     .as_array()

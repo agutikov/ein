@@ -288,6 +288,21 @@ def inference_runs(entry: dict) -> list[str]:
     return out
 
 
+def saved_node(path: Path) -> bool:
+    """Is `path` a saved file of a node, one with a `(commit …)`?
+
+    `ein test` asks such a file nothing, so `--events` writes nothing for it
+    and its `test` cell has no event file by design (Q-M1f.403). A saved file
+    opens with its `(program …)` wrapper after the format's one comment line
+    (`ein_ir::saved`), and a node's carries a `(commit …)` at the top level; a
+    saved file of root has none and is asked as its program is.
+    """
+    text = path.read_text(encoding="utf-8")
+    head = [ln for ln in text.splitlines() if ln.strip() and not ln.lstrip().startswith(";")]
+    return (bool(head) and head[0].startswith("(program")
+            and any(ln.startswith("(commit") for ln in text.splitlines()))
+
+
 def sweep(entries: list[dict], args, imports: dict[str, list[str]],
           by_name: dict[str, list[dict]]) -> dict:
     """Run the corpus under `--events` and tally activations by rule.
@@ -319,7 +334,10 @@ def sweep(entries: list[dict], args, imports: dict[str, list[str]],
                                       stderr=subprocess.PIPE)
                 if not events.exists():
                     # A `broken/` fixture that never reaches the engine: that is
-                    # the entry's point, not a failure of the sweep.
+                    # the entry's point, not a failure of the sweep. Nor is a
+                    # saved node under `test`, which asks it nothing.
+                    if run.split()[0] == "test" and saved_node(REPO / path):
+                        continue
                     if proc.returncode == 0:
                         failures.append(f"{path} [{run}]: exit 0 and no event file")
                     continue

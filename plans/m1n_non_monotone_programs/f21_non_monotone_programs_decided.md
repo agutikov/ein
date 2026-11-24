@@ -921,6 +921,108 @@ not investigate here. Does ein detect non-monotone program here??? We already de
   root*), which is readable off the rules. **The user, 2026-11-19, verbatim: *"N-15 - to F21"*: it stays here**, with
   this page's other calls, and nothing is built in M1f.
 
+### Met again by P1f.21: the search written as rules, and the contradiction's activators at root
+
+**Handed over** at the close of M1f's P1f.21, the kernel's verdicts as rules (2026-11-25, on the user's word,
+*"close"*): its findings V-8 and V-90, each on a program the static check calls monotone, and the three things its
+S1f.21.13 declined, which wait on this page's D2. No register row is filed. **V-8's disposition**, accepted by the
+user on 2026-11-19 (*"OK"*), is this page **as a twin of `W8/fifo-gap-root`**, read with that row's reading, D2's
+stratum-order admission; V-90 is of that row's own second twin. The phase's folder is deleted
+(`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation/p1f.21_verdicts_as_rules`; its findings page is
+`findings.md` there, and V-8's review item `q-m1f.549_hypotheses_as_facts/`). Both re-taken on the release build of
+`213e8a92`.
+
+**V-8 — the search written as rules answers wrong at its third stratum.** `two-worlds.ein`, whole, writes the
+lattice of a two-candidate program as rules, under `(solve :no-search)`: a world is a fact naming its commitment,
+`in-R` is concluded for a world that has paid and holds no `(in ?w (false))`, an absence, and `always` for a
+candidate that every world in $R$ holds, a `forall` over `in-R`, a second absence over the first's conclusions. The
+object program is [`examples/lattice/18_two_candidates.ein`](../../examples/lattice/18_two_candidates.ein), whose $R$
+`ein oracle` gives as the two states `{(s a)}` and `{(s b)}`; the corpus's
+[`18_two_candidates_as_rules.ein`](../../examples/lattice/18_two_candidates_as_rules.ein) is this program without
+`always`, which is why it holds.
+
+```lisp
+;; The same program with its lattice written as rules, in one saturation and no search.
+;; A world is a fact (w …) naming its commitment; (in W F) says world W holds F.
+(import std.macro :symbols (forall))
+(thing a) (thing b)
+(question (s a)) (question (s b))
+(before (s a) (s b))                 ; an order on the candidates, so a set has one name
+(world (w))
+(rule split-1 ()
+  :match  (question ?f)
+  :assert (and (world (w ?f)) (in (w ?f) ?f))
+  :why    "the world that supposes {?f}")
+(rule split-2 ()
+  :match  (and (question ?f) (question ?g) (before ?f ?g))
+  :assert (and (world (w ?f ?g)) (in (w ?f ?g) ?f) (in (w ?f ?g) ?g))
+  :why    "the world that supposes {?f} and {?g}")
+;; the program's rule, lifted into a world by hand
+(rule clash-in ()
+  :match  (and (in ?w (s a)) (in ?w (s b)))
+  :assert (in ?w (false))
+  :why    "in {?w}: s of a and of b")
+;; the requirement and its payment
+(rule paid-in ()
+  :match  (in ?w (s ?x))
+  :assert (paid ?w)
+  :why    "{?w} holds s of {?x}")
+;; the verdicts, each a fact about a world
+(rule in-R ()
+  :match  (and (world ?w) (paid ?w) (absent (in ?w (false))))
+  :assert (in-R ?w)
+  :why    "{?w} is alive and owes nothing")
+;; a fact inferred from the search: what holds in some state of R, and in every one
+(rule possible ()
+  :match  (and (in-R ?w) (in ?w ?f))
+  :assert (possible ?f)
+  :why    "{?f} holds in {?w}, a state of R")
+(rule always ()
+  :match  (and (question ?f) (forall ?w (in-R ?w) (in ?w ?f)))
+  :assert (always ?f)
+  :why    "{?f} holds in every state of R")
+(solve :no-search)
+(query :goal (in-R ?w))
+(query :goal (in ?w (false)))
+(query :goal (possible ?f))
+(query :goal (always ?f))
+```
+
+`ein solve two-worlds.ein` answers `(in-R ?w)` with `(w (s a))` and `(w (s b))`, the oracle's $R$ of the object
+program, and `(always ?f)` with `(s a)` and `(s b)`. Neither is in every state of $R$: `(w (s b))` does not hold
+`(s a)`. Under stratum-order admission `always` is read once `in-R` is complete, and has no row. `ein saturate --dump
+two-worlds.ein` prints `in-R … stratum 1`, `possible … stratum 1`, `always … stratum 2`, `;; Strata — stratified, 3
+strata`, and under `DERIVED` both `(always (s a) :rule always)` and `(always (s b) :rule always)`; the read-out says
+`lattice monotone (the static check)`, since the program has no candidate and no `absent` reads a relation a
+commitment extends. The strata are computed and printed, and the boundary admits `always` against a fixpoint that
+holds no `in-R` yet, where its `forall` is true of nothing. On S1f.21.13's build the same program with `always`
+written over `(open ?f)` answered the same and was flagged, as a rule that reads an `open` fact makes its program
+([Q-M1f.569](../../docs/decisions/hypotheses/Q-M1f.569-a-rule-may-read-an-open-fact-and-its-program.md)).
+
+**V-90 — the agenda's first half reads the contradiction's activators as written, not as derived.** The row's
+second twin, [`fifo-gap-root-negation.ein`](../wrong_answers/witnesses/fifo-gap-root-negation.ein), has `r1` conclude
+a stored negation, `(and (q ?x) (not (w ?x)))`, so that the agenda admits it first (Q-M1f.313). Since the
+contradiction became a theory a program imports
+([Q-M1f.557](../../docs/decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)), what the
+agenda puts first is read off the pair rules a program activates: the file imports nothing, and answers `(p ?x)` with
+`?x = one`, as the witness does, where the row's `[[case.twin]]` record says the query has no row. With
+`(import std.contradiction)` appended, the pair rules' activators are derived at root after the rules that wait on an
+`absent` are enqueued, so `r1` is still not admitted first, and the answer is `?x = one` again; with the activator
+written as well, `(std.contradiction.clash-1 w)`, it is, and the query has no row. The two witnesses' headers still say
+which rule is admitted first. The gate's step holds each row's own answer, the twins' records being a record no step
+runs, and stays green. With P1f.21's review item 79 (its V-22): a program with no candidate is never flagged, and the
+user ruled (a), *"for now we don't claim we 100% detect all types of non-monotone programs in all possible cases, ther
+is  M1n for that"*: the row stays, M1n's to fix.
+
+**What P1f.21's S1f.21.13 declined**, each waiting on this page's D2, as that stage's record checked each on its
+build, and kept here as what the phase left and where:
+
+| what | why | what would reopen it |
+|---|---|---|
+| **search control from inside Ein**: rules that conclude what to split on, that a debt is forced, that a state is hopeless | the tree route takes the owed instance with the fewest alternatives left, the first by text among equals, and a debt with none has no child (licence L5): *order*, *forced* and *hopeless* are done, and no corpus program is known to want another order. Such a rule reads *still open*, an `open` fact, and so flags its program (Q-M1f.569): a probe over `(open s)` and `(absent (open (s ?x)))` that states `:ein inconsistent` prints `site hopeless: open-read reads open at absent depth 0` | a program whose search is slow by its order and fast by another, measured; then a word to the engine a rule over `open` facts states, and a ruling that such a rule does not flag its program |
+| **the search as rules in the engine**, every state a context | $2^{\lvert H \rvert}$ worlds where the tree takes 7 saturations of *zebra2*'s $2^{56}$; every rule written again under a context, with no form that lifts one; each world's absences need the strata followed (V-8). A lifted rule cannot state the engine's word, which ends every world at once, so a world's death is a fact, `(in W (false))` | D2's stratum-order admission, and a form that lifts a rule |
+| **facts inferred from the search** | the first rule over a second absence answers wrong (V-8); and a fact the search writes back into a state changes that state, and so $R$: written today as a rule that reads an `open` fact and concludes a held fact, which flags its program ([`features/23_a_rule_reads_open.ein`](../../examples/features/23_a_rule_reads_open.ein)) | P1n.2's stratum-order admission; then `always` is one stratum more of `18_two_candidates_as_rules.ein` |
+
 ## Why it is parked
 
 - The user's direction, above.
