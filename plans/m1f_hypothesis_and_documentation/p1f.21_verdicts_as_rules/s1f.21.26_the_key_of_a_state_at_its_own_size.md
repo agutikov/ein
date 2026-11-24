@@ -3,7 +3,7 @@
 **Phase:** [P1f.21](README.md), part 2 ([the order](README.md#the-order-two-parts))
 **Status:** planned 2026-11-25 on the user's answer to review item 78, *"(b)"*
 ([the README](README.md#the-answers-to-part-2s-items-and-item-87)); **built** 2026-11-25 on its own branch, the
-code in `24aeebbe`, the costs re-taken and the record below; not merged.
+code in `24aeebbe`, the costs re-taken and the record below; merged into master by `6ddef90e`.
 **Writes:** `ein-infer/src/region.rs` (the node function) and what reads a state's key whole; their tests; the
 costs page's final table, re-taken.
 

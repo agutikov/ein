@@ -14,6 +14,6 @@ the page to read first. Each part has its index and its own answers file; an ite
 | part | what | items | answers |
 |---|---|---|---|
 | [**part 1**](part-1/README.md) | the verdict *dead*: `false`, `not`, `relation`, the key. Built, and its pages written | **nothing is open**: every item answered, the last on 2026-11-25 | [`part-1/ANSWERS.md`](part-1/ANSWERS.md) |
-| [**part 2**](part-2/README.md) | `open`: what a state owes, and the hypotheses. Its builds and its pages done | **one item for review**: [88](part-2/88-S1f.21.27-defaults/README.md), the default S1f.21.27 took; the rest answered 2026-11-25 | [`part-2/ANSWERS.md`](part-2/ANSWERS.md) |
+| [**part 2**](part-2/README.md) | `open`: what a state owes, and the hypotheses. Its builds and its pages done | **two items for review**: [88](part-2/88-S1f.21.27-defaults/README.md) and [89](part-2/89-S1f.21.26-defaults/README.md), the defaults S1f.21.27 and S1f.21.26 took; the rest answered 2026-11-25 | [`part-2/ANSWERS.md`](part-2/ANSWERS.md) |
 
 An item's programs are tracked; its `tools/` and `runs/` are ignored and on this machine only.

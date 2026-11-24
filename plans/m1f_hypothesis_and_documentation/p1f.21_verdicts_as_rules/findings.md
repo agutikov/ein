@@ -90,7 +90,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-80](#v-80--the-cost-pages-first-instruction-counts-were-taken-unpinned) | the cost page's first instruction counts were taken unpinned | S1f.21.21 | **taken up by the coordinator**: the final table takes every count one way |
 | [V-84](#v-84--two-comments-of-the-obligations-reader-name-forms-the-parser-refuses) | two comments of the obligations' reader name forms the parser refuses | S1f.21.22 | **fixed** by S1f.21.23 |
 | [V-85](#v-85--nine-pictures-of-the-pages-are-no-longer-what-the-kb-render-draws) | nine pictures of the pages are no longer what the kb render draws | S1f.21.22 | **ruled 2026-11-25 by the user: (a)**, review item 77 of part 2; **fixed** by S1f.21.27 (`41ef4922`, `f9bb5e54`, `6a3ae275`): the nine pictures drawn again with root's `open` facts, the three sentences written again |
-| [V-86](#v-86--a-states-key-sorts-every-fact-the-state-holds-roots-among-them) | a state's key sorts every fact the state holds, root's among them | S1f.21.23 | **ruled 2026-11-25 by the user: (b)**, review item 78 of part 2: built at its own size, S1f.21.26, planned |
+| [V-86](#v-86--a-states-key-sorts-every-fact-the-state-holds-roots-among-them) | a state's key sorts every fact the state holds, root's among them | S1f.21.23 | **ruled 2026-11-25 by the user: (b)**, review item 78 of part 2; **fixed** by S1f.21.26 (`24aeebbe`): the key read above root's mark at its own size; 47 % of `send_more_money.ein`'s instructions off, no key moved |
 | [V-87](#v-87--the-deltas-walk-was-counted-twice-in-its-finding) | the delta's walk was counted twice in its finding | S1f.21.23 | **closed**: the figure corrected |
 | [V-88](#v-88--an-obligations-relation-is-never-absent) | an obligation's relation is never absent | S1f.21.23 | open |
 | [V-89](#v-89--a-rule-that-concludes-a-hypothesis-reads-none-of-its-absent-premises) | a rule that concludes a hypothesis reads none of its absent premises | S1f.21.19 | **a wrong answer, filed and fixed** by S1f.21.24 on the coordinator's default (Q-M1f.685): a hypothesis rule's `absent` premises are read; the row is a regression, its witness in the corpus; $H$ and $R$ moved on no corpus program; review item 86 of part 2 |
@@ -108,6 +108,8 @@ without a path is in [`design.md`](design.md), whole.
 | [V-103](#v-103--a-test-cites-q-m1f1-for-what-q-m1f1-does-not-decide) | `cli_semantics.rs`' `a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling` cites Q-M1f.1 for a refusal at the parse | S1f.21.25 | open; a comment, with the next code batch |
 | [V-104](#v-104--a-function-stays-public-with-one-caller-in-its-crate) | `binds_a_relation_to_a_fact` stays `pub` and re-exported by `ein_infer`, with `activators_into` its one caller | S1f.21.25 | open; with the next code batch |
 | [V-105](#v-105--the-ledgers-entry-for-q-m1f1-against-the-decisions-new-title) | the ledger's Q-M1f.1 entry is the coordinator's to read again against the decision's title | S1f.21.25 | **fixed** by the coordinator's filing of S1f.21.25 |
+| [V-106](#v-106--a-function-that-reads-a-key-has-no-caller) | `canon::distinct_by_state` has no caller, and its doc comment says three sites use it | S1f.21.26 | open; left by its default Q-M1f.699 |
+| [V-107](#v-107--an-instruction-count-depends-on-how-the-program-is-run) | an instruction count of a program of many small states depends on how it is run, not only on the binary and the input | S1f.21.26 | open; its cause not settled |
 | [V-111](#v-111--nothing-holds-a-pages-picture-of-a-knowledge-base-to-what-ein-render-kb-draws) | nothing holds a page's picture of a knowledge base to what `ein render kb` draws: `render_diagrams.py --check` holds a picture to its own source only | S1f.21.27 | open; a process check |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
@@ -1034,6 +1036,8 @@ firing of the calculator's rules is the likely cause; it is not found. **Open**;
 
 **Ruled 2026-11-25 by the user: (b)**, on review item 78 of part 2: *"(b)"*. The key is built at its own size, a stage like S1f.21.23: [S1f.21.26](s1f.21.26_the_key_of_a_state_at_its_own_size.md), planned, not started.
 
+**Fixed** 2026-11-25 by S1f.21.26 (`24aeebbe`), on the user's ruling (b): the node function reads the fork's facts above root's mark and sorts those, the filter gone; on the gate build the new key is held to the old at every node. No key moved: `solve -p` and the events' digest the same on 944 corpus files. `send_more_money.ein` 10 438 M instructions → 5 537 M, the key's 38 % and the filter's 9 % replaced by under 1 %; `equation_two_unknowns.ein` 3 290 M → 2 860 M (the costs page's final table, its fourth column).
+
 ## V-87 — The delta's walk was counted twice in its finding
 
 **Found** by S1f.21.23. V-78's figure, about 17 % of `send_more_money.ein`, added the walk's inclusive cost to the cost of the loop inside it. The walk was 8.2 %, and S1f.21.23 takes 8.9 % of that program's instructions off. ****closed: the figure corrected.**
@@ -1119,6 +1123,19 @@ run on that commit; the whole nightly is run again on the phase's last commit.
 ## V-105 — The ledger's entry for Q-M1f.1 against the decision's new title
 
 **Found** by S1f.21.25: the ledger's entry for Q-M1f.1 links the decision file, whose title is now Q-M1f.691's, and the stage does not edit the ledger. **Fixed** by the coordinator's filing of the stage: the entry says the decision is built and names its title.
+
+## V-106 — A function that reads a key has no caller
+
+**Found** by S1f.21.26. `ein_infer::canon::distinct_by_state` has no caller in the workspace, and its doc comment
+says three sites deduplicate a model list through it. Left as it is by the stage's default (Q-M1f.699). **Open.**
+
+## V-107 — An instruction count depends on how the program is run
+
+**Found** by S1f.21.26. Against the rows of 2026-11-20 on the costs page, `pets.ein` and `01_not_and_absent.ein`
+count about 420 M and 3 180 M instructions fewer on every engine alike; the other three programs agree to 0.1 %. One
+binary on one input, `fa2c2914` on `pets.ein`, counts 3 509 M under `utils/bench_env.sh`, 3 642 M from a plain shell
+with the same pin, 4 230 M unpinned. Rows taken in one session compare; rows of two sessions do not. The cause is not
+settled; idle threads of the worker pool would fit. The costs page says so beside the figures that moved. **Open.**
 
 ## V-111 — Nothing holds a page's picture of a knowledge base to what `ein render kb` draws
 
