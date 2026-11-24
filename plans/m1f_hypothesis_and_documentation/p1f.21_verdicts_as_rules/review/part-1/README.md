@@ -2,14 +2,19 @@
 
 [← the bundle](../README.md) · [← the phase](../../README.md) · [your answers](ANSWERS.md)
 
-**No item of this part is open.** You answered the last seven on 2026-11-24: the defaults of S1f.21.17, S1f.21.11
-and S1f.21.2 (66, 67, 68) accepted, and the four findings (79 to 82) ruled, item 82 in the conversation. Each answer
-is filed in your words in [the phase's README](../../README.md#the-answers-to-part-1s-items-66-to-82) and under its
-question in [the ledger](../../../open_questions.md) or its finding in [`findings.md`](../../findings.md). Item 82's
-ruling, an activator that names no relation activating nothing in silence, is built by
-[S1f.21.25](../../s1f.21.25_an_activator_that_names_no_relation_in_silence.md), planned, not started. The part's own
+**One item is open for your review: 87**, the defaults S1f.21.25 took building your ruling on item 82. You answered
+the seven before it on 2026-11-24: the defaults of S1f.21.17, S1f.21.11 and S1f.21.2 (66, 67, 68) accepted, and the
+four findings (79 to 82) ruled, item 82 in the conversation. Each answer is filed in your words in
+[the phase's README](../../README.md#the-answers-to-part-1s-items-66-to-82) and under its question in
+[the ledger](../../../open_questions.md) or its finding in [`findings.md`](../../findings.md). The part's own
 questions, its six items of 2026-11-19, were ruled before, each answer filed in your words under its question in
 [the ledger](../../../open_questions.md) and in [the phase's README](../../README.md#the-rulings-of-the-answers-file).
+
+## What is left for you
+
+| # | what | the default |
+|---|---|---|
+| [**87**](87-S1f.21.25-defaults/README.md) | the five defaults S1f.21.25 took: the load's warnings field and the CLI's channel; Q-M1f.1's file; the test of the sixteen shapes; the fixtures' headers; what cites no line | each as built |
 
 ## The three readings, confirmed
 

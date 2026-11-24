@@ -394,7 +394,7 @@ paragraph, no register count, no measurement (the user's rule).
   rule's `absent` premises. Every stage planned then is done. The user has
   answered every item of the first part's review; the ruling on item 82,
   an activator that names no relation activating nothing in silence, is
-  S1f.21.25, planned and not started. The part's pages,
+  S1f.21.25, is built; its defaults are review item 87. The part's pages,
   S1f.21.14, are written. Q-M1f.566 to
   Q-M1f.579 are ruled and the second part's builds are planned on them,
   S1f.21.12 and S1f.21.18. **On the user's word every stage left is run to

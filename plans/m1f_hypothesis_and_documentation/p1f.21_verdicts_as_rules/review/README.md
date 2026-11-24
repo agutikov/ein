@@ -13,7 +13,7 @@ the page to read first. Each part has its index and its own answers file; an ite
 
 | part | what | items | answers |
 |---|---|---|---|
-| [**part 1**](part-1/README.md) | the verdict *dead*: `false`, `not`, `relation`, the key. Built, and its pages written | **nothing is open**: the last seven items, 66, 67, 68 and 79 to 82, answered 2026-11-24 and out of the bundle; item 82's ruling is built by S1f.21.25, planned | [`part-1/ANSWERS.md`](part-1/ANSWERS.md) |
+| [**part 1**](part-1/README.md) | the verdict *dead*: `false`, `not`, `relation`, the key. Built, and its pages written | **one item for review**: [87](part-1/87-S1f.21.25-defaults/README.md), the defaults S1f.21.25 took building the ruling on item 82; the seven before it answered 2026-11-24 and out of the bundle | [`part-1/ANSWERS.md`](part-1/ANSWERS.md) |
 | [**part 2**](part-2/README.md) | `open`: what a state owes, and the hypotheses. Its builds and its pages done | **two questions wait for you**: [77](part-2/77-what-a-drawing-of-root-shows/README.md), what a drawing of root shows (nine pictures of the pages wait on it), and [78](part-2/78-the-key-of-a-state/README.md), the key of a state. **Three findings are yours to call**: 83, 84, 85. **A wrong answer fixed on a default, for you to confirm**: [86](part-2/86-a-hypothesis-rule-reads-its-absent/README.md). **Sixteen more for review**: 58 to 65, the examples of S1f.21.12; [69](part-2/69-S1f.21.12-defaults/README.md) to [76](part-2/76-S1f.21.23-defaults/README.md), the defaults its stages took | [`part-2/ANSWERS.md`](part-2/ANSWERS.md) |
 
 An item's programs are tracked; its `tools/` and `runs/` are ignored and on this machine only.

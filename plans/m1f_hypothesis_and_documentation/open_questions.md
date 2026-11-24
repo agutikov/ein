@@ -16,7 +16,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 
 | id | question | state |
 |---|---|---|
-| [Q-M1f.1](#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) | G-14: is a bad conclusion that never fires refused? | **ruled 2026-11-08, (b)**; S1f.5.5 and S1f.5.18; **built 2026-11-09** by S1f.5.18 (T1f.5.18.3, W59): a program in which a rule could derive an activator binding a relation parameter to a fact is refused at load, read off the program (Q-M1f.41); **a warning since 2026-11-20** (P1f.21's S1f.21.17, review item 38's answer); **ruled 2026-11-24 by the user: in silence**, review item 82 of P1f.21's part 1: such an activator activates nothing and nothing says so, whether a rule could derive it, the program writes it or a state holds it (S1f.21.25, planned) |
+| [Q-M1f.1](#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) | G-14: is a bad conclusion that never fires refused? | **ruled 2026-11-08, (b)**; S1f.5.5 and S1f.5.18; **built 2026-11-09** by S1f.5.18 (T1f.5.18.3, W59): a program in which a rule could derive an activator binding a relation parameter to a fact is refused at load, read off the program (Q-M1f.41); **a warning since 2026-11-20** (P1f.21's S1f.21.17, review item 38's answer); **ruled 2026-11-24 by the user: in silence**, review item 82 of P1f.21's part 1: such an activator activates nothing and nothing says so, whether a rule could derive it, the program writes it or a state holds it; **built 2026-11-24** by S1f.21.25 (`a117e80a`, `e802c611`, `02bcddc3`), the decision rewritten under its id and file (Q-M1f.691) |
 | [Q-M1f.2](#q-m1f2--the-55-files-the-grammar-refuses-that-todays-parser-accepts) | the 55 files the grammar refuses that today's parser accepts | **ruled 2026-11-08, (a)**; S1f.5.5 |
 | [Q-M1f.3](#q-m1f3--three-wrong-answers-the-census-found-with-no-row) | three wrong answers the census found with no row | **ruled 2026-11-08, as recommended**; S1f.5.0 files W33–W35; W33 **fixed 2026-11-09** by S1f.5.18 (T1f.5.18.2), W34 by S1f.5.9 (T1f.5.9.2) and W35 by S1f.5.5's swap (`8c3fe86e`) |
 | [Q-M1f.4](#q-m1f4--removing-priority-moves-the-facts-of-cores-on-seven-corpus-programs) | removing `:priority` moves the facts of cores on seven corpus programs | **ruled 2026-11-08, (b)**: derive the order from the rules first; S1f.5.15 |
@@ -612,6 +612,11 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.687](#q-m1f687--what-the-oracles-listing-of-a-node-shows) | What the oracle's listing of a node shows | **defaulted 2026-11-20** (P1f.21's S1f.21.24); review item 86 of part 2 |
 | [Q-M1f.688](#q-m1f688--whether-a-defaults-decision-file-is-written-before-the-user-rules-it) | Whether a default's decision file is written before the user rules it | **defaulted 2026-11-20** (P1f.21's S1f.21.24); review item 86 of part 2 |
 | [Q-M1f.689](#q-m1f689--what-the-moved-witness-of-the-hypothesis-rules-absent-states) | What the moved witness of the hypothesis rule's absent states | **defaulted 2026-11-20** (P1f.21's S1f.21.24); review item 86 of part 2 |
+| [Q-M1f.690](#q-m1f690--the-loads-warnings-and-the-clis-channel-go-with-the-lines) | The load's warnings and the CLI's channel go with the lines | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `a117e80a`); review item 87 of part 1 |
+| [Q-M1f.691](#q-m1f691--q-m1f1-keeps-its-file-and-its-slug) | Q-M1f.1 keeps its file and its slug | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `e802c611`); review item 87 of part 1 |
+| [Q-M1f.692](#q-m1f692--what-the-test-of-the-sixteen-shapes-holds-now) | What the test of the sixteen shapes holds now | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `a117e80a`); review item 87 of part 1 |
+| [Q-M1f.693](#q-m1f693--the-fixtures-headers-keep-their-line-counts) | The fixtures' headers keep their line counts | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `02bcddc3`); review item 87 of part 1 |
+| [Q-M1f.694](#q-m1f694--what-cites-no-line-stays) | What cites no line stays | **defaulted 2026-11-24** (P1f.21's S1f.21.25, `e802c611`); review item 87 of part 1 |
 
 **The questions those two phases already own are M1e's and keep their ids.**
 They are not copied here and they are not renumbered — the stage files cite
@@ -661,7 +666,9 @@ run's line where a state holds such an activator.
 activated rules if program imports something but not use. Any concerns?"*; and, asked back whether the line for an
 activator the program writes (Q-M1e2.18) and the run's go too: *"All three go (Recommended)"*. Such an activator
 activates nothing and nothing says so. The reading of which positions hold a relation's name stays, for Q-M1f.46's
-refusal and the relations of the program (Q-M1f.522). Built by P1f.21's S1f.21.25, planned.
+refusal and the relations of the program (Q-M1f.522).
+
+**Built 2026-11-24** by P1f.21's S1f.21.25: `a117e80a` (the code and the tests), `e802c611` (the decisions and the pages), `02bcddc3` (the fixtures, the corpus's notes, the standard library's comments); no exit and no stdout moved over the corpus. The decision is rewritten under its id and its file, its title now *A rule that could derive an activator binding a relation parameter to a fact loads, and such an activator activates nothing in silence* (Q-M1f.691, a default).
 
 ### Q-M1f.2 — The 55 files the grammar refuses that today's parser accepts
 
@@ -12258,3 +12265,41 @@ The user reviews it in [review item 86](p1f.21_verdicts_as_rules/review/part-2/8
 **The default taken**: a `(solve :expect (region (model) (model (r b))))`, the row's answer, with a `test` run; none while the row was open, so the register's `solve` run exited 0. The other reading: no `:expect`, the row alone holding the answer.
 
 The user reviews it in [review item 86](p1f.21_verdicts_as_rules/review/part-2/86-a-hypothesis-rule-reads-its-absent/README.md).
+
+### Q-M1f.690 — The load's warnings and the CLI's channel go with the lines
+
+**Raised and defaulted** 2026-11-24 by P1f.21's S1f.21.25 ([its record](p1f.21_verdicts_as_rules/s1f.21.25_an_activator_that_names_no_relation_in_silence.md#record)), built as `a117e80a`. `Program::warnings`, which held only these lines, goes with them, and with it `ein-cli`'s `keep_warnings` and its pending list; `say_warnings`, which now prints the load's `note:` lines alone, is `say_notes`. Q-M1f.580 is rewritten for every line a load or a run prints, the load's notes today, held by `non_monotone_warning.rs`' `the_warning_comes_before_a_loads_note`.
+
+The other reading: keep the field and the channel, empty, for a later load warning.
+
+The user reviews it in [review item 87](p1f.21_verdicts_as_rules/review/part-1/87-S1f.21.25-defaults/README.md).
+
+### Q-M1f.691 — Q-M1f.1 keeps its file and its slug
+
+**Raised and defaulted** 2026-11-24 by P1f.21's S1f.21.25 ([its record](p1f.21_verdicts_as_rules/s1f.21.25_an_activator_that_names_no_relation_in_silence.md#record)), built as `e802c611`. Q-M1f.1's decision keeps its file and slug, and its title is rewritten to start as the old one: *A rule that could derive an activator binding a relation parameter to a fact loads, and such an activator activates nothing in silence*. No link moves.
+
+The other reading: a title led by the activator, *An activator that binds a relation parameter to a fact activates nothing, and nothing says so*, in a file of that slug, every link moved with it.
+
+The user reviews it in [review item 87](p1f.21_verdicts_as_rules/review/part-1/87-S1f.21.25-defaults/README.md).
+
+### Q-M1f.692 — What the test of the sixteen shapes holds now
+
+**Raised and defaulted** 2026-11-24 by P1f.21's S1f.21.25 ([its record](p1f.21_verdicts_as_rules/s1f.21.25_an_activator_that_names_no_relation_in_silence.md#record)), built as `a117e80a`. `from_ir.rs`' unit test that read the load's lines keeps its sixteen shapes as programs that load, and holds the positions through the relations of the program: a name passed through a marker or a parameter's conclusion is a relation of the program, one written at a declared relation's argument is not (dropping the passed names fails it, checked by hand). Q-M1f.41 and Q-M1f.42 cite it beside `eq_at_another_arity_is_refused_at_load`.
+
+The other reading: the sixteen shapes alone, loading.
+
+The user reviews it in [review item 87](p1f.21_verdicts_as_rules/review/part-1/87-S1f.21.25-defaults/README.md).
+
+### Q-M1f.693 — The fixtures' headers keep their line counts
+
+**Raised and defaulted** 2026-11-24 by P1f.21's S1f.21.25 ([its record](p1f.21_verdicts_as_rules/s1f.21.25_an_activator_that_names_no_relation_in_silence.md#record)), built as `02bcddc3`. The headers of fixtures 19 and 20, `derived-activator.ein`, `derived-activator-never.ein` and `nested-fact-activator.ein` are rewritten in as many lines as they had, so no position in them moves and no golden is re-banked.
+
+The other reading: headers of any length.
+
+The user reviews it in [review item 87](p1f.21_verdicts_as_rules/review/part-1/87-S1f.21.25-defaults/README.md).
+
+### Q-M1f.694 — What cites no line stays
+
+**Raised and defaulted** 2026-11-24 by P1f.21's S1f.21.25 ([its record](p1f.21_verdicts_as_rules/s1f.21.25_an_activator_that_names_no_relation_in_silence.md#record)), built as `e802c611`. What cites none of the three lines stays as it is: the diagnostics page's § 2.9 keeps its paragraph on the positions, which § 2.14 and § 2.20 read, retitled *Which positions hold relation names*; the reasoning pages `02-rewriting-rules.md` and `02-saturation.md`, Q-M1f.115, Q-M1f.567, Q-M1e2.26, Q-M1f.46, `entities.rs`, `plan.rs`, `corpus/regressions.toml` and `activator_arity.expected` are unchanged; the reasoning-in-code row *a variable in a relation's place is a parameter* names `refuse_no_fact_holds` for the removed `validate_relation_parameters`.
+
+The user reviews it in [review item 87](p1f.21_verdicts_as_rules/review/part-1/87-S1f.21.25-defaults/README.md).

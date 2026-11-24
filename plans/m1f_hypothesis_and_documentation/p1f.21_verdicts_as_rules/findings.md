@@ -44,7 +44,7 @@ without a path is in [`design.md`](design.md), whole.
 | [V-31](#v-31--the-module-tables-have-no-row-for-stdcore) | the module tables of `stdlib/README.md` and the root `README.md` have no row for `std.core` | the merge of `std.debts` | **fixed** by S1f.21.2: both tables have the row |
 | [V-32](#v-32--the-loads-warning-is-one-line-a-site) | the load's warning for an activator a rule could derive is one line a site: seventeen lines for one program that imports `std.algebra` | S1f.21.17 | **ruled 2026-11-24 by the user: (a), one line a site**, review item 81 of part 1; the lines it counts go by the ruling on V-34 (S1f.21.25) |
 | [V-33](#v-33--the-json-summary-carries-no-warning-of-the-load-or-the-run) | `--json-summary` carries none of the load's or the run's `warning:` lines | S1f.21.17 | open |
-| [V-34](#v-34--the-milestones-l-109-program-loads) | the milestone's L-109 program, *zebra2* with `about-1` and `(about-1 symmetric)`, loads now under one warning | S1f.21.17 | **ruled 2026-11-24 by the user**, review item 82 of part 1: the warning is false by design and goes, with the written activator's and the run's lines (S1f.21.25, planned); the milestone's L-109 closed |
+| [V-34](#v-34--the-milestones-l-109-program-loads) | the milestone's L-109 program, *zebra2* with `about-1` and `(about-1 symmetric)`, loads now under one warning | S1f.21.17 | **ruled 2026-11-24 by the user**, review item 82 of part 1: the warning is false by design and goes, with the written activator's and the run's lines, **built by S1f.21.25**; the milestone's L-109 closed |
 | [V-35](#v-35--the-renaming-test-does-not-rename-false-and-not) | `renaming_invariance.rs` does not rename `false` and `not`: the kernel still reads both in four places | S1f.21.11 | open |
 | [V-36](#v-36--the-index-of-negations-has-no-reader-that-decides) | `Kb::is_negated` and `Kb::negated` drive no decision any more | S1f.21.11 | **fixed** by S1f.21.21: the set of negated facts and the dump's rows that printed it are gone; a pair's probe asks the fact store |
 | [V-37](#v-37--every-declared-relation-activates-clash-0-too) | every declared relation activates `clash-0` as well as the rule of its count | S1f.21.11 | **ruled by the user 2026-11-20** (Q-M1f.658): the instance stays, *"this cost is absolutely acceptable"* |
@@ -103,6 +103,11 @@ without a path is in [`design.md`](design.md), whole.
 | [V-96](#v-96--a-comment-of-a-test-still-says-rung) | a comment of a test still says rung | S1f.21.24 | open |
 | [V-97](#v-97--a-site-through-a-nested-absent-flagged-a-read-the-engine-did-not-make) | a site through a nested absent flagged a read the engine did not make | S1f.21.24 | **closed**: the fix makes the site true |
 | [V-100](#v-100--two-mutants-of-the-bijections-setup-were-caught-by-a-load-error-alone) | two mutants of the bijection's setup were caught by a load error alone, and survived once the file that gave it was rewritten: the container's nightly failed on them | the coordinator, the container's nightly | **fixed**: a test that claims the two activators, `tests/stdlib/bijection/07_setup_owed_activators.ein` |
+| [V-101](#v-101--a-header-still-says-the-keyword-pair-in-a-guard-is-a-load-error) | the header of `kwpair-in-guard.ein` says the loader refuses it with a `kb load error`; today it is a parse error at the keyword | S1f.21.25 | open; the header's words, with the next code batch |
+| [V-102](#v-102--the-calculators-shared-rules-are-named-by-their-activators-a-choice-the-warning-justified) | `std.math.positional`'s shared rules are named by their activators and not in a base's closing rule, a choice the comments justified by the load's warning, now gone | S1f.21.25 | open; not tried |
+| [V-103](#v-103--a-test-cites-q-m1f1-for-what-q-m1f1-does-not-decide) | `cli_semantics.rs`' `a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling` cites Q-M1f.1 for a refusal at the parse | S1f.21.25 | open; a comment, with the next code batch |
+| [V-104](#v-104--a-function-stays-public-with-one-caller-in-its-crate) | `binds_a_relation_to_a_fact` stays `pub` and re-exported by `ein_infer`, with `activators_into` its one caller | S1f.21.25 | open; with the next code batch |
+| [V-105](#v-105--the-ledgers-entry-for-q-m1f1-against-the-decisions-new-title) | the ledger's Q-M1f.1 entry is the coordinator's to read again against the decision's title | S1f.21.25 | **fixed** by the coordinator's filing of S1f.21.25 |
 
 ## V-1 — *forbid* reads rules, and the kernel's contradiction is none
 
@@ -747,9 +752,9 @@ firing on `imply1`'s own use, `(imply1 equivalence symmetric)`, which works. The
 false by desing. We do use relations as arguments. And there could be any number of not activated rules if program
 imports something but not use. Any concerns?"*; and, asked back whether the lines for an activator the program
 writes and one a state holds go too, *"All three go (Recommended)"*. Such an activator activates nothing and nothing
-says so; the reading of the positions stays for Q-M1f.46 and the relations of the program. Built by
-[S1f.21.25](s1f.21.25_an_activator_that_names_no_relation_in_silence.md), planned. The milestone's L-109 is closed
-by it.
+says so; the reading of the positions stays for Q-M1f.46 and the relations of the program. **Built** 2026-11-24 by
+[S1f.21.25](s1f.21.25_an_activator_that_names_no_relation_in_silence.md): `a117e80a`, `e802c611`, `02bcddc3`. The
+milestone's L-109 is closed by it.
 
 ## V-35 — The renaming test does not rename `false` and `not`
 
@@ -1079,3 +1084,23 @@ differ in count the setup's elimination rules end root. **Fixed** by a program t
 two activators it holds, `tests/stdlib/bijection/07_setup_owed_activators.ein`: it holds on the library and fails
 on each mutant, and the census's survivors are the banked set again. The nightly's steps after the census were not
 run on that commit; the whole nightly is run again on the phase's last commit.
+
+## V-101 — A header still says the keyword pair in a guard is a load error
+
+**Found** by S1f.21.25. The header of `examples/ein-bugs/wrong-answers/kwpair-in-guard.ein` says the loader refuses the program with a `kb load error` naming the rule and the clause, *… a name, a string or an integer*; today it is a parse error at the keyword (`33:38: unexpected `:k``), as its corpus note and regression row say. The keyword half of Q-M1e2.18, not the stage's. **Open**: the header's words, with the next batch of code.
+
+## V-102 — The calculator's shared rules are named by their activators, a choice the warning justified
+
+**Found** by S1f.21.25. `std.math.positional`'s shared rules are named by their activators and not in a base's closing rule, a choice the comments of `stdlib/math/positional.ein` and `decimal-arith.ein` justified by the load's warning, now gone; the stage reworded them to give the loader's reading (Q-M1f.42) as the reason. Whether a closing rule may name them now is open, and not tried: naming them would move the positions the loader reads, and so the relations of the program (Q-M1f.522). **Open.**
+
+## V-103 — A test cites Q-M1f.1 for what Q-M1f.1 does not decide
+
+**Found** by S1f.21.25. `ein-cli/tests/cli_semantics.rs`' `a_conclusion_no_fact_can_hold_is_one_line_in_eins_spelling` cites Q-M1f.1 for a conclusion no fact can hold, refused at the parse, which Q-M1f.1 does not decide. **Open**: the comment, with the next batch of code.
+
+## V-104 — A function stays public with one caller in its crate
+
+**Found** by S1f.21.25. `ein_infer::compile::binds_a_relation_to_a_fact` stays `pub` and re-exported by `ein_infer`'s `lib.rs`, with `activators_into` its one caller since the run's line went. **Open**: its visibility, with the next batch of code.
+
+## V-105 — The ledger's entry for Q-M1f.1 against the decision's new title
+
+**Found** by S1f.21.25: the ledger's entry for Q-M1f.1 links the decision file, whose title is now Q-M1f.691's, and the stage does not edit the ledger. **Fixed** by the coordinator's filing of the stage: the entry says the decision is built and names its title.
