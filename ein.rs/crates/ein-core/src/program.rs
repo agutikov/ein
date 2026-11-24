@@ -93,12 +93,6 @@ pub struct Program {
     /// (`ein_ir::from_ir::read_goal`), and what the slice of a knowledge base
     /// reads a relation by (`ein_infer::slice`, Q-M1f.523).
     pub relations_of: Box<[Symbol]>,
-    /// **What the load noticed and did not refuse**, one line each, in the
-    /// order the loader's passes found them: a program in which a rule could
-    /// derive, or a fact writes, an activator that binds a relation
-    /// parameter to a fact, which activates nothing (Q-M1f.1). Every command
-    /// prints each as a `warning:` and loads the program.
-    pub warnings: Vec<String>,
 }
 
 /// A program's text and its modules' texts, each as it was read: what

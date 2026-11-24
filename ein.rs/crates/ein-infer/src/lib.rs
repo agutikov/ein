@@ -72,7 +72,7 @@ pub mod verdict;
 pub use canon::{state_digest, state_key};
 pub use compile::{
     CompileError, PlanKey, PlanMemo, SharedMemo, activators_for, asserted_relation,
-    binds_a_relation_to_a_fact, compile_rule, naf_relation_refs, plan_key, take_inert_activators,
+    binds_a_relation_to_a_fact, compile_rule, naf_relation_refs, plan_key,
 };
 pub use contradiction::{Contradiction, Pairs, detect, has_contradiction};
 pub use engine::Engine;

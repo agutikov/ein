@@ -43,7 +43,7 @@ pub fn run() -> ExitCode {
     // The delegated subcommand owns its own flag parsing.
     if argv.first().map(String::as_str) == Some("saturate") {
         let status = saturate::main(&argv[1..]);
-        common::say_warnings();
+        common::say_notes();
         return code(status);
     }
     // `--version` is intercepted for the same reason `saturate` is, and only
@@ -59,8 +59,8 @@ pub fn run() -> ExitCode {
     // `--in-flight`: the pass at every state the command's runs build
     // (Q-M1f.656), read by each route as it builds its axes on this thread.
     let status = ein_infer::open::at_every_state(in_flight(&m), || dispatch(&m));
-    // What the load and the run warned of; `ein test` says it per file.
-    common::say_warnings();
+    // What the load noticed; `ein test` says it per file.
+    common::say_notes();
     code(status)
 }
 

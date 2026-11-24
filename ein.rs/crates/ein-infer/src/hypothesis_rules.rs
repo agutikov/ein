@@ -46,7 +46,6 @@ impl HypothesisRules {
         let rules: Vec<Rule> = s.kb.program().hypotheses.values().cloned().collect();
         let mut plans = Vec::new();
         for rule in &rules {
-            crate::compile::note_inert_activators(s.ast, s.terms, s.kb, rule);
             for act in crate::compile::activators_for(s.kb, s.terms, rule) {
                 plans.push(Arc::new(crate::compile::compile_rule(
                     s.ast, s.terms, rule, act,

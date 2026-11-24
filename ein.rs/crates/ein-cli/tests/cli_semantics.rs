@@ -1276,9 +1276,9 @@ fn a_run_of_digits_is_a_name_in_every_place() {
 /// `guard-before-binder`, a guard written before the premise that binds its
 /// variable, which waits for it. A form that holds a variable stays refused
 /// (Q-M1f.30), with its own line. And `nested-fact-activator`, an activator
-/// that binds a relation parameter to a nested fact, loads under a
-/// `warning:` and activates nothing (Q-M1f.1), so it reads nothing, and says
-/// so.
+/// that binds a relation parameter to a nested fact, loads and activates
+/// nothing (Q-M1f.1), as one of another count does (Q-M1f.115): it reads
+/// nothing, and nothing says so.
 #[test]
 fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
     const GUARD: &str = "a guard compares two values, each a variable, a name, or a fact \
@@ -1343,33 +1343,33 @@ fn a_rule_shape_that_reads_nothing_is_refused_at_load() {
         }
     }
     // A relation parameter its activator binds to a nested fact: the program
-    // loads, and the load and the run say what the activator does.
+    // loads, `r` never fires, and nothing is said of the activator.
     let file = "examples/ein-bugs/wrong-answers/nested-fact-activator.ein";
-    for cmd in ["saturate", "solve", "oracle"] {
-        let r = ein(&[cmd, file]);
-        assert_eq!(r.code, 0, "ein {cmd} {file}:\n{}", r.err);
-        for want in [
-            format!(
-                "warning: {file}: rule 'r': its parameter ?R names a relation, and (r (a b)) binds \
-                 it to the fact (a b) — a relation is named by a symbol, not a fact, so such an \
-                 activator activates nothing"
-            ),
-            format!(
-                "warning: {file}:37:22: rule 'r': its activator (r (a b)) binds its parameter ?R, \
-                 which names a relation, to the fact (a b), and activates nothing — a relation is \
-                 named by a symbol, not a fact"
-            ),
-        ] {
-            assert!(
-                r.err.lines().any(|l| l == want),
-                "ein {cmd} {file}: no line {want:?}:\n{}",
-                r.err
-            );
-        }
+    for args in [
+        vec!["saturate", "--dump", file],
+        vec!["solve", file],
+        vec!["oracle", file],
+        vec!["show", "hyps", file],
+    ] {
+        let r = ein(&args);
+        assert_eq!(r.code, 0, "ein {args:?}:\n{}", r.err);
+        assert!(
+            !r.err.contains("warning:"),
+            "ein {args:?}: a line of the activator:\n{}",
+            r.err
+        );
         for python in ["CompileError", "Wildcard()", "SForm", "Fact("] {
             assert!(!r.err.contains(python), "`{python}` is back:\n{}", r.err);
         }
     }
+    let r = ein(&["saturate", "--dump", file]);
+    assert!(
+        r.out.lines().any(|l| l.trim() == "(r (a b))")
+            && r.out.contains(";;   r  :params (?R)  no plan compiled")
+            && !r.out.lines().any(|l| l.trim_start().starts_with("(hit ")),
+        "the activator is held, no plan of r is compiled, and r never fires:\n{}",
+        r.out
+    );
     // The two shapes Q-M1e2.26 answers load, on every command.
     for name in ["form-in-guard", "guard-before-binder"] {
         let file = format!("examples/ein-bugs/wrong-answers/{name}.ein");
@@ -1597,30 +1597,23 @@ fn a_conclusion_variable_nothing_binds_is_refused_at_load() {
     assert!(r.out.contains("(hit (f a) :rule act)"), "{}", r.out);
 }
 
-/// **A rule that could derive an activator binding a relation parameter to a
-/// fact is warned of at load, by every command, with one line, and the
-/// program loads** (Q-M1f.1).
+/// **An activator that binds a relation parameter to a fact activates
+/// nothing, and no command says so** (Q-M1f.1), as none says so of one of
+/// another count (Q-M1f.115): the program loads, and no `warning:` line is
+/// printed at its load, of a rule that could derive one, nor at its run, of
+/// a state that holds one.
 ///
 /// The two `g14` programs, `examples/features/19_derived_activator.ein` and
 /// `20_derived_activator_never.ein`, and their twins with a query under
 /// `examples/ein-bugs/wrong-answers/`, each on every command that loads a
-/// program: exit 0 and the loader's `warning:`, naming the deriving rule, the
-/// activated rule and the parameter, never the compiler's line where a plan
-/// was compiled. Where root derives the activator, `(item (a b))` written,
-/// the run's `warning:` names the rule and the activator, which activates
-/// nothing; where no state derives one, no run says so. The static check
-/// flags the four, and nothing here reads what they answer. What loads with
-/// no warning: the zebra2 fan-out and the stdlib's, which pass a relation's
-/// name on through a rule's parameter and through a marker.
+/// program: exit 0, no `warning:` line, and never the compiler's line where
+/// a plan was compiled. Where root derives the activator, `(item (a b))`
+/// written, root holds it and no plan of `r` is compiled for it. The static
+/// check flags the four, and nothing here reads what they answer. Beside
+/// them, the zebra2 fan-out and the stdlib's, which pass a relation's name
+/// on through a rule's parameter and through a marker.
 #[test]
-fn a_derived_activator_binding_a_relation_parameter_to_a_fact_is_warned_of_at_load() {
-    let warned = "rule 'mk': its :assert writes (r ?f), whose ?f is rule 'r''s parameter ?R, which \
-                  names a relation, and (item ?f) can bind ?f to a fact, as an argument of the \
-                  declared relation item — a relation is named by a symbol, not a fact, so such an \
-                  activator activates nothing";
-    let inert = "rule 'r': its activator (r (a b)) binds its parameter ?R, which names a relation, \
-                 to the fact (a b), and activates nothing — a relation is named by a symbol, not a \
-                 fact";
+fn an_activator_binding_a_relation_parameter_to_a_fact_activates_nothing_in_silence() {
     let scratch = ein_corpus::Scratch::new("ein-derived-activator");
     let einb = scratch.path().join("x.einb").to_string_lossy().into_owned();
     for (file, derived) in [
@@ -1635,30 +1628,22 @@ fn a_derived_activator_binding_a_relation_parameter_to_a_fact_is_warned_of_at_lo
             false,
         ),
     ] {
-        let want = format!("warning: {file}: {warned}");
-        for (args, saturates) in [
-            (vec!["saturate", "--dump", file], true),
-            (vec!["solve", file], true),
-            (vec!["solve", "--minimal", file], true),
-            (vec!["oracle", file], true),
-            (vec!["render", "lattice", file], true),
-            (vec!["render", "kb", file], true),
-            (vec!["render", "rules", file], false),
-            (vec!["kb", "save", file, &einb], false),
+        for args in [
+            vec!["saturate", "--dump", file],
+            vec!["solve", file],
+            vec!["solve", "--minimal", file],
+            vec!["show", "hyps", file],
+            vec!["oracle", file],
+            vec!["render", "lattice", file],
+            vec!["render", "kb", file],
+            vec!["render", "rules", file],
+            vec!["kb", "save", file, &einb],
         ] {
             let r = ein(&args);
             assert_eq!(r.code, 0, "ein {args:?}:\n{}", r.err);
             assert!(
-                r.err.lines().any(|l| l == want),
-                "ein {args:?}: no line {want:?}:\n{}",
-                r.err
-            );
-            assert_eq!(
-                r.err
-                    .lines()
-                    .any(|l| l.starts_with("warning: ") && l.ends_with(inert)),
-                derived && saturates,
-                "ein {args:?}: the run's line, where a state derives the activator:\n{}",
+                !r.err.contains("warning:"),
+                "ein {args:?}: a line of the activator:\n{}",
                 r.err
             );
             assert!(
@@ -1667,10 +1652,25 @@ fn a_derived_activator_binding_a_relation_parameter_to_a_fact_is_warned_of_at_lo
                 r.err
             );
         }
+        // Root holds the activator where a rule derives it, and no plan of
+        // `r` is compiled.
+        let r = ein(&["saturate", "--dump", file]);
+        assert_eq!(
+            r.out.lines().any(|l| l.trim() == "(r (a b) :rule mk)"),
+            derived,
+            "{file}: the derived activator:\n{}",
+            r.out
+        );
+        assert!(
+            r.out.contains(";;   r  :params (?R)  no plan compiled"),
+            "{file}: a plan of r:\n{}",
+            r.out
+        );
     }
-    // What loads: zebra2's `co-located-fanout`, whose `?R1` a rule's relation
-    // parameter binds, and the stdlib's `bijective-setup` and `typecheck-setup`,
-    // which read the markers `(bijective ?R)` and `(typecheck-hierarchy ?isa)`.
+    // Beside them: zebra2's `co-located-fanout`, whose `?R1` a rule's
+    // relation parameter binds, and the stdlib's `bijective-setup` and
+    // `typecheck-setup`, which read the markers `(bijective ?R)` and
+    // `(typecheck-hierarchy ?isa)`.
     for (args, code) in [
         (vec!["saturate", "examples/zebra2.ein"], 0),
         (

@@ -678,10 +678,7 @@ fn a_genuinely_ambiguous_symmetric_puzzle_reports_exactly_its_two_models() {
 ///
 /// `mark` is a marker, as the stdlib's `bijective` is: no `(relation …)`
 /// declares it, so the loader reads its argument by what the program does with
-/// it, which is pass a relation's name on to `a` (Q-M1f.41). Declared
-/// `(relation mark T)`, its argument would hold any value of `T`, a fact
-/// among them, so `mark` could derive an activator binding `a`'s relation
-/// parameter to a fact, which the loader warns of (Q-M1f.1).
+/// it, which is pass a relation's name on to `a` (Q-M1f.41).
 #[test]
 fn a_rule_that_derives_its_own_activator_still_reaches_a_fixpoint() {
     let src = "(rule a (?rel) :match (?rel ?x ?y) :assert (mark ?rel) :why \"{?rel} holds of {?x} and {?y}, so {?rel} is marked\")

@@ -177,7 +177,6 @@ impl Engine {
         // ([03-design/07-search.md § 1](../../../../docs/ein/ein.rs/03-design/07-search.md#1-hypothesis-generation)).
         let mut acts: Vec<Option<FactId>> = Vec::new();
         for rule in kb.program().rules.values() {
-            crate::compile::note_inert_activators(ast, terms, kb, rule);
             activators_into(kb, terms, rule, &mut acts);
             for act in acts.iter().copied() {
                 self.compile_for(ast, terms, rule, act, events)?;

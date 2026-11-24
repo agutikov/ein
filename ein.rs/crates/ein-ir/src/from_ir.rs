@@ -214,8 +214,6 @@ pub fn load_query_by(
     let mut kb = Kb::new(Program::new());
     kb.program_mut().active_query = active_query;
     let mut errors: Vec<String> = Vec::new();
-    // What the load notices and does not refuse (`Program::warnings`).
-    let mut warnings: Vec<String> = Vec::new();
 
     // A saved file, its first form its `(program …)`: its program against
     // the modules it carries, with its choices (`crate::saved`). Its
@@ -336,21 +334,11 @@ pub fn load_query_by(
     );
     // An obligation made to owe `open` (Q-M1f.66).
     refuse_open_owed(ast, terms, &kb, &facts, &mut errors);
-    // A rule parameter that names a relation, bound to a nested fact by an
-    // activator the program writes down: a warning.
-    validate_relation_parameters(ast, terms, &kb, &facts, &mut warnings);
-    // …and one a rule could derive, read off the program (Q-M1f.1).
-    let relation_places = warn_derived_relation_activators(
-        ast,
-        terms,
-        &kb,
-        &facts,
-        &solve_blocks,
-        Lines {
-            errors: &mut errors,
-            warnings: &mut warnings,
-        },
-    );
+    // Which positions hold relation names, read off the program (Q-M1f.41,
+    // Q-M1f.42): `eq`, `absent` and `false` passed where one heads a form of
+    // another arity are refused (Q-M1f.46), and the names passed there are
+    // relations of the program (Q-M1f.522).
+    let relation_places = read_relation_places(ast, terms, &kb, &facts, &solve_blocks, &mut errors);
     // A conclusion `(not ?x)` whose variable the program shows can hold a
     // name.
     refuse_negated_names(ast, terms, &kb, &facts, &solve_blocks, &mut errors);
@@ -463,24 +451,10 @@ pub fn load_query_by(
     }
 
     if errors.is_empty() {
-        kb.program_mut().warnings = warnings;
         Ok(kb)
     } else {
         Err(KbLoadError(errors.join("; ")))
     }
-}
-
-/// **What a warning of an activator that binds a relation parameter to a
-/// fact says after its finding** (Q-M1f.1): why it names no relation, and
-/// what such an activator does.
-const NAMED: &str =
-    "a relation is named by a symbol, not a fact, so such an activator activates nothing";
-
-/// Where a check that refuses some shapes and warns of others writes its
-/// lines: [`KbLoadError`]'s, and [`Program::warnings`](ein_core::Program::warnings).
-struct Lines<'a> {
-    errors: &'a mut Vec<String>,
-    warnings: &'a mut Vec<String>,
 }
 
 /// Intern every name a **rule** or the `(query …)` block mentions, so that
@@ -656,8 +630,8 @@ fn validate_solve(
     }
 }
 
-/// Where a program holds relation names, as
-/// [`warn_derived_relation_activators`] reads them off it.
+/// Where a program holds relation names, as [`read_relation_places`] reads
+/// them off it.
 #[derive(Default)]
 struct RelationPlaces {
     /// Every name a fact or a conclusion writes where a relation's name is
@@ -2652,153 +2626,17 @@ fn expand_goal(
     }
 }
 
-/// **A rule parameter that names a relation is bound to a name** (Q-M1e.21).
-///
-/// `(rule mirror (?R) :match (q ?a ?b) :assert (?R ?b ?a))` names the relation
-/// it matches and asserts by its parameter, and the activator binds it:
-/// `(mirror q)` asserts `q` facts. An activator that binds it to a **nested
-/// fact**, `(mirror (p a))`, names no relation, and activates nothing
-/// (`ein_infer::activators_for`, Q-M1e2.18): the load says so in one
-/// `warning:` line and goes on.
-///
-/// **Here, where the activator is written down**: a fact, or a literal in a
-/// rule's `:assert`. An activator a rule derives through a variable is known
-/// only to a run; the loader warns of a program in which a rule could derive
-/// one, [`warn_derived_relation_activators`], below, and the run of a state
-/// that does derive one (`ein_infer::compile::note_inert_activators`). An
-/// activator of the wrong arity activates nothing (`activators_for`'s
-/// filter), so it is not checked. A run of digits is a name of the program,
-/// so `(mirror 3)` names the relation `3`, a name the program has (Q-M1e.21:
-/// a rule brings in no name).
-fn validate_relation_parameters(
-    ast: &Ast,
-    terms: &Terms,
-    kb: &Kb,
-    facts: &[NodeId],
-    warnings: &mut Vec<String>,
-) {
-    // Each rule with a parameter that names a relation: its name, its arity,
-    // and those parameters with their positions.
-    struct Named {
-        rule: Symbol,
-        arity: usize,
-        heads: Vec<(usize, Symbol)>,
-    }
-    let mut named: Vec<Named> = Vec::new();
-    for (name, rule) in kb.program().every_rule() {
-        let heads: Vec<(usize, Symbol)> = rule
-            .params
-            .iter()
-            .copied()
-            .enumerate()
-            .filter(|&(_, p)| {
-                [rule.match_.as_ref(), rule.assert_.as_ref()]
-                    .into_iter()
-                    .flatten()
-                    .any(|pat| names_relation(ast, NodeId(pat.expr.0), terms.sym(p)))
-            })
-            .collect();
-        if !heads.is_empty() {
-            named.push(Named {
-                rule: name,
-                arity: rule.params.len(),
-                heads,
-            });
-        }
-    }
-    if named.is_empty() {
-        return;
-    }
-    let mut check = |form: NodeId| {
-        let Some(sym) = ast.head_name(form).and_then(|h| terms.syms.get(h)) else {
-            return;
-        };
-        let Some(Named { rule, arity, heads }) = named.iter().find(|n| n.rule == sym) else {
-            return;
-        };
-        let args: Vec<NodeId> = ast
-            .form_args(form)
-            .iter()
-            .copied()
-            .filter(|&a| !matches!(ast.node(a), Node::KwPair { .. }))
-            .collect();
-        if args.len() != *arity {
-            return;
-        }
-        for &(i, param) in heads {
-            // A nested fact binds no parameter (`ein_infer::compile`), so
-            // the relation it would name is none (Q-M1e2.18).
-            if let Node::SForm { .. } = ast.node(args[i]) {
-                warnings.push(format!(
-                    "rule '{}': its parameter ?{} names a relation, and {} binds it to the \
-                     fact {} — {NAMED}",
-                    terms.sym(*rule),
-                    terms.sym(param),
-                    crate::dump::dump_compact(ast, form),
-                    crate::dump::dump_compact(ast, args[i]),
-                ));
-            }
-        }
-    };
-    for &form in facts {
-        check(form);
-    }
-    // A rule's `:assert` derives an activator like a fact states one; walk
-    // every form under it, so `(and (mirror 3) …)` is read too.
-    let mut asserted: Vec<NodeId> = Vec::new();
-    for registry in [
-        &kb.program().rules,
-        &kb.program().hypotheses,
-        &kb.program().obligations,
-    ] {
-        for (_, rule) in registry.iter() {
-            if let Some(a) = rule.assert_.as_ref() {
-                sforms_under(ast, NodeId(a.expr.0), &mut asserted);
-            }
-        }
-    }
-    for form in asserted {
-        check(form);
-    }
-}
-
-/// **A rule could derive an activator that binds a relation parameter to a
-/// fact** (Q-M1f.1): a derived activator, said at load in a `warning:` by a
-/// static check, whether or not a run derives it. The program loads, and
-/// such an activator, where a state holds one, activates nothing
-/// (`ein_infer::activators_for`).
-///
-/// [`validate_relation_parameters`] warns of a relation parameter bound to a
-/// fact where the activator is written down. An activator a rule
-/// derives, `(rule mk () :match (item ?f) :assert (r ?f))`, binds `r`'s
-/// parameter to whatever `?f` holds, which only a run knows; the run says so
-/// where a state derives one (`ein_infer::compile::note_inert_activators`),
-/// and this check reads the program, so that a program that could is said
-/// to before any run.
-///
-/// **Which positions hold relation names** (Q-M1f.41). A rule's parameter
-/// that heads a form,
-/// `(?R …)`, holds one, and every argument of `(relation …)` holds a name. An
-/// argument of a **declared** relation holds any value of its type, a fact
-/// among them, as does an argument inside a fact pattern, `(p (g ?x))`, and an
-/// argument of a relation a parameter names, `(?S ?x)`. An argument of an
-/// **undeclared** relation, a marker such as `(bijective color-loc)`, and a
-/// rule's parameter hold what the program passes on from them: where a
-/// variable bound there reaches a position that holds relation names, so does
-/// that position, inferred to a fixpoint. This is what lets the stdlib's
-/// fan-outs load, `bijective-properties` passing `(bijective ?R)`'s `?R` to
-/// `functional`.
-///
-/// **What is warned of**, one line per site, in Ein's spelling:
-/// - a conclusion that writes, where a relation name is held, a variable no
-///   premise binds where a name is held, the deriving rule, the conclusion,
-///   the parameter and the premise named;
-/// - a conclusion or a fact that writes a fact where an inferred position holds
-///   a relation name (a rule's own activator is
-///   [`validate_relation_parameters`]'s, above).
-///
-/// **What is refused**: `eq`, `absent` and `false` where a relation name
-/// passes at another arity (`refuse_eq_at_another_arity`).
+/// **Which positions hold relation names**, read off the program's text
+/// (Q-M1f.41). A rule's parameter that heads a form, `(?R …)`, holds one, and
+/// every argument of `(relation …)` holds a name. An argument of a
+/// **declared** relation holds any value of its type, a fact among them, as
+/// does an argument inside a fact pattern, `(p (g ?x))`, and an argument of a
+/// relation a parameter names, `(?S ?x)`. An argument of an **undeclared**
+/// relation, a marker such as `(bijective color-loc)`, and a rule's parameter
+/// hold what the program passes on from them: where a variable bound there
+/// reaches a position that holds relation names, so does that position,
+/// inferred to a fixpoint. This is how `bijective-properties` passes
+/// `(bijective ?R)`'s `?R` to `functional`.
 ///
 /// A conclusion written `(?T …)` writes into the relation its activator
 /// names: it is read as writing into every rule of its arity whose name the
@@ -2806,48 +2644,37 @@ fn validate_relation_parameters(
 /// can come from. `(not P)` is read as `P`, in a premise, a conclusion and a
 /// fact, since a stored negative holds the values its positive would.
 ///
-/// **What it returns**: the positions that hold relation names,
-/// and every name the program writes at one, in a fact or a conclusion — the
-/// relations a program names only by passing them to a rule, which
-/// [`refuse_solve_names`] reads.
-fn warn_derived_relation_activators(
+/// An activator that binds a relation parameter to a fact, written or
+/// derived, activates nothing (`ein_infer::activators_for`), and nothing says
+/// so (Q-M1f.1): the positions are read for the two things below, and for no
+/// line of their own.
+///
+/// **What is refused**: `eq`, `absent` and `false` where a relation name
+/// passes at another arity (`refuse_eq_at_another_arity`, Q-M1f.46).
+///
+/// **What it returns**: every name the program writes at a position that
+/// holds relation names, in a fact or a conclusion — the relations a program
+/// names only by passing them to a rule, which [`relations_written`] takes
+/// into the program's relations (Q-M1f.522).
+fn read_relation_places(
     ast: &Ast,
     terms: &Terms,
     kb: &Kb,
     facts: &[NodeId],
     solve_blocks: &[NodeId],
-    lines: Lines<'_>,
+    errors: &mut Vec<String>,
 ) -> RelationPlaces {
-    let Lines { errors, warnings } = lines;
     /// A position: a relation's name and an argument's index.
     type Pos = (String, usize);
-    /// Why a position holds relation names.
-    enum Holds {
-        /// A rule's parameter that heads a form in it.
-        Param { rule: String, param: String },
-        /// A variable bound there reaches `to`, through rule `by`: a premise
-        /// of `by` binds it (`premise` as written), or it is `by`'s parameter.
-        Passed {
-            by: String,
-            premise: Option<String>,
-            var: String,
-            to: Pos,
-        },
-    }
     /// Where a premise binds a variable.
     enum Occ {
         /// The deriving rule's parameter, by index.
         Param(usize),
         /// An argument of a premise whose relation is a name.
-        Arg {
-            rel: String,
-            k: usize,
-            premise: NodeId,
-        },
-        /// An argument of a fact pattern inside a premise.
-        Inner { premise: NodeId, inner: NodeId },
-        /// An argument of a premise whose relation is a parameter.
-        Head { premise: NodeId, head: String },
+        Arg { rel: String, k: usize },
+        /// An argument of a fact pattern inside a premise, or of a premise
+        /// whose relation is a parameter: a place that holds any value.
+        Value,
         /// An `eq` or `neq` guard, which binds it over the program's names.
         Guard,
     }
@@ -2859,34 +2686,9 @@ fn warn_derived_relation_activators(
         to: Pos,
         arg: NodeId,
         /// Per disjunct of the deriving rule's `:match`, where it binds `arg`.
-        ways: Vec<(NodeId, Vec<Occ>)>,
+        ways: Vec<Vec<Occ>>,
     }
 
-    fn describe(rp: &BTreeMap<Pos, Holds>, pos: &Pos) -> String {
-        match &rp[pos] {
-            Holds::Param { rule, param } => {
-                format!("rule '{rule}''s parameter {param}, which names a relation")
-            }
-            Holds::Passed {
-                by,
-                premise: Some(p),
-                var,
-                to,
-            } => format!(
-                "{var} of {p}, which rule '{by}' passes to {}",
-                describe(rp, to)
-            ),
-            Holds::Passed {
-                by,
-                premise: None,
-                var,
-                to,
-            } => format!(
-                "rule '{by}''s parameter {var}, which it passes to {}",
-                describe(rp, to)
-            ),
-        }
-    }
     /// `(not P)` read as `P`.
     fn positive(ast: &Ast, node: NodeId) -> NodeId {
         if matches!(ast.node(node), Node::SForm { .. })
@@ -2933,41 +2735,27 @@ fn warn_derived_relation_activators(
             _ => {
                 let p = positive(ast, node);
                 let rel = relation_of(ast, p);
-                let head = match ast.node(p) {
-                    Node::SForm { head, .. } => match ast.node(head) {
-                        Node::Var(s) => format!("?{}", ast.sym(s)),
-                        _ => String::new(),
-                    },
-                    _ => String::new(),
-                };
                 for (k, &a) in ast.form_args(p).iter().enumerate() {
                     match ast.node(a) {
                         Node::Var(s) if ast.sym(s) == var => out.push(match &rel {
                             Some(rel) => Occ::Arg {
                                 rel: rel.clone(),
                                 k,
-                                premise: node,
                             },
-                            None => Occ::Head {
-                                premise: node,
-                                head: head.clone(),
-                            },
+                            None => Occ::Value,
                         }),
-                        Node::SForm { .. } => inner(ast, a, var, node, out),
+                        Node::SForm { .. } => inner(ast, a, var, out),
                         _ => {}
                     }
                 }
             }
         }
     }
-    fn inner(ast: &Ast, form: NodeId, var: &str, premise: NodeId, out: &mut Vec<Occ>) {
+    fn inner(ast: &Ast, form: NodeId, var: &str, out: &mut Vec<Occ>) {
         for &a in ast.form_args(form) {
             match ast.node(a) {
-                Node::Var(s) if ast.sym(s) == var => out.push(Occ::Inner {
-                    premise,
-                    inner: form,
-                }),
-                Node::SForm { .. } => inner(ast, a, var, premise, out),
+                Node::Var(s) if ast.sym(s) == var => out.push(Occ::Value),
+                Node::SForm { .. } => inner(ast, a, var, out),
                 _ => {}
             }
         }
@@ -2994,7 +2782,7 @@ fn warn_derived_relation_activators(
     // Each rule's parameters, and the positions that hold relation names
     // because a parameter heads a form.
     let mut params: BTreeMap<String, Vec<String>> = BTreeMap::new();
-    let mut rp: BTreeMap<Pos, Holds> = BTreeMap::new();
+    let mut rp: BTreeSet<Pos> = BTreeSet::new();
     for &(_, (name, rule)) in &rules {
         let name = terms.sym(name).to_string();
         let ps: Vec<String> = rule
@@ -3008,13 +2796,7 @@ fn warn_derived_relation_activators(
                 .flatten()
                 .any(|pat| names_relation(ast, NodeId(pat.expr.0), p))
             {
-                rp.insert(
-                    (name.clone(), i),
-                    Holds::Param {
-                        rule: name.clone(),
-                        param: format!("?{p}"),
-                    },
-                );
+                rp.insert((name.clone(), i));
             }
         }
         params.insert(name, ps);
@@ -3100,7 +2882,7 @@ fn warn_derived_relation_activators(
                                     if !disjuncts.is_empty() {
                                         occs(ast, d, var, &mut o);
                                     }
-                                    (d, o)
+                                    o
                                 })
                                 .collect()
                         }
@@ -3121,12 +2903,12 @@ fn warn_derived_relation_activators(
 
     // A way binds the argument to a name where one of its occurrences is at a
     // position that holds relation names, or a guard.
-    let named = |rp: &BTreeMap<Pos, Holds>, rule: &str, occ: &Occ| -> bool {
+    let named = |rp: &BTreeSet<Pos>, rule: &str, occ: &Occ| -> bool {
         match occ {
-            Occ::Param(m) => rp.contains_key(&(rule.to_string(), *m)),
-            Occ::Arg { rel, k, .. } => rel == "relation" || rp.contains_key(&(rel.clone(), *k)),
+            Occ::Param(m) => rp.contains(&(rule.to_string(), *m)),
+            Occ::Arg { rel, k } => rel == "relation" || rp.contains(&(rel.clone(), *k)),
             Occ::Guard => true,
-            Occ::Inner { .. } | Occ::Head { .. } => false,
+            Occ::Value => false,
         }
     };
     // The fixpoint: a way that binds the argument nowhere a name is held, but
@@ -3135,30 +2917,20 @@ fn warn_derived_relation_activators(
     loop {
         let mut grew = false;
         for s in &sites {
-            if !rp.contains_key(&s.to) || !matches!(ast.node(s.arg), Node::Var(_)) {
+            if !rp.contains(&s.to) || !matches!(ast.node(s.arg), Node::Var(_)) {
                 continue;
             }
-            let var = crate::dump::dump_compact(ast, s.arg);
-            for (_, way) in &s.ways {
+            for way in &s.ways {
                 if way.iter().any(|o| named(&rp, &s.rule, o)) {
                     continue;
                 }
                 for o in way {
-                    let (pos, premise) = match o {
-                        Occ::Param(m) => ((s.rule.clone(), *m), None),
-                        Occ::Arg { rel, k, premise } if !declared.contains(rel) => (
-                            (rel.clone(), *k),
-                            Some(crate::dump::dump_compact(ast, *premise)),
-                        ),
+                    let pos = match o {
+                        Occ::Param(m) => (s.rule.clone(), *m),
+                        Occ::Arg { rel, k } if !declared.contains(rel) => (rel.clone(), *k),
                         _ => continue,
                     };
-                    if let std::collections::btree_map::Entry::Vacant(e) = rp.entry(pos) {
-                        e.insert(Holds::Passed {
-                            by: s.rule.clone(),
-                            premise,
-                            var: var.clone(),
-                            to: s.to.clone(),
-                        });
+                    if rp.insert(pos) {
                         grew = true;
                     }
                 }
@@ -3166,95 +2938,6 @@ fn warn_derived_relation_activators(
         }
         if !grew {
             break;
-        }
-    }
-
-    for s in &sites {
-        if !rp.contains_key(&s.to) {
-            continue;
-        }
-        let conclusion = crate::dump::dump_compact(ast, s.conclusion);
-        let arg = crate::dump::dump_compact(ast, s.arg);
-        match ast.node(s.arg) {
-            // A fact written as a rule's own activator, where the rule's
-            // parameter heads a form, is `validate_relation_parameters`' line.
-            Node::SForm { .. } => {
-                let written_as_activator = relation_of(ast, positive(ast, s.conclusion)).is_some()
-                    && matches!(rp[&s.to], Holds::Param { .. });
-                if !written_as_activator {
-                    warnings.push(format!(
-                        "{} '{}': its :assert writes {conclusion}, whose {arg} is {} — {NAMED}",
-                        s.head,
-                        s.rule,
-                        describe(&rp, &s.to)
-                    ));
-                }
-            }
-            Node::Var(_) => {
-                let bad: Vec<(NodeId, &Occ)> = s
-                    .ways
-                    .iter()
-                    .filter(|(_, way)| !way.iter().any(|o| named(&rp, &s.rule, o)))
-                    .filter_map(|(d, way)| way.first().map(|o| (*d, o)))
-                    .collect();
-                let Some(&(_, first)) = bad.first() else {
-                    continue;
-                };
-                let how = match first {
-                    Occ::Arg { rel, premise, .. } => format!(
-                        "{} can bind {arg} to a fact, as an argument of the declared relation {rel}",
-                        crate::dump::dump_compact(ast, *premise)
-                    ),
-                    Occ::Inner { premise, inner } => format!(
-                        "{} can bind {arg} to a fact, as an argument of {}",
-                        crate::dump::dump_compact(ast, *premise),
-                        crate::dump::dump_compact(ast, *inner)
-                    ),
-                    Occ::Head { premise, head } => format!(
-                        "{} can bind {arg} to a fact, as an argument of the relation {head} names",
-                        crate::dump::dump_compact(ast, *premise)
-                    ),
-                    Occ::Param(_) | Occ::Guard => unreachable!("a parameter or a guard is named"),
-                };
-                let place = if bad.len() == s.ways.len() || s.ways.len() < 2 {
-                    String::new()
-                } else {
-                    let arms: Vec<String> = bad
-                        .iter()
-                        .map(|(d, _)| crate::dump::dump_compact(ast, *d))
-                        .collect();
-                    format!(" where its :match holds through {}", arms.join(" or "))
-                };
-                warnings.push(format!(
-                    "{} '{}': its :assert writes {conclusion}, whose {arg} is {}, and {how}{place} — {NAMED}",
-                    s.head,
-                    s.rule,
-                    describe(&rp, &s.to)
-                ));
-            }
-            _ => {}
-        }
-    }
-    // A fact that writes a fact where an inferred position holds a relation
-    // name; one written as a rule's own activator is
-    // `validate_relation_parameters`' line.
-    for &f in facts {
-        let p = positive(ast, f);
-        let Some(rel) = relation_of(ast, p) else {
-            continue;
-        };
-        for (k, &a) in ast.form_args(p).iter().enumerate() {
-            let pos = (rel.clone(), k);
-            if matches!(rp.get(&pos), Some(Holds::Passed { .. }))
-                && matches!(ast.node(a), Node::SForm { .. })
-            {
-                warnings.push(format!(
-                    "the fact {} writes {} as {} — {NAMED}",
-                    crate::dump::dump_compact(ast, f),
-                    crate::dump::dump_compact(ast, a),
-                    describe(&rp, &pos)
-                ));
-            }
         }
     }
 
@@ -3287,7 +2970,7 @@ fn warn_derived_relation_activators(
         };
         for (k, &a) in ast.form_args(p).iter().enumerate() {
             if let Node::Atom(s) = ast.node(a)
-                && rp.contains_key(&(rel.clone(), k))
+                && rp.contains(&(rel.clone(), k))
             {
                 places.passed.insert(ast.sym(s).to_string());
             }
@@ -3295,7 +2978,7 @@ fn warn_derived_relation_activators(
     }
     for s in &sites {
         if let Node::Atom(a) = ast.node(s.arg)
-            && rp.contains_key(&s.to)
+            && rp.contains(&s.to)
         {
             places.passed.insert(ast.sym(a).to_string());
         }
@@ -3309,7 +2992,7 @@ fn warn_derived_relation_activators(
         program: &'a ein_core::program::Program,
         /// `eq`, `absent` or `false`: the name a parameter may be bound to.
         word: &'static str,
-        rp: &'a BTreeMap<Pos, Holds>,
+        rp: &'a BTreeSet<Pos>,
         sites: &'a [Site],
         written: &'a BTreeSet<String>,
         facts: &'a [NodeId],
@@ -3414,7 +3097,7 @@ fn warn_derived_relation_activators(
             };
             for (k, &a) in c.ast.form_args(p).iter().enumerate() {
                 let pos = (rel.clone(), k);
-                if is_eq(a) && c.rp.contains_key(&pos) {
+                if is_eq(a) && c.rp.contains(&pos) {
                     at.entry(pos).or_insert(EqFrom::Fact(f));
                 }
             }
@@ -3438,7 +3121,7 @@ fn warn_derived_relation_activators(
         loop {
             let mut grew = false;
             for s in c.sites {
-                if !c.rp.contains_key(&s.to) || at.contains_key(&s.to) {
+                if !c.rp.contains(&s.to) || at.contains_key(&s.to) {
                     continue;
                 }
                 let from = if is_eq(s.arg) {
@@ -3448,16 +3131,15 @@ fn warn_derived_relation_activators(
                         conclusion: s.conclusion,
                     })
                 } else if matches!(c.ast.node(s.arg), Node::Var(_)) {
-                    s.ways.iter().find_map(|(_, way)| {
+                    s.ways.iter().find_map(|way| {
                         let named: Vec<Pos> = way
                             .iter()
                             .filter_map(|o| match o {
-                                Occ::Param(m) if c.rp.contains_key(&(s.rule.clone(), *m)) => {
+                                Occ::Param(m) if c.rp.contains(&(s.rule.clone(), *m)) => {
                                     Some((s.rule.clone(), *m))
                                 }
                                 Occ::Arg { rel, k, .. }
-                                    if rel == "relation"
-                                        || c.rp.contains_key(&(rel.clone(), *k)) =>
+                                    if rel == "relation" || c.rp.contains(&(rel.clone(), *k)) =>
                                 {
                                     Some((rel.clone(), *k))
                                 }
@@ -5103,13 +4785,6 @@ mod tests {
         kb.expect_err("must fail").0
     }
 
-    /// What the load of `text`, which must load, warns of, `; `-joined as a
-    /// refusal's lines are.
-    fn warned(text: &str) -> String {
-        let (_terms, kb) = ok(text);
-        kb.program().warnings.join("; ")
-    }
-
     fn facts(terms: &Terms, kb: &Kb) -> Vec<String> {
         kb.facts().map(|f| terms.fact_text(f)).collect()
     }
@@ -5269,8 +4944,8 @@ mod tests {
     /// loader keeps what a context-free grammar does not see: a form that
     /// holds a variable as a guard's argument (Q-M1f.30) and a relation
     /// variable no parameter binds. An activator binding a relation
-    /// parameter to a nested fact loads, under a warning: it activates
-    /// nothing (Q-M1f.1).
+    /// parameter to a nested fact loads, and nothing is said of it: it
+    /// activates nothing (Q-M1f.1).
     ///
     /// **Two shapes load** (Q-M1e2.26): a fact that holds no variable as a
     /// guard's argument, a value, and a guard on a variable no premise before
@@ -5337,17 +5012,19 @@ mod tests {
         }
         // A relation parameter its activator binds to a nested fact, where the
         // activator is written: a fact, or a literal in an `:assert`. It
-        // loads, and the load warns.
+        // loads, and a written one is held as the fact it is.
         let mirror = "(rule mirror (?R) :match (box (?R a)) :assert (hit a) :why \"box holds of ({?R} a), so hit holds of a\")";
-        for activator in [
-            "(mirror (p a))".to_string(),
-            "(rule mk () :match (q ?x) :assert (mirror (p a)) :why \"q holds of {?x}, so rule mirror is switched on for (p a)\")".to_string(),
+        for (activator, held) in [
+            ("(mirror (p a))", true),
+            (
+                "(rule mk () :match (q ?x) :assert (mirror (p a)) :why \"q holds of {?x}, so rule mirror is switched on for (p a)\")",
+                false,
+            ),
         ] {
+            let (terms, kb) = ok(&format!("{pre}{mirror}\n{activator}"));
             assert_eq!(
-                warned(&format!("{pre}{mirror}\n{activator}")),
-                "rule 'mirror': its parameter ?R names a relation, and (mirror (p a)) binds it \
-                 to the fact (p a) — a relation is named by a symbol, not a fact, so such an \
-                 activator activates nothing",
+                facts(&terms, &kb).iter().any(|f| f == "(mirror (p a))"),
+                held,
                 "{activator}"
             );
         }
@@ -5954,142 +5631,71 @@ mod tests {
         }
     }
 
-    /// **A rule that could derive an activator binding a relation parameter
-    /// to a fact is warned of at load, and the program loads** (Q-M1f.1,
-    /// [`warn_derived_relation_activators`]): a variable from a value
-    /// position and a fact written where a relation is held, and the ones the
-    /// reading of Q-M1f.41 and Q-M1f.42 adds, one line each; and what loads
-    /// with no warning, the zebra2 and stdlib fan-outs among them.
+    /// **A program in which a rule could derive an activator binding a
+    /// relation parameter to a fact loads, and nothing is said of it**
+    /// (Q-M1f.1): such an activator activates nothing, as one of another
+    /// count does (Q-M1f.115). Each shape the reading of positions meets
+    /// (Q-M1f.41, Q-M1f.42, [`read_relation_places`]): a variable from a
+    /// value position, a fact written where a relation is held, a marker and
+    /// a parameter that pass a name on, a conclusion whose relation is a
+    /// parameter; and the zebra2 and stdlib fan-outs. What the positions are
+    /// read for is held by [`eq_at_another_arity_is_refused_at_load`] and by
+    /// the relations of the program.
     #[test]
-    fn a_derived_activator_binding_a_relation_parameter_to_a_fact_is_warned_of_at_load() {
-        const NAMED: &str =
-            "a relation is named by a symbol, not a fact, so such an activator activates nothing";
+    fn a_derived_activator_binding_a_relation_parameter_to_a_fact_loads() {
         let r = "(rule r (?R) :match (box (?R b)) :assert (hit z) :why \"box holds of ({?R} b), so hit holds of z\")";
-        let r_param = "rule 'r''s parameter ?R, which names a relation";
         let pre = "(relation box Node :why \"box holds of {?3}\") (relation hit Node :why \"hit holds of {?3}\") (relation item Node :why \"{?3} is an item\") (relation q T T :why \"q holds of {?3} and {?4}\")\n";
-        for (src, want) in [
+        for src in [
             // A variable from a declared relation's argument: `g14`'s two
             // programs, with the fact and without it.
-            (
-                format!(
-                    "{pre}{r}\n(rule mk () :match (item ?f) :assert (r ?f) :why \"{{?f}} is an item, so rule r is switched on for {{?f}}\")\n(item (a b))"
-                ),
-                format!(
-                    "rule 'mk': its :assert writes (r ?f), whose ?f is {r_param}, and (item ?f) \
-                     can bind ?f to a fact, as an argument of the declared relation item — {NAMED}"
-                ),
+            format!(
+                "{pre}{r}\n(rule mk () :match (item ?f) :assert (r ?f) :why \"{{?f}} is an item, so rule r is switched on for {{?f}}\")\n(item (a b))"
             ),
-            (
-                format!(
-                    "{pre}{r}\n(rule mk () :match (item ?f) :assert (r ?f) :why \"{{?f}} is an item, so rule r is switched on for {{?f}}\")"
-                ),
-                format!(
-                    "rule 'mk': its :assert writes (r ?f), whose ?f is {r_param}, and (item ?f) \
-                     can bind ?f to a fact, as an argument of the declared relation item — {NAMED}"
-                ),
+            format!(
+                "{pre}{r}\n(rule mk () :match (item ?f) :assert (r ?f) :why \"{{?f}} is an item, so rule r is switched on for {{?f}}\")"
             ),
             // A variable inside a fact pattern, and one under a relation a
             // parameter names; a hypothesis rule derives too.
-            (
-                format!(
-                    "{pre}{r}\n(rule mk () :match (box (g ?f)) :assert (r ?f) :why \"box holds of (g {{?f}}), so rule r is switched on for {{?f}}\")"
-                ),
-                format!(
-                    "rule 'mk': its :assert writes (r ?f), whose ?f is {r_param}, and (box (g \
-                     ?f)) can bind ?f to a fact, as an argument of (g ?f) — {NAMED}"
-                ),
+            format!(
+                "{pre}{r}\n(rule mk () :match (box (g ?f)) :assert (r ?f) :why \"box holds of (g {{?f}}), so rule r is switched on for {{?f}}\")"
             ),
-            (
-                format!(
-                    "{pre}{r}\n(rule mk (?S) :match (?S ?f) :assert (r ?f) :why \"{{?S}} holds of {{?f}}, so rule r is switched on for {{?f}}\")\n(mk item)"
-                ),
-                format!(
-                    "rule 'mk': its :assert writes (r ?f), whose ?f is {r_param}, and (?S ?f) \
-                     can bind ?f to a fact, as an argument of the relation ?S names — {NAMED}"
-                ),
+            format!(
+                "{pre}{r}\n(rule mk (?S) :match (?S ?f) :assert (r ?f) :why \"{{?S}} holds of {{?f}}, so rule r is switched on for {{?f}}\")\n(mk item)"
             ),
-            (
-                format!(
-                    "{pre}{r}\n(rule mk () :match (item ?f) :assert (open (r ?f)) :why \"{{?f}} is an item: guess that rule r is switched on for {{?f}}\")"
-                ),
-                format!(
-                    "rule 'mk': its :assert writes (r ?f), whose ?f is {r_param}, and (item ?f) \
-                     can bind ?f to a fact, as an argument of the declared relation item — {NAMED}"
-                ),
+            format!(
+                "{pre}{r}\n(rule mk () :match (item ?f) :assert (open (r ?f)) :why \"{{?f}} is an item: guess that rule r is switched on for {{?f}}\")"
             ),
             // A marker passes a relation name on: a fact written there, a
             // literal written there, and a variable from a value position
-            // written there, each refused through the marker.
-            (
-                format!(
-                    "{pre}{r}\n(rule fan () :match (marker ?m) :assert (r ?m) :why \"the marker names {{?m}}, so rule r is switched on for {{?m}}\")\n(marker (a b))"
-                ),
-                format!(
-                    "the fact (marker (a b)) writes (a b) as ?m of (marker ?m), which rule 'fan' \
-                     passes to {r_param} — {NAMED}"
-                ),
+            // written there.
+            format!(
+                "{pre}{r}\n(rule fan () :match (marker ?m) :assert (r ?m) :why \"the marker names {{?m}}, so rule r is switched on for {{?m}}\")\n(marker (a b))"
             ),
-            (
-                format!(
-                    "{pre}{r}\n(rule fan () :match (marker ?m) :assert (r ?m) :why \"the marker names {{?m}}, so rule r is switched on for {{?m}}\")\n\
-                     (rule mk () :match (item ?x) :assert (marker (a b)) :why \"{{?x}} is an item, so the marker names (a b)\")\n(item c)"
-                ),
-                format!(
-                    "rule 'mk': its :assert writes (marker (a b)), whose (a b) is ?m of (marker \
-                     ?m), which rule 'fan' passes to {r_param} — {NAMED}"
-                ),
+            format!(
+                "{pre}{r}\n(rule fan () :match (marker ?m) :assert (r ?m) :why \"the marker names {{?m}}, so rule r is switched on for {{?m}}\")\n\
+                 (rule mk () :match (item ?x) :assert (marker (a b)) :why \"{{?x}} is an item, so the marker names (a b)\")\n(item c)"
             ),
-            (
-                format!(
-                    "{pre}{r}\n(rule fan () :match (marker ?m) :assert (r ?m) :why \"the marker names {{?m}}, so rule r is switched on for {{?m}}\")\n\
-                     (rule mk () :match (item ?x) :assert (marker ?x) :why \"{{?x}} is an item, so the marker names {{?x}}\")"
-                ),
-                format!(
-                    "rule 'mk': its :assert writes (marker ?x), whose ?x is ?m of (marker ?m), \
-                     which rule 'fan' passes to {r_param}, and (item ?x) can bind ?x to a fact, \
-                     as an argument of the declared relation item — {NAMED}"
-                ),
+            format!(
+                "{pre}{r}\n(rule fan () :match (marker ?m) :assert (r ?m) :why \"the marker names {{?m}}, so rule r is switched on for {{?m}}\")\n\
+                 (rule mk () :match (item ?x) :assert (marker ?x) :why \"{{?x}} is an item, so the marker names {{?x}}\")"
             ),
             // A rule's parameter passes it on: its activator, written.
-            (
-                format!(
-                    "{pre}{r}\n(rule pass (?x) :match () :assert (r ?x) :why \"pass is given {{?x}}, so rule r is switched on for {{?x}}\")\n(pass (a b))"
-                ),
-                format!(
-                    "the fact (pass (a b)) writes (a b) as rule 'pass''s parameter ?x, which it \
-                     passes to {r_param} — {NAMED}"
-                ),
+            format!(
+                "{pre}{r}\n(rule pass (?x) :match () :assert (r ?x) :why \"pass is given {{?x}}, so rule r is switched on for {{?x}}\")\n(pass (a b))"
             ),
             // A conclusion whose relation is a parameter writes into every rule
             // of its arity whose name the program writes (Q-M1f.42).
-            (
-                format!(
-                    "{pre}{r}\n(rule copy (?S ?T) :match (?S ?x) :assert (?T ?x) :why \"{{?S}} holds of {{?x}}, so {{?T}} holds of {{?x}}\")\n(copy item r)"
-                ),
-                format!(
-                    "rule 'copy': its :assert writes (?T ?x), whose ?x is {r_param}, and (?S ?x) \
-                     can bind ?x to a fact, as an argument of the relation ?S names — {NAMED}"
-                ),
+            format!(
+                "{pre}{r}\n(rule copy (?S ?T) :match (?S ?x) :assert (?T ?x) :why \"{{?S}} holds of {{?x}}, so {{?T}} holds of {{?x}}\")\n(copy item r)"
             ),
             // An `(or …)` whose one arm binds it where a name is held.
-            (
-                format!(
-                    "{pre}{r}\n(rule mk () :match (or (item ?f) (relation ?f ?a)) :assert (r ?f) :why \"{{?f}} is an item or a declared relation, so rule r is switched on for {{?f}}\")"
-                ),
-                format!(
-                    "rule 'mk': its :assert writes (r ?f), whose ?f is {r_param}, and (item ?f) \
-                     can bind ?f to a fact, as an argument of the declared relation item where \
-                     its :match holds through (item ?f) — {NAMED}"
-                ),
+            format!(
+                "{pre}{r}\n(rule mk () :match (or (item ?f) (relation ?f ?a)) :assert (r ?f) :why \"{{?f}} is an item or a declared relation, so rule r is switched on for {{?f}}\")"
             ),
-        ] {
-            assert_eq!(warned(&src), want, "{src}");
-        }
-        // What loads with no warning: a relation signature's name, a rule's relation
-        // parameter (zebra2's `co-located-fanout`), a marker that passes a
-        // name on and is written with names (the stdlib's
-        // `bijective-properties`), an `eq` guard, and a value parameter.
-        for src in [
+            // A relation signature's name, a rule's relation parameter
+            // (zebra2's `co-located-fanout`), a marker that passes a name on
+            // and is written with names (the stdlib's `bijective-properties`),
+            // an `eq` guard, and a value parameter.
             format!(
                 "{pre}{r}\n(rule mk () :match (relation ?f ?a) :assert (r ?f) :why \"{{?f}} is a relation declared over {{?a}}, so rule r is switched on for {{?f}}\")"
             ),
@@ -6110,7 +5716,42 @@ mod tests {
                  (rule mk () :match (item ?f) :assert (v ?f) :why \"{{?f}} is an item, so rule v is switched on for {{?f}}\")\n(item (a b))"
             ),
         ] {
-            assert_eq!(warned(&src), "", "{src}");
+            ok(&src);
+        }
+        // What the positions are read for beside Q-M1f.46's refusal: a name
+        // the program passes where a relation's name is held, through a
+        // marker (Q-M1f.41) or through a conclusion whose relation is a
+        // parameter (Q-M1f.42), is a relation of the program (Q-M1f.522); one
+        // written at a declared relation's argument is not.
+        for (src, relation) in [
+            (
+                format!(
+                    "{pre}{r}\n(rule fan () :match (marker ?m) :assert (r ?m) :why \"the marker names {{?m}}, so rule r is switched on for {{?m}}\")\n(marker zork)"
+                ),
+                true,
+            ),
+            (
+                format!(
+                    "{pre}{r}\n(rule copy (?T) :match (marker ?x) :assert (?T ?x) :why \"the marker names {{?x}}, so {{?T}} holds of {{?x}}\")\n(copy r)\n(marker zork)"
+                ),
+                true,
+            ),
+            (
+                format!(
+                    "{pre}{r}\n(rule mk () :match (item ?f) :assert (r ?f) :why \"{{?f}} is an item, so rule r is switched on for {{?f}}\")\n(item zork)"
+                ),
+                false,
+            ),
+        ] {
+            let (terms, kb) = ok(&src);
+            assert_eq!(
+                kb.program()
+                    .relations_of
+                    .iter()
+                    .any(|&s| terms.sym(s) == "zork"),
+                relation,
+                "{src}"
+            );
         }
     }
 

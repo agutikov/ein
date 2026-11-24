@@ -236,7 +236,6 @@ pub(crate) fn plans_for(
     // Load order, the registry's: no rule has a priority.
     let mut out = Vec::new();
     for rule in kb.program().obligations.values() {
-        crate::compile::note_inert_activators(ast, terms, kb, rule);
         for act in activators_for(kb, terms, rule) {
             let key = plan_key(terms, rule, act);
             let mut memo: std::sync::MutexGuard<'_, PlanMemo> =
