@@ -210,7 +210,14 @@ Two commitments that saturate to the same KB are one state. `canon::state_key`
 **identity is the canonical form itself, never a hash of it**: every identity site keys on the list, so a hash
 collision costs a comparison and never a wrong answer; `canon::state_digest` exists for display alone. For identity
 any total order is equivalent, so the key sorts by fact id, which is no observable order; where a state is shown, it
-is ordered by its rendered text ([`01-determinism-and-order.md`](01-determinism-and-order.md)). No carrier head is
+is ordered by its rendered text ([`01-determinism-and-order.md`](01-determinism-and-order.md)). **A search keys a node
+by its facts beyond root's**, read above root's mark of its stack at their own size, as a resumed node's delta is
+(`Snapshot::new_facts_of`, [`06-saturation.md` § 4](06-saturation.md#4-a-node-resumes-roots-saturation)), and sorted as
+`state_key` sorts: every fixpoint holds root's facts, so the part beyond them tells two states apart exactly as the
+whole does, and the gate's build holds the one to the whole key less root's facts at every node. The whole key is
+read where a state is compared with one reached another way and no search pays it at a node: the read-out's check of
+a printed state's parent paths (`region::Nodes::by_parent`), and a saved container's solutions
+([`09-binary-format.md` § 6](09-binary-format.md#6-the-solution-store)). No carrier head is
 excluded: a committed fact is the fact itself, its provenance a commitment's, and a state's `open` facts are facts of
 the kernel's relation `open`, a function of the rest of the state
 ([Q-M1f.572](../../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md)).

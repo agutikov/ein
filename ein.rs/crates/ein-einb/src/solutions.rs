@@ -76,7 +76,9 @@ pub enum VerdictKind {
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct SolutionNode {
     /// The canonical identity of the state — `canon::state_key`, the sorted
-    /// fact list, which is what the search deduped nodes by.
+    /// fact list, root's facts among them, as a state rebuilt from the file
+    /// ([`Self::reconstitute`]) is keyed. A search keys a node by the part
+    /// beyond root's, which tells states apart alike.
     pub state_key: Box<[FactId]>,
     /// The facts this model has and the file's KB does not, in the model's own
     /// insertion order.
