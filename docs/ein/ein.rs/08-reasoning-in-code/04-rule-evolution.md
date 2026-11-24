@@ -62,8 +62,12 @@ ein render kb --fold kinds.ein    # the drawing on the page, each fact of three 
 
 The dump's `DERIVED` section holds more than the two rules derive: what the imported module's own rules derive, and
 root's `open` facts, the blind enumerator's hypotheses, as part of the state
-([Q-M1f.572](../../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md)). The facts the
-page derives are the two rules':
+([Q-M1f.572](../../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md)). The drawing
+on the page is the whole of `ein render kb --fold kinds.ein`, and holds them too: the activators
+`(std.contradiction.clash-0 is-a)`, `(std.contradiction.clash-2 is-a)` and their twins of `is-a*`, which
+`std.contradiction`'s rules derive from the two declarations (`std.algebra` imports it), each a loop on its relation's
+box, and root's 18 `open` facts, each a loop labelled `open by open` on the octagon of the fact it supposes, in the
+frame `open ctx`. The facts the page derives are the two rules':
 
 ```sh
 ein saturate kinds.ein --dump | grep -E ':rule (includes|transitive)\)'

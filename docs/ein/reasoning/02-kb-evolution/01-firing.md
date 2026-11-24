@@ -102,9 +102,16 @@ $$
 
 A match $\theta$ sends the diamonds of the pattern to nodes of the knowledge base so that each arrow of the
 pattern lands on an arrow with the same label. Here is a knowledge base before the firing, $K$, drawn without its declarations' facts: a fact of
-$\operatorname{is-a}$ is an arrow like any other.
+$\operatorname{is-a}$ is an arrow like any other. It is drawn as the fixpoint of a program that states it and has no
+rule, with the facts of $\mathsf{open}$ written there
+([hypothesis generation](04-hypothesis-generation.md#2-the-union)): each octagon in the frame
+$\mathsf{open\ ctx}$ is a fact $K$ does not hold, a **hypothesis**, and the dashed loop labelled $\mathsf{open}$ on
+it is the fact $\operatorname{open}(f)$ that says so. Nothing says what to guess, so they are every fact $K$ does
+not hold of a declared relation between two different names that are neither a relation nor a label
+([the blind enumerator](04-hypothesis-generation.md#5-the-blind-enumerator)). The rule reads none of them, and
+its firing adds none.
 
-![A knowledge base before the firing](diagrams/01-before-firing.svg)
+![A knowledge base before the firing, and its hypotheses, each an octagon in the frame open ctx with a loop labelled open](diagrams/01-before-firing.svg)
 
 The pattern has exactly one match,
 
@@ -113,9 +120,11 @@ $$
 $$
 
 and the firing glues the conclusion onto the nodes $\theta$ found. After it, $\operatorname{fire}(K, \xi)$ holds
-one arrow more, dashed because it is derived, and every arrow it held before:
+one arrow more, dashed because it is derived, and every arrow it held before. Drawn as the fixpoint of the program
+with the rule, its facts of $\mathsf{open}$ are written at that fixpoint, and they are those drawn with $K$ but one:
+$\operatorname{near}(\mathsf{Norwegian}, \mathsf{House\text{-}2})$ is held now, and no longer a hypothesis.
 
-![The knowledge base after the firing: one arrow more, dashed](diagrams/01-after-firing.svg)
+![The knowledge base after the firing: one arrow more, dashed, and one hypothesis fewer](diagrams/01-after-firing.svg)
 
 $$
 \operatorname{fire}(K, \xi) = K \cup \lbrace\, \operatorname{near}(\mathsf{Norwegian}, \mathsf{House\text{-}2}) \,\rbrace

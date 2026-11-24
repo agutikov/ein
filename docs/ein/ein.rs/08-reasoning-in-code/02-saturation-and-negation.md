@@ -101,7 +101,10 @@ ein render kb --fold FILE                        # the knowledge base, saturated
 
 The page shows `ein render kb --fold`'s graph without the four declarations' own facts, two for each, as
 `(relation lives-in Person House)` and `(relation lives-in)` for `lives-in`, which the view draws as an octagon whose
-arrow `1` is at the box `relation` and a loop labelled `relation` on the box `lives-in`.
+arrow `1` is at the box `relation` and a loop labelled `relation` on the box `lives-in`. It keeps root's `open` facts,
+the blind enumerator's hypotheses, each a loop labelled `open by open` on the octagon of the fact it supposes, which
+stands in the frame `open ctx`: `ein saturate --dump FILE` lists 22 without the rule and 21 with it, where root holds
+`(near Norwegian House-2)` and does not guess it.
 
 ---
 
@@ -198,7 +201,8 @@ Its read-out names the three stated facts as the core and `fox-keeps-away` as wh
 [`examples/ein-bugs/binding-key-both.ein`](../../../../examples/ein-bugs/binding-key-both.ein); `binding-key-swapped.ein`
 writes the two activators in the other order, and there is one file for each activator alone. The rule's drawing
 is `ein render rules --fold`' of the file and the state's `ein render kb --fold`'s, without the declarations' facts,
-the activators and the fact `(src Y)` the second activator points at.
+the activators and the fact `(src Y)` the second activator points at; root's two `open` facts, below, are drawn, each
+a loop labelled `open by open` on the octagon of `(holds 2)` or `(holds Y)` in the frame `open ctx`.
 
 ```sh
 ein saturate examples/ein-bugs/binding-key-both.ein --dump
@@ -299,6 +303,13 @@ without its declarations' facts:
 (seats Bob C2)
 (allergic Bob)
 ```
+
+The drawing keeps root's `open` facts, the blind enumerator's hypotheses, each a loop labelled `open by open` on the
+octagon of the fact it supposes, in the frame `open ctx`; `ein saturate --dump FILE` lists the 61. Among them is
+`(open (allergic Ann))`, so the rule's `absent` reads a relation the enumerator guesses: the program is flagged, `ein
+show hyps FILE` says so on stderr's first line and `ein solve FILE` in its read-out's first row, `WARNING`, and
+nothing is claimed of its answer
+([Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)).
 
 `ein solve FILE` prints a `strata` row for a program with a cycle through an `absent`, one `negative cycle` line
 a cycle with its parity ([`08-read-out.md`](../../user/04-reference/08-read-out.md)).

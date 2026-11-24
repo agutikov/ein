@@ -99,9 +99,19 @@ and in the saturated world below, where two guests are seated and one is allergi
 Both drawings fold each fact of three arrows into a labelled arrow and each of two into a labelled loop
 ([the knowledge base](../01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows)): a fact of one argument,
 $\operatorname{allergic}(\mathsf{Bob})$, is a loop on $\mathsf{Bob}$, and the world is drawn without its
-declarations' facts. The dashed arrow is the fact the rule derived.
+declarations' facts. The dashed arrow labelled with the rule is the fact the rule derived. The world is drawn with
+the facts of $\mathsf{open}$ written at its fixpoint
+([hypothesis generation](04-hypothesis-generation.md#2-the-union)): each octagon in the frame
+$\mathsf{open\ ctx}$ is a fact the world does not hold and supposes, a **hypothesis**, and the dashed loop labelled
+$\mathsf{open}$ on it is $\operatorname{open}(f)$. Nothing says what to guess, so they are every fact the world does
+not hold of a declared relation over names that are neither a relation nor a label, two different ones for a
+relation of two ([the blind enumerator](04-hypothesis-generation.md#5-the-blind-enumerator)). One of them is
+$\operatorname{allergic}(\mathsf{Ann})$, the fact the absence reads for $\mathsf{Ann}$. The absence reads a relation
+a commitment can add a fact of, so the static check finds a site in the rule
+([monotonicity § 3](08-monotonicity.md#3-the-static-check)), and nothing is claimed of the program's answer
+([§ 11.3](08-monotonicity.md#113-what-is-claimed-of-a-flagged-program)).
 
-![The saturated world: two guests seated, one allergic, the other given the soup](diagrams/03-soup-saturated.svg)
+![The saturated world: two guests seated, one allergic, the other given the soup; and its hypotheses, each an octagon in the frame open ctx with a loop labelled open](diagrams/03-soup-saturated.svg)
 
 $$
 \begin{aligned}

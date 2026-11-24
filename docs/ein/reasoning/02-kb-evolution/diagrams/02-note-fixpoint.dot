@@ -8,6 +8,24 @@ digraph kb {
   "3" -> "3" [xlabel="holds", color="#bcbd22", fontcolor="#bcbd22", style=solid, constraint=false];
   "1" -> "1" [xlabel="noted by note", color="#8c564b", fontcolor="#8c564b", style=dashed, constraint=false];
   "2" -> "1" [xlabel="noted by note", color="#8c564b", fontcolor="#8c564b", style=dashed, constraint=false];
+  f_ab0723275e -> f_ab0723275e [xlabel="open by open", color="#2ca02c", fontcolor="#2ca02c", style=dashed, constraint=false];
+  f_75995ae786 -> f_75995ae786 [xlabel="open by open", color="#2ca02c", fontcolor="#2ca02c", style=dashed, constraint=false];
+  newrank=true;
+  subgraph cluster_ctx_0 {
+    label="open ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    f_ab0723275e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+    f_75995ae786 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  }
+  "holds" -> f_ab0723275e [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_ab0723275e -> "2" [xlabel="2", color="#bcbd22", style=solid];
+  "holds" -> f_75995ae786 [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_75995ae786 -> "Y" [xlabel="2", color="#bcbd22", style=solid];
   "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
-  { rank=same; "layer 0"; "1"; "2"; "3"; }
+  "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 0" -> "layer 1" [style=invis];
+  "layer 1" -> "layer 2" [style=invis];
+  { rank=same; "layer 0"; "holds"; }
+  { rank=same; "layer 1"; f_ab0723275e; f_75995ae786; }
+  { rank=same; "layer 2"; "2"; "Y"; "1"; "3"; }
 }

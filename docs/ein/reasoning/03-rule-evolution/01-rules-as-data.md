@@ -84,19 +84,38 @@ $$
 
 That is the fixed point of Ein's model, *an instance is an instance of instance*, reached with two membership
 facts, two property facts and two rules, and it is inference about Ein performed by Ein. The saturated state,
-every fact of it, the declarations' facts and the two property facts among them, folded: a fact of three arrows a
-labelled arrow, and a fact of two, the declarations' second facts and the property $\operatorname{transitive}(\operatorname{is-a}^{*})$,
-a labelled loop on its argument:
+every fact of it, the declarations' facts, the two property facts and its hypotheses among them, folded: a fact of
+three arrows a labelled arrow, and a fact of two, the declarations' second facts, the property
+$\operatorname{transitive}(\operatorname{is-a}^{*})$, the activators $\operatorname{clash}_0$ and
+$\operatorname{clash}_2$ of the contradiction's rules, which the relation algebra brings, derived for each of the two
+relations
+([cores](../02-kb-evolution/09-cores.md#the-contradiction-rule-and-why-it-is-a-schema)) and each fact
+$\operatorname{open}(f)$, a labelled loop on its argument:
 
-![The saturated state in which instance is an instance of instance: the atom is-a under the second arrow of its declaration's facts, the label of its facts' arrows, and the tail of one of them](diagrams/01-instance-of-instance.svg)
+![The saturated state in which instance is an instance of instance: the atom is-a under the second arrow of its declaration's facts, the label of its facts' arrows, and the tail of one of them; and the hypotheses, each an octagon in the frame open ctx with a loop labelled open](diagrams/01-instance-of-instance.svg)
 
 The drawing folds each fact of three arrows into a labelled arrow and each of two into a labelled loop
 ([the knowledge base](../01-static-ir/01-knowledge-base.md#drawn-with-labelled-arrows)), and the membership
 relation appears in it three ways: as the first argument of the facts its declaration is (the arrow numbered 2 of
 an octagon whose arrow 1 is at $\mathsf{relation}$, and a loop labelled $\mathsf{relation}$), as the label of the arrows that are its facts, and as the
 atom, a box, with such an arrow of its own to $\mathsf{Relation}$. A fact of it is drawn as any other fact is.
-The pink dashed arrows are the derived facts; the one from the membership relation to $\mathsf{Object}$ is $e_3$,
-the conclusion of the derivation above.
+The pink dashed arrows are the facts of $\operatorname{is-a}^{*}$ the two rules derive; the one from the membership
+relation to $\mathsf{Object}$ is $e_3$, the conclusion of the derivation above.
+
+The octagons in the frame $\mathsf{open\ ctx}$ are the facts the state supposes, its **hypotheses**, each a fact the
+state does not hold: a fact $\operatorname{open}(f)$ points at it, drawn as the dashed loop labelled
+$\mathsf{open}$, and the facts of $\mathsf{open}$ are written at the fixpoint
+([hypothesis generation](../02-kb-evolution/04-hypothesis-generation.md#2-the-union)). The program says nothing of
+what to guess, so they are every fact the state does not hold of the two declared relations between two different
+names that are neither a relation nor a label:
+
+$$
+\lbrace\, r(x, y) \;:\; r \in \lbrace \operatorname{is-a}, \operatorname{is-a}^{*} \rbrace,\
+x \neq y \in \lbrace \mathsf{Object}, \mathsf{Relation}, \mathsf{Fact}, \mathsf{Rule} \rbrace,\
+r(x, y) \notin K \,\rbrace
+$$
+
+with $K$ the saturated state ([the blind enumerator](../02-kb-evolution/04-hypothesis-generation.md#5-the-blind-enumerator)).
 
 ### Facts, relations, properties and rules
 

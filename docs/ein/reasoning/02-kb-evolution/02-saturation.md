@@ -339,14 +339,21 @@ edge. The second binds $f$ to the fact $\operatorname{src}(\mathsf{Y})$, of whic
 it derives nothing, and it removes nothing the first derives. In either order of the two activators the fixpoint
 is the same:
 
-![The fixpoint of the rule note, the same in either order of its two activators](diagrams/02-note-fixpoint.svg)
+![The fixpoint of the rule note, the same in either order of its two activators, with its two hypotheses in the frame open ctx](diagrams/02-note-fixpoint.svg)
 
 It folds each fact of three arrows and of two as the rule's drawing does; a fact of $\operatorname{holds}$ is a
 loop on its argument.
 The two dashed arrows labelled with the rule are the two conclusions, $\operatorname{noted}(\mathsf{1},
 \mathsf{1})$ an arrow from $\mathsf{1}$ to itself. The activators and the declarations' facts are left out of the
 drawing, and so is $\operatorname{src}(\mathsf{Y})$: nothing drawn points at it, and nothing
-holds it.
+holds it. The facts of $\mathsf{open}$ the fixpoint holds are drawn
+([hypothesis generation](04-hypothesis-generation.md#2-the-union)): the two octagons in the frame
+$\mathsf{open\ ctx}$ are $\operatorname{holds}(\mathsf{2})$ and $\operatorname{holds}(\mathsf{Y})$, the facts it
+supposes, each with the dashed loop labelled $\mathsf{open}$ that is $\operatorname{open}(f)$. The program says
+nothing of what to guess and keeps $\operatorname{edge}$ and $\operatorname{noted}$ out of it
+([scoping](04-hypothesis-generation.md#6-scoping-and-the-mechanisms-judged-together)), so they are the facts of
+$\operatorname{holds}$ the fixpoint does not hold, over its names that are neither a relation nor a label. They are
+the same in either order of the activators.
 
 So on such a program every question and every claim answers alike under the agenda and under the written order
 alone. Taking first what can make a contradiction finds a dead node's contradiction sooner, and that is all the
