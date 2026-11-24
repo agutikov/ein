@@ -1,0 +1,20 @@
+;;; Review item 86, part 2: the contrast to alibi-supposed.ein. Not a corpus file.
+;;;
+;;; `ask` reads the supposed alibi positively, at no `absent`: at root nobody has an alibi, so it
+;;; proposes nothing; committing `(alibi Ann)` makes the state propose `(witness Ann)`, a
+;;; hypothesis first held above root. That is a site of the static check (Q-M1f.574): the program
+;;; is flagged, and nothing is claimed of its answer.
+
+(relation present Person :why "{?3} was there")
+(relation alibi   Person :why "{?3} has an alibi")
+(relation witness Person :why "{?3} saw something")
+(present Ann) (present Bob)
+(rule maybe-alibi ()
+  :match  (present ?x)
+  :assert (open (alibi ?x))
+  :why    "suppose {?x} has an alibi")
+(rule ask ()
+  :match  (and (present ?x) (alibi ?x))
+  :assert (open (witness ?x))
+  :why    "suppose {?x}, who has an alibi, saw something")
+(query :goal (witness ?who))

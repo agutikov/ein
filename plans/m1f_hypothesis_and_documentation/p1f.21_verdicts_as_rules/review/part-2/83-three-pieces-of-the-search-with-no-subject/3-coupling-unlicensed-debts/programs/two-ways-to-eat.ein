@@ -1,0 +1,37 @@
+;;; Review item 83, piece 3 (the coupling's unlicensed debts). Not a corpus file. The final
+;;; engine's spelling.
+;;;
+;;; Ann owes a dish, and two candidates each derive the one payment alone: `(orders Ann)` by
+;;; `takeaway`, `(invites Bob)` by `dinner`. On the engine before the union the payment was no
+;;; candidate, the instance unlicensed, and the coupling read its payers off the payment's
+;;; holders, the candidates whose own node holds it: `(orders Ann)` and `(invites Bob)`, two
+;;; questions, so the debt was an edge, an unlicensed one. Under the union `(fed Ann Soup)` is a
+;;; candidate and the debt's one alternative: the debt is that question's own, and the two
+;;; derivations are edges of the node.
+
+(import std.algebra :symbols (total-owed))
+(relation is-a    T T        :why "{?3} is a {?4}")
+(relation fed     Guest Dish :why "{?3} is fed {?4}")
+(relation orders  Guest      :why "{?3} orders a takeaway")
+(relation invites Host       :why "{?3} invites Ann to dinner")
+(is-a Ann Guest)
+(is-a Soup Dish)
+(is-a Bob Host)
+(total-owed fed is-a)
+(rule takeaway ()
+  :match  (orders Ann)
+  :assert (fed Ann Soup)
+  :why    "Ann orders a takeaway, so she is fed soup")
+(rule dinner ()
+  :match  (invites Bob)
+  :assert (fed Ann Soup)
+  :why    "Bob invites Ann, so she is fed soup")
+(rule order ()
+  :match  (is-a ?g Guest)
+  :assert (open (orders ?g))
+  :why    "suppose {?g} orders a takeaway")
+(rule invite ()
+  :match  (is-a ?h Host)
+  :assert (open (invites ?h))
+  :why    "suppose {?h} invites Ann")
+(query :goal (fed ?who ?what))

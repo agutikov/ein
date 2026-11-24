@@ -1,0 +1,24 @@
+;;; Review item 83, piece 1 (L5's last reason). Not a corpus file. The final engine's spelling.
+;;;
+;;; Ann owes a dish (`total-owed`): the one fact that pays her is `(fed Ann Soup)`, which a rule
+;;; derives from the one candidate a hypothesis rule proposes, `(orders Ann)`. The payment is
+;;; derived, not proposed: on the engine before the union it was no candidate, so L5 refused the
+;;; instance for its last reason and the search fell back to the state route. Under the union the
+;;; obligation proposes it too: H is `(orders Ann)` and `(fed Ann Soup)`, and L5 licenses.
+
+(import std.algebra :symbols (total-owed))
+(relation is-a   T T        :why "{?3} is a {?4}")
+(relation fed    Guest Dish :why "{?3} is fed {?4}")
+(relation orders Guest      :why "{?3} orders a takeaway")
+(is-a Ann Guest)
+(is-a Soup Dish)
+(total-owed fed is-a)
+(rule takeaway ()
+  :match  (orders Ann)
+  :assert (fed Ann Soup)
+  :why    "Ann orders a takeaway, so she is fed soup")
+(rule order ()
+  :match  (is-a ?g Guest)
+  :assert (open (orders ?g))
+  :why    "suppose {?g} orders a takeaway")
+(query :goal (fed ?who ?what))

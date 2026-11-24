@@ -6,6 +6,26 @@
 
 **Built without asking, on a default. This item is where you say it was the wrong reading.**
 
+> **The pictures are files under each part's `runs/`, which git ignores**, embedded as `<img>`. If one is missing,
+> `bash tools/run.sh` writes every part's runs and drawings in a second, on the final binary and on the engine just
+> before the fix (the release build of `2ed5bfb1`, its engine `7b72bd84`'s, kept as
+> `build/review-bin/ein-before-fix-2ed5bfb1`).
+
+## In one paragraph
+
+A rule that concludes a hypothesis, `(open F)`, was matched **without its `absent` premises**. *Suspect anyone
+present who has no alibi* suspected Ann, who has one. Since the fix it reads them as every rule does (default 1).
+Four smaller choices came with the fix: whether such a read is a site of the static check (default 2, the one with a
+consequence); what the oracle's listing of a node shows (default 3); and two of bookkeeping, a decision file
+written before your ruling and the witness's `:expect` (defaults 4 and 5).
+
+| part | what | the default |
+|---|---|---|
+| [**1**](1-the-absent-is-read/README.md) | **the `absent` is read**: the wrong answer and its fix, on a small story and the corpus witness | 1, Q-M1f.685 |
+| [**2**](2-a-read-under-absent-flags-nothing/README.md) | **a read under `absent` flags nothing**: above root such a read only takes hypotheses away; a positive read adds one, and is flagged | 2, Q-M1f.686 |
+| [**3**](3-the-oracles-listing/README.md) | **the oracle's listing of a node**: its facts beyond root's and every `open` fact it holds | 3, Q-M1f.687 |
+| [**4**](4-the-witness-and-its-decision/README.md) | **the witness and its decision**: how the wrong answer was filed, fixed and held | 4 and 5, Q-M1f.688, Q-M1f.689 |
+
 ## What was wrong
 
 Running the review items on the final engine found it. A rule that concludes `(open F)` was matched without its

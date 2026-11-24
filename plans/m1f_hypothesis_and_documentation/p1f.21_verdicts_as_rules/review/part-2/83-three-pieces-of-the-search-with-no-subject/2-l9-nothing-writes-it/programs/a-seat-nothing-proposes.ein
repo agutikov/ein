@@ -1,0 +1,23 @@
+;;; Review item 83, piece 2 (L9). Not a corpus file. The final engine's spelling.
+;;;
+;;; Ann owes a seat (`total-owed`, `functional`): `(sits Ann S1)` or `(sits Ann S2)` pays her. The
+;;; hypothesis rule proposes only the window seat, S1. On the engine before the union
+;;; `(sits Ann S2)` was no candidate, so L5 refused the instance; but no rule concludes a `sits`
+;;; fact, so S2 can be in no state, and L9 licensed it with S1 its one alternative. Under the union
+;;; the obligation proposes S2 too: L5 licenses alone, and R has both seats.
+
+(import std.algebra :symbols (functional total-owed))
+(relation is-a   T T        :why "{?3} is a {?4}")
+(relation sits   Guest Seat :why "{?3} sits in seat {?4}")
+(relation window Seat       :why "seat {?3} is by the window")
+(is-a Ann Guest)
+(is-a S1 Seat)
+(is-a S2 Seat)
+(window S1)
+(functional sits)
+(total-owed sits is-a)
+(rule seat ()
+  :match  (and (is-a ?g Guest) (window ?s))
+  :assert (open (sits ?g ?s))
+  :why    "suppose {?g} sits by the window, in {?s}")
+(query :goal (sits ?who ?where))

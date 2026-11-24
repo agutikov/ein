@@ -1,0 +1,23 @@
+;;; Review item 83, piece 1: one-way-to-eat.ein stating `(solve :no-search)`. Not a corpus file.
+;;;
+;;; H is empty by the program's word, so the payment `(fed Ann Soup)` is no candidate and L5 gives
+;;; its last reason on the final engine too: the one place it is still given. Nothing is searched,
+;;; so the reason steers nothing.
+
+(import std.algebra :symbols (total-owed))
+(relation is-a   T T        :why "{?3} is a {?4}")
+(relation fed    Guest Dish :why "{?3} is fed {?4}")
+(relation orders Guest      :why "{?3} orders a takeaway")
+(is-a Ann Guest)
+(is-a Soup Dish)
+(total-owed fed is-a)
+(rule takeaway ()
+  :match  (orders Ann)
+  :assert (fed Ann Soup)
+  :why    "Ann orders a takeaway, so she is fed soup")
+(rule order ()
+  :match  (is-a ?g Guest)
+  :assert (open (orders ?g))
+  :why    "suppose {?g} orders a takeaway")
+(query :goal (fed ?who ?what))
+(solve :no-search)

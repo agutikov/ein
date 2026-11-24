@@ -1,0 +1,19 @@
+;;; Review item 83, piece 2: a-seat-nothing-proposes.ein in the spelling of the engine before the
+;;; union (`ddf09492`: `hrule` and `(solve :hrules …)`), to run on that engine. Not a corpus file.
+
+(import std.algebra :symbols (functional total-owed))
+(relation is-a   T T        :why "{?3} is a {?4}")
+(relation sits   Guest Seat :why "{?3} sits in seat {?4}")
+(relation window Seat       :why "seat {?3} is by the window")
+(is-a Ann Guest)
+(is-a S1 Seat)
+(is-a S2 Seat)
+(window S1)
+(functional sits)
+(total-owed sits is-a)
+(hrule seat ()
+  :match  (and (is-a ?g Guest) (window ?s))
+  :assert (sits ?g ?s)
+  :why    "suppose {?g} sits by the window, in {?s}")
+(query :goal (sits ?who ?where))
+(solve :hrules (seat))
