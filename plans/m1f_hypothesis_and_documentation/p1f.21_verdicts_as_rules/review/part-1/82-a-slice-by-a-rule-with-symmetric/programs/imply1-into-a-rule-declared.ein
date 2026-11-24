@@ -1,0 +1,11 @@
+;;; Review item 82: imply1-into-a-rule.ein with the marker declared as a
+;;; relation. Not a corpus file. It works and warns the same; a declared
+;;; relation's argument holds any object (Q-M1f.41).
+(import std.algebra :symbols (symmetric imply1))
+(relation next-to House House :why "{?3} is next to {?4}")
+(relation equivalence Relation :why "{?3} is an equivalence")
+(next-to H1 H2)
+(equivalence next-to)
+(imply1 equivalence symmetric)
+(query :goal (next-to ?a ?b))
+(solve :no-search)

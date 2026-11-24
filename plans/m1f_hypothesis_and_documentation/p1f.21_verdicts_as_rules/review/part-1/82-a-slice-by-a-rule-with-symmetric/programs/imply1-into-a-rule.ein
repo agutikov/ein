@@ -1,0 +1,16 @@
+;;; Review item 82: std.algebra's imply1 used as its own comment says, property to
+;;; property: every relation marked `equivalence` is symmetric. Not a corpus file.
+;;;
+;;; It works: imply1 derives (symmetric next-to), which activates the rule
+;;; symmetric, which derives (next-to H2 H1). The marker `equivalence` is
+;;; undeclared and its one argument is a relation's name. The load still prints
+;;; the warning of item 82: (imply1 … symmetric) writes the rule name `symmetric`
+;;; as an argument (Q-M1f.42), and imply1's premise (?R1 ?a) is read as able to
+;;; bind ?a to a fact whatever ?R1 is (Q-M1f.41).
+(import std.algebra :symbols (symmetric imply1))
+(relation next-to House House :why "{?3} is next to {?4}")
+(next-to H1 H2)
+(equivalence next-to)
+(imply1 equivalence symmetric)
+(query :goal (next-to ?a ?b))
+(solve :no-search)
