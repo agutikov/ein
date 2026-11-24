@@ -553,6 +553,43 @@ So:
   ([S1f.21.19](s1f.21.19_the_review_items_on_the_built_engine.md)): each program in the spelling ruled, run on the
   built binary, with its drawings, beside what the stand-in showed.
 
+## The answers to part 1's items 66 to 82
+
+The user, 2026-11-24 (*"process …/review/part-1/ANSWERS.md, I did not answer 82 beacause it is not question
+anymore, is it?"*), each verbatim, each filed under its question in [the ledger](../open_questions.md) or its finding
+in [`findings.md`](findings.md). **With them no item of the first part is open**, and the items are out of the bundle.
+
+| item | what | the user, verbatim | what it rules |
+|---|---|---|---|
+| 66 | S1f.21.17's five defaults, Q-M1f.580 to .584 | *"I accept"* | each as built |
+| 67 | S1f.21.11's ten defaults, Q-M1f.585 to .594 | *"I accept"* | each as built |
+| 68 | S1f.21.2's five defaults, Q-M1f.601 to .605 | *"I accept"* | each as written |
+| 79 | [V-22](findings.md#v-22--a-program-with-no-candidate-is-never-flagged), a program with no candidate is never flagged | *"(a) for now we don't claim we 100% detect all types of non-monotone programs in all possible cases, ther is  M1n for that"* | (a): `W8/fifo-gap-root` stays a row of the register, a wrong answer of a program the engine claims, M1n's to fix |
+| 80 | [V-24](findings.md#v-24--the-read-outs-examples-page-holds-flagged-programs-read-outs-to-the-binary), the examples page holds flagged programs' read-outs | *"(a)"* | left: the page keeps them, held to the binary, and calls no answer right |
+| 81 | [V-32](findings.md#v-32--the-loads-warning-is-one-line-a-site), the load's warning is one line a site | *"(a)"* | one line a site, for whatever lines a load prints; the lines V-32 counts go by item 82's ruling |
+| 82 | [V-34](findings.md#v-34--the-milestones-l-109-program-loads), the milestone's L-109 | in the conversation, below | below |
+
+**Item 82**, answered in the conversation and not in the file. The item's runs showed the warning naming
+`std.algebra.imply1`, a rule nothing in the program activates, and firing on `imply1`'s own use,
+`(imply1 equivalence symmetric)`, which works. The user:
+
+> I think this warning is false by desing. We do use relations as arguments. And there could be any number of not
+> activated rules if program imports something but not use. Any concerns?
+
+Asked back whether the two lines that say the same of an activator the program writes (Q-M1e2.18) and of one a state
+holds go with it (*All three go (Recommended)*, *Only the load's line*, *Load's and run's go*): *"All three go
+(Recommended)"*.
+
+| what | ruled |
+|---|---|
+| an activator that binds a rule's relation parameter to a fact | activates nothing, **and nothing says so**: no `warning:` at load for one a rule could derive, none for one the program writes, none at a run for one a state holds; as an activator of another count says nothing (Q-M1f.115) |
+| what stays | the engine compiles no plan for such an activator; the reading of which positions hold a relation's name (Q-M1f.41, Q-M1f.42), which two other things read: Q-M1f.46's refusal and the relations of the program (Q-M1f.522) |
+| the decisions | Q-M1f.1 rewritten under its id, as S1f.21.17 rewrote it; Q-M1e2.18's second half |
+| L-109 | closed: the program loads and answers as `zebra2`, and prints nothing |
+| item 81's answer and Q-M1f.580 | stand for every line a load or a run prints; the lines and the words they set for this case go with it |
+
+**Built by [S1f.21.25](s1f.21.25_an_activator_that_names_no_relation_in_silence.md)**, planned, not started.
+
 ## What it is
 
 Three things the kernel decides by itself, each a verdict about a state, none written anywhere as a rule:
@@ -599,6 +636,7 @@ the order the stages run. [`overview.md` § 5](overview.md#5-the-stages) has the
 | [S1f.21.17](s1f.21.17_the_loader_warns_and_std_core_by_import.md) | | **A warning where the loader refused for what a rule could derive; `std.core` by import and by `$EIN_STDLIB`.** The first as review item 38's answer is read; the other two the user's answer to item 41 | **done 2026-11-20**: `24491e80` (the build), `6d5204be` (its record); the gate green on its branch. The five programs load, four of them flagged; five defaults (Q-M1f.580 to .584, review item 66 of part 1); V-32 to V-34 |
 | [S1f.21.11](s1f.21.11_kill_and_three_conventions.md) | G | **`not` and `relation` as conventions: the contradiction as rules.** Its examples, then the build in four commits | **done 2026-11-20**: `0345e799`, `d6773d76`, `663ca7d1`, `3617f009`, `7f69b9ac`, `04665c38`, record `ddf09492`; rebased onto S1f.21.17; the gate green on `04665c38`. No corpus answer moved; 36 programs and three library modules gained the import. Ten defaults (Q-M1f.585 to .594, review item 67 of part 1); V-35 to V-39; the cost measurement owed |
 | [S1f.21.2](s1f.21.2_the_pages.md) | B | **The pages of the first part.** *Dead*, the contradiction and the key on the reasoning pages and in Ein on the user's; `(false)` as a proposition; the part's rulings as decisions | **done 2026-11-20**: `558bf086`, `7b375380`, `a5e4bc26`, `28aa1ce8`, record `ab184ba2`, `459b37a2`; the gate green on its branch. Nine decisions written and three rewritten; V-16, V-20 and V-31 fixed; five defaults (Q-M1f.601 to .605, review item 68 of part 1); V-43 to V-45 |
+| [S1f.21.25](s1f.21.25_an_activator_that_names_no_relation_in_silence.md) | | **An activator that names no relation activates nothing, in silence.** The user's ruling on review item 82: the load's warning for what a rule could derive, the written activator's and the run's go; the reading of the positions stays for Q-M1f.46 and the relations of the program | **planned 2026-11-24**, not started |
 
 **Part 2 — `open`: what a state owes, and the hypotheses.** Not started before part 1 is done; its two questions,
 Q-M1f.390 and Q-M1f.549, wait with it.

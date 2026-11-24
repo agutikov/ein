@@ -16,7 +16,7 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 
 | id | question | state |
 |---|---|---|
-| [Q-M1f.1](#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) | G-14: is a bad conclusion that never fires refused? | **ruled 2026-11-08, (b)**; S1f.5.5 and S1f.5.18; **built 2026-11-09** by S1f.5.18 (T1f.5.18.3, W59): a program in which a rule could derive an activator binding a relation parameter to a fact is refused at load, read off the program (Q-M1f.41) |
+| [Q-M1f.1](#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused) | G-14: is a bad conclusion that never fires refused? | **ruled 2026-11-08, (b)**; S1f.5.5 and S1f.5.18; **built 2026-11-09** by S1f.5.18 (T1f.5.18.3, W59): a program in which a rule could derive an activator binding a relation parameter to a fact is refused at load, read off the program (Q-M1f.41); **a warning since 2026-11-20** (P1f.21's S1f.21.17, review item 38's answer); **ruled 2026-11-24 by the user: in silence**, review item 82 of P1f.21's part 1: such an activator activates nothing and nothing says so, whether a rule could derive it, the program writes it or a state holds it (S1f.21.25, planned) |
 | [Q-M1f.2](#q-m1f2--the-55-files-the-grammar-refuses-that-todays-parser-accepts) | the 55 files the grammar refuses that today's parser accepts | **ruled 2026-11-08, (a)**; S1f.5.5 |
 | [Q-M1f.3](#q-m1f3--three-wrong-answers-the-census-found-with-no-row) | three wrong answers the census found with no row | **ruled 2026-11-08, as recommended**; S1f.5.0 files W33–W35; W33 **fixed 2026-11-09** by S1f.5.18 (T1f.5.18.2), W34 by S1f.5.9 (T1f.5.9.2) and W35 by S1f.5.5's swap (`8c3fe86e`) |
 | [Q-M1f.4](#q-m1f4--removing-priority-moves-the-facts-of-cores-on-seven-corpus-programs) | removing `:priority` moves the facts of cores on seven corpus programs | **ruled 2026-11-08, (b)**: derive the order from the rules first; S1f.5.15 |
@@ -508,32 +508,32 @@ defaulted by a stage the close re-opened is that stage's, recorded in its file.
 | [Q-M1f.577](#q-m1f577--a-view-of-a-state-without-its-open-facts) | A view of a state without its `open` facts | **ruled 2026-11-20 by the user: (a)**: `-P` leaves out the `(open …)` facts as it leaves out the `(not …)` |
 | [Q-M1f.578](#q-m1f578--the-two-lists-of-solve-and-a-closure-once-the-hypotheses-are-open-facts) | The two lists of `(solve …)` and a closure, once the hypotheses are `open` facts | **ruled 2026-11-20 by the user: (a), and more**: the three are the blind enumerator's configuration, a white list and a black list; the blind enumerator runs only where root's fixpoint holds no `open` fact, and never beside hypotheses a rule emits; beside `open` facts, a list or a closure that disagrees with them is an error, an invalid program |
 | [Q-M1f.579](#q-m1f579--an-obligation-whose-guard-or-trigger-reads-what-a-commitment-can-change) | An obligation whose guard or trigger reads what a commitment can change | **ruled 2026-11-20 by the user: (b)**: such an obligation never steps aside; it writes its guard's candidates at root and the program is flagged. `oblig-derived-domain.ein` is checked again once it is built: the user expects it still solvable, *"my expectation, not requirement"*, to be reviewed then |
-| [Q-M1f.580](#q-m1f580--the-warning-for-an-activator-a-rule-could-derive-its-words-and-when-it-is-printed) | The warning for an activator a rule could derive: its words, and when it is printed | **defaulted 2026-11-20** (P1f.21's S1f.21.17, `24491e80`); review item 66 of part 1 |
-| [Q-M1f.581](#q-m1f581--the-regression-rows-of-the-two-derived-activator-witnesses-now-flagged) | The regression rows of the two derived-activator witnesses, now flagged | **defaulted 2026-11-20** (P1f.21's S1f.21.17, `24491e80`); review item 66 of part 1 |
-| [Q-M1f.582](#q-m1f582--nested-fact-activatorein-states-solve-no-search) | `nested-fact-activator.ein` states `(solve :no-search)` | **defaulted 2026-11-20** (P1f.21's S1f.21.17, `24491e80`); review item 66 of part 1 |
-| [Q-M1f.583](#q-m1f583--where-the-fixtures-that-load-now-are-kept) | Where the fixtures that load now are kept | **defaulted 2026-11-20** (P1f.21's S1f.21.17, `24491e80`); review item 66 of part 1 |
-| [Q-M1f.584](#q-m1f584--how-stdcores-rule-prints-under-an-import-that-renames-it) | How `std.core`'s rule prints under an import that renames it | **defaulted 2026-11-20** (P1f.21's S1f.21.17, `24491e80`); review item 66 of part 1 |
-| [Q-M1f.585](#q-m1f585--which-programs-and-modules-gain-the-contradictions-import) | Which programs and modules gain the contradiction's import | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
-| [Q-M1f.586](#q-m1f586--an-explanation-reads-through-the-contradictions-rules) | An explanation reads through the contradiction's rules | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
-| [Q-M1f.587](#q-m1f587--a-rule-that-refutes-a-pair-fires-at-once) | A rule that refutes a pair fires at once | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
-| [Q-M1f.588](#q-m1f588--what-a-denial-is-once-the-pair-is-a-rules) | What a denial is, once the pair is a rule's | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
-| [Q-M1f.589](#q-m1f589--the-static-check-reads-not-as-any-relation) | The static check reads `not` as any relation | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
-| [Q-M1f.590](#q-m1f590--a-hypothesis-rule-is-matched-as-it-is-reached) | A hypothesis rule is matched as it is reached | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
-| [Q-M1f.591](#q-m1f591--the-words-of-the-surfaces-stay) | The words of the surfaces stay | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
-| [Q-M1f.592](#q-m1f592--the-registers-rows-the-change-answers) | The register's rows the change answers | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
-| [Q-M1f.593](#q-m1f593--not-is-a-name-everywhere-but-at-a-forms-head) | `not` is a name everywhere but at a form's head | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
-| [Q-M1f.594](#q-m1f594--the-witnesses-of-the-count-check-and-a-relation-declared-at-several-counts) | The witnesses of the count check, and a relation declared at several counts | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1 |
+| [Q-M1f.580](#q-m1f580--the-warning-for-an-activator-a-rule-could-derive-its-words-and-when-it-is-printed) | The warning for an activator a rule could derive: its words, and when it is printed | **defaulted 2026-11-20** (P1f.21's S1f.21.17, `24491e80`); review item 66 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 66 of part 1): the lines whose words it set go by the ruling on item 82 (Q-M1f.1, S1f.21.25); when a line prints stands for every line |
+| [Q-M1f.581](#q-m1f581--the-regression-rows-of-the-two-derived-activator-witnesses-now-flagged) | The regression rows of the two derived-activator witnesses, now flagged | **defaulted 2026-11-20** (P1f.21's S1f.21.17, `24491e80`); review item 66 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 66 of part 1) |
+| [Q-M1f.582](#q-m1f582--nested-fact-activatorein-states-solve-no-search) | `nested-fact-activator.ein` states `(solve :no-search)` | **defaulted 2026-11-20** (P1f.21's S1f.21.17, `24491e80`); review item 66 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 66 of part 1) |
+| [Q-M1f.583](#q-m1f583--where-the-fixtures-that-load-now-are-kept) | Where the fixtures that load now are kept | **defaulted 2026-11-20** (P1f.21's S1f.21.17, `24491e80`); review item 66 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 66 of part 1) |
+| [Q-M1f.584](#q-m1f584--how-stdcores-rule-prints-under-an-import-that-renames-it) | How `std.core`'s rule prints under an import that renames it | **defaulted 2026-11-20** (P1f.21's S1f.21.17, `24491e80`); review item 66 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 66 of part 1) |
+| [Q-M1f.585](#q-m1f585--which-programs-and-modules-gain-the-contradictions-import) | Which programs and modules gain the contradiction's import | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 67 of part 1) |
+| [Q-M1f.586](#q-m1f586--an-explanation-reads-through-the-contradictions-rules) | An explanation reads through the contradiction's rules | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 67 of part 1) |
+| [Q-M1f.587](#q-m1f587--a-rule-that-refutes-a-pair-fires-at-once) | A rule that refutes a pair fires at once | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 67 of part 1) |
+| [Q-M1f.588](#q-m1f588--what-a-denial-is-once-the-pair-is-a-rules) | What a denial is, once the pair is a rule's | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 67 of part 1) |
+| [Q-M1f.589](#q-m1f589--the-static-check-reads-not-as-any-relation) | The static check reads `not` as any relation | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 67 of part 1) |
+| [Q-M1f.590](#q-m1f590--a-hypothesis-rule-is-matched-as-it-is-reached) | A hypothesis rule is matched as it is reached | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 67 of part 1) |
+| [Q-M1f.591](#q-m1f591--the-words-of-the-surfaces-stay) | The words of the surfaces stay | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 67 of part 1) |
+| [Q-M1f.592](#q-m1f592--the-registers-rows-the-change-answers) | The register's rows the change answers | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 67 of part 1) |
+| [Q-M1f.593](#q-m1f593--not-is-a-name-everywhere-but-at-a-forms-head) | `not` is a name everywhere but at a form's head | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 67 of part 1) |
+| [Q-M1f.594](#q-m1f594--the-witnesses-of-the-count-check-and-a-relation-declared-at-several-counts) | The witnesses of the count check, and a relation declared at several counts | **defaulted 2026-11-20** (P1f.21's S1f.21.11); review item 67 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 67 of part 1) |
 | [Q-M1f.595](#q-m1f595--an-open-fact-of-a-relation-the-white-list-leaves-out) | An `open` fact of a relation the white list leaves out | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
 | [Q-M1f.596](#q-m1f596--where-open-may-be-written-once-it-is-the-kernels-relation) | Where `open` may be written once it is the kernel's relation | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
 | [Q-M1f.597](#q-m1f597--whether-the-lists-and-a-closure-are-judged-against-the-open-facts-root-holds-or-the-declarations) | Whether the lists and a closure are judged against the `open` facts root holds or the declarations | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
 | [Q-M1f.598](#q-m1f598--whether-the-pass-writes-open-facts-at-a-dead-state) | Whether the pass writes `open` facts at a dead state | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
 | [Q-M1f.599](#q-m1f599--the-blind-enumerator-beside-a-rule-that-concludes-nothing-at-root) | The blind enumerator beside a rule that concludes nothing at root | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
 | [Q-M1f.600](#q-m1f600--what-becomes-of-06_blind_enumerationein) | What becomes of `06_blind_enumeration.ein` | **default (a) taken 2026-11-20 on the user's word** (*"pick defaults, implement the phase to the end … I will review questions after"*); built on, and reviewed by the user after the build |
-| [Q-M1f.601](#q-m1f601--which-of-the-first-parts-readings-get-a-decision-file) | Which of the first part's readings get a decision file | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1 |
-| [Q-M1f.602](#q-m1f602--the-reasoning-pages-notation-for-the-engines-word) | The reasoning pages' notation for the engine's word | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1 |
-| [Q-M1f.603](#q-m1f603--the-constraints-pages-running-program-imports-the-contradiction) | The constraints page's running program imports the contradiction | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1 |
-| [Q-M1f.604](#q-m1f604--how-the-words-a-module-reads-and-does-not-declare-are-listed) | How the words a module reads and does not declare are listed | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1 |
-| [Q-M1f.605](#q-m1f605--sentences-of-the-second-parts-pages-changed-by-the-first-parts) | Sentences of the second part's pages changed by the first part's | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1 |
+| [Q-M1f.601](#q-m1f601--which-of-the-first-parts-readings-get-a-decision-file) | Which of the first part's readings get a decision file | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 68 of part 1) |
+| [Q-M1f.602](#q-m1f602--the-reasoning-pages-notation-for-the-engines-word) | The reasoning pages' notation for the engine's word | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 68 of part 1) |
+| [Q-M1f.603](#q-m1f603--the-constraints-pages-running-program-imports-the-contradiction) | The constraints page's running program imports the contradiction | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 68 of part 1) |
+| [Q-M1f.604](#q-m1f604--how-the-words-a-module-reads-and-does-not-declare-are-listed) | How the words a module reads and does not declare are listed | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 68 of part 1) |
+| [Q-M1f.605](#q-m1f605--sentences-of-the-second-parts-pages-changed-by-the-first-parts) | Sentences of the second part's pages changed by the first part's | **defaulted 2026-11-20** (P1f.21's S1f.21.2); review item 68 of part 1. **Accepted 2026-11-24 by the user** (*"I accept"*, review item 68 of part 1) |
 | [Q-M1f.606](#q-m1f606--which-reads-make-a-rule-that-concludes-a-hypothesis-a-site-of-the-static-check) | Which reads make a rule that concludes a hypothesis a site of the static check | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
 | [Q-M1f.607](#q-m1f607--the-blind-enumerator-under-no-search) | The blind enumerator under no-search | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
 | [Q-M1f.608](#q-m1f608--a-states-open-facts-within-its-own-pass) | A state's open facts within its own pass | **defaulted 2026-11-20** (P1f.21's S1f.21.12, the build); review item 69 of part 2 |
@@ -650,6 +650,18 @@ user any corpus program it would refuse.
 **Built 2026-11-09** by S1f.5.18's
 T1f.5.18.3: both `g14` programs are refused at load, one line each, and no corpus program that answers is (W59's two
 rows).
+
+**A warning since 2026-11-20.** On the user's answer to P1f.21's review item 38 (*"forbid becomes a warning"*),
+read back and confirmed, S1f.21.17 (`24491e80`) made the refusal a `warning:` line, the program loaded, and added a
+run's line where a state holds such an activator.
+
+**Ruled 2026-11-24: in silence.** The user, on P1f.21's review item 82, whose runs showed the load's line naming
+`std.algebra.imply1`, a rule nothing activates, and firing on `(imply1 equivalence symmetric)`, which works:
+*"I think this warning is false by desing. We do use relations as arguments. And there could be any number of not
+activated rules if program imports something but not use. Any concerns?"*; and, asked back whether the line for an
+activator the program writes (Q-M1e2.18) and the run's go too: *"All three go (Recommended)"*. Such an activator
+activates nothing and nothing says so. The reading of which positions hold a relation's name stays, for Q-M1f.46's
+refusal and the relations of the program (Q-M1f.522). Built by P1f.21's S1f.21.25, planned.
 
 ### Q-M1f.2 — The 55 files the grammar refuses that today's parser accepts
 
@@ -11380,7 +11392,9 @@ the stand-in of it answers an empty $R$.
 The other reading: each line printed where it arises, the load's before the run.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 66](p1f.21_verdicts_as_rules/review/part-1/66-S1f.21.17-defaults/README.md).
+review item 66.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 66, of this and its siblings: *"I accept"*. The lines whose words it set, for an activator that binds a relation parameter to a fact, go by the user's ruling on item 82 ([Q-M1f.1](#q-m1f1--g-14-is-a-bad-conclusion-that-never-fires-refused), S1f.21.25); when a load's or a run's line is printed stands for every line.
 
 ### Q-M1f.581 — The regression rows of the two derived-activator witnesses, now flagged
 
@@ -11390,7 +11404,9 @@ The other reading: each line printed where it arises, the load's before the run.
 The other reading: the rows rewritten to what the programs print, which no suite may hold of a flagged program (Q-M1f.564).
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 66](p1f.21_verdicts_as_rules/review/part-1/66-S1f.21.17-defaults/README.md).
+review item 66.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 66, of this and its siblings: *"I accept"*.
 
 ### Q-M1f.582 — `nested-fact-activator.ein` states `(solve :no-search)`
 
@@ -11400,7 +11416,9 @@ The other reading: the rows rewritten to what the programs print, which no suite
 The other reading: the program left as written and marked slow in the corpus.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 66](p1f.21_verdicts_as_rules/review/part-1/66-S1f.21.17-defaults/README.md).
+review item 66.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 66, of this and its siblings: *"I accept"*.
 
 ### Q-M1f.583 — Where the fixtures that load now are kept
 
@@ -11410,7 +11428,9 @@ The other reading: the program left as written and marked slow in the corpus.
 The other reading: deleted, their subjects being held by tests.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 66](p1f.21_verdicts_as_rules/review/part-1/66-S1f.21.17-defaults/README.md).
+review item 66.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 66, of this and its siblings: *"I accept"*.
 
 ### Q-M1f.584 — How `std.core`'s rule prints under an import that renames it
 
@@ -11420,7 +11440,9 @@ The other reading: deleted, their subjects being held by tests.
 The other reading: always the full name, whatever the import.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 66](p1f.21_verdicts_as_rules/review/part-1/66-S1f.21.17-defaults/README.md).
+review item 66.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 66, of this and its siblings: *"I accept"*.
 
 ### Q-M1f.585 — Which programs and modules gain the contradiction's import
 
@@ -11429,7 +11451,9 @@ The other reading: always the full name, whatever the import.
 The other reading: a program left without it where it reads better as a theory with no contradiction; none was left so.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
+review item 67.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 67, of this and its siblings: *"I accept"*.
 
 ### Q-M1f.586 — An explanation reads through the contradiction's rules
 
@@ -11438,7 +11462,9 @@ The other reading: a program left without it where it reads better as a theory w
 The other reading: the module's rules named in an explanation.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
+review item 67.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 67, of this and its siblings: *"I accept"*.
 
 ### Q-M1f.587 — A rule that refutes a pair fires at once
 
@@ -11447,7 +11473,9 @@ The other reading: the module's rules named in an explanation.
 The other reading: such a rule waits its turn in the agenda, and a state can derive more before it ends.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
+review item 67.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 67, of this and its siblings: *"I accept"*.
 
 ### Q-M1f.588 — What a denial is, once the pair is a rule's
 
@@ -11456,7 +11484,9 @@ The other reading: such a rule waits its turn in the agenda, and a state can der
 The other reading: `(not F)` at root denies F whatever the program imports.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
+review item 67.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 67, of this and its siblings: *"I accept"*.
 
 ### Q-M1f.589 — The static check reads `not` as any relation
 
@@ -11465,7 +11495,9 @@ The other reading: `(not F)` at root denies F whatever the program imports.
 The other reading: the check keeps a negated side for each relation.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
+review item 67.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 67, of this and its siblings: *"I accept"*.
 
 ### Q-M1f.590 — A hypothesis rule is matched as it is reached
 
@@ -11474,7 +11506,9 @@ The other reading: the check keeps a negated side for each relation.
 The other reading: the look-ahead kept, read off the rules.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
+review item 67.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 67, of this and its siblings: *"I accept"*.
 
 ### Q-M1f.591 — The words of the surfaces stay
 
@@ -11483,7 +11517,9 @@ The other reading: the look-ahead kept, read off the rules.
 The other reading: words that name the rule that ended the state.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
+review item 67.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 67, of this and its siblings: *"I accept"*.
 
 ### Q-M1f.592 — The register's rows the change answers
 
@@ -11492,7 +11528,9 @@ The other reading: words that name the rule that ended the state.
 No other reading.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
+review item 67.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 67, of this and its siblings: *"I accept"*.
 
 ### Q-M1f.593 — `not` is a name everywhere but at a form's head
 
@@ -11501,7 +11539,9 @@ No other reading.
 The other reading: `not` stays reserved and the library writes it quoted, which drew it as two nodes in a knowledge base's drawing.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
+review item 67.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 67, of this and its siblings: *"I accept"*.
 
 ### Q-M1f.594 — The witnesses of the count check, and a relation declared at several counts
 
@@ -11510,7 +11550,9 @@ The other reading: `not` stays reserved and the library writes it quoted, which 
 The other reading: the seven rows removed with the refusal.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 67](p1f.21_verdicts_as_rules/review/part-1/67-S1f.21.11-defaults/README.md).
+review item 67.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 67, of this and its siblings: *"I accept"*.
 
 ### Q-M1f.595 — An `open` fact of a relation the white list leaves out
 
@@ -11579,7 +11621,9 @@ question after the build, and the review item stays in the bundle until then.
 The other reading: a file for every id.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 68](p1f.21_verdicts_as_rules/review/part-1/68-S1f.21.2-defaults/README.md).
+review item 68.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 68, of this and its siblings: *"I accept"*.
 
 ### Q-M1f.602 — The reasoning pages' notation for the engine's word
 
@@ -11588,7 +11632,9 @@ The other reading: a file for every id.
 No other reading was weighed; the notation is the pages' and can be renamed.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 68](p1f.21_verdicts_as_rules/review/part-1/68-S1f.21.2-defaults/README.md).
+review item 68.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 68, of this and its siblings: *"I accept"*.
 
 ### Q-M1f.603 — The constraints page's running program imports the contradiction
 
@@ -11597,7 +11643,9 @@ No other reading was weighed; the notation is the pages' and can be renamed.
 The other reading: the page's program left without the import, and its answer rewritten to the one with no contradiction.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 68](p1f.21_verdicts_as_rules/review/part-1/68-S1f.21.2-defaults/README.md).
+review item 68.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 68, of this and its siblings: *"I accept"*.
 
 ### Q-M1f.604 — How the words a module reads and does not declare are listed
 
@@ -11606,7 +11654,9 @@ The other reading: the page's program left without the import, and its answer re
 The other reading: lists written by reading the modules.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 68](p1f.21_verdicts_as_rules/review/part-1/68-S1f.21.2-defaults/README.md).
+review item 68.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 68, of this and its siblings: *"I accept"*.
 
 ### Q-M1f.605 — Sentences of the second part's pages changed by the first part's
 
@@ -11615,7 +11665,9 @@ The other reading: lists written by reading the modules.
 The other reading: left untrue until the second part's pages are written.
 
 **Default taken**, under the user's word to run the phase on defaults; the user reviews it in
-[review item 68](p1f.21_verdicts_as_rules/review/part-1/68-S1f.21.2-defaults/README.md).
+review item 68.
+
+**Accepted 2026-11-24.** The user, in P1f.21's part 1 answers file, item 68, of this and its siblings: *"I accept"*.
 
 ### Q-M1f.606 — Which reads make a rule that concludes a hypothesis a site of the static check
 

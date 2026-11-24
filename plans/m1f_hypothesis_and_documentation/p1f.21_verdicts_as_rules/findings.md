@@ -32,9 +32,9 @@ without a path is in [`design.md`](design.md), whole.
 | [V-19](#v-19--a-saved-files-first-line-speaks-of-the-modules-it-imports) | a saved file's first line says *every module it imports*, and it carries `std.core` too | S1f.21.10 | open |
 | [V-20](#v-20--a-page-shows-a-trace-that-now-has-a-step-more) | a page shows a dead root's trace ending at *Derives `false`*, and a step follows now | S1f.21.10 | **fixed** by S1f.21.2 (its record) |
 | [V-21](#v-21--dependent-hypotheses-a-candidate-proposed-above-root) | dependent hypotheses: once a rule concludes `(open H)`, a candidate can be proposed above root, and the search space is a lattice that is no cube | the user, 2026-11-19 | parked on the user's word: not this phase's; M1n's at the close |
-| [V-22](#v-22--a-program-with-no-candidate-is-never-flagged) | a program with no candidate is never flagged, whatever its rules read by `absent`: `W8/fifo-gap-root` answers wrong at root, unwarned | S1f.21.15 | open; **the user's call**, review item 79 of part 1 |
+| [V-22](#v-22--a-program-with-no-candidate-is-never-flagged) | a program with no candidate is never flagged, whatever its rules read by `absent`: `W8/fifo-gap-root` answers wrong at root, unwarned | S1f.21.15 | **ruled 2026-11-24 by the user: (a)**, review item 79 of part 1: it stays a row of the register, M1n's to fix |
 | [V-23](#v-23--regression-rows-that-went-with-a-flagged-witness-and-record-another-defect) | regression rows that went because their witness is flagged, though the defect each records is not about monotonicity | S1f.21.15 | open; a monotone witness for each, or left |
-| [V-24](#v-24--the-read-outs-examples-page-holds-flagged-programs-read-outs-to-the-binary) | the read-out's examples page holds ten read-outs of five flagged programs to the binary | S1f.21.15 | open; **the user's call**, review item 80 of part 1 |
+| [V-24](#v-24--the-read-outs-examples-page-holds-flagged-programs-read-outs-to-the-binary) | the read-out's examples page holds ten read-outs of five flagged programs to the binary | S1f.21.15 | **ruled 2026-11-24 by the user: (a), left**, review item 80 of part 1 |
 | [V-25](#v-25--ein-render-h-space-prints-no-warning-on-stderr) | `ein render h-space` prints no warning on stderr for a flagged program | S1f.21.15 | open; with S1f.21.11's surfaces |
 | [V-26](#v-26--three-censuses-and-two-measurement-examples-still-describe-the-refusal) | the hole, node and taint censuses and two measurement examples still describe the refusal | S1f.21.15 | open; re-taken at the phase's close |
 | [V-27](#v-27--a-test-may-still-pin-what-a-flagged-program-written-inline-answers) | a test may still pin what a flagged program written inline in it answers: those were not swept | S1f.21.15 | open |
@@ -42,9 +42,9 @@ without a path is in [`design.md`](design.md), whole.
 | [V-29](#v-29--the-static-check-reads-a-rule-of-stddebts-nothing-asks-for) | the static check lists two sites of `std.debts` in three flagged programs that do not ask for the module's rules | the merge of `std.debts` | open |
 | [V-30](#v-30--a-duplicated-declaration-loads-once-an-import-is-appended) | `examples/broken/load/relation_duplicate.ein` loads once any import is appended | the merge of `std.debts` | **answered** by Q-M1f.447 as built (S1f.21.11): a declaration twice loads, wherever it is written |
 | [V-31](#v-31--the-module-tables-have-no-row-for-stdcore) | the module tables of `stdlib/README.md` and the root `README.md` have no row for `std.core` | the merge of `std.debts` | **fixed** by S1f.21.2: both tables have the row |
-| [V-32](#v-32--the-loads-warning-is-one-line-a-site) | the load's warning for an activator a rule could derive is one line a site: seventeen lines for one program that imports `std.algebra` | S1f.21.17 | open; **the user's call**, review item 81 of part 1 |
+| [V-32](#v-32--the-loads-warning-is-one-line-a-site) | the load's warning for an activator a rule could derive is one line a site: seventeen lines for one program that imports `std.algebra` | S1f.21.17 | **ruled 2026-11-24 by the user: (a), one line a site**, review item 81 of part 1; the lines it counts go by the ruling on V-34 (S1f.21.25) |
 | [V-33](#v-33--the-json-summary-carries-no-warning-of-the-load-or-the-run) | `--json-summary` carries none of the load's or the run's `warning:` lines | S1f.21.17 | open |
-| [V-34](#v-34--the-milestones-l-109-program-loads) | the milestone's L-109 program, *zebra2* with `about-1` and `(about-1 symmetric)`, loads now under one warning | S1f.21.17 | open; **the user's call**, review item 82 of part 1 |
+| [V-34](#v-34--the-milestones-l-109-program-loads) | the milestone's L-109 program, *zebra2* with `about-1` and `(about-1 symmetric)`, loads now under one warning | S1f.21.17 | **ruled 2026-11-24 by the user**, review item 82 of part 1: the warning is false by design and goes, with the written activator's and the run's lines (S1f.21.25, planned); the milestone's L-109 closed |
 | [V-35](#v-35--the-renaming-test-does-not-rename-false-and-not) | `renaming_invariance.rs` does not rename `false` and `not`: the kernel still reads both in four places | S1f.21.11 | open |
 | [V-36](#v-36--the-index-of-negations-has-no-reader-that-decides) | `Kb::is_negated` and `Kb::negated` drive no decision any more | S1f.21.11 | **fixed** by S1f.21.21: the set of negated facts and the dump's rows that printed it are gone; a pair's probe asks the fact store |
 | [V-37](#v-37--every-declared-relation-activates-clash-0-too) | every declared relation activates `clash-0` as well as the rule of its count | S1f.21.11 | **ruled by the user 2026-11-20** (Q-M1f.658): the instance stays, *"this cost is absolutely acceptable"* |
@@ -644,6 +644,10 @@ its answer is not to be trusted). **The user's call**: (a) it stays a row, a wro
 claims, M1n's to fix; (b) it goes, the program counted non-monotone, and what is owed is a detection that warns of
 it, M1n's too.
 
+**Ruled 2026-11-24 by the user: (a)**, on review item 79 of part 1: *"(a) for now we don't claim we 100% detect all
+types of non-monotone programs in all possible cases, ther is  M1n for that"*. The row stays in the register, a wrong
+answer of a program the engine claims, M1n's to fix.
+
 ## V-23 — Regression rows that went with a flagged witness, and record another defect
 
 **Found** by S1f.21.15. Of the 11 rows of `corpus/regressions.toml` removed because their witness is a flagged
@@ -660,6 +664,8 @@ it by a gate step and a test. Ten of its read-outs are of five flagged programs.
 rows are shown, and a row only a flagged program prints has no other example; the page calls no answer right. It is
 all the same a golden of what a flagged program prints. **The user's call**: left, the default; or those blocks
 shown and not held; or one flagged example kept, for the warning, and the rest replaced by monotone programs.
+
+**Ruled 2026-11-24 by the user: (a), left**, on review item 80 of part 1: *"(a)"*.
 
 ## V-25 — `ein render h-space` prints no warning on stderr
 
@@ -719,6 +725,10 @@ warning it prints them all. A program that names a rule of a copier's count besi
 seventeen lines, one a generic rule of the module (`converse`, `imply2-fwd`, …). Each line is true. **Open; the
 user's call**: whether a module's lines are gathered into one.
 
+**Ruled 2026-11-24 by the user: (a)**, on review item 81 of part 1: *"(a)"*, one line a site, for whatever lines a
+load prints. The lines this finding counts go by the same day's ruling on V-34: every one of them names a rule with
+no plan (`std.algebra`'s seventeen and `std.negation.eliminate-2`), the case that ruling calls false by design.
+
 ## V-33 — The JSON summary carries no warning of the load or the run
 
 **Found** by S1f.21.17. `--json-summary` has `monotonicity.warning` for a flagged program and nothing for the
@@ -729,7 +739,17 @@ user's call**: whether a module's lines are gathered into one.
 **Found** by S1f.21.17. `examples/zebra2.ein` with `about-1`, `(about-1 symmetric)` and its query appended, the
 program of the milestone's finding L-109 (*the user's call*), loads now: `ein saturate` exits 0 under one warning
 that names `std.algebra.imply1`, and root derives `(in-slice-1 symmetric next-to)`. The refusal L-109 met is gone;
-whether a slice is had by such a rule is still the user's. **Open; the user's call, with L-109.**
+whether a slice is had by such a rule was still the user's.
+
+**Ruled 2026-11-24 by the user**, on review item 82 of part 1, in the conversation. The item's runs (its page,
+last at `0f7190b9`) showed the warning naming `std.algebra.imply1`, which nothing in the program activates, and
+firing on `imply1`'s own use, `(imply1 equivalence symmetric)`, which works. The user: *"I think this warning is
+false by desing. We do use relations as arguments. And there could be any number of not activated rules if program
+imports something but not use. Any concerns?"*; and, asked back whether the lines for an activator the program
+writes and one a state holds go too, *"All three go (Recommended)"*. Such an activator activates nothing and nothing
+says so; the reading of the positions stays for Q-M1f.46 and the relations of the program. Built by
+[S1f.21.25](s1f.21.25_an_activator_that_names_no_relation_in_silence.md), planned. The milestone's L-109 is closed
+by it.
 
 ## V-35 — The renaming test does not rename `false` and `not`
 

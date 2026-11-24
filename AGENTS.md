@@ -391,7 +391,10 @@ paragraph, no register count, no measurement (the user's rule).
   short in the binary, and S1f.21.23 reads a resumed state's delta off its
   own layers; S1f.21.19 has put the review items on the built engine, and
   S1f.21.24 has fixed the wrong answer those runs found, a hypothesis
-  rule's `absent` premises. Every stage planned is done. The part's pages,
+  rule's `absent` premises. Every stage planned then is done. The user has
+  answered every item of the first part's review; the ruling on item 82,
+  an activator that names no relation activating nothing in silence, is
+  S1f.21.25, planned and not started. The part's pages,
   S1f.21.14, are written. Q-M1f.566 to
   Q-M1f.579 are ruled and the second part's builds are planned on them,
   S1f.21.12 and S1f.21.18. **On the user's word every stage left is run to

@@ -2,23 +2,14 @@
 
 [← the bundle](../README.md) · [← the phase](../../README.md) · [your answers](ANSWERS.md)
 
-**Four findings are yours to call: 79, 80, 81 and 82.** And three items are open for your review after the build,
-as you asked, 66, 67 and 68: the defaults S1f.21.17, S1f.21.11 and S1f.21.2 took. The part is built and its pages are written. The part's
-own questions are all ruled: you answered its six items on 2026-11-19, each answer filed in your words under its
-question in [the ledger](../../../open_questions.md) and in
-[the phase's README](../../README.md#the-rulings-of-the-answers-file).
-
-## What is left for you
-
-| # | what | the default |
-|---|---|---|
-| [**66**](66-S1f.21.17-defaults/README.md) | the five defaults S1f.21.17 took: the warning's words and when it prints; two regression rows removed; `nested-fact-activator.ein` given `(solve :no-search)`; where three fixtures moved; how `std.core`'s rule prints under a renaming import | each as built |
-| [**67**](67-S1f.21.11-defaults/README.md) | the ten defaults S1f.21.11 took: which programs and modules gain the contradiction's import; how an explanation reads; when a rule that refutes a pair fires; what a denial is; `not` as a name; the witnesses of the count check | each as built |
-| [**68**](68-S1f.21.2-defaults/README.md) | the five defaults S1f.21.2 took, writing the pages: which readings became decision files; the reasoning pages' notation; the constraints page's program importing the contradiction; five sentences of the second part's pages changed | each as written |
-| [**79**](79-a-program-with-no-candidate-is-never-flagged/README.md) | **a program with no candidate is never flagged** (V-22), a finding that is yours to call | **(a)** It stays a row of the register; **(b)** It goes | (a) |
-| [**80**](80-the-examples-page-holds-flagged-programs-read-outs/README.md) | **the read-out's examples page holds flagged programs' read-outs** (V-24), a finding that is yours to call | **(a)** Left; **(b)** Those blocks are shown and not held to the binary; **(c)** One flagged example is kept, for the warning, and the rest are replaced by monotone programs | (a) |
-| [**81**](81-the-loads-warning-is-one-line-a-site/README.md) | **the load's warning is one line a site** (V-32), a finding that is yours to call | **(a)** As built; **(b)** A module's lines are gathered into one, which names the module and counts its rules | (a) |
-| [**82**](82-a-slice-by-a-rule-with-symmetric/README.md) | **a slice by a rule, activated with `symmetric`, loads now** (V-34), a finding that is yours to call | **(a)** It is; **(b)** It is not what a slice should be | (a) |
+**No item of this part is open.** You answered the last seven on 2026-11-24: the defaults of S1f.21.17, S1f.21.11
+and S1f.21.2 (66, 67, 68) accepted, and the four findings (79 to 82) ruled, item 82 in the conversation. Each answer
+is filed in your words in [the phase's README](../../README.md#the-answers-to-part-1s-items-66-to-82) and under its
+question in [the ledger](../../../open_questions.md) or its finding in [`findings.md`](../../findings.md). Item 82's
+ruling, an activator that names no relation activating nothing in silence, is built by
+[S1f.21.25](../../s1f.21.25_an_activator_that_names_no_relation_in_silence.md), planned, not started. The part's own
+questions, its six items of 2026-11-19, were ruled before, each answer filed in your words under its question in
+[the ledger](../../../open_questions.md) and in [the phase's README](../../README.md#the-rulings-of-the-answers-file).
 
 ## The three readings, confirmed
 
@@ -41,10 +32,17 @@ Three things your answers did not say in so many words were said back to you, an
 | 40 | Q-M1f.552 to .556 | as built |
 | 41 | Q-M1f.562, Q-M1f.563 | `(import std.core)` works as a duplicated import; `$EIN_STDLIB` may replace `std.core`, and a library there without one is an error that says so; no backward compatibility until you ask |
 | 42 | the findings | each disposition as proposed |
+| 66 | Q-M1f.580 to .584 | accepted, each as built |
+| 67 | Q-M1f.585 to .594 | accepted, each as built |
+| 68 | Q-M1f.601 to .605 | accepted, each as written |
+| 79 | V-22 | (a): `W8/fifo-gap-root` stays a row of the register, M1n's to fix |
+| 80 | V-24 | (a): the examples page keeps the flagged programs' read-outs |
+| 81 | V-32 | (a): one line a site, for whatever lines a load prints |
+| 82 | V-34, L-109 | the warning is false by design: an activator that names no relation activates nothing and nothing says so, the written activator's and the run's lines with it (S1f.21.25) |
 
 ## Out of the bundle
 
-Each item's page and programs are in `git log`: items 35, 36, 38, 40, 41 and 42, last at `bedbfbd4`; item
+Each item's page and programs are in `git log`: items 66, 67, 68, 79, 80, 81 and 82, last at `0f7190b9`; items 35, 36, 38, 40, 41 and 42, last at `bedbfbd4`; item
 33, the names (Q-M1f.399, Q-M1f.550), last at `984137bf`; item 37, *forbid* once the contradiction is rules
 (Q-M1f.558), ruled against both its options by Q-M1f.564; item 43, one way to say *must* and one to say *may*
 (Q-M1f.561), declined, its analysis and programs in [`one_way_each.md`](../../one_way_each.md).
