@@ -149,7 +149,7 @@ parked set and the events `park`, `admit` and `retire` ([`05-events.md`](../05-e
 | every name of the program is a guessable atom | `ein-infer/tests/alive_invariant.rs`: `every_name_of_the_program_is_a_candidate_object` |
 | no run reaches a name the program does not have, against either baseline | `ein-infer/tests/alive_invariant.rs`: `no_run_reaches_a_name_the_program_does_not_have` |
 | a program and its twin that writes the same name in a fact answer one R | `ein-infer/tests/alive_invariant.rs`: `the_pair_answers_one_region` |
-| a parameter in a relation's place bound to a fact, written or derivable, activates nothing, and the load and the run say so | `ein-cli/tests/cli_semantics.rs`: `a_derived_activator_binding_a_relation_parameter_to_a_fact_is_warned_of_at_load`; `ein-infer/tests/compile_semantics.rs`: `a_relation_parameter_a_rule_binds_to_a_nested_fact_activates_nothing` |
+| a parameter in a relation's place bound to a fact, written or derivable, activates nothing, and nothing says so | `ein-cli/tests/cli_semantics.rs`: `an_activator_binding_a_relation_parameter_to_a_fact_activates_nothing_in_silence`; `ein-infer/tests/compile_semantics.rs`: `a_relation_parameter_a_rule_binds_to_a_nested_fact_activates_nothing` |
 | the search interns no name the load did not | `ein-infer/tests/interning.rs`: `the_search_interns_no_names`, `a_rule_only_constant_is_interned_at_load` |
 | a dunder is a name of the program where it is written as an argument, and not guessable | `ein-infer/tests/dunder_objects.rs`: `the_programs_names_hold_a_dunder_where_it_is_written_as_a_value`, `a_dunder_written_as_a_value_is_no_object` |
 

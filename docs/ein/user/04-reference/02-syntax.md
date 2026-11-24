@@ -459,8 +459,8 @@ either is refused at the parse
 
 **An activator binds each parameter to its argument, any object**: an atom, or a nested fact, `(act (f a))` binding
 `?y` to `(f a)`, which the rule's patterns match and its conclusions write as they would an atom. A parameter that
-stands for a relation, `?rel` above, binds an atom: an activator that binds one to a fact activates nothing, and the
-load says so in a `warning:`, where the activator is written and where a rule could derive it
+stands for a relation, `?rel` above, binds an atom: an activator that binds one to a fact activates nothing, and
+nothing says so, whether it is written or a rule derives it
 ([Q-M1f.1](../../../decisions/language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md)). One that can be
 bound to `eq` heads premises and conclusions of two arguments only
 ([Q-M1f.46](../../../decisions/language/Q-M1f.46-a-relation-parameter-that-can-hold-eq-heads-only.md)): `(?R ?x)`
@@ -490,7 +490,7 @@ refuses,
 one line naming the rule and the clause ([`07-diagnostics.md`](07-diagnostics.md), *a rule shape that reads nothing*): a
 name or a variable written where a premise goes; and a relation written as a variable no parameter binds, at the top
 level or inside a pattern, in a `:match` or an `:assert`. An activator that binds a relation parameter to a nested
-fact loads, with a `warning:`, and activates nothing
+fact loads, and activates nothing in silence
 ([Q-M1f.1](../../../decisions/language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md)). A string, a bare
 `_` and a keyword pair anywhere in a premise are refused at the parse.
 

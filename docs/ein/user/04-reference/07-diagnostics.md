@@ -208,11 +208,13 @@ view refuses what the loader refuses
 **A program's answer is never an error.** A refuted claim exits 1, every answer exits 0, and `ein test`'s codes are
 its own: [`05-cli.md`](05-cli.md) has the table, and [`08-read-out.md`](08-read-out.md) the lines a run prints.
 
-**What the load warns of, it loads.** An activator that binds a relation parameter to a fact names no relation and
-activates nothing; a program that writes one, or in which a rule could derive one, is not refused. Every command
-that loads it prints a `warning:` line for each on stderr when its run of the program ends, and one more for each
-such activator a state of the run holds ([§ 2.9](#29-a-rule-shape-that-reads-nothing)). No answer and no exit code
-moves.
+**What the load notes, it loads.** A load's `note:` line, a hypothesis declaration that proposes or filters nothing
+([§ 2.26](#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)), is printed when the command's run
+of the program ends, after a flagged program's `WARNING` line
+([Q-M1f.580](../../../decisions/diagnostics/Q-M1f.580-a-loads-and-a-runs-warnings-are-printed-when.md)), and moves
+no answer and no exit code. An activator that binds a relation parameter to a fact names no relation and activates
+nothing, and nothing says so: a program that writes one, or in which a rule could derive one, loads in silence
+([§ 2.9](#29-a-rule-shape-that-reads-nothing)).
 
 ### 2.1 A query's, a solve's and a claim's refusals
 
@@ -373,9 +375,9 @@ has, and there is no refusal to meet. A rule brings in no name the program does 
 ([Q-M1e.21](../../../decisions/hypotheses/Q-M1e.21-a-rule-brings-in-no-name.md)).
 
 A parameter that stands for a relation bound to a **fact**, `(mirror (a b))`, names none: a relation is an atom, so
-the activator activates nothing, and the load says so in [§ 2.9](#29-a-rule-shape-that-reads-nothing)'s warning,
-where the activator is written and where a rule could derive it. An activator of the wrong arity activates nothing
-and is not checked.
+the activator activates nothing, and nothing says so ([§ 2.9](#29-a-rule-shape-that-reads-nothing)), where the
+activator is written and where a rule could derive it. An activator of the wrong arity activates nothing and is not
+checked.
 
 ### 2.7 The module every program gets cannot be read
 
@@ -434,47 +436,40 @@ or an obligation among them, one line per slot, `; `-joined with every other loa
 `unbound_head.ein` in [`examples/broken/load/`](../../../../examples/broken/load/) is the witness of the relation
 variable no parameter binds.
 
-**A relation parameter bound to a fact reads nothing, and the load says so**
+**A relation parameter bound to a fact reads nothing, and nothing says so**
 ([Q-M1f.1](../../../decisions/language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md)). An activator that
 binds a parameter standing for a relation to a fact names no relation: a state holds it as the fact it is, and it
-activates nothing, no plan of its rule compiled for it. A program in which one is written, or in which a rule could
-derive one, loads; every command that loads it prints, on stderr, one line per site, `warning: <file>: ` and the
-line below, and where a state of its run holds such an activator, one line placed at the rule's `:match`, behind
-`warning: ` alone. They come when the command's run of the program ends, after a flagged program's `WARNING` line,
-and no answer and no exit code moves:
-
-| what the program holds | the line |
-|---|---|
-| an activator, a fact or a literal in an `:assert`, that binds a relation parameter to a nested fact | `rule '<r>': its parameter ?<p> names a relation, and (r (a b)) binds it to the fact (a b) — a relation is named by a symbol, not a fact, so such an activator activates nothing` |
-| the same activator, which a rule could derive through a variable, whether or not a run derives it | `rule '<d>': its :assert writes (r ?f), whose ?f is rule '<r>''s parameter ?<p>, which names a relation, and (item ?f) can bind ?f to a fact, as an argument of the declared relation item — a relation is named by a symbol, not a fact, so such an activator activates nothing` (`… as an argument of (g ?f)` inside a fact pattern, `… of the relation ?S names` under a parameter's relation; `… where its :match holds through <arm>` where some disjuncts of an `(or …)` bind it where a name is held) |
-| a fact, or a literal fact in an `:assert`, written where a relation name is passed on | `the fact (marker (a b)) writes (a b) as ?m of (marker ?m), which rule 'fan' passes to rule '<r>''s parameter ?<p>, which names a relation — a relation is named by a symbol, not a fact, so such an activator activates nothing` (`rule '<d>': its :assert writes (marker (a b)), whose (a b) is ?m of …` for the literal) |
-| a state of the run that holds such an activator | `<file>:<line>:<col>: rule '<r>': its activator (r (a b)) binds its parameter ?<p>, which names a relation, to the fact (a b), and activates nothing — a relation is named by a symbol, not a fact` |
-
-*Could* is read off the program
-([Q-M1f.41](../../../decisions/language/Q-M1f.41-a-position-holds-a-fact-unless-the-program.md)): a rule's parameter
-that heads a form holds relation names, and so does every argument of `(relation …)`; an argument of a **declared**
-relation holds any object, a fact among them, as does an argument inside a fact pattern and one of a relation a
-parameter names; and an argument of an **undeclared** relation, a marker such as `(bijective color-loc)`, or a rule's
-own parameter, holds relation names where the program passes a variable bound there on to a position that does, to
-a fixpoint, so the stdlib's fan-outs load with no warning and a fact written there is warned of. A conclusion written
-`(?T …)` is read as writing into every rule of its arity whose name the program writes as an argument
-([Q-M1f.42](../../../decisions/language/Q-M1f.42-a-conclusion-whose-relation-is-a-parameter.md)). The witnesses are
+activates nothing, no plan of its rule compiled for it, as an activator of another count activates nothing
+([Q-M1f.115](../../../decisions/language/Q-M1f.115-an-activator-is-a-fact-of-its-rules-name-and-one.md)). A program
+in which one is written, or in which a rule could derive one, loads, and no command prints a line of it, at the load
+or at a run; no answer and no exit code moves. The witnesses are
 [`examples/features/19_derived_activator.ein`](../../../../examples/features/19_derived_activator.ein), whose root
 derives `(r (a b))`, and `20_derived_activator_never.ein` beside it, where no run derives one, and
 [`examples/ein-bugs/wrong-answers/nested-fact-activator.ein`](../../../../examples/ein-bugs/wrong-answers/nested-fact-activator.ein),
-which writes it. On the first, stderr reads:
+which writes it. On the first, stderr holds the static check's line alone:
 
 <!-- output -->
 ```text
 $ ein solve examples/features/19_derived_activator.ein 2>&1 >/dev/null
 WARNING: examples/features/19_derived_activator.ein: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)
-warning: examples/features/19_derived_activator.ein: rule 'mk': its :assert writes (r ?f), whose ?f is rule 'r''s parameter ?R, which names a relation, and (item ?f) can bind ?f to a fact, as an argument of the declared relation item — a relation is named by a symbol, not a fact, so such an activator activates nothing
-warning: examples/features/19_derived_activator.ein:24:11: rule 'r': its activator (r (a b)) binds its parameter ?R, which names a relation, to the fact (a b), and activates nothing — a relation is named by a symbol, not a fact
 ```
 
 The static check flags that program, a commitment deriving an activator of `r` that root has no plan of, so nothing
 is claimed of its answer
 ([Q-M1f.564](../../../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)).
+
+**Which positions hold relation names** is read off the program
+([Q-M1f.41](../../../decisions/language/Q-M1f.41-a-position-holds-a-fact-unless-the-program.md)): a rule's parameter
+that heads a form holds relation names, and so does every argument of `(relation …)`; an argument of a **declared**
+relation holds any object, a fact among them, as does an argument inside a fact pattern and one of a relation a
+parameter names; and an argument of an **undeclared** relation, a marker such as `(bijective color-loc)`, or a rule's
+own parameter, holds relation names where the program passes a variable bound there on to a position that does, to
+a fixpoint. A conclusion written `(?T …)` is read as writing into every rule of its arity whose name the program
+writes as an argument
+([Q-M1f.42](../../../decisions/language/Q-M1f.42-a-conclusion-whose-relation-is-a-parameter.md)). The reading prints
+nothing of its own: it is what [§ 2.14](#214-eq-at-another-arity) reads for a parameter that can hold `eq`, and
+what makes a name passed there a relation of the program, which a list and a claim may name
+([§ 2.20](#220-a-solve--list-names-what-the-program-has)).
 
 **A guard's variable needs no binder before it.** A guard waits for the relation premise that binds its variable, so
 its place among the relation premises does not change what the premise means; one whose variable nothing else binds

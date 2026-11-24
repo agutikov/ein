@@ -9,10 +9,8 @@ parameter and is applied under an activator of its own, `(clash-2 seats)`, `(eli
 chooses the relations a rule reaches. Neither module declares a relation or states a fact. `std.logic` is not one of
 them.
 
-**Why.** Apart, each loads wherever the program does: the elimination concludes a fact whose relation is its
-parameter, which the load warns of beside a program that names a rule of that count of parameters
-([Q-M1f.1](../language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md)), and the contradiction is wanted
-where the elimination is not. A declaration an import brings is not inert, its labels being names of the importing
+**Why.** Apart, a program imports the one it means: the elimination is a step of one logic, and the contradiction
+is wanted where the elimination is not. A declaration an import brings is not inert, its labels being names of the importing
 program, so a module that states no declaration changes nothing a program does not ask of it.
 
 **Held by.** `stdlib/negation.ein` and `stdlib/contradiction.ein`; the programs under `tests/stdlib/negation/` and

@@ -487,8 +487,8 @@ At the parse or at load, on every command, one line each ([diagnostics](../04-re
 - a premise that reads nothing: a name, a variable or a string where a premise goes;
 - a rule that states both `:assert` and `:ein`, and a word after `:ein` that is not the engine's.
 
-An activator that would bind a relation parameter to a fact is no refusal: the program loads, the load says so in a
-`warning:`, and the activator activates nothing
+An activator that would bind a relation parameter to a fact is no refusal: the program loads, and the activator
+activates nothing, as one of another count of arguments does; nothing says so
 ([Q-M1f.1](../../../decisions/language/Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md)).
 
 ## See also

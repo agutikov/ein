@@ -259,7 +259,7 @@ The page: [the rules](../../reasoning/01-static-ir/02-rewriting-rules.md).
 | the instance of a conclusion | `build_conclusion` in `ein-infer/src/firing.rs` |
 | a rule applied under an activator | `ein_infer::compile::compile_rule`, to a plan per activator, cached under `PlanKey` ([`03-design/05-matcher.md`](../03-design/05-matcher.md)) |
 | a conclusion's variable bound by every way of matching | `refuse_unbound_conclusions` in `ein-ir/src/from_ir.rs` |
-| a variable in a relation's place is a parameter | `validate_relation_parameters` in `ein-ir/src/from_ir.rs` |
+| a variable in a relation's place is a parameter | `refuse_no_fact_holds` in `ein-ir/src/from_ir.rs` |
 | the names of a program | `intern_program_names` in `ein-ir/src/from_ir.rs`; `ein_infer::invariant::program_names` |
 | the structural rules of the standard library | `domain-elimination` and `range-elimination` in `stdlib/bijection.ein`; `slot-elimination` and `slot-fill` in `stdlib/slots.ein` |
 | a rule drawn as its match and its conclusion | `ein-render/src/rules.rs` |
@@ -286,7 +286,7 @@ out, a firing, is [saturation and negation](02-saturation-and-negation.md#1-firi
 | a rule with parameters and no activator has no application, and an activator applies it to the facts of the relation it names and of no other | `ein-infer/tests/rule_semantics.rs`: `a_parametrised_rule_with_no_activator_is_dormant` |
 | a rule with no parameters matches an empty pattern once, and once per activator with parameters | `ein-infer/tests/rule_semantics.rs`: `an_empty_match_fires_once_or_once_per_activator` |
 | an activator gives a parameter a nested fact | `ein-infer/tests/compile_semantics.rs`: `a_value_parameter_an_activator_binds_to_a_nested_fact_is_bound` |
-| a parameter in a relation's place bound to a fact, written or derivable, activates nothing, and the load and the run say so | `ein-cli/tests/cli_semantics.rs`: `a_derived_activator_binding_a_relation_parameter_to_a_fact_is_warned_of_at_load`; `ein-infer/tests/compile_semantics.rs`: `a_relation_parameter_a_rule_binds_to_a_nested_fact_activates_nothing` |
+| a parameter in a relation's place bound to a fact, written or derivable, activates nothing, and nothing says so | `ein-cli/tests/cli_semantics.rs`: `an_activator_binding_a_relation_parameter_to_a_fact_activates_nothing_in_silence`; `ein-infer/tests/compile_semantics.rs`: `a_relation_parameter_a_rule_binds_to_a_nested_fact_activates_nothing` |
 | a rule name declared twice is refused at load | `ein-ir/tests/load_semantics.rs`: `the_load_negative_fixtures_are_byte_identical`, over `examples/broken/load/rule_duplicate_name.ein` and `hrule_duplicate_name.ein`, two rules that conclude a hypothesis under one name |
 | `domain-elimination` concludes the last object left, and nothing while two survive | `ein-infer/tests/stdlib_semantics.rs`: `domain_elimination_forces_the_last_surviving_value`, `range_elimination_forces_the_last_surviving_object`, `domain_elimination_says_nothing_while_two_values_survive` |
 | a declaration is stored as facts of `relation` | `ein-infer/tests/compile_semantics.rs`: `a_bare_declaration_is_declared_with_an_empty_signature_and_stores_one_fact` |

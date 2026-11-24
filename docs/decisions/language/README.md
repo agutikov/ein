@@ -26,7 +26,7 @@ macros, and the shapes the parser and the loader refuse.
 - [Q-M1e2.28](Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md) — Each form takes a closed list of keywords
 - [Q-M1e2.36](Q-M1e2.36-an-empty-match-is-true-and-fires-once.md) — An empty `:match` is true and fires once
 - [Q-M1e2.37](Q-M1e2.37-a-conclusions-variable-is-bound-by-every-way.md) — A conclusion's variable is bound by every way of satisfying the `:match`
-- [Q-M1f.1](Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md) — A rule that could derive an activator binding a relation parameter to a fact is warned of at load, and such an activator activates nothing
+- [Q-M1f.1](Q-M1f.1-a-rule-that-could-derive-an-activator-binding.md) — A rule that could derive an activator binding a relation parameter to a fact loads, and such an activator activates nothing in silence
 - [Q-M1f.7](Q-M1f.7-the-dunder-is-never-bound-and-the-writeback.md) — The dunder is never bound, and the writeback names never written
 - [Q-M1f.11](Q-M1f.11-a-template-may-not-refer-to-a-variable-whose.md) — A template may not refer to a variable whose name holds `}`
 - [Q-M1f.30](Q-M1f.30-a-guard-argument-holds-no-variable-inside-a-fact.md) — A guard argument holds no variable inside a fact
