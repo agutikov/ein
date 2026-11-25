@@ -433,14 +433,12 @@ fn the_librarys_two_names_are_bound_by_a_relation_and_a_rule() {
 /// **A `std.*` module may import only `std.*` modules**, and the refusal is
 /// the same in all three tiers.
 ///
-/// `Resolver::locate` derives a module's identity — and the `base_dir` for its
-/// *own* imports — from `std::fs::canonicalize(&display)`. Under the embedded
-/// root `display` is `<embedded>/x.ein`, which is not a path, so the
-/// canonicalisation fails silently and `base_dir` comes back `None`. A stdlib
-/// module with a file-relative import therefore resolves under a checkout and
-/// under `$EIN_STDLIB`, and fails **only** under the embedded copy — that is,
-/// only in an installed binary, and never in this harness, which always sets
-/// the override.
+/// A module's file-relative imports are found from a directory on disk.
+/// Under the embedded root a module is `<embedded>/x.ein`, which is no path,
+/// so a stdlib module with a file-relative import would resolve under a
+/// checkout and under `$EIN_STDLIB`, and fail **only** under the embedded copy
+/// — that is, only in an installed binary, and never in this harness, which
+/// always sets the override.
 ///
 /// Refusing the shape is what makes the three tiers agree. The stdlib does not
 /// contain one today; this builds one, because a check nothing can trip is not

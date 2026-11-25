@@ -198,25 +198,42 @@ fn add(
     if let Some(&i) = at.get(&f) {
         return i;
     }
-    let (rel, args) = terms.fact(f);
-    let texts: Vec<String> = args.iter().map(|a| terms.display(*a)).collect();
-    let under: Vec<Under> = args
-        .iter()
-        .map(|a: &Value| match a.as_fact() {
-            Some(g) => Under::Fact(add(kb, terms, opts, since, set, at, g)),
-            None => Under::Name(terms.display(*a)),
-        })
-        .collect();
-    let i = set.facts.len();
-    set.facts.push(Fact {
-        id: fact_id(terms.sym(rel), &texts),
-        relation: terms.sym(rel).to_string(),
-        args: under,
-        held: kb.contains(f),
-        look: look(kb, terms, f, opts, since),
-    });
-    at.insert(f, i);
-    i
+    // A fact is added after every fact it points at, in the order of its
+    // arguments, each once: a stack of the facts being added and how many of
+    // their arguments are done, not the call stack, so a fact nested at any
+    // depth is drawn.
+    let mut adding: Vec<(FactId, usize)> = vec![(f, 0)];
+    while let Some((g, done)) = adding.last_mut() {
+        let g = *g;
+        let args = terms.fact(g).1;
+        let next =
+            (*done..args.len()).find(|&j| args[j].as_fact().is_some_and(|h| !at.contains_key(&h)));
+        if let Some(j) = next {
+            *done = j + 1;
+            adding.push((args[j].as_fact().expect("a fact"), 0));
+            continue;
+        }
+        adding.pop();
+        let (rel, args) = terms.fact(g);
+        let texts: Vec<String> = args.iter().map(|a| terms.display(*a)).collect();
+        let under: Vec<Under> = args
+            .iter()
+            .map(|a: &Value| match a.as_fact() {
+                Some(h) => Under::Fact(at[&h]),
+                None => Under::Name(terms.display(*a)),
+            })
+            .collect();
+        let i = set.facts.len();
+        set.facts.push(Fact {
+            id: fact_id(terms.sym(rel), &texts),
+            relation: terms.sym(rel).to_string(),
+            args: under,
+            held: kb.contains(g),
+            look: look(kb, terms, g, opts, since),
+        });
+        at.insert(g, i);
+    }
+    at[&f]
 }
 
 /// The opening lines of a knowledge base's digraph, the KB view's and the

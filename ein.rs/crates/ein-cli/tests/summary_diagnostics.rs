@@ -249,8 +249,8 @@ fn every_corpus_program_says_on_stderr_what_its_summary_lists() {
 /// stdout, the abort's line on stderr, and a summary with no answer, its
 /// `asked` the question, its `config` the program's, and one diagnostic,
 /// the deadline's, as stderr printed it. `ein oracle` says its own line, and
-/// `ein test`, which prints the abort under the file's `ERROR` row on
-/// stdout, lists it in the file's summary all the same.
+/// `ein test` the line `ein solve` says, on stderr, beside the file's `ERROR`
+/// row on stdout, and lists it in the file's summary as stderr printed it.
 #[test]
 fn the_clock_writes_a_summary_whose_one_diagnostic_is_the_deadlines() {
     let file = "examples/lattice/02_genuine_3set_death.ein";
@@ -307,9 +307,11 @@ fn the_clock_writes_a_summary_whose_one_diagnostic_is_the_deadlines() {
     );
     assert_eq!(r.code, 2, "test: {}{}", r.out, r.err);
     assert!(r.out.starts_with("ERROR "), "test: {}", r.out);
+    assert_eq!(r.err, format!("** aborted: {decided} **\n"), "test");
     let s = r.summary.expect("test -T 0: a summary");
     assert!(unanswered(&s), "test: {s}");
     assert_eq!(s["diagnostics"], deadline(decided), "test");
+    said::agree(&s, &r.err).unwrap_or_else(|e| panic!("test: {e}"));
     let rows: J =
         serde_json::from_str(&std::fs::read_to_string(&report).expect("the report")).expect("JSON");
     let rows = rows["rows"].as_array().expect("rows");

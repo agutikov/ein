@@ -411,7 +411,7 @@ pub fn explain_shape(
             kb.primary(f)
                 .is_some_and(|p| terms.provs.get(p).kind == ein_core::ProvKind::Rule)
         })
-        .map(|f| (repr(&terms.repr_fact(f)), f))
+        .map(|f| (terms.repr_fact_text(f), f))
         .collect();
     derived.sort();
     let sample: Vec<FactId> = derived
@@ -469,7 +469,7 @@ fn naf_args_repr(terms: &Terms, args: &[ein_core::NafArg]) -> String {
 fn naf_arg_repr(terms: &Terms, arg: &ein_core::NafArg) -> String {
     match arg {
         ein_core::NafArg::Free => "None".to_string(),
-        ein_core::NafArg::Value(v) => repr(&terms.repr_value(*v)),
+        ein_core::NafArg::Value(v) => terms.repr_text(*v),
         ein_core::NafArg::Nested { rel, args } => format!(
             "({}, {})",
             repr_str(terms.sym(*rel)),
@@ -485,7 +485,7 @@ fn match_text(terms: &Terms, at: &FxHashMap<FactId, usize>, m: &Match<'_>) -> St
             format!(
                 "({}, {})",
                 repr_str(terms.sym(name)),
-                repr(&terms.repr_value(value))
+                terms.repr_text(value)
             )
         })
         .collect();
@@ -513,7 +513,7 @@ fn render_plan(out: &mut String, ast: &Ast, terms: &Terms, plan: &Plan, key: &[S
         out.push_str(&format!(
             "  SEED {} {}\n",
             terms.sym(*name),
-            repr(&terms.repr_value(*value))
+            terms.repr_text(*value)
         ));
     }
     for (i, d) in plan.disjuncts.iter().enumerate() {
@@ -612,7 +612,7 @@ fn render_steps(
 fn slot_text(ast: &Ast, terms: &Terms, plan: &Plan, regs: &[Symbol], slot: &Slot) -> String {
     match slot {
         Slot::Reg(r) => format!("?{}", terms.sym(regs[*r as usize])),
-        Slot::Const(v) => repr(&terms.repr_value(*v)),
+        Slot::Const(v) => terms.repr_text(*v),
         Slot::Nested { rel, slots } => {
             let mut s = format!("({}", terms.sym(*rel));
             for inner in plan.slots(*slots) {

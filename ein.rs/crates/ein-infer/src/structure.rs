@@ -1129,15 +1129,13 @@ pub fn subject(terms: &Terms, pairs: &crate::contradiction::Pairs, fact: FactId)
 /// Every name among `fact`'s arguments, at any depth, appended to `out`
 /// where it does not hold it.
 pub fn names_of(terms: &Terms, fact: FactId, out: &mut Vec<Symbol>) {
-    for &a in terms.fact(fact).1 {
-        if let Some(s) = a.as_sym() {
-            if !out.contains(&s) {
-                out.push(s);
-            }
-        } else if let Some(f) = a.as_fact() {
-            names_of(terms, f, out);
+    terms.walk_term(ein_core::Value::fact(fact), |step| {
+        if let ein_core::TermStep::Name(s) = step
+            && !out.contains(&s)
+        {
+            out.push(s);
         }
-    }
+    });
 }
 
 /// The program as loaded: what [`Loaded::over`] states a program over fewer

@@ -229,6 +229,80 @@ fn every_command_refuses_a_file_that_is_not_utf8_with_one_line() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
+/// **A missing file is one line, from every command and from the library**
+/// (`07-diagnostics.md` § 2): the line the one read of a program gives, at
+/// each command's load-error exit, `ein test` counting the file an `ERROR`
+/// and going on to the next, where it once stopped the whole selection with a
+/// line of its own; and `ein_ir::load_file`, handed the same path, refuses it
+/// with one finding of the kind `unreadable` whose message is that line, as
+/// it refuses a container, which the library's text load does not open, with
+/// a line of its own.
+#[test]
+fn every_command_and_the_library_refuse_a_missing_file_with_one_line() {
+    let scratch = Scratch::new("ein-program-read");
+    let dir = scratch.path();
+    programs(dir);
+    let want = "FileNotFoundError: [Errno 2] No such file or directory: 'nope.ein'";
+    let mut bad = Vec::new();
+    let show: (&[&str], &[&str], i32) = (&["show", "hyps"], &[], 1);
+    for (i, cmd) in COMMANDS.iter().chain([&show]).enumerate() {
+        let out = format!("out-{i}.einb");
+        let r = ein_in(dir, &argv(cmd, "nope.ein", &out));
+        let name = cmd.0.join(" ");
+        if r.code != cmd.2 {
+            bad.push(format!(
+                "`ein {name}`: exit {}, its load error's is {}",
+                r.code, cmd.2
+            ));
+        }
+        if r.stderr.lines().next() != Some(want) {
+            bad.push(format!("`ein {name}`: stderr {:?}", r.stderr));
+        }
+    }
+    assert!(bad.is_empty(), "{}", bad.join("\n"));
+    let r = ein_in(dir, &["test", "nope.ein", "w.ein"]);
+    assert_eq!(r.code, 2, "{}{}", r.stdout, r.stderr);
+    assert_eq!(r.stderr.lines().next(), Some(want), "{}", r.stderr);
+    assert!(
+        r.stdout
+            .lines()
+            .any(|l| l.starts_with("ERROR") && l.ends_with("nope.ein"))
+            && r.stdout.contains("2 files, 1 expectation: 1 held"),
+        "the selection stopped at the file that is not there:\n{}",
+        r.stdout
+    );
+
+    // The library, handed the path a command is handed, says what the
+    // command says.
+    let path = dir.join("nope.ein");
+    let mut ast = ein_ir::Ast::new();
+    let mut terms = ein_core::Terms::new();
+    let err =
+        ein_ir::load_file(&mut ast, &mut terms, &path).expect_err("a missing file is refused");
+    let by_the_binary = ein_in(dir, &["solve", path.to_str().expect("a path")]);
+    let line = by_the_binary.stderr.lines().next().unwrap_or("");
+    assert!(line.starts_with("FileNotFoundError: "), "{line}");
+    assert_eq!(err.to_string(), line);
+    assert_eq!(err.findings().len(), 1, "{:?}", err.findings());
+    let d = &err.findings()[0];
+    assert_eq!(
+        (d.kind, d.message.as_str(), d.place.is_none()),
+        (ein_core::Kind::Unreadable, line, true)
+    );
+    let boxed = dir.join("w.einb");
+    let err = ein_ir::load_file(&mut ast, &mut terms, &boxed)
+        .expect_err("the library's text load opens no container");
+    assert_eq!(
+        err.to_string(),
+        format!(
+            "{}: a .einb container, and ein_ir::load_file reads Ein text: open it with \
+             ein_einb::open",
+            boxed.display()
+        )
+    );
+    assert_eq!(err.findings()[0].kind, ein_core::Kind::Unreadable);
+}
+
 /// A container's stored program is parsed under a name that says so, which
 /// every position in it carries: `<program stored in x.einb>` and the stored
 /// text's line, where it was `<string>` (or the first file name the

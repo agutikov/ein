@@ -278,13 +278,7 @@ fn run_bounded(
     let Some(mut kb) =
         crate::common::load_program(&mut ast, &mut terms, Path::new(&file), &load_opts)
     else {
-        write_unanswered(
-            summary_path.as_deref(),
-            &file,
-            Some(asked.clone()),
-            None,
-            &[],
-        );
+        write_unanswered(summary_path.as_deref(), &file, Some(asked.clone()), None);
         return 1;
     };
     let load = t_load.elapsed();
@@ -335,7 +329,6 @@ fn run_bounded(
                     &file,
                     Some(asked.clone()),
                     Some(&cfg),
-                    &[],
                 );
                 return 2;
             }
@@ -356,7 +349,6 @@ fn run_bounded(
                 &file,
                 Some(asked.clone()),
                 Some(&cfg),
-                &[],
             );
             return 2;
         }
@@ -378,7 +370,6 @@ fn run_bounded(
                 &file,
                 Some(asked.clone()),
                 Some(&cfg),
-                &[],
             );
             return 1;
         }
@@ -403,7 +394,6 @@ fn run_bounded(
             &file,
             Some(asked.clone()),
             Some(&cfg),
-            &[],
         );
         return code;
     }
@@ -573,7 +563,6 @@ fn run_monotone(m: &ArgMatches, file: &str) -> i32 {
             file,
             Some(crate::summary::asked_monotone()),
             None,
-            &[],
         );
         return 1;
     };
@@ -1288,19 +1277,16 @@ pub fn print(
 /// **Write the summary of a run with no answer** where `--json-summary`
 /// asks for one ([`crate::summary::build_unanswered`]): what the command
 /// asked, the program's config where it loaded, and what the run said
-/// ([`crate::common::said`]), then `unsaid`, what the command printed
-/// elsewhere: `ein test`'s abort, the line of its `ERROR` row. Additive as
+/// ([`crate::common::said`]), in the order stderr printed it. Additive as
 /// every summary is: a write that fails says so and moves no exit code.
 pub(crate) fn write_unanswered(
     path: Option<&str>,
     source: &str,
     asked: Option<ein_render::dump::Json>,
     config: Option<&ein_core::SolverConfig>,
-    unsaid: &[ein_core::Diagnostic],
 ) {
     let Some(path) = path else { return };
-    let mut said = crate::common::said();
-    said.extend(unsaid.iter().cloned());
+    let said = crate::common::said();
     let summary = crate::summary::build_unanswered(source, asked, config, &said);
     if let Err(e) = crate::summary::write(path, &summary) {
         crate::solve::artefact_failed("json-summary", path, e);

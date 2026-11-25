@@ -53,7 +53,7 @@ pub use prov::{NafArg, NafRef, Prov, ProvArena, ProvId, ProvKind, Region};
 pub use shape::shape;
 pub use terms::{
     Kernel, Kernel as KernelSymbols, LIBRARY_NAMES, Lent, PREDICATES, RESERVED, STRUCTURAL, Table,
-    Terms, binds_no_reserved, is_predicate, is_reserved,
+    TermStep, Terms, binds_no_reserved, is_predicate, is_reserved,
 };
 pub use value::{Tag, Value};
 pub use walks::{

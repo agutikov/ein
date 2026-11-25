@@ -76,7 +76,7 @@
 //! describe meets on the whole corpus, and finds nothing.
 
 use ein_core::bitset::BitSet;
-use ein_core::{FactId, Kb, Symbol, Terms, Value};
+use ein_core::{FactId, Kb, Symbol, TermStep, Terms, Value};
 use ein_ir::{Ast, Node, NodeId};
 
 /// What the loaded program may name, and what it may name a fact *about*.
@@ -138,18 +138,13 @@ impl Breach {
     }
 }
 
+/// Every symbol of a value, at any depth, a nested fact's relation before
+/// its arguments ([`Terms::walk_term`], which keeps no call stack).
 fn walk_value(terms: &Terms, v: Value, out: &mut impl FnMut(Symbol)) {
-    match v.tag() {
-        ein_core::value::Tag::Sym => out(v.as_sym().expect("tagged Sym")),
-        ein_core::value::Tag::Fact => {
-            let f = v.as_fact().expect("tagged Fact");
-            let (rel, args) = terms.facts.get(f);
-            out(rel);
-            for &a in args {
-                walk_value(terms, a, out);
-            }
-        }
-    }
+    terms.walk_term(v, |step| match step {
+        TermStep::Name(s) | TermStep::Open(s, _) => out(s),
+        TermStep::Arg(_) | TermStep::Close(..) => {}
+    });
 }
 
 /// A constant a registered rule names in an **argument position** of its
@@ -275,13 +270,11 @@ impl ProgramName {
 /// Every symbol in an **argument position** of a value, at any depth: a
 /// nested fact's arguments, and not its head.
 fn walk_args(terms: &Terms, v: Value, out: &mut impl FnMut(Symbol)) {
-    if let Some(s) = v.as_sym() {
-        out(s);
-    } else if let Some(f) = v.as_fact() {
-        for &a in terms.facts.args(f) {
-            walk_args(terms, a, out);
+    terms.walk_term(v, |step| {
+        if let TermStep::Name(s) = step {
+            out(s);
         }
-    }
+    });
 }
 
 /// **Every name of the program** (Q-M1e2.9), `06-solution-semantics.md` § 1.2

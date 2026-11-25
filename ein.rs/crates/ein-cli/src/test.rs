@@ -563,8 +563,17 @@ fn status(label: &str, path: &Path) -> String {
 /// and a gate command that hangs is worse than one that misses a file nobody
 /// asked it for. An explicitly named path is still followed — naming it is
 /// asking for it.
+///
+/// **A named path the walk cannot look at is a file**, read as every command
+/// reads the program it is given (`common::read_program`): a missing one is
+/// refused with the one line every command prints for it, and is an `ERROR`
+/// that the selection goes on past, as an unreadable file is
+/// (`07-diagnostics.md` § 2).
 fn collect(arg: &Path, out: &mut Vec<PathBuf>) -> Result<(), String> {
-    let meta = std::fs::metadata(arg).map_err(|e| format!("{}: {e}", arg.display()))?;
+    let Ok(meta) = std::fs::metadata(arg) else {
+        out.push(arg.to_path_buf());
+        return Ok(());
+    };
     if meta.is_file() {
         out.push(arg.to_path_buf());
         return Ok(());
@@ -775,7 +784,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             let mut r = row(0, 0, "query", Came::Error.key());
             r.diagnostics = Some(refusal.findings);
             rows.push(r);
-            crate::modes::write_unanswered(summary_path, &file, None, None, &[]);
+            crate::modes::write_unanswered(summary_path, &file, None, None);
             return;
         }
     };
@@ -877,7 +886,6 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
                 &file,
                 Some(ein_render::dump::region_answer::asked(f.asked, no_search)),
                 Some(&config),
-                &f.unsaid,
             );
         }
     };
@@ -963,7 +971,6 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
                 let f = Failed {
                     why: e.to_string(),
                     diagnostics: Vec::new(),
-                    unsaid: Vec::new(),
                     asked: describing,
                 };
                 return failed(tally, rows, f, true);
@@ -1341,6 +1348,11 @@ impl Asked {
     }
 }
 
+/// The line under a file's `ERROR` row whose run the clock ended: that it was
+/// aborted, and nothing of why, which is stderr's line
+/// ([`crate::modes::aborted`]).
+const ABORTED: &str = "aborted before an answer";
+
 /// Why a file's run is no verdict: the line `ein test` prints under its
 /// `ERROR`, and the same as values, for its report's rows and its summary
 /// (Q-M2.9).
@@ -1348,12 +1360,9 @@ struct Failed {
     /// The line printed under the file's `ERROR`.
     why: String,
     /// Why, as values: the clock's abort, a refusal's findings; `[]` for an
-    /// engine error, which no diagnostic of Ein's names.
+    /// engine error, which no diagnostic of Ein's names. Each was printed on
+    /// stderr as it was met, so the summary lists them where stderr did.
     diagnostics: Vec<Diagnostic>,
-    /// Those of [`Self::diagnostics`] stderr did not print, which the summary
-    /// lists after what it did: the clock's abort, which `ein test` prints
-    /// on stdout as its `ERROR` row's line.
-    unsaid: Vec<Diagnostic>,
     /// The question that was asked.
     asked: Mode,
 }
@@ -1364,7 +1373,6 @@ impl Failed {
         Failed {
             why: "the program did not load a second time".to_string(),
             diagnostics: refusal.findings,
-            unsaid: Vec::new(),
             asked,
         }
     }
@@ -1407,13 +1415,15 @@ fn ask(
     crate::solve::events_load(&mut events, &terms, &kb);
     let t0 = Instant::now();
     // Never a pass and never a failure: the claims were neither confirmed
-    // nor refuted. The abort is the `ERROR` row's line, on stdout.
+    // nor refuted. The abort is stderr's line, in the words `ein solve`
+    // prints it; the file's `ERROR` row on stdout says only that it was
+    // aborted.
     let aborted = || {
         let d = crate::modes::aborted(m.get_one::<f64>("max-time").copied());
+        crate::common::say(d.clone());
         Failed {
-            why: "aborted before an answer: --max-time".to_string(),
-            diagnostics: vec![d.clone()],
-            unsaid: vec![d],
+            why: ABORTED.to_string(),
+            diagnostics: vec![d],
             asked: mode,
         }
     };
@@ -1437,7 +1447,6 @@ fn ask(
             return Err(Failed {
                 why: e.to_string(),
                 diagnostics,
-                unsaid: Vec::new(),
                 asked: mode,
             });
         }

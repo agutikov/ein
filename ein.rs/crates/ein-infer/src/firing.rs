@@ -5,7 +5,7 @@
 //! facts from it (a conjunction) and they **share one** [`Prov`]: one rule
 //! application fanning out to N derived nodes, not N applications.
 
-use ein_core::repr::{ReprValue, repr, repr_str};
+use ein_core::repr::repr_str;
 use ein_core::{FactId, Kb, NafRef, Overflow, Prov, ProvId, Symbol, Terms, Value};
 use ein_ir::{Ast, Node};
 
@@ -39,11 +39,7 @@ impl<'a> Env<'a> {
         let items: Vec<String> = self
             .bindings(plan)
             .map(|(name, value)| {
-                format!(
-                    "{}: {}",
-                    repr_str(terms.sym(name)),
-                    repr(&terms.repr_value(value))
-                )
+                format!("{}: {}", repr_str(terms.sym(name)), terms.repr_text(value))
             })
             .collect();
         format!("{{{}}}", items.join(", "))
@@ -457,15 +453,6 @@ pub fn rendered_bindings(terms: &Terms, bindings: &[(Symbol, Value)]) -> Vec<(St
     bindings
         .iter()
         .map(|(k, v)| (terms.sym(*k).to_string(), terms.display(*v)))
-        .collect()
-}
-
-/// The `ReprValue` rendering of a whole binding environment — for the error
-/// paths and the event log.
-pub fn bindings_repr(terms: &Terms, bindings: &[(Symbol, Value)]) -> Vec<(String, ReprValue)> {
-    bindings
-        .iter()
-        .map(|(k, v)| (terms.sym(*k).to_string(), terms.repr_value(*v)))
         .collect()
 }
 

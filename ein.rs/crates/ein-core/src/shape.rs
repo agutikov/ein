@@ -202,15 +202,11 @@ pub fn shape(kb: &Kb, terms: &Terms) -> String {
 /// `repr((relation_name, args))` — a fact's identity tuple, which is
 /// unambiguous across the three value shapes.
 fn identity(terms: &Terms, f: FactId) -> String {
-    let (rel, args) = terms.facts.get(f);
-    repr(&ReprValue::Tuple(vec![
-        ReprValue::Str(terms.sym(rel).to_string()),
-        ReprValue::Tuple(args.iter().map(|&a| terms.repr_value(a)).collect()),
-    ]))
+    terms.repr_identity(f)
 }
 
 fn render(terms: &Terms, v: Value) -> String {
-    repr(&terms.repr_value(v))
+    terms.repr_text(v)
 }
 
 fn pattern_names(terms: &Terms, names: Option<&[crate::intern::Symbol]>) -> String {

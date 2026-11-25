@@ -143,6 +143,19 @@ observable order: two names by rank, two facts by `Terms::cmp_fact_semantic` (re
 element-wise, then arity), and `Sym` before `Fact` across shapes. `Terms::display` is the one printer of a `Value`
 as Ein text.
 
+**No walk of a term recurses on its depth.** A rule that nests its conclusion deeper than its premise makes a fact as
+deep as its firings went, and a deep fact is printed, compared and drawn whole. `Terms::walk_term` hands each part of
+a term in the order it is written, a fact's relation before its arguments, keeping a stack of the facts it has opened
+rather than the call stack: the one printer, `Terms::repr_text`, the names a program's invariant reads off a value,
+`region::order_key` and the views' labels and keys walk through it, `Terms::cmp_semantic` keeps a stack of the
+argument lists it has open on each side, and the knowledge-base view a stack of the facts it is adding. `ein-core`'s
+`a_term_nested_past_any_call_stack_is_walked_whole` holds the walk, the printers and the order at 200 000 levels on a
+thread of 256 KiB, and `ein-cli/tests/deep_terms.rs` every surface that prints a fact. What does recurse is a walk of a
+written form, the macro expander, the loader, the dumper and a rule's compiled pattern, which the parser's limit of
+1 000 parentheses bounds ([`04-ir-frontend.md` § 3.4](04-ir-frontend.md#34-the-nesting-limit)); the identity of a
+nested fact is one id for its relation and its arguments' ids (§ 4), so interning, hashing and equality read one
+level.
+
 `ein_core::facts::FactId(pub u32)` is dense, so it indexes a `Vec` or a bit set directly. It derives `Ord`, and that
 order is assignment order, legitimate only where any total order is equivalent.
 

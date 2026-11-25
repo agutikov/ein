@@ -16,12 +16,14 @@
 
 use ein_core::{FactId, Tag, Terms, Value};
 
-/// One argument of a [`FactRef`]: a name or a nested fact. A run of digits
-/// is a name.
+/// One argument of a [`FactRef`]: a name, or a nested fact as its label
+/// ([`crate::dot_util::fact_label`]), the one way a step reads one; so a
+/// reference is one level deep whatever the depth of the fact it was read
+/// from. A run of digits is a name.
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum RefArg {
     Str(String),
-    Fact(FactRef),
+    Fact(String),
 }
 
 /// A fact reference: `(relation_name, args)`, mirroring the kernel's fact-id
@@ -43,7 +45,7 @@ impl FactRef {
     }
 
     /// The readable `rel(a, b, …)` label — `dot_util.fact_label` over this
-    /// shape, recursing into nested references. A name prints as the one
+    /// shape, a nested fact as its own label. A name prints as the one
     /// printer prints it: bare where it lexes as itself, else
     /// quoted, so `holds("x y")` is one argument and `holds(1)` a name.
     pub fn label(&self) -> String {
@@ -52,7 +54,7 @@ impl FactRef {
             .iter()
             .map(|a| match a {
                 RefArg::Str(s) => ein_core::text::symbol(s).into_owned(),
-                RefArg::Fact(f) => f.label(),
+                RefArg::Fact(label) => label.clone(),
             })
             .collect();
         let inner = parts.join(", ");
@@ -76,7 +78,10 @@ pub fn fact_ref(terms: &Terms, f: FactId) -> FactRef {
 fn ref_arg(terms: &Terms, v: Value) -> RefArg {
     match v.tag() {
         Tag::Sym => RefArg::Str(terms.sym(v.as_sym().expect("tagged Sym")).to_string()),
-        Tag::Fact => RefArg::Fact(fact_ref(terms, v.as_fact().expect("tagged Fact"))),
+        Tag::Fact => RefArg::Fact(crate::dot_util::fact_label(
+            terms,
+            v.as_fact().expect("tagged Fact"),
+        )),
     }
 }
 

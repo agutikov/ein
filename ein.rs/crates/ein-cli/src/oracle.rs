@@ -81,7 +81,7 @@ pub fn run(m: &ArgMatches) -> i32 {
     let Some(mut kb) =
         crate::common::load_program(&mut ast, &mut terms, Path::new(&file), &load_opts)
     else {
-        crate::modes::write_unanswered(summary_path.as_deref(), &file, Some(asked), None, &[]);
+        crate::modes::write_unanswered(summary_path.as_deref(), &file, Some(asked), None);
         return 1;
     };
     let mut on_projection = |p: &Projection| {
@@ -121,7 +121,6 @@ pub fn run(m: &ArgMatches) -> i32 {
                 &file,
                 Some(asked),
                 Some(&config),
-                &[],
             );
             return 2;
         }

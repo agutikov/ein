@@ -166,7 +166,9 @@ t.ein:1:7: 'é' (U+00E9) is not ASCII: Unicode is allowed only inside a string l
   step, an import's module, between two tokens, a line's or the file's first character — a byte-order mark among
   them, `'\u{feff}' (U+FEFF)`
   ([Q-M1f.96](../../../decisions/language/Q-M1f.96-a-byte-order-mark-is-refused-as-any-character.md)) — in place of a
-  paren, glued after a string, and in an imported module, whose line names the module's resolved path.
+  paren, glued after a string, and in an imported module, whose line names the module by the path its import
+  resolves to, the program's directory as given joined with the module's name
+  ([Q-M1f.93](../../../decisions/diagnostics/Q-M1f.93-a-modules-read-line-names-the-path-its-import.md)).
 - **Not refused**: any character inside a string literal, whatever the string is written as (a string where an
   argument goes is refused as one, [§ 2.12](#212-a-string-is-natural-language-text-and-an-escape-names-a-character), and an
   escape it does not read as one, at its quote), and any in a comment. A byte that is not UTF-8 is refused before
@@ -195,14 +197,17 @@ A failure the engine cannot place in a form prints one line and exits non-zero:
 
 | input | the line | exit |
 |---|---|---|
-| a missing input file | `FileNotFoundError: [Errno 2] No such file or directory: '<path>'` | 1 |
+| a missing input file | `FileNotFoundError: [Errno 2] No such file or directory: '<path>'` | 1 (`ein test`: 2, the file an `ERROR` row) |
 | an input file that is neither UTF-8 text nor a `.einb` container | `<path>:<line>:<col>: byte 0x<hh> is not UTF-8: a program is UTF-8 text, or a .einb container`, at its first byte that is not | 1 (`ein test`: 2, the file an `ERROR` row) |
 | an imported module that exists and cannot be read as text | `kb load error: ` and the line its path gives as a program ([§ 2.18](#218-an-imported-module-is-read-as-the-program-is)) | 1 (`ein test`: 2) |
 | an argument the command line rejects | `error: invalid value 'x' for '--solutions <N>': invalid int value: 'x'` | 2 |
 
 **Every command reads a program by one path**, so a file that cannot be read, or is not UTF-8, is refused with the
 same line by `solve`, `saturate`, `oracle`, `test`, `show`, each `render` view and `kb save`, at each command's
-load-error exit. `ein test` counts such a file an `ERROR` and goes on to the next.
+load-error exit. `ein test` counts such a file an `ERROR` and goes on to the next, a path that names nothing among
+them. A program that links Ein reads a path by the same read: `ein_ir::load_file` refuses such a file with one
+finding of the kind `unreadable` whose message is the same line, and a `.einb` container, which it does not open,
+with a line of its own ([`04-api.md` § 2.2](../../ein.rs/04-api.md#22-load)).
 
 **The last row is the command line's own wording.** What is fixed about it is the **exit code and the stream**,
 which is what a script can depend on: a usage error exits 2, on stderr, before anything runs ([`05-cli.md`](05-cli.md)).
@@ -749,7 +754,7 @@ read's line, behind `kb load error: `, naming the path the import resolves to
 | unreadable | `kb load error: PermissionError: [Errno 13] Permission denied: 'm.ein'` |
 | a directory | `kb load error: IsADirectoryError: [Errno 21] Is a directory: 'm.ein'` |
 | a `.einb` container | `kb load error: m.ein: a .einb container, and an imported module is Ein text: import the .ein it was saved from` ([Q-M1f.91](../../../decisions/imports/Q-M1f.91-an-imported-module-is-ein-text-and-a-einb.md)) |
-| holding a character that is not ASCII outside a string | `kb load error: <its resolved path>:2:5: 'é' (U+00E9) is not ASCII: …` ([§ 1.6](#16-a-character-that-is-not-ascii-is-written-only-in-a-string-or-a-comment)), as any parse error in a module names its resolved path |
+| holding a character that is not ASCII outside a string | `kb load error: m.ein:2:5: 'é' (U+00E9) is not ASCII: …` ([§ 1.6](#16-a-character-that-is-not-ascii-is-written-only-in-a-string-or-a-comment)), as any parse error in a module names it, by the same path |
 | missing | `kb load error: (import m) — module not found at m.ein (None)` |
 
 The first three are the lines the module's path gives to `ein solve` as a program; the directory's and the
@@ -1267,7 +1272,7 @@ An import names a module by its path from the program file's directory, or `std.
 
 | the import | the line, behind `kb load error: ` |
 |---|---|
-| a module that imports, through its own imports, a file that imports it | `import cycle: <a> -> <b> -> <a> (at None)`, each file by its resolved path |
+| a module that imports, through its own imports, a file that imports it | `import cycle: <a> -> <b> -> <a> (at None)`, each file by the path its import resolves to, the program's directory as given joined with the module's name |
 | `(import std)` | `(import std) — bare 'std' is not a module at None` |
 | both `:as` and `:symbols` | `(import m) — :as and :symbols are mutually exclusive at None` |
 | a `std.*` module's import of a module that is not one | `(import m) — a std.* module may import only std.* modules; a file-relative import there resolves under a checkout and not under the embedded copy an installed binary carries, at None` |

@@ -196,6 +196,12 @@ fn missing_why(head: &str, name: &str) -> String {
 
 /// Parse and load a `.ein` file, resolving its imports file-relative: a
 /// program, or a saved file ([`crate::saved::load_text`]).
+///
+/// The path is read as every command reads the program it is given
+/// ([`crate::read::read_program`]), so a file that cannot be read, or is not
+/// UTF-8, is refused with the line every command prints
+/// (`07-diagnostics.md` § 2), [`Kind::Unreadable`]. A `.einb` container is
+/// refused too: `ein_einb::open` opens one.
 pub fn load_file(ast: &mut Ast, terms: &mut Terms, path: &Path) -> Result<Kb, KbLoadError> {
     load_file_with(ast, terms, path, &LoadOptions::default())
 }
@@ -207,9 +213,17 @@ pub fn load_file_with(
     path: &Path,
     opts: &LoadOptions,
 ) -> Result<Kb, KbLoadError> {
-    let text = std::fs::read_to_string(path).map_err(|e| {
-        KbLoadError::one(Kind::Unreadable, format!("{}: {e}", path.display()), None)
-    })?;
+    let text = match crate::read::read_program(path) {
+        Ok(crate::read::Held::Text(text)) => text,
+        Ok(crate::read::Held::Container(_)) => {
+            return Err(KbLoadError::one(
+                Kind::Unreadable,
+                crate::read::container_program_line(path),
+                None,
+            ));
+        }
+        Err(e) => return Err(KbLoadError::one(Kind::Unreadable, e.line, e.place)),
+    };
     // A program, or a saved file (`crate::saved`).
     crate::saved::load_text(ast, terms, &text, path.to_str(), path.parent(), 0, opts)
         .map(|l| l.kb)

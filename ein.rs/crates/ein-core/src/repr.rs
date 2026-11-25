@@ -18,7 +18,7 @@
 //! - **tuple** — `(a, b)`, items separated by `, `; one item is `(a,)` and
 //!   none is `()`.
 //! - **Fact** — `Fact(relation_name='p', args=('A',))`: the relation name as
-//!   a `str` and the args as a tuple, a nested fact recursively.
+//!   a `str` and the args as a tuple, a nested fact in the same form.
 
 use crate::printable::is_printable;
 
@@ -72,6 +72,18 @@ fn write_repr(out: &mut String, value: &ReprValue) {
             out.push(')');
         }
     }
+}
+
+/// A tuple of items already in `repr`'s form: `(a, b)`, `(a,)` for one item,
+/// `()` for none, as [`repr`] prints a [`ReprValue::Tuple`].
+pub fn tuple(items: &[String]) -> String {
+    let mut out = String::from("(");
+    out.push_str(&items.join(", "));
+    if items.len() == 1 {
+        out.push(',');
+    }
+    out.push(')');
+    out
 }
 
 /// The `repr` of a `str`.

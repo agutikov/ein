@@ -209,7 +209,8 @@ before a path takes the path for its level and is refused, exit 2, with the two 
 as the full run decides it, and every other is `NOT CHECKED`, which moves no exit code
 ([Q-M1f.257](../../../decisions/cli/Q-M1f.257-under-no-search-a-claim-not-checked-moves-no.md)). `-T` aborts a file
 after N seconds, wherever the run is, and the abort is an `ERROR`: nothing was established either way, and the
-file's rows that state a claim are `error` rows that say it.
+file's rows that state a claim are `error` rows that say it. The abort's line is stderr's, in the words `ein solve`
+prints it (§ 3), and the file's `ERROR` row on stdout says only `aborted before an answer`.
 `--region-budget` bounds each question a file is asked, and `--max-steps` each saturation of each question, its load's
 among them, as `ein solve`'s do; a claim no question decided within them is `NOT CHECKED`. `--events` and
 `--json-summary` name one run, so they are refused over a selection of more than one file; where a file was asked
@@ -332,7 +333,8 @@ claim false; `ein test --no-search` decides what root decides, and a claim it le
 asked not to search, moves no exit code.
 
 **A `-T` abort** prints one line on stderr, `** aborted: --max-time S s reached before the question was decided **`,
-nothing on stdout, and exits 2: a machine-dependent limit is never an answer. Its `--json-summary` has no answer, and
+nothing on stdout but `ein test`'s `ERROR` row of the file, and exits 2: a machine-dependent limit is never an
+answer. Its `--json-summary` has no answer, and
 its diagnostics say the deadline ([`08-read-out.md` § 11.3](08-read-out.md#113-diagnostics-what-the-run-said-as-values)). The clock is read between a route's
 steps and inside every saturation, root's first, every thousand-odd firings and at each quiescence, so a run ends
 at it wherever it is, a saturation with no fixpoint among them ([Q-M2.16](../../../decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md)).

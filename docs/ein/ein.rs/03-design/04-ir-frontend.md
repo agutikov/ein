@@ -342,14 +342,19 @@ So the answer does not depend on the import form
 ### 8.2 One read per module
 
 `Resolver::walk` reads the import graph depth first. Its map `by_name`, from a canonical module name to the
-module's `File` (its name, its resolved path, its parsed forms, its imports, the names it declares and the relations
-it states facts of), is the resolution's cache: a module reached by several edges, a diamond, is located, read and
-parsed **once per resolution**, and its facts arrive once
+module's `File` (its name, the path it is read from, its parsed forms, its imports, the names it declares and the
+relations it states facts of), is the resolution's cache: a module reached by several edges, a diamond, is located,
+read and parsed **once per resolution**, and its facts arrive once
 ([Q-M1f.143](../../../decisions/imports/Q-M1f.143-a-modules-fact-arrives-once-however-many-imports.md)). A module
-met again while it is still on the chain being read is a cycle, refused with the chain of resolved paths.
+met again while it is still on the chain being read is a cycle, refused with the chain of their paths.
 
-A `File`'s identity is its canonicalised path, or `<embedded>/x/y.ein` for the embedded copy: what a cycle names
-and what the module's positions name. Its forms are `NodeId`s in the arena the resolution builds, and renaming
+A `File` is told from another by its module name, the key of `by_name`, and never by its path. **Its path is the
+one the program names**: the program's directory as it was given joined with the module's name as written, or a
+`std.*` module's under the library's root as it was found (`$EIN_STDLIB` as set, the checkout, `<embedded>/x/y.ein`
+for the embedded copy), never made absolute; it is what a cycle names and what the module's positions name, so a
+program run from two directories says the same but for its own path as given
+([Q-M1f.93](../../../decisions/diagnostics/Q-M1f.93-a-modules-read-line-names-the-path-its-import.md);
+`ein-cli/tests/module_paths.rs`). Its forms are `NodeId`s in the arena the resolution builds, and renaming
 builds new nodes (`rename_atoms`) instead of changing them, so the one parse serves every importer; a file cannot
 change during its own load, so no content digest is kept. A module on disk is read through `read::read_program`, so
 it is refused with the line its path would be refused with as a program

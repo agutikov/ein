@@ -404,7 +404,7 @@ fn print_firings(terms: &Terms, firings: &[Firing]) {
 
 // ── Saturated KB dump (--dump) ──────────────────────────────────
 
-/// `(rel arg1 arg2 …)`, nested facts recursing.
+/// `(rel arg1 arg2 …)`, a nested fact the same way, at any depth.
 fn fact_text(terms: &Terms, id: ein_core::FactId) -> String {
     events::sexpr(terms, id)
 }

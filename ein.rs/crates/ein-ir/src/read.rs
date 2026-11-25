@@ -1,5 +1,7 @@
 //! **The one read of a program's text from a path**; `ein-cli`'s
-//! `common::read_program` is a wrapper over it that is every command's read.
+//! `common::read_program` is a wrapper over it that is every command's read,
+//! and the library's [`crate::load_file`] reads a path through it too, so a
+//! caller of either meets one line for one refusal.
 //!
 //! Every command reads the program it is given through [`read_program`], and
 //! the import resolver reads each module a file-relative or a checkout's
@@ -77,8 +79,8 @@ impl fmt::Display for ReadError {
 
 impl std::error::Error for ReadError {}
 
-/// Read a program from `path`: the one read every command makes of one, and
-/// the import resolver of a module.
+/// Read a program from `path`: the one read every command makes of one,
+/// [`crate::load_file`] too, and the import resolver of a module.
 ///
 /// A file that cannot be read gives one line naming the error class, the
 /// errno text and the quoted path (`FileNotFoundError: [Errno 2] No such file
@@ -178,6 +180,17 @@ pub const EINB_MAGIC: [u8; 8] = *b"EINB\0\0\0\0";
 /// The one predicate, so no two readers can answer it differently.
 pub fn looks_like_einb(bytes: &[u8]) -> bool {
     bytes.len() >= EINB_MAGIC.len() && bytes[..EINB_MAGIC.len()] == EINB_MAGIC
+}
+
+/// The line [`crate::load_file`] refuses a `.einb` container with, in the
+/// words of [`container_module_line`]: this crate reads a program as text,
+/// and a container is opened by `ein-einb`, the crate above it, as every
+/// command that is handed one opens it.
+pub fn container_program_line(path: &Path) -> String {
+    format!(
+        "{}: a .einb container, and ein_ir::load_file reads Ein text: open it with ein_einb::open",
+        path.display()
+    )
 }
 
 /// The line an imported module that is a `.einb` container is refused with:

@@ -158,7 +158,6 @@
 //!   id tuple — a different rendering of the same thing, and both are
 //!   observable.
 
-use ein_core::repr::{ReprValue, repr};
 use ein_core::{FactId, Kb, ProvId, Terms};
 use rustc_hash::{FxHashMap, FxHashSet};
 
@@ -458,11 +457,7 @@ impl Graph {
 /// ordered by. Not `repr` of the whole fact; that one is
 /// [`recorded_fallback`]'s key and they are different strings.
 fn fact_id_repr(terms: &Terms, id: FactId) -> String {
-    let (rel, args) = terms.facts.get(id);
-    repr(&ReprValue::Tuple(vec![
-        ReprValue::Str(terms.sym(rel).to_string()),
-        ReprValue::Tuple(args.iter().map(|a| terms.repr_value(*a)).collect()),
-    ]))
+    terms.repr_identity(id)
 }
 
 /// What a search grounds out on, and which activators it follows.
@@ -1143,7 +1138,7 @@ fn fallback_groups(
         }
         // The sorted whole-fact `repr`s joined by a space — not the id
         // tuple's.
-        let mut reprs: Vec<String> = core.iter().map(|&f| repr(&terms.repr_fact(f))).collect();
+        let mut reprs: Vec<String> = core.iter().map(|&f| terms.repr_fact_text(f)).collect();
         reprs.sort();
         let key = (core.len(), reprs.join(" "));
         if best.as_ref().is_none_or(|(b, _, _)| key < *b) {

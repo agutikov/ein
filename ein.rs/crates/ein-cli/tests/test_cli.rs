@@ -423,7 +423,9 @@ fn an_error_dominates_a_failure_in_the_exit_code() {
 
 /// A `-T` abort is neither a pass nor a failure — nothing was established
 /// either way — so it is an ERROR and takes 2. A budget answers in part
-/// (below), and only the wall clock aborts.
+/// (below), and only the wall clock aborts. The abort is stderr's line, in
+/// the words `ein solve` prints it; the file's `ERROR` row on stdout says only
+/// that it was aborted.
 #[test]
 fn a_deadline_abort_is_an_error_and_never_a_pass() {
     // The 2¹⁶ region of `lattice/07`, claimed whole: no deadline of 0 s
@@ -440,6 +442,13 @@ fn a_deadline_abort_is_an_error_and_never_a_pass() {
     assert_eq!(r.code, 2, "{}{}", r.out, r.err);
     assert!(r.out.contains("ERROR"), "{}", r.out);
     assert!(r.out.contains("aborted before an answer"), "{}", r.out);
+    assert!(!r.out.contains("--max-time"), "{}", r.out);
+    assert_eq!(
+        r.err.lines().next(),
+        Some("** aborted: --max-time 0 s reached before the question was decided **"),
+        "{}",
+        r.err
+    );
     assert!(!r.out.contains("holds"), "{}", r.out);
     let e = ein(&[
         "test",
@@ -472,11 +481,22 @@ fn an_empty_directory_is_refused() {
     assert!(r.err.contains("no .ein files"), "{}", r.err);
 }
 
+/// A path that names nothing is read as every command reads the program it
+/// is given, and refused with the line every command prints for it
+/// (`07-diagnostics.md` § 2): the file is an `ERROR`, exit 2.
 #[test]
 fn a_path_that_does_not_exist_is_refused() {
     let r = ein(&["test", "examples/nope-not-here.ein"]);
     assert_eq!(r.code, 2, "{}{}", r.out, r.err);
-    assert!(r.err.starts_with("error: "), "{}", r.err);
+    assert_eq!(
+        r.err.lines().next(),
+        Some(
+            "FileNotFoundError: [Errno 2] No such file or directory: 'examples/nope-not-here.ein'"
+        ),
+        "{}",
+        r.err
+    );
+    assert!(r.out.starts_with("ERROR "), "{}", r.out);
 }
 
 // ── The mode a claim needs, and nothing more ───────────────────────

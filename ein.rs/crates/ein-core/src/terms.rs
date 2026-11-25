@@ -18,7 +18,7 @@
 use crate::facts::{FactId, FactStore};
 use crate::intern::{Interner, Overflow, Symbol};
 use crate::prov::ProvArena;
-use crate::repr::ReprValue;
+use crate::repr;
 use crate::text;
 use crate::value::{Tag, Value};
 use std::cmp::Ordering;
@@ -574,17 +574,54 @@ impl Terms {
     /// a fact as [`Self::cmp_fact_semantic`] orders it, and a mixed pair by
     /// tag, `Sym < Fact`
     /// ([03-design/01-determinism-and-order.md § 2.2](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#22-content-order)).
+    ///
+    /// Two terms are compared with a stack of the argument lists still open on
+    /// each side, not the call stack, so two facts nested past any depth
+    /// compare ([`Self::walk_term`]); a value is equal to itself at once, a fact
+    /// being one id for one content.
     pub fn cmp_semantic(&self, a: Value, b: Value) -> Ordering {
-        match (a.tag(), b.tag()) {
-            (Tag::Sym, Tag::Sym) => self
-                .syms
-                .rank(a.as_sym().expect("tagged Sym"))
-                .cmp(&self.syms.rank(b.as_sym().expect("tagged Sym"))),
-            (Tag::Fact, Tag::Fact) => self.cmp_fact_semantic(
-                a.as_fact().expect("tagged Fact"),
-                b.as_fact().expect("tagged Fact"),
-            ),
-            (x, y) => tag_order(x).cmp(&tag_order(y)),
+        // Each open pair of facts: both argument lists and the next position.
+        let mut open: Vec<(&[Value], &[Value], usize)> = Vec::new();
+        let mut next = Some((a, b));
+        loop {
+            if let Some((x, y)) = next.take()
+                && x != y
+            {
+                match (x.tag(), y.tag()) {
+                    (Tag::Sym, Tag::Sym) => {
+                        let ord = self
+                            .syms
+                            .rank(x.as_sym().expect("tagged Sym"))
+                            .cmp(&self.syms.rank(y.as_sym().expect("tagged Sym")));
+                        if ord != Ordering::Equal {
+                            return ord;
+                        }
+                    }
+                    (Tag::Fact, Tag::Fact) => {
+                        let (x_rel, x_args) = self.facts.get(x.as_fact().expect("tagged Fact"));
+                        let (y_rel, y_args) = self.facts.get(y.as_fact().expect("tagged Fact"));
+                        let ord = self.syms.rank(x_rel).cmp(&self.syms.rank(y_rel));
+                        if ord != Ordering::Equal {
+                            return ord;
+                        }
+                        open.push((x_args, y_args, 0));
+                    }
+                    (x, y) => return tag_order(x).cmp(&tag_order(y)),
+                }
+            }
+            let Some((x_args, y_args, i)) = open.last_mut() else {
+                return Ordering::Equal;
+            };
+            if *i < x_args.len() && *i < y_args.len() {
+                next = Some((x_args[*i], y_args[*i]));
+                *i += 1;
+            } else {
+                let ord = x_args.len().cmp(&y_args.len());
+                if ord != Ordering::Equal {
+                    return ord;
+                }
+                open.pop();
+            }
         }
     }
 
@@ -595,40 +632,92 @@ impl Terms {
     /// This is the comparator the lattice's first layer sorts the alive set by
     /// ([03-design/01-determinism-and-order.md § 4.2](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#42-the-hypothesis-set-and-the-search)).
     pub fn cmp_fact_semantic(&self, a: FactId, b: FactId) -> Ordering {
-        let (a_rel, a_args) = self.facts.get(a);
-        let (b_rel, b_args) = self.facts.get(b);
-        self.syms
-            .rank(a_rel)
-            .cmp(&self.syms.rank(b_rel))
-            .then_with(|| {
-                for (x, y) in a_args.iter().zip(b_args.iter()) {
-                    let ord = self.cmp_semantic(*x, *y);
-                    if ord != Ordering::Equal {
-                        return ord;
-                    }
-                }
-                a_args.len().cmp(&b_args.len())
-            })
+        self.cmp_semantic(Value::fact(a), Value::fact(b))
     }
 
     // ── Rendering ──────────────────────────────────────────────────
 
-    /// The value as a [`ReprValue`], for the `repr`-shaped output sites ([03-design/01-determinism-and-order.md § 7](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#7-the-value-renderer)).
-    pub fn repr_value(&self, v: Value) -> ReprValue {
-        match v.tag() {
-            Tag::Sym => ReprValue::Str(self.sym(v.as_sym().expect("tagged Sym")).to_string()),
-            Tag::Fact => self.repr_fact(v.as_fact().expect("tagged Fact")),
+    /// **Every walk of a term that renders it or reads its names**: `each` is
+    /// handed what the term is made of in the order it is written, a fact's
+    /// relation before its arguments ([`TermStep`]).
+    ///
+    /// The walk keeps a stack of the facts it has opened, not the call stack,
+    /// so a term nested at any depth is walked whole: a rule that nests its
+    /// conclusion one deeper at each firing makes a fact as deep as the
+    /// firings, and every surface that prints one prints it through here
+    /// (`03-design/01-determinism-and-order.md` § 7).
+    pub fn walk_term<'a>(&'a self, v: Value, mut each: impl FnMut(TermStep<'a>)) {
+        let mut open: Vec<(Symbol, &'a [Value], usize)> = Vec::new();
+        let mut next = Some(v);
+        loop {
+            if let Some(v) = next.take() {
+                match v.tag() {
+                    Tag::Sym => each(TermStep::Name(v.as_sym().expect("tagged Sym"))),
+                    Tag::Fact => {
+                        let (rel, args) = self.facts.get(v.as_fact().expect("tagged Fact"));
+                        each(TermStep::Open(rel, args));
+                        open.push((rel, args, 0));
+                    }
+                }
+            }
+            let Some((rel, args, i)) = open.last_mut() else {
+                return;
+            };
+            if let Some(&a) = args.get(*i) {
+                each(TermStep::Arg(*i));
+                *i += 1;
+                next = Some(a);
+            } else {
+                each(TermStep::Close(*rel, args));
+                open.pop();
+            }
         }
     }
 
-    /// A whole fact as a [`ReprValue`] — `Fact(relation_name=…, args=(…))`:
-    /// the relation name and the arguments, and nothing else about the fact.
-    pub fn repr_fact(&self, id: FactId) -> ReprValue {
+    /// The value as `repr` prints it, for the `repr`-shaped output sites
+    /// ([03-design/01-determinism-and-order.md § 7](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#7-the-value-renderer)):
+    /// a name as [`repr::repr_str`], a fact as
+    /// `Fact(relation_name=…, args=(…))`, the relation name and the
+    /// arguments and nothing else about the fact — the text
+    /// [`repr::repr`] gives the [`ReprValue`](crate::repr::ReprValue) of the
+    /// value, written through [`Self::walk_term`].
+    pub fn repr_text(&self, v: Value) -> String {
+        let mut out = String::new();
+        self.walk_term(v, |step| match step {
+            TermStep::Name(s) => out.push_str(&repr::repr_str(self.sym(s))),
+            TermStep::Open(rel, _) => {
+                out.push_str("Fact(relation_name=");
+                out.push_str(&repr::repr_str(self.sym(rel)));
+                out.push_str(", args=(");
+            }
+            TermStep::Arg(i) => {
+                if i > 0 {
+                    out.push_str(", ");
+                }
+            }
+            TermStep::Close(_, args) => {
+                // The one-tuple's trailing comma, then the tuple and the fact.
+                if args.len() == 1 {
+                    out.push(',');
+                }
+                out.push_str("))");
+            }
+        });
+        out
+    }
+
+    /// A whole fact as [`Self::repr_text`] prints it.
+    pub fn repr_fact_text(&self, id: FactId) -> String {
+        self.repr_text(Value::fact(id))
+    }
+
+    /// The `repr` of a fact's `(relation_name, args)` identity tuple,
+    /// `('p', ('A',))`: unambiguous across the value shapes, and not the
+    /// whole fact's [`Self::repr_fact_text`], a different string.
+    pub fn repr_identity(&self, id: FactId) -> String {
         let (rel, args) = self.facts.get(id);
-        ReprValue::Fact {
-            relation_name: self.sym(rel).to_string(),
-            args: args.iter().map(|a| self.repr_value(*a)).collect(),
-        }
+        let args: Vec<String> = args.iter().map(|&a| self.repr_text(a)).collect();
+        repr::tuple(&[repr::repr_str(self.sym(rel)), repr::tuple(&args)])
     }
 
     /// A value as Ein text the loader reads back to the same value — **the
@@ -637,19 +726,48 @@ impl Terms {
     /// surface that prints a value prints it through here. There is no int:
     /// `1` and `01` are two names, and they print apart.
     pub fn display(&self, v: Value) -> String {
-        match v.tag() {
-            Tag::Sym => text::symbol(self.sym(v.as_sym().expect("tagged Sym"))).into_owned(),
-            Tag::Fact => self.fact_text(v.as_fact().expect("tagged Fact")),
-        }
+        let mut out = String::new();
+        self.write_display(&mut out, v);
+        out
+    }
+
+    /// [`Terms::display`], appended to `out`, through [`Self::walk_term`]: a
+    /// fact `(rel arg …)`, `(rel)` with no arguments and `()` for the empty
+    /// form, each argument printed the same way ([`text::form`]'s shape).
+    pub fn write_display(&self, out: &mut String, v: Value) {
+        self.walk_term(v, |step| match step {
+            TermStep::Name(s) => out.push_str(&text::symbol(self.sym(s))),
+            TermStep::Open(rel, args) => {
+                out.push('(');
+                let rel = self.sym(rel);
+                if !(rel == text::EMPTY_HEAD && args.is_empty()) {
+                    out.push_str(&text::head(rel));
+                }
+            }
+            TermStep::Arg(_) => out.push(' '),
+            TermStep::Close(..) => out.push(')'),
+        });
     }
 
     /// A fact as Ein text: `(rel arg …)`, `(rel)` with no arguments, each
     /// argument as [`Terms::display`] prints it ([`text::form`]).
     pub fn fact_text(&self, id: FactId) -> String {
-        let (rel, args) = self.facts.get(id);
-        let args: Vec<String> = args.iter().map(|a| self.display(*a)).collect();
-        text::form(self.sym(rel), &args)
+        self.display(Value::fact(id))
     }
+}
+
+/// What [`Terms::walk_term`] meets, in the order a term is written.
+#[derive(Clone, Copy, Debug)]
+pub enum TermStep<'a> {
+    /// A name.
+    Name(Symbol),
+    /// A fact opens: its relation, and its arguments, which follow.
+    Open(Symbol, &'a [Value]),
+    /// The `i`-th argument (from 0) of the innermost open fact comes next.
+    Arg(usize),
+    /// The innermost open fact closes after its last argument: its relation
+    /// and its arguments again.
+    Close(Symbol, &'a [Value]),
 }
 
 /// The tables, lent for the duration of one fan-out — [`Terms::lend`].
@@ -779,5 +897,106 @@ mod tests {
         assert_eq!(t.display(one), "1", "the name 1 prints as written");
         let zero_one = t.value_text("01").expect("room");
         assert_eq!(t.display(zero_one), "01", "and 01 is another name");
+    }
+
+    /// **The text writers write what the format's table states**: `repr` of
+    /// the [`ReprValue`](crate::repr::ReprValue) a value is, built by hand,
+    /// for every shape a fact's argument takes (a name, a fact of no, one and
+    /// two arguments, a fact nested in one), the identity tuple, and the one
+    /// printer's `()` for the empty form.
+    #[test]
+    fn the_text_writers_write_the_formats_shapes() {
+        use crate::repr::{ReprValue, repr};
+        let mut t = Terms::new();
+        let rel = t.intern_text("co-located").expect("room");
+        let quoted = t.intern_text("quote'd").expect("room");
+        let zero = t.intern_text("arity-0").expect("room");
+        let a = t.value_text("Norwegian").expect("room");
+        let b = t.value_text("House 2").expect("room");
+        let inner = t.value_fact(rel, &[a, b]).expect("room");
+        let one = t.value_fact(quoted, &[inner]).expect("room");
+        let none = t.value_fact(zero, &[]).expect("room");
+        let s = |x: &str| ReprValue::Str(x.to_string());
+        let inner_r = ReprValue::Fact {
+            relation_name: "co-located".into(),
+            args: vec![s("Norwegian"), s("House 2")],
+        };
+        let one_r = ReprValue::Fact {
+            relation_name: "quote'd".into(),
+            args: vec![inner_r.clone()],
+        };
+        let none_r = ReprValue::Fact {
+            relation_name: "arity-0".into(),
+            args: vec![],
+        };
+        for (v, want) in [
+            (a, s("Norwegian")),
+            (b, s("House 2")),
+            (inner, inner_r.clone()),
+        ] {
+            assert_eq!(t.repr_text(v), repr(&want));
+        }
+        assert_eq!(t.repr_text(one), repr(&one_r));
+        assert_eq!(t.repr_text(none), repr(&none_r));
+        let id = one.as_fact().expect("a fact");
+        assert_eq!(
+            t.repr_identity(id),
+            repr(&ReprValue::Tuple(vec![
+                s("quote'd"),
+                ReprValue::Tuple(vec![inner_r])
+            ]))
+        );
+        assert_eq!(
+            t.display(one),
+            "(quote'd (co-located Norwegian \"House 2\"))"
+        );
+        let empty = t.intern_text(text::EMPTY_HEAD).expect("room");
+        let empty = t.value_fact(empty, &[]).expect("room");
+        assert_eq!(t.display(empty), "()");
+        assert_eq!(t.display(none), "(arity-0)");
+    }
+
+    /// **No walk of a term recurses on its depth**: a fact nested 200 000
+    /// deep, past what a call stack takes, is printed whole by the one
+    /// printer and by `repr`, its names read, and ordered against one a
+    /// level shallower and against itself, on a thread whose stack is
+    /// small enough that a recursive walk of a few thousand levels would
+    /// overflow it.
+    #[test]
+    fn a_term_nested_past_any_call_stack_is_walked_whole() {
+        const DEPTH: usize = 200_000;
+        std::thread::Builder::new()
+            .stack_size(256 * 1024)
+            .spawn(|| {
+                let mut t = Terms::new();
+                let s = t.intern_text("s").expect("room");
+                let mut v = t.value_text("zero").expect("room");
+                let mut shallower = v;
+                for _ in 0..DEPTH {
+                    shallower = v;
+                    v = t.value_fact(s, &[v]).expect("room");
+                }
+                let text = t.display(v);
+                assert_eq!(text.len(), DEPTH * 4 + 4);
+                assert!(
+                    text.starts_with("(s (s ") && text.trim_end_matches(')').ends_with("(s zero")
+                );
+                let repr = t.repr_text(v);
+                assert!(repr.starts_with("Fact(relation_name='s', args=(Fact("));
+                assert!(repr.trim_end_matches([',', ')']).ends_with("args=('zero'"));
+                let mut names = 0usize;
+                t.walk_term(v, |step| {
+                    if let TermStep::Name(_) | TermStep::Open(..) = step {
+                        names += 1;
+                    }
+                });
+                assert_eq!(names, DEPTH + 1);
+                assert_eq!(t.cmp_semantic(shallower, v), Ordering::Less);
+                assert_eq!(t.cmp_semantic(v, shallower), Ordering::Greater);
+                assert_eq!(t.cmp_semantic(v, v), Ordering::Equal);
+            })
+            .expect("a thread")
+            .join()
+            .expect("no overflow");
     }
 }

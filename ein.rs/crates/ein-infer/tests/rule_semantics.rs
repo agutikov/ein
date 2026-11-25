@@ -90,11 +90,7 @@ impl Run {
         self.firings
             .iter()
             .filter(|f| !f.redundant)
-            .flat_map(|f| {
-                f.derived
-                    .iter()
-                    .map(|&d| ein_core::repr::repr(&self.terms.repr_fact(d)))
-            })
+            .flat_map(|f| f.derived.iter().map(|&d| self.terms.repr_fact_text(d)))
             .collect()
     }
 

@@ -156,7 +156,7 @@ core of a dead node.
   name, stably, relations in declaration order, slots ascending. The order of the filters decides which counter a
   dropped candidate is attributed to, and those counters are printed.
 - **H** is the writers' list sorted by `region::order_key`, a candidate's s-expression with every name as its raw
-  text and a nested fact rendered recursively, stably, and deduplicated. The key is defined for every argument
+  text and a nested fact rendered whole, at any depth, stably, and deduplicated. The key is defined for every argument
   shape, a name or a nested fact, so H's order is a content order whatever a hypothesis holds; between two
   candidates of one key, the writers' order, itself a content order, decides. H's order is the bit order of every
   node mask, the oracle's cube included, so no node, edge or listing depends on ids.
@@ -250,12 +250,15 @@ with it (`repr::repr_str`). It covers the three shapes `ReprValue` reachable fro
 |---|---|
 | a name, `Str` | quoted in `'`, or in `"` when the text holds a `'` and no `"`; the chosen quote and `\` backslash-escaped; tab, newline and carriage return as `\t` `\n` `\r`; any other C0 control and DEL as `\xNN`; any other non-printable code point as `\xNN` below U+0100, `\uNNNN` below U+10000, `\UNNNNNNNN` above, lower-case hex; everything else as itself |
 | a tuple | `(a, b)`, items separated by `, `; one item `(a,)`; none `()` |
-| a fact | `Fact(relation_name='p', args=('A',))`: the relation name as a name and the arguments as a tuple, a nested fact recursively |
+| a fact | `Fact(relation_name='p', args=('A',))`: the relation name as a name and the arguments as a tuple, a nested fact in the same form |
 
-Printability is `ein_core::printable`'s table. `Terms::repr_value` and `Terms::repr_fact` build a `ReprValue` from
-an interned `Value`. The format is specified by tables: `ein-core/tests/format_tables.rs` holds every shape
-(`golden/repr_values.txt`) and every code point where printability turns over (`golden/repr_escapes.txt`), so a
-change to the format is a re-blessed golden, never a silent one. `repr` is a sort key and a quoting rule, never the
+Printability is `ein_core::printable`'s table. `Terms::repr_text` writes an interned `Value`'s `repr` straight from
+the term, through the walk that keeps no call stack ([`03-data-model.md` § 3](03-data-model.md#3-values-and-fact-ids)),
+and `Terms::repr_identity` a fact's `(relation_name, args)` tuple; `terms.rs`'
+`the_text_writers_write_the_formats_shapes` holds each to the text `repr` gives the `ReprValue` the value is. The
+format is specified by tables: `ein-core/tests/format_tables.rs` holds every shape (`golden/repr_values.txt`) and
+every code point where printability turns over (`golden/repr_escapes.txt`), so a change to the format is a
+re-blessed golden, never a silent one. `repr` is a sort key and a quoting rule, never the
 form a fact is shown to a reader in; that is the s-expression.
 
 `ein_core::numfmt` formats a float under a `[[fill]align][sign][0][width][.precision]f` spec, which is how
@@ -275,8 +278,8 @@ refused rather than guessed. `format_tables.rs` holds it over a seeded set of do
 
 The two DOT digests are stable digests, not salted hashes, so a node id and a colour are the same in every process
 and every build. The caller owns `hashed_id`'s seed: `dot_util::fact_key`'s flat `rel|arg,arg` and the trace slice's
-recursive key are each part of the id they make. A colour reaches a view as an attribute and never as an id, so a
-mismatch would be visible rather than structural. Pinned by `dot_util`'s
+deep key, which descends into every nested fact, are each part of the id they make. A colour reaches a view as an
+attribute and never as an id, so a mismatch would be visible rather than structural. Pinned by `dot_util`'s
 `the_node_id_is_the_first_ten_hex_digits_of_the_md5`, `palette`'s `the_palette_index_is_the_whole_digest_mod_ten`,
 and the DOT goldens under `ein-render/tests/golden/dot/` (`ein-render/tests/golden_dot.rs`). `state_digest` is never
 identity: distinct states may share one, and nothing reads it back.

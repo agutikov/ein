@@ -528,15 +528,15 @@ fn an_imported_module_is_read_as_the_program_is() {
     if !unreadable {
         eprintln!("m-unread.ein is readable with its mode 000 (root?): its case is not run");
     }
-    let canonical = dir.canonicalize().expect("the scratch directory");
+    // A module's parse names it as the program names it, its directory as
+    // given joined with the module's name: here the program's own directory,
+    // the working one.
     let nonascii = format!(
-        "kb load error: {}/m-nonascii.ein:2:5: {}",
-        canonical.display(),
+        "kb load error: m-nonascii.ein:2:5: {}",
         line_for("é", '\u{e9}')
     );
     let nbsp = format!(
-        "kb load error: {}/m-nbsp.ein:2:3: {}",
-        canonical.display(),
+        "kb load error: m-nbsp.ein:2:3: {}",
         line_for("\\u{a0}", '\u{a0}')
     );
     let mut cases: Vec<(&str, String)> = vec![
@@ -575,14 +575,13 @@ fn an_imported_module_is_read_as_the_program_is() {
         // The module's line is the one its path gives as the program a
         // command is given, but the container's, which a command opens, and
         // the missing one's, which no read reaches; a module's parse names it
-        // by its resolved path, which is the only difference.
+        // by the same path.
         if !matches!(*m, "m-box" | "m-none") {
             let r = ein_in(dir, &["solve", &format!("{m}.ein")]);
             let alone = r.err.lines().next().unwrap_or("");
             let through = want
                 .strip_prefix("kb load error: ")
-                .expect("the load's line")
-                .replace(&format!("{}/", canonical.display()), "");
+                .expect("the load's line");
             if alone != through {
                 bad.push(format!(
                     "{m}: as the program, {alone:?}; through the import, {through:?}"

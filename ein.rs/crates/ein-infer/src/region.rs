@@ -2502,19 +2502,17 @@ fn core_sources_of(kb: &Kb, terms: &Terms, facts: &[FactId]) -> Vec<Option<Strin
 /// candidates that print apart could share it, and the generator's order is
 /// the tie-break.
 pub(crate) fn order_key(terms: &Terms, id: FactId) -> String {
-    let (rel, args) = terms.facts.get(id);
-    let inner: Vec<String> = args
-        .iter()
-        .map(|&a| match a.tag() {
-            ein_core::Tag::Fact => order_key(terms, a.as_fact().expect("tagged Fact")),
-            ein_core::Tag::Sym => terms.sym(a.as_sym().expect("tagged Sym")).to_string(),
-        })
-        .collect();
-    if inner.is_empty() {
-        format!("({})", terms.sym(rel))
-    } else {
-        format!("({} {})", terms.sym(rel), inner.join(" "))
-    }
+    let mut out = String::new();
+    terms.walk_term(ein_core::Value::fact(id), |step| match step {
+        ein_core::TermStep::Name(s) => out.push_str(terms.sym(s)),
+        ein_core::TermStep::Open(rel, _) => {
+            out.push('(');
+            out.push_str(terms.sym(rel));
+        }
+        ein_core::TermStep::Arg(_) => out.push(' '),
+        ein_core::TermStep::Close(..) => out.push(')'),
+    });
+    out
 }
 
 /// A dead fixpoint's core as a node reports one: its facts as sorted text,

@@ -29,7 +29,7 @@
 
 use std::collections::{BTreeSet, HashMap, HashSet, VecDeque};
 
-use ein_core::{FactId, Kb, Tag, Terms, Value};
+use ein_core::{FactId, Kb, TermStep, Terms, Value};
 use ein_infer::firing::Firing;
 
 use crate::dot_util::{
@@ -105,22 +105,29 @@ pub fn derivation_hue(rule: &str) -> Hue {
 }
 
 /// The content key behind a slice node id — stable across runs, and
-/// deliberately **recursive**: it descends into nested fact arguments, which
-/// the flat [`crate::dot_util::fact_key`] does not. That recursion is
-/// load-bearing for these ids, which is why only the hash-and-prefix tail,
+/// deliberately **deep**: it descends into nested fact arguments, at any
+/// depth, which the flat [`crate::dot_util::fact_key`] does not. That descent
+/// is load-bearing for these ids, which is why only the hash-and-prefix tail,
 /// [`crate::dot_util::hashed_id`], is shared and the two key builders are not
 /// merged.
 fn key(terms: &Terms, f: FactId) -> String {
-    let (rel, args) = terms.fact(f);
-    let parts: Vec<String> = args.iter().map(|a| arg_str(terms, *a)).collect();
-    format!("{}|{}", terms.sym(rel), parts.join(","))
-}
-
-fn arg_str(terms: &Terms, a: Value) -> String {
-    match a.tag() {
-        Tag::Fact => key(terms, a.as_fact().expect("tagged Fact")),
-        _ => terms.display(a),
-    }
+    // `rel|a,b`, a nested fact's argument its own key, at any depth
+    // ([`Terms::walk_term`]).
+    let mut out = String::new();
+    terms.walk_term(Value::fact(f), |step| match step {
+        TermStep::Name(s) => out.push_str(&ein_core::text::symbol(terms.sym(s))),
+        TermStep::Open(rel, _) => {
+            out.push_str(terms.sym(rel));
+            out.push('|');
+        }
+        TermStep::Arg(i) => {
+            if i > 0 {
+                out.push(',');
+            }
+        }
+        TermStep::Close(..) => {}
+    });
+    out
 }
 
 fn node_id(key: &str) -> String {
@@ -237,7 +244,7 @@ pub fn render_slice(
     let sorted = |facts: &[FactId]| -> Vec<FactId> {
         let mut v: Vec<(String, FactId)> = facts
             .iter()
-            .map(|f| (ein_core::repr::repr(&terms.repr_fact(*f)), *f))
+            .map(|f| (terms.repr_fact_text(*f), *f))
             .collect();
         v.sort();
         v.dedup();

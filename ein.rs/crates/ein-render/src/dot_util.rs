@@ -4,7 +4,7 @@
 //! drift apart in how they name a node: a renderer that hand-rolled its own
 //! would.
 
-use ein_core::{FactId, Tag, Terms, Value};
+use ein_core::{FactId, TermStep, Terms, Value};
 use ein_ir::{Ast, Node, NodeId};
 use md5::{Digest, Md5};
 
@@ -22,7 +22,7 @@ pub fn quote(s: &str) -> String {
 /// A content-addressed node id: `prefix` + `md5(seed)[:10]` in hex.
 ///
 /// The caller owns `seed`: the flat [`fact_key`] and `render/slice`'s
-/// *recursive* key are deliberately not merged — only this hash-and-prefix
+/// *deep* key are deliberately not merged — only this hash-and-prefix
 /// tail is shared. `quoted` wraps the result in DOT quotes, which some
 /// emitters do and others do not.
 pub fn hashed_id(prefix: &str, seed: &str, quoted: bool) -> String {
@@ -170,13 +170,33 @@ pub fn digraph_open(name: &str, rankdir: Option<&str>, node_defaults: Option<&st
     out
 }
 
-/// A readable `rel(a, b, …)` label for a fact, recursing into nested fact
-/// arguments (the Q40 relational-node idiom).
+/// A readable `rel(a, b, …)` label for a fact, its nested facts labelled
+/// the same way at any depth (the Q40 relational-node idiom), through
+/// [`Terms::walk_term`], which keeps no call stack.
 ///
 /// A nullary fact is its bare relation name — `""` inner, so no parentheses.
 pub fn fact_label(terms: &Terms, f: FactId) -> String {
-    let (rel, args) = terms.fact(f);
-    fact_label_parts(terms, terms.sym(rel), args)
+    let mut out = String::new();
+    terms.walk_term(Value::fact(f), |step| match step {
+        TermStep::Name(s) => out.push_str(&ein_core::text::symbol(terms.sym(s))),
+        TermStep::Open(rel, args) => {
+            out.push_str(terms.sym(rel));
+            if !args.is_empty() {
+                out.push('(');
+            }
+        }
+        TermStep::Arg(i) => {
+            if i > 0 {
+                out.push_str(", ");
+            }
+        }
+        TermStep::Close(_, args) => {
+            if !args.is_empty() {
+                out.push(')');
+            }
+        }
+    });
+    out
 }
 
 /// [`fact_label`] with the relation and arguments given separately, for the
@@ -184,9 +204,9 @@ pub fn fact_label(terms: &Terms, f: FactId) -> String {
 pub fn fact_label_parts(terms: &Terms, relation_name: &str, args: &[Value]) -> String {
     let parts: Vec<String> = args
         .iter()
-        .map(|a| match a.tag() {
-            Tag::Fact => fact_label(terms, a.as_fact().expect("tagged Fact")),
-            _ => terms.display(*a),
+        .map(|a| match a.as_fact() {
+            Some(g) => fact_label(terms, g),
+            None => terms.display(*a),
         })
         .collect();
     let inner = parts.join(", ");

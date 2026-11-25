@@ -197,7 +197,9 @@ impl Default for Resolver {
 struct File {
     /// The canonical module name; `None` for the main file.
     name: Option<String>,
-    /// The resolved path (or the embedded copy's), what a cycle names.
+    /// The path the file is read from, as the program names it (or the
+    /// embedded copy's): what a cycle names and what its forms' `Loc`s name.
+    /// A module is told from another by its [`Self::name`], never by this.
     key: String,
     /// The file's forms, as parsed.
     forms: Vec<NodeId>,
@@ -692,12 +694,17 @@ impl Resolver {
         Ok(())
     }
 
-    /// Logical module name → `(identity, text)`.
+    /// Logical module name → `(the path it is read from, text)`.
     ///
     /// `std.x.y` resolves under the stdlib root; anything else from the
-    /// program file's directory. The identity is the **resolved** path,
-    /// because that is what a cycle names and what the imported forms' `Loc`s
-    /// name.
+    /// program file's directory. **The path is the one the program names**:
+    /// the program's directory as it was given, joined with the module's name
+    /// as written, and the stdlib root as it was found (`$EIN_STDLIB` as set,
+    /// the checkout, `<embedded>`), never made absolute or resolved further,
+    /// so a cycle, a module's parse error and every `Loc` of its forms read
+    /// the same from any working directory but for the program's own path. A
+    /// module is told from another by its name (`by_name`), so no message
+    /// needs the file's canonical path.
     fn locate(
         &self,
         written: &str,
@@ -779,10 +786,7 @@ impl Resolver {
                 return Err(LoadError::new(Kind::ModuleUnreadable, line, place));
             }
         };
-        let key = std::fs::canonicalize(&display)
-            .ok()
-            .map_or_else(|| display.clone(), |p| p.display().to_string());
-        Ok((key, text))
+        Ok((display, text))
     }
 
     /// Every file's short names. A module's are read before the files that

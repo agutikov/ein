@@ -76,7 +76,11 @@ lives in the interner ([`03-design/03-data-model.md`](03-design/03-data-model.md
 ### 2.2 Load
 
 `ein_ir::load_file` is parse, macro expansion, import resolution and KB construction in one call, resolving a local
-module's name against the program file's directory. Where `std.*` comes from is
+module's name against the program file's directory. It reads the path as every command reads the program it is
+given, through `ein_ir::read::read_program`: a file that cannot be read, or is not UTF-8, is a `KbLoadError` of one
+finding of the kind `unreadable` whose message is the line every command prints
+([`07-diagnostics.md` § 2](../user/04-reference/07-diagnostics.md#2-errors-and-exit-codes)), and a `.einb`
+container, which `ein_einb::open` opens, is refused with a line that says so. Where `std.*` comes from is
 [`ein_ir::stdlib`](../../../ein.rs/crates/ein-ir/src/stdlib.rs)'s three steps: `$EIN_STDLIB`, a `stdlib/` found by
 walking up from the executable, then the copy compiled in; `ein --version` prints which one answered
 ([`03-design/02-shared-assets.md`](03-design/02-shared-assets.md)).
