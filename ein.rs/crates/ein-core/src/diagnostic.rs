@@ -28,7 +28,9 @@ use std::fmt;
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub enum Severity {
     /// The program is refused, a claim is refuted, or the run is not
-    /// answered: the command's exit code says so.
+    /// answered: the command's exit code says so. And a file the run was
+    /// asked to write and could not, whose line says `error:` and whose run
+    /// keeps its exit code (`07-diagnostics.md` § 2.4).
     Error,
     /// Something the answer does not claim, or a file the load did not
     /// believe: printed, and no answer and no exit code moves.
@@ -96,8 +98,10 @@ kinds! {
     /// § 1.7: a text nested past the parser's limit.
     NestingLimit = "nesting-limit",
     // ── 07-diagnostics.md § 2: the rest ──
-    /// § 2: a program file that cannot be read, or is neither UTF-8 text nor
-    /// a `.einb` container.
+    /// § 2: a program file that cannot be read, is neither UTF-8 text nor a
+    /// `.einb` container, or is a container this build cannot read: its own
+    /// refusals, its magic, its version, its digest, a truncated or malformed
+    /// section, and a build with no `einb` feature.
     Unreadable = "unreadable",
     /// § 2.1: a query's, a solve's and a claim's refusals.
     Claim = "claim",
@@ -255,7 +259,8 @@ impl Diagnostic {
     /// **The line stderr prints for this diagnostic alone**: a note after
     /// `note: `, the static check's warning after `WARNING: `, another
     /// warning after `warning: `, the clock's abort between `** aborted: `
-    /// and ` **`, and any other error as its message is. A refusal of the
+    /// and ` **`, an artefact's failure after `error: `, and any other error
+    /// as its message is. A refusal of the
     /// load is printed as its findings together, behind `kb load error: `,
     /// which is the refusal's line and no one finding's.
     pub fn line(&self) -> String {
@@ -264,6 +269,7 @@ impl Diagnostic {
             (Severity::Warning, Kind::NotMonotone) => format!("WARNING: {}", self.message),
             (Severity::Warning, _) => format!("warning: {}", self.message),
             (Severity::Error, Kind::Deadline) => format!("** aborted: {} **", self.message),
+            (Severity::Error, Kind::Artefact) => format!("error: {}", self.message),
             (Severity::Error, _) => self.message.clone(),
         }
     }
@@ -307,6 +313,11 @@ mod tests {
         assert_eq!(s.line(), "warning: x.einb was written");
         let d = Diagnostic::error(Kind::Deadline, "--max-time 0 s reached before x");
         assert_eq!(d.line(), "** aborted: --max-time 0 s reached before x **");
+        let a = Diagnostic::error(Kind::Artefact, "--trace t.md: Is a directory (os error 21)");
+        assert_eq!(
+            a.line(),
+            "error: --trace t.md: Is a directory (os error 21)"
+        );
         let e = Diagnostic::error(Kind::ClaimFailed, "f.ein: query :expect FAILED — why");
         assert_eq!(e.line(), e.message);
         assert_eq!(e.to_string(), e.message);

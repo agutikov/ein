@@ -273,9 +273,18 @@ fn run_bounded(
     let mut terms = Terms::new();
     let t_load = Instant::now();
     let load_opts = crate::common::load_options(m);
+    // What the run was asked, which a summary with no answer says too.
+    let asked = ein_render::dump::region_answer::asked(opts.mode, opts.no_search);
     let Some(mut kb) =
         crate::common::load_program(&mut ast, &mut terms, Path::new(&file), &load_opts)
     else {
+        write_unanswered(
+            summary_path.as_deref(),
+            &file,
+            Some(asked.clone()),
+            None,
+            &[],
+        );
         return 1;
     };
     let load = t_load.elapsed();
@@ -320,7 +329,14 @@ fn run_bounded(
                 Some(Vec::new())
             }
             Err(ein_infer::SolveError::Deadline) => {
-                eprintln!("{}", aborted(max_time).line());
+                crate::common::say(aborted(max_time));
+                write_unanswered(
+                    summary_path.as_deref(),
+                    &file,
+                    Some(asked.clone()),
+                    Some(&cfg),
+                    &[],
+                );
                 return 2;
             }
             Err(e) => {
@@ -334,7 +350,14 @@ fn run_bounded(
     let r = match read_out::run_with(&mut kb, &mut terms, &ast, &opts, &mut events) {
         Ok(r) => r,
         Err(ein_infer::SolveError::Deadline) => {
-            eprintln!("{}", aborted(max_time).line());
+            crate::common::say(aborted(max_time));
+            write_unanswered(
+                summary_path.as_deref(),
+                &file,
+                Some(asked.clone()),
+                Some(&cfg),
+                &[],
+            );
             return 2;
         }
         // `-y` found a parent path that reaches another state on a monotone
@@ -342,6 +365,22 @@ fn run_bounded(
         Err(ein_infer::SolveError::SpotCheck(e)) => {
             eprintln!("error: {e}");
             return 2;
+        }
+        // A saved file's choice that names no node of its program
+        // (`07-diagnostics.md` § 2.29): a refusal, with its summary.
+        Err(e) if e.kind().is_some() => {
+            crate::common::say(ein_core::Diagnostic::error(
+                e.kind().expect("a kind"),
+                e.to_string(),
+            ));
+            write_unanswered(
+                summary_path.as_deref(),
+                &file,
+                Some(asked.clone()),
+                Some(&cfg),
+                &[],
+            );
+            return 1;
         }
         Err(e) => {
             eprintln!("{e}");
@@ -358,7 +397,14 @@ fn run_bounded(
         max_time,
         m.get_flag("stats"),
     );
-    if code == 2 {
+    if r.answer.stopped == Some(Stopped::Deadline) {
+        write_unanswered(
+            summary_path.as_deref(),
+            &file,
+            Some(asked.clone()),
+            Some(&cfg),
+            &[],
+        );
         return code;
     }
     emit_region(&mut events, &r);
@@ -435,17 +481,19 @@ fn run_bounded(
     }
     // The summary and the answer directory: the same facts as stdout, as
     // files, additive in the same sense.
-    let summary = match crate::summary::build_region(&ast, &mut terms, &mut kb, &r, &file, &cfg) {
-        Ok(s) => crate::summary::text(&s),
-        Err(e) => {
-            for (flag, path) in [("json-summary", &summary_path), ("dump-answer", &dump)] {
-                if let Some(p) = path {
-                    crate::solve::artefact_failed(flag, p, &e);
+    let said = crate::common::said();
+    let summary =
+        match crate::summary::build_region(&ast, &mut terms, &mut kb, &r, &file, &cfg, &said) {
+            Ok(s) => crate::summary::text(&s),
+            Err(e) => {
+                for (flag, path) in [("json-summary", &summary_path), ("dump-answer", &dump)] {
+                    if let Some(p) = path {
+                        crate::solve::artefact_failed(flag, p, &e);
+                    }
                 }
+                return code;
             }
-            return code;
-        }
-    };
+        };
     if let Some(path) = summary_path.as_deref()
         && let Err(e) = std::fs::write(path, &summary)
     {
@@ -520,6 +568,13 @@ fn run_monotone(m: &ArgMatches, file: &str) -> i32 {
     let Some(mut kb) =
         crate::common::load_program(&mut ast, &mut terms, Path::new(file), &load_opts)
     else {
+        write_unanswered(
+            summary_path.as_deref(),
+            file,
+            Some(crate::summary::asked_monotone()),
+            None,
+            &[],
+        );
         return 1;
     };
     let cfg = crate::solve::resolved_config(&kb, m);
@@ -561,14 +616,19 @@ fn run_monotone(m: &ArgMatches, file: &str) -> i32 {
             )
         );
     }
-    for l in text.stderr() {
-        eprintln!("{l}");
+    for d in &text.diagnostics {
+        crate::common::say(d.clone());
     }
     if summary_path.is_none() && dump.is_none() {
         return text.code;
     }
     let summary = crate::summary::text(&crate::summary::build_monotone(
-        &terms, &kb, &checked, file, &cfg,
+        &terms,
+        &kb,
+        &checked,
+        file,
+        &cfg,
+        &crate::common::said(),
     ));
     if let Some(path) = summary_path.as_deref()
         && let Err(e) = std::fs::write(path, &summary)
@@ -1194,7 +1254,7 @@ pub fn print(
     stats: bool,
 ) -> (i32, ein_render::read_out::Text) {
     if r.answer.stopped == Some(Stopped::Deadline) {
-        eprintln!("{}", aborted(max_time).line());
+        crate::common::say(aborted(max_time));
         return (2, ein_render::read_out::Text::default());
     }
     let argv = header_argv(command);
@@ -1219,15 +1279,38 @@ pub fn print(
             )
         );
     }
-    for l in text.stderr() {
-        eprintln!("{l}");
+    for d in &text.diagnostics {
+        crate::common::say(d.clone());
     }
     (text.code, text)
 }
 
+/// **Write the summary of a run with no answer** where `--json-summary`
+/// asks for one ([`crate::summary::build_unanswered`]): what the command
+/// asked, the program's config where it loaded, and what the run said
+/// ([`crate::common::said`]), then `unsaid`, what the command printed
+/// elsewhere: `ein test`'s abort, the line of its `ERROR` row. Additive as
+/// every summary is: a write that fails says so and moves no exit code.
+pub(crate) fn write_unanswered(
+    path: Option<&str>,
+    source: &str,
+    asked: Option<ein_render::dump::Json>,
+    config: Option<&ein_core::SolverConfig>,
+    unsaid: &[ein_core::Diagnostic],
+) {
+    let Some(path) = path else { return };
+    let mut said = crate::common::said();
+    said.extend(unsaid.iter().cloned());
+    let summary = crate::summary::build_unanswered(source, asked, config, &said);
+    if let Err(e) = crate::summary::write(path, &summary) {
+        crate::solve::artefact_failed("json-summary", path, e);
+    }
+}
+
 /// **The clock's abort** (`-T`), as a diagnostic: [`ein_core::Kind::Deadline`],
 /// printed as its line, `** aborted: --max-time S s reached before the
-/// question was decided **`, on stderr and nowhere else, at exit 2.
+/// question was decided **`, on stderr, at exit 2; the run summary, where one
+/// is asked for, is written with no answer and this diagnostic.
 pub(crate) fn aborted(max_time: Option<f64>) -> ein_core::Diagnostic {
     ein_core::Diagnostic::error(
         ein_core::Kind::Deadline,

@@ -11,8 +11,16 @@
 //! that appears only sometimes is a field a consumer has to guess about*).
 //! `ein-cli/tests/region_answer.rs` holds the key set on every arm, and
 //! `summary_properties.rs` the region's identities.
+//!
+//! **It is written wherever the run got far enough to know where to write
+//! it** (Q-M2.9): a run that answers, and one with no answer, refused at the
+//! parse, at the load or at its node, or ended by the clock, whose answer
+//! keys are `null` ([`build_unanswered`]). The last key, `diagnostics`, is
+//! what the run said on stderr, as values, in its order: a refusal's
+//! findings, the clock's abort, the static check's warning, the read-out's
+//! notes, a failed artefact's line, the load's notes.
 
-use ein_core::{Kb, SolverConfig, Terms};
+use ein_core::{Diagnostic, Kb, SolverConfig, Terms};
 use ein_infer::SharedMemo;
 use ein_infer::hypgen::{Drop, HypGenStats, Skip};
 use ein_ir::Ast;
@@ -263,7 +271,8 @@ fn config_block(cfg: &SolverConfig) -> Json {
 /// The read-out's blocks (`asked`, `region`, `verdict`, `queries`, `claim`,
 /// `work`) from [`ein_render::dump::region_answer::summary_blocks`], then the
 /// program's: the static check, `EIN_LEFTOVER`'s block, root's fixpoint and H
-/// (`root_block`) and the resolved config. Every key on every run.
+/// (`root_block`) and the resolved config, and last what the run said,
+/// `diagnostics`. Every key on every run.
 ///
 /// `kb` is the root the run answered from, at its fixpoint.
 pub fn build_region(
@@ -273,6 +282,7 @@ pub fn build_region(
     r: &ein_infer::read_out::ReadOut,
     source: &str,
     config: &SolverConfig,
+    diagnostics: &[Diagnostic],
 ) -> Result<Json, String> {
     let mut pairs: Vec<(&str, Json)> = vec![
         (
@@ -311,13 +321,17 @@ pub fn build_region(
     pairs.push(("leftover", leftover_block(ast, terms, kb, r)?));
     pairs.push(("root", root));
     pairs.push(("config", config_block(config)));
+    pairs.push((
+        "diagnostics",
+        ein_render::dump::region_answer::diagnostics(diagnostics),
+    ));
     Ok(Json::obj(pairs))
 }
 
 /// The summary of `ein solve --monotone`, `ein-summary/2`: every key a
 /// region run's summary has, `asked.ask` = `"monotone"`, no
 /// region, no verdict, no query answered, root's one saturation as the work,
-/// and the static check's block. Its `root` block is a region run's, so
+/// the static check's block, and what the run said. Its `root` block is a region run's, so
 /// `root.hypgen.emitted` is the universe its stdout prints.
 pub fn build_monotone(
     terms: &Terms,
@@ -325,6 +339,7 @@ pub fn build_monotone(
     checked: &ein_infer::explore::Checked,
     source: &str,
     config: &SolverConfig,
+    diagnostics: &[Diagnostic],
 ) -> Json {
     let taken = matches!(std::env::var("EIN_LEFTOVER").as_deref(), Ok("1"));
     Json::obj(vec![
@@ -333,14 +348,7 @@ pub fn build_monotone(
             Json::str(ein_render::dump::region_answer::SUMMARY),
         ),
         ("source", Json::str(source)),
-        (
-            "asked",
-            Json::obj(vec![
-                ("which", Json::Null),
-                ("ask", Json::str("monotone")),
-                ("n", Json::Null),
-            ]),
-        ),
+        ("asked", asked_monotone()),
         ("region", Json::Null),
         ("verdict", Json::Null),
         ("queries", Json::Array(Vec::new())),
@@ -376,6 +384,56 @@ pub fn build_monotone(
         ),
         ("root", root_block(terms, kb, &checked.root)),
         ("config", config_block(config)),
+        (
+            "diagnostics",
+            ein_render::dump::region_answer::diagnostics(diagnostics),
+        ),
+    ])
+}
+
+/// **The summary of a run with no answer**, `ein-summary/2` (Q-M2.9): a
+/// program refused at the parse, at the load or at its node, or a run the
+/// clock ended. Every key a region run's summary has, and every key of the
+/// answer `null`: `region`, `verdict`, `queries`, `claim`, `work`,
+/// `monotonicity`, `leftover` and `root`. `asked` is what the command asked,
+/// where it chose a question, and `config` the program's where it loaded;
+/// `diagnostics` say why there is no answer.
+pub fn build_unanswered(
+    source: &str,
+    asked: Option<Json>,
+    config: Option<&SolverConfig>,
+    diagnostics: &[Diagnostic],
+) -> Json {
+    Json::obj(vec![
+        (
+            "schema",
+            Json::str(ein_render::dump::region_answer::SUMMARY),
+        ),
+        ("source", Json::str(source)),
+        ("asked", asked.unwrap_or(Json::Null)),
+        ("region", Json::Null),
+        ("verdict", Json::Null),
+        ("queries", Json::Null),
+        ("claim", Json::Null),
+        ("work", Json::Null),
+        ("monotonicity", Json::Null),
+        ("leftover", Json::Null),
+        ("root", Json::Null),
+        ("config", config.map_or(Json::Null, config_block)),
+        (
+            "diagnostics",
+            ein_render::dump::region_answer::diagnostics(diagnostics),
+        ),
+    ])
+}
+
+/// The `asked` block of `ein solve --monotone`: a question about the
+/// program, no part of R.
+pub fn asked_monotone() -> Json {
+    Json::obj(vec![
+        ("which", Json::Null),
+        ("ask", Json::str("monotone")),
+        ("n", Json::Null),
     ])
 }
 

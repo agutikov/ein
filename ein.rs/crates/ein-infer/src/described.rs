@@ -41,6 +41,10 @@ pub struct Root {
     pub refuted_by: Vec<String>,
     /// The `:source` of each core fact that carries one.
     pub sources: Vec<String>,
+    /// The `:source` of each fact of [`Self::core`], in the core's order,
+    /// `None` for a fact that carries none: the summary's
+    /// `region.core_sources`.
+    pub core_sources: Vec<Option<String>>,
 }
 
 impl Root {
@@ -330,6 +334,7 @@ fn root_of(p: Option<&Point>, root_dead: bool) -> Root {
             core_status: p.core_status,
             refuted_by: p.refuted_by.clone(),
             sources: p.sources.clone(),
+            core_sources: p.core_sources.clone(),
         },
         None => Root {
             alive: !root_dead,
@@ -762,6 +767,7 @@ pub fn of_states(s: &StateRoute, d: &states::Description) -> Described {
             core_status: s.root.core_status,
             refuted_by: s.root.refuted_by.clone(),
             sources: s.root.sources.clone(),
+            core_sources: s.root.core_sources.clone(),
         },
         any_alive: !s.root.dead,
         k_c,
@@ -830,6 +836,7 @@ pub(crate) fn of_tree_classes(
         core_status: root_node.core_status,
         refuted_by: root_node.refuted_by.clone(),
         sources: root_node.sources.clone(),
+        core_sources: root_node.core_sources.clone(),
     };
     let root_in_r = root.in_r();
     let class = |i: usize| b.classes.get(i);
@@ -1189,6 +1196,7 @@ pub fn of_cube(r: &Region) -> Described {
             core_status: root.core_status,
             refuted_by: root.refuted_by.clone(),
             sources: root.sources.clone(),
+            core_sources: root.core_sources.clone(),
         },
         any_alive,
         k_c: t.size_r,

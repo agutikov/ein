@@ -195,8 +195,9 @@ A mode's count row counts the states the run lists: the summary's `region.states
 limit a line mode meets members it does not list, so its row is describe's, read off the same description, and the
 other members met are counted on the listing's last line.
 
-A run `--max-time` stops is no answer: it prints nothing on stdout, writes no summary and no answer directory's
-files, and exits 2 (§ 10). So no row reads *stopped at `--max-time`*. The clock is read inside every saturation, root's
+A run `--max-time` stops is no answer: it prints nothing on stdout, writes no answer directory's files, and exits 2
+(§ 10); its summary has no answer, every answer key `null`, and its one diagnostic is the deadline's (§ 11.3). So no
+row reads *stopped at `--max-time`*. The clock is read inside every saturation, root's
 first, as between a route's steps, so a saturation with no fixpoint ends there too.
 
 **A run a saturation stopped at `--max-steps`** ([Q-M2.16](../../../decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md)) is not decided, and establishes nothing of R: a
@@ -207,7 +208,8 @@ decided*, and `decided`, which says which saturation, root's or a node's, needed
 standing, nor H, nor the static check is read. Each query prints its `query` row and an `over` row that has no state
 to answer from, each claim is NOT CHECKED, a `note: … partial — …` line says it on stderr, and the run exits 0. The
 summary's `region.exhausted` is false and `region.stopped` says why; `region.root`, `region.universe` and
-`region.route` are `null`, and so are the summary's `monotonicity` and `root` blocks
+`region.route` are `null`, and so are the summary's `monotonicity` and `root` blocks; its `diagnostics` hold the
+`partial` note
 ([X22](09-read-out-examples.md#x22--zebra2ein---max-steps-100-a-saturation-stopped-at-the-cap)).
 
 ### 3.1 What order the obligation tree took
@@ -539,7 +541,9 @@ timing
 
 The shapes of the lines a question writes beside an answer; [`07-diagnostics.md`](07-diagnostics.md) has the exit codes and
 every error's line. Each line has a **kind**, the last column, as each refusal of `07-diagnostics.md` has one beside
-its section: the name a program that links Ein reads the line by, as a value beside its text.
+its section: the name a program that links Ein reads the line by, as a value beside its text. Each line a run prints,
+these, a refusal's findings and a failed artefact's line (`07-diagnostics.md` § 2.4), is a diagnostic of the run
+summary too, in the order stderr prints it (§ 11.3).
 
 | line | when | exit | kind |
 |---|---|---|---|
@@ -550,14 +554,19 @@ its section: the name a program that links Ein reads the line by, as a value bes
 | `note: FILE:L:C: solve: its :no-hypothesis …`, `… :no-search …` | when the run ends, on every command, after a flagged program's `WARNING`: where root holds no `open` fact, a name another declaration already says; a rule that concludes a hypothesis or a list beside `(solve :no-search)`, which proposes or filters nothing ([`07-diagnostics.md`](07-diagnostics.md), the hypothesis mechanisms) | 0 | `mechanisms` |
 | `warning: FILE was written under different inputs (…)` | a `.einb` container whose inputs moved since it was written, opened anyway, on every command that reads it, when it is loaded ([`09-binary-format.md` § 4.3](../../ein.rs/03-design/09-binary-format.md#43-a-file-not-believed)) | 0 | `stale-container` |
 | `FILE: query :expect FAILED — …`, `FILE: (solve :expect) FAILED — …` | a claim the run refutes | 1 | `claim-failed` |
-| `** aborted: --max-time S s reached before the question was decided **` | `-T`, between a route's steps or inside a saturation: no answer, so nothing on stdout, no summary, and no file in the answer directory | 2 | `deadline` |
+| `** aborted: --max-time S s reached before the question was decided **` | `-T`, between a route's steps or inside a saturation: no answer, so nothing on stdout and no file in the answer directory, and a summary with no answer whose one diagnostic, besides what the run printed before it, is this (§ 11.3). `ein oracle`'s ends *before the cube was done*; `ein test` prints the abort under the file's `ERROR` row on stdout, and lists it in the file's summary and on its report's rows | 2 | `deadline` |
 
 ---
 
 ## 11. `--json-summary`: the answer blocks
 
 The summary is the same facts as stdout, from the same read-out, with every key on every run and `null` where it does
-not apply (`ein-summary/2`). Every bound sits beside `exhausted`.
+not apply (`ein-summary/2`). Every bound sits beside `exhausted`. It is written wherever a run gets far enough to know
+where to write it, a run with no answer among them: a program refused at the parse, at the load, by the judgement of
+its hypothesis mechanisms or at a saved file's node, and a run the clock ended, whose answer keys, `region`,
+`verdict`, `queries`, `claim`, `work`, `monotonicity`, `leftover` and `root`, are `null`, `asked` the question, `config`
+the program's where it loaded, and `diagnostics` why (§ 11.3). A run that ends in an engine's error, which no
+diagnostic of Ein's names, writes none.
 
 **`[]` and `null`**
 ([Q-M1e2.27](../../../decisions/read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-what-does.md)): `[]` is a
@@ -590,6 +599,7 @@ root on it, and the summary writes `core: []` and `refuted_by: ["r"]`, where eve
 | `leftover` | [`06-config.md`](06-config.md)'s `EIN_LEFTOVER` row |
 | `root` | [`10-answer-dump.md` § The run summary](10-answer-dump.md#the-run-summary) |
 | `config` | [`06-config.md`](06-config.md)'s defaults block |
+| `diagnostics` | this page, § 11.3 |
 <!-- /owners -->
 
 ### 11.2 The fields no row prints as itself
@@ -618,6 +628,7 @@ Every other field of the seven keys is in a row's summary column above. Under a 
 | `region.maximal.trivial` | the line is $\top$ because nothing dies | *⊤, the trivial line* |
 | `region.route` | `1`, `2`, `states`, `tree` or `tree-classes` | `route`'s first words |
 | `region.licences` | each licence the route used, by its label | `route`, after the route; on route 2 describe and `ein oracle` say *no licence* where this holds `L7 the cube` |
+| `region.core_sources` | beside `region.core`, for each fact of the core, in its order, the `:source` it was written with, or `null` for a fact with none; `null` where `region.core` is | the `source` rows, one per fact with a `:source` |
 | `region.core_status` | the core's search: `within-budget`, `cut-` and its caps, or `null` | `core search`, where cut |
 | `region.holes.minimal[].set` | the hole's commitment | `minimal hole` |
 | `region.holes.minimal[].dead` | dead, or owing | `minimal hole`'s *dead:* or *owes* |
@@ -642,6 +653,46 @@ Every other field of the seven keys is in a row's summary column above. Under a 
 | `claim.lines` | why | the rows under it |
 <!-- /fields -->
 
+### 11.3 `diagnostics`: what the run said, as values
+
+The summary's last key is every line the run printed on stderr, as a value, in the order stderr printed it: a
+refusal's findings, each a finding of the refusal its line prints, the clock's abort, the static check's warning, a
+partial run's note, each claim not checked or refuted, a failed artefact's line, and the load's notes, which stderr
+prints when the run ends, last ([Q-M2.9](../../../decisions/diagnostics/Q-M2.9-a-refusal-is-a-value-with-a-kind-a-place-and-its.md)).
+A line written after the summary, a failed write of the summary itself or of the answer directory, is not in it.
+`[]` is a run that said nothing; the key is on every summary.
+
+<!-- diagnostics -->
+| field | what it holds |
+|---|---|
+| `kind` | the line of this page's § 10 by its `kind` column, or the refusal of [`07-diagnostics.md`](07-diagnostics.md) the line is, by the name beside its section |
+| `severity` | `error` for a refusal, a refuted claim, the clock's abort and a failed artefact; `warning` for the static check's line and a stale container; `note` for the rest |
+| `message` | the line as stderr prints it, without the word its severity puts in front (`note: `, `warning: `, `WARNING: `, `error: `) or the abort's `** aborted: ` and ` **`, and, for a refusal's finding, without `kb load error: `: its place in front where the line carries one |
+| `place` | where the line names a position, `null` where it names none (a line about a top-level form ends `at None`) |
+| `place.file` | the file as the line names it |
+| `place.line` | its line, 1-based |
+| `place.col` | its column, 1-based, in characters |
+<!-- /diagnostics -->
+
+A refused program's summary, `examples/broken/load/derivation_cycle.ein` under `ein solve`, trimmed to the keys
+that are not `null`:
+
+```json
+{
+  "schema": "ein-summary/2",
+  "source": "examples/broken/load/derivation_cycle.ein",
+  "asked": {"which": "all", "ask": "describe", "n": null},
+  "diagnostics": [
+    {
+      "kind": "derivation-cycle",
+      "severity": "error",
+      "message": "derivation cycle: (r a b) -> (r c d) -> (r a b)",
+      "place": null
+    }
+  ]
+}
+```
+
 ---
 
 ## 12. The surfaces that repeat these numbers
@@ -654,7 +705,7 @@ They define nothing; each repeats rows defined above.
 | `--dump-answer DIR`'s `answer.json` and `index.json` | the summary byte for byte; the `region` block |
 | `--trace FILE.md`'s headline | the rows above the listing, from the same printer |
 | `--events FILE`'s `region` event | `asked`, `region` without `states` and `frontier`, `verdict`, `work`: the summary's own blocks |
-| `ein test -v` and `--json-report` | a solve row's `region.k_s` and `k_c`; a query row's classes, over the states of the question the claim was read off, which both name (`route`, and `fell_back_from` where the first question left the claim undecided) |
+| `ein test -v` and `--json-report` | a solve row's `region.k_s` and `k_c`; a query row's classes, over the states of the question the claim was read off, which both name (`route`, and `fell_back_from` where the first question left the claim undecided); an `error` row's `diagnostics`, as § 11.3 writes them |
 
 ---
 

@@ -64,6 +64,8 @@ use std::time::{Duration, Instant};
 
 use ein_corpus::{Scratch, corpus, golden, golden_path, plan, repo_root};
 
+mod said;
+
 /// One cell's result.
 struct Cell {
     path: String,
@@ -180,12 +182,14 @@ fn run_cell(bin: &str, argv: &[String], repo: &Path, dir: &Path) -> (i32, String
 /// summary is *parsed*, not merely stat-ed: a truncated or malformed JSON
 /// object is exactly what an additive writer gets wrong under a run that dies
 /// part way through.
-fn inspect(path: &str, run: &str, code: i32, dir: &Path) -> Artefacts {
+///
+/// **A `solve` cell's summary says what its stderr printed** (Q-M2.9), kind
+/// by kind (`said::agree`), whatever its exit: a refused run writes one too,
+/// with no answer and the refusal's findings. Every other artefact is a run's
+/// that answered.
+fn inspect(path: &str, run: &str, code: i32, stderr: &str, dir: &Path) -> Artefacts {
     let mut a = Artefacts::default();
-    if code != 0 {
-        return a; // a refused run promises nothing.
-    }
-    if run.starts_with("solve") {
+    if run.starts_with("solve") && matches!(code, 0 | 1) {
         match std::fs::read_to_string(dir.join("summary.json")) {
             Err(e) => a
                 .bad
@@ -194,14 +198,28 @@ fn inspect(path: &str, run: &str, code: i32, dir: &Path) -> Artefacts {
                 Err(e) => a.bad.push(format!("  {path} :: {run} — summary.json: {e}")),
                 Ok(v) => {
                     a.summaries += 1;
-                    if v["schema"] != "ein-summary/2" || !v["region"].is_object() {
+                    // A run that answered has a region; a refused one, exit
+                    // 1, none, and an error among its diagnostics says why.
+                    let refused = code == 1
+                        && v["region"].is_null()
+                        && v["diagnostics"]
+                            .as_array()
+                            .is_some_and(|d| d.iter().any(|x| x["severity"] == "error"));
+                    if v["schema"] != "ein-summary/2" || !(v["region"].is_object() || refused) {
                         a.bad.push(format!(
-                            "  {path} :: {run} — summary is not ein-summary/2 with a region"
+                            "  {path} :: {run} — summary is not ein-summary/2 with a region, \
+                             nor a refusal's"
                         ));
+                    }
+                    if let Err(e) = said::agree(&v, stderr) {
+                        a.bad.push(format!("  {path} :: {run} — {e}"));
                     }
                 }
             },
         }
+    }
+    if code != 0 {
+        return a; // a refused run promises nothing more.
     }
     if run.contains("--trace") {
         a.traces += 1;
@@ -283,7 +301,7 @@ fn sweep() -> Vec<Cell> {
             std::fs::create_dir_all(&dir).expect("cell output directory");
             let argv = plan::argv(run, path, &dir);
             let (code, stderr, took) = run_cell(bin, &argv, &repo, &dir);
-            let artefacts = inspect(path, run, code, &dir);
+            let artefacts = inspect(path, run, code, &stderr, &dir);
             let _ = std::fs::remove_dir_all(&dir);
             Cell {
                 path: path.clone(),

@@ -140,6 +140,9 @@ pub struct Point {
     pub refuted_by: Vec<String>,
     /// The `:source` of each core fact that carries one.
     pub sources: Vec<String>,
+    /// The `:source` of each fact of [`Self::core`], in its order, `None`
+    /// for a fact that carries none.
+    pub core_sources: Vec<Option<String>>,
     /// The first visited point with the same state, as an index into
     /// [`DownSet::points`].
     pub class: u32,
@@ -468,6 +471,7 @@ pub(crate) fn compute_prepared(
                     core_status: o.node.core_status,
                     refuted_by: o.node.refuted_by,
                     sources: o.node.sources,
+                    core_sources: o.node.core_sources,
                     class,
                     closure: o.closure.into_boxed_slice(),
                 });
@@ -543,6 +547,7 @@ pub(crate) fn compute_prepared(
             core_status: o.node.core_status,
             refuted_by: o.node.refuted_by,
             sources: o.node.sources,
+            core_sources: o.node.core_sources,
             class: classes.get(&o.state).copied().unwrap_or(u32::MAX),
             closure: o.closure.into_boxed_slice(),
         });
@@ -582,6 +587,7 @@ pub(crate) fn compute_prepared(
             p.core_status = node.core_status;
             p.refuted_by = node.refuted_by;
             p.sources = node.sources;
+            p.core_sources = node.core_sources;
         }
     }
     out.cost.nodes = t_nodes.elapsed();

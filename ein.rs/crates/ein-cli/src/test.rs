@@ -77,8 +77,11 @@
 //! its claim's outcome was read off, as `ein solve`'s flags spell it and
 //! `describe` for the bare run; and `fell_back_from`, the question asked
 //! first where it left the claim undecided; each `null` on a row no run
-//! checked; and `diff`, the claim's diff under `--diff`, `null` without it
-//! and on a row no run checked. `--json-summary`
+//! checked; `diff`, the claim's diff under `--diff`, `null` without it
+//! and on a row no run checked; and `diagnostics`, on a row whose outcome is
+//! `error`, why: the refusal's findings, the clock's abort, each
+//! `{kind, severity, message, place}` as the run summary writes them
+//! (Q-M2.9), and `null` on every other row. `--json-summary`
 //! is a *run*'s summary — verdict, counters, config — and is refused over a
 //! selection of more than one run for the reason every artefact flag is: it
 //! names one path. A report is the other shape. It has no run to be more than
@@ -107,7 +110,7 @@ use std::path::{Path, PathBuf};
 use std::time::Instant;
 
 use clap::ArgMatches;
-use ein_core::Terms;
+use ein_core::{Diagnostic, Terms};
 use ein_infer::expect::{Outcome, Report};
 use ein_infer::explore::{self, Mode};
 use ein_infer::read_out::{self, ReadOut, Stands};
@@ -363,6 +366,9 @@ struct Row {
     /// The claim's diff under `--diff` ([`claim_diff::json`]), where a run
     /// decided the claim.
     diff: Option<Json>,
+    /// Why the row is an `error`: the file's refusal, or what ended its run
+    /// (Q-M2.9). `None` on every other row.
+    diagnostics: Option<Vec<Diagnostic>>,
 }
 
 impl Row {
@@ -446,6 +452,12 @@ impl Row {
         pairs.push(("route", word(&self.route)));
         pairs.push(("fell_back_from", word(&self.fell_back_from)));
         pairs.push(("diff", self.diff.clone().unwrap_or(Json::Null)));
+        pairs.push((
+            "diagnostics",
+            self.diagnostics
+                .as_deref()
+                .map_or(Json::Null, ein_render::dump::region_answer::diagnostics),
+        ));
         Json::obj(pairs)
     }
 }
@@ -744,18 +756,28 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
         route: None,
         fell_back_from: None,
         diff: None,
+        diagnostics: None,
     };
     let load_opts = crate::common::load_options(m);
-    let Some(kb) = crate::common::load_program(&mut ast, &mut terms, path, &load_opts) else {
-        println!("{}", status("ERROR", path));
-        tally.errors += 1;
-        // A file that did not load states nothing, because a claim is a
-        // property of a *program*. The `examples/broken/load/` fixtures that
-        // contain the token `:expect` are here — they exist to be refused,
-        // and counting them as claims would put the loader's own negatives in
-        // the numerator of "what fraction of the corpus claims a model set".
-        rows.push(row(0, 0, "query", Came::Error.key()));
-        return;
+    let summary_path = m.get_one::<String>("json-summary").map(String::as_str);
+    let file = path.display().to_string();
+    let kb = match crate::common::load_or_refuse(&mut ast, &mut terms, path, 0, &load_opts) {
+        Ok(kb) => kb,
+        Err(refusal) => {
+            println!("{}", status("ERROR", path));
+            tally.errors += 1;
+            // A file that did not load states nothing, because a claim is a
+            // property of a *program*. The `examples/broken/load/` fixtures
+            // that contain the token `:expect` are here — they exist to be
+            // refused, and counting them as claims would put the loader's own
+            // negatives in the numerator of "what fraction of the corpus
+            // claims a model set". Its row says why, as the summary does.
+            let mut r = row(0, 0, "query", Came::Error.key());
+            r.diagnostics = Some(refusal.findings);
+            rows.push(r);
+            crate::modes::write_unanswered(summary_path, &file, None, None, &[]);
+            return;
+        }
     };
     let n_queries = kb.program().queries.len();
     // The `(solve … :expect …)` claim first: it is about the lattice every
@@ -833,23 +855,41 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
     let deadline = m
         .get_one::<f64>("max-time")
         .map(|s| Instant::now() + std::time::Duration::from_secs_f64(s.max(0.0)));
-    let failed = |tally: &mut Tally, why: String| {
+    // The rows of this file: its solve row, then its query rows.
+    let file_rows = solve_row.unwrap_or(first_row);
+    let config = kb.program().config.clone().unwrap_or_default();
+    // A run that is no verdict: the file is an `ERROR`, every row of it that
+    // states a claim is an `error` with why, and the summary asked for says
+    // why with no answer. `summary` is whether that summary is still to be
+    // written: a run that failed after the file's summary was written
+    // leaves it.
+    let failed = |tally: &mut Tally, rows: &mut Vec<Row>, f: Failed, summary: bool| {
         tally.errors += 1;
         println!("{}", status(Came::Error.label(), path));
-        println!("    {why}");
+        println!("    {}", f.why);
+        for r in rows[file_rows..].iter_mut().filter(|r| r.claim.is_some()) {
+            r.outcome = Came::Error.key();
+            r.diagnostics = Some(f.diagnostics.clone());
+        }
+        if summary {
+            crate::modes::write_unanswered(
+                summary_path,
+                &file,
+                Some(ein_render::dump::region_answer::asked(f.asked, no_search)),
+                Some(&config),
+                &f.unsaid,
+            );
+        }
     };
     let tree = explore::DescribeRoute::Tree;
     let mut first = match ask(path, m, least, deadline, (ast, terms, kb), tree) {
         Ok(run) => run,
-        Err(why) => return failed(tally, why),
+        Err(f) => return failed(tally, rows, f, true),
     };
     // A flagged program: the loud warning, once a file (Q-M1f.564). Its
     // claims are checked as any program's are.
     if !first.r.answer.monotonicity.is_monotone() {
-        eprintln!(
-            "{}",
-            ein_infer::detector::warning_line(&path.display().to_string())
-        );
+        crate::common::say(ein_infer::detector::warning(&path.display().to_string()));
     }
     // The read-out answers the queries that have a :goal, in order.
     let mut answered: Vec<Option<usize>> = Vec::with_capacity(n_queries);
@@ -875,12 +915,16 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
     if undecided {
         let mut ast = Ast::new();
         let mut terms = Terms::new();
-        let Some(kb) = crate::common::load_program(&mut ast, &mut terms, path, &load_opts) else {
-            return failed(tally, "the program did not load a second time".to_string());
+        let kb = match crate::common::load_or_refuse(&mut ast, &mut terms, path, 0, &load_opts) {
+            Ok(kb) => kb,
+            Err(refusal) => {
+                let f = Failed::again(describing, refusal);
+                return failed(tally, rows, f, true);
+            }
         };
         second = match ask(path, m, describing, deadline, (ast, terms, kb), tree) {
             Ok(run) => Some(run),
-            Err(why) => return failed(tally, why),
+            Err(f) => return failed(tally, rows, f, true),
         };
     }
     // Each query claim, read off the run that decided it.
@@ -916,7 +960,13 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             }
             Err(e) => {
                 eprintln!("{e}");
-                return failed(tally, e.to_string());
+                let f = Failed {
+                    why: e.to_string(),
+                    diagnostics: Vec::new(),
+                    unsaid: Vec::new(),
+                    asked: describing,
+                };
+                return failed(tally, rows, f, true);
             }
         }
     }
@@ -931,6 +981,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             &run.r,
             &run.file,
             &run.config,
+            &crate::common::said(),
         )
         .and_then(|s| crate::summary::write(out, &s).map_err(|e| e.to_string()));
         if let Err(e) = written {
@@ -970,8 +1021,12 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
     {
         let mut ast = Ast::new();
         let mut terms = Terms::new();
-        let Some(kb) = crate::common::load_program(&mut ast, &mut terms, path, &load_opts) else {
-            return failed(tally, "the program did not load a second time".to_string());
+        let kb = match crate::common::load_or_refuse(&mut ast, &mut terms, path, 0, &load_opts) {
+            Ok(kb) => kb,
+            Err(refusal) => {
+                let f = Failed::again(describing, refusal);
+                return failed(tally, rows, f, false);
+            }
         };
         by_states = match ask(
             path,
@@ -982,7 +1037,7 @@ fn check_file(path: &Path, m: &ArgMatches, volume: Volume, tally: &mut Tally, ro
             explore::DescribeRoute::States,
         ) {
             Ok(run) => Some(run),
-            Err(why) => return failed(tally, why),
+            Err(f) => return failed(tally, rows, f, false),
         };
     }
     // `--diff`: the solve claim's models against R, of the run its outcome
@@ -1286,6 +1341,35 @@ impl Asked {
     }
 }
 
+/// Why a file's run is no verdict: the line `ein test` prints under its
+/// `ERROR`, and the same as values, for its report's rows and its summary
+/// (Q-M2.9).
+struct Failed {
+    /// The line printed under the file's `ERROR`.
+    why: String,
+    /// Why, as values: the clock's abort, a refusal's findings; `[]` for an
+    /// engine error, which no diagnostic of Ein's names.
+    diagnostics: Vec<Diagnostic>,
+    /// Those of [`Self::diagnostics`] stderr did not print, which the summary
+    /// lists after what it did: the clock's abort, which `ein test` prints
+    /// on stdout as its `ERROR` row's line.
+    unsaid: Vec<Diagnostic>,
+    /// The question that was asked.
+    asked: Mode,
+}
+
+impl Failed {
+    /// The program refused when it was loaded again for `asked`.
+    fn again(asked: Mode, refusal: crate::common::Refusal) -> Failed {
+        Failed {
+            why: "the program did not load a second time".to_string(),
+            diagnostics: refusal.findings,
+            unsaid: Vec::new(),
+            asked,
+        }
+    }
+}
+
 /// Ask `mode` of a **freshly loaded** program, deciding its claims
 /// ([`explore::Options::refute`]), within `--region-budget`, `--max-steps` and
 /// the file's deadline, narrating into `--events`. `Err` is why the run is no verdict.
@@ -1296,7 +1380,7 @@ fn ask(
     deadline: Option<Instant>,
     (ast, mut terms, mut kb): (Ast, Terms, ein_core::Kb),
     route: explore::DescribeRoute,
-) -> Result<Asked, String> {
+) -> Result<Asked, Failed> {
     let mut opts = explore::Options::new(mode);
     opts.describe_route = route;
     if let Some(&b) = m.get_one::<i64>("region-budget") {
@@ -1323,14 +1407,39 @@ fn ask(
     crate::solve::events_load(&mut events, &terms, &kb);
     let t0 = Instant::now();
     // Never a pass and never a failure: the claims were neither confirmed
-    // nor refuted.
-    let aborted = || "aborted before an answer: --max-time".to_string();
+    // nor refuted. The abort is the `ERROR` row's line, on stdout.
+    let aborted = || {
+        let d = crate::modes::aborted(m.get_one::<f64>("max-time").copied());
+        Failed {
+            why: "aborted before an answer: --max-time".to_string(),
+            diagnostics: vec![d.clone()],
+            unsaid: vec![d],
+            asked: mode,
+        }
+    };
     let r = match read_out::run_with(&mut kb, &mut terms, &ast, &opts, &mut events) {
         Ok(r) => r,
         Err(ein_infer::SolveError::Deadline) => return Err(aborted()),
         Err(e) => {
-            eprintln!("{e}");
-            return Err(e.to_string());
+            // A refusal at the node is one of Ein's diagnostics; any other
+            // error is the engine's.
+            let diagnostics = match e.kind() {
+                Some(kind) => {
+                    let d = Diagnostic::error(kind, e.to_string());
+                    crate::common::say(d.clone());
+                    vec![d]
+                }
+                None => {
+                    eprintln!("{e}");
+                    Vec::new()
+                }
+            };
+            return Err(Failed {
+                why: e.to_string(),
+                diagnostics,
+                unsaid: Vec::new(),
+                asked: mode,
+            });
         }
     };
     let ms = t0.elapsed().as_secs_f64() * 1000.0;

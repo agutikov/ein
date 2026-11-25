@@ -98,20 +98,21 @@ fn printed(path: &Path, route: Route, budget: u64) -> Option<Printed> {
         .filter(|l| !l.starts_with("  route ") && !l.starts_with("  work "))
         .collect();
     let cfg = kb.program().config.clone().unwrap_or_default();
-    let summary = match ein_cli::summary::build_region(&ast, &mut terms, &mut kb, &r, &file, &cfg) {
-        Ok(s) => {
-            let mut j: J = serde_json::from_str(&ein_cli::summary::text(&s)).expect("parses");
-            if let Some(o) = j.as_object_mut() {
-                o.remove("work");
-                if let Some(region) = o.get_mut("region").and_then(J::as_object_mut) {
-                    region.remove("route");
-                    region.remove("licences");
+    let summary =
+        match ein_cli::summary::build_region(&ast, &mut terms, &mut kb, &r, &file, &cfg, &[]) {
+            Ok(s) => {
+                let mut j: J = serde_json::from_str(&ein_cli::summary::text(&s)).expect("parses");
+                if let Some(o) = j.as_object_mut() {
+                    o.remove("work");
+                    if let Some(region) = o.get_mut("region").and_then(J::as_object_mut) {
+                        region.remove("route");
+                        region.remove("licences");
+                    }
                 }
+                serde_json::to_string_pretty(&j).expect("serialises")
             }
-            serde_json::to_string_pretty(&j).expect("serialises")
-        }
-        Err(e) => format!("<summary> {e}"),
-    };
+            Err(e) => format!("<summary> {e}"),
+        };
     Some(Printed {
         text: format!(
             "{}\n--- stderr\n{}\n--- exit {}\n--- summary\n{summary}\n",

@@ -450,9 +450,13 @@ def solve_summary(text: str, bin: str, path: Path) -> dict:
     path.write_text(text, encoding="utf-8")
     js = path.with_suffix(".json")
     p = subprocess.run([bin, "solve", str(path), "--json-summary", str(js)], capture_output=True, text=True)
-    if not js.exists():
+    # A cell refused, or ended by the clock, writes a summary with no answer:
+    # its `region` is null, and its `diagnostics` say why. An engine's error
+    # writes none.
+    s = json.loads(js.read_text()) if js.exists() else None
+    if s is None or s["region"] is None:
         raise Unsupported(f"a cell does not solve: {p.stderr.strip()[:300]}")
-    return json.loads(js.read_text())
+    return s
 
 
 # ── the split ─────────────────────────────────────────────────────────────────

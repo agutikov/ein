@@ -143,7 +143,7 @@ fn studied(file: &str, cube: &Path, run: &Path) {
         region_lattice::write(&dir, &v, &lattice).expect("lattice/");
         let config = kb.program().config.clone().unwrap_or_default();
         let summary = ein_cli::summary::text(
-            &ein_cli::summary::build_region(&ast, &mut terms, &mut kb, &r, file, &config)
+            &ein_cli::summary::build_region(&ast, &mut terms, &mut kb, &r, file, &config, &[])
                 .expect("the summary"),
         );
         let inputs = ein_render::dump::region_answer::Inputs {

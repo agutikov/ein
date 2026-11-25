@@ -171,6 +171,9 @@ pub struct Dead {
     pub core_status: Option<crate::explain::CoreStatus>,
     pub refuted_by: Vec<String>,
     pub sources: Vec<String>,
+    /// The `:source` of each fact of [`Self::core`], in its order, `None`
+    /// for a fact that carries none.
+    pub core_sources: Vec<Option<String>>,
 }
 
 /// Root's node.
@@ -184,6 +187,9 @@ pub struct Root {
     pub core_status: Option<crate::explain::CoreStatus>,
     pub refuted_by: Vec<String>,
     pub sources: Vec<String>,
+    /// The `:source` of each fact of [`Self::core`], in its order, `None`
+    /// for a fact that carries none.
+    pub core_sources: Vec<Option<String>>,
 }
 
 /// ⊤, every candidate, saturated once when the budget stopped the route.
@@ -429,6 +435,7 @@ pub(crate) fn compute_resumable(
             core_status: o.node.core_status,
             refuted_by: o.node.refuted_by.clone(),
             sources: o.node.sources.clone(),
+            core_sources: o.node.core_sources.clone(),
         };
         if o.dead {
             stats.dead = 1;
@@ -440,6 +447,7 @@ pub(crate) fn compute_resumable(
                 core_status: o.node.core_status,
                 refuted_by: o.node.refuted_by,
                 sources: o.node.sources,
+                core_sources: o.node.core_sources,
             });
         } else {
             if o.owes > 0 {
@@ -603,6 +611,7 @@ pub(crate) fn compute_resumable(
             core_status: None,
             refuted_by: Vec::new(),
             sources: Vec::new(),
+            core_sources: Vec::new(),
         }));
 
         let t_layer = Instant::now();
@@ -657,6 +666,7 @@ pub(crate) fn compute_resumable(
                         core_status: o.node.core_status,
                         refuted_by: o.node.refuted_by,
                         sources: o.node.sources,
+                        core_sources: o.node.core_sources,
                     });
                     continue;
                 }

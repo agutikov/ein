@@ -9,8 +9,9 @@
 //! fix nobody intended or a new wrong answer.
 //!
 //! - **A refusal** exits 1, its stderr's first line is the recorded one, and
-//!   it writes no summary; so does a run that ends in an error before it
-//!   answered. A solve's usage refusal exits 2.
+//!   its summary has no answer: every answer key `null`, and its diagnostics
+//!   the refusal's findings (Q-M2.9); a run that ends in an engine's error
+//!   before it answered writes none. A solve's usage refusal exits 2.
 //! - **N's cores**: a dead node's core is not in the summary, whose
 //!   `region.core` is root's, so the run also writes `--dump-answer`, and its
 //!   `nogoods.json` is read.
@@ -391,6 +392,26 @@ fn printed_line(text: &str, label: &str) -> String {
         .unwrap_or_default()
 }
 
+/// Whether `s` is a summary with no answer that says why: every answer key
+/// `null`, and an error among its diagnostics.
+fn unanswered(s: &J) -> bool {
+    [
+        "region",
+        "verdict",
+        "queries",
+        "claim",
+        "work",
+        "monotonicity",
+        "leftover",
+        "root",
+    ]
+    .iter()
+    .all(|k| s[k].is_null())
+        && s["diagnostics"]
+            .as_array()
+            .is_some_and(|d| d.iter().any(|x| x["severity"] == "error"))
+}
+
 /// What the summary says, in `[case.now]`'s fields.
 fn now_of(row: &Row, got: &Got) -> Result<Now, String> {
     let s = got.summary.as_ref().ok_or("no summary.json was written")?;
@@ -685,8 +706,9 @@ pub fn hold(ein: &Path, rows: &[Row], scratch: &Path) -> Outcome {
             .lines()
             .find(|l| !l.is_empty())
             .unwrap_or("<empty>");
-        // A refusal is exit 1 and its first line, and no summary; so is a run
-        // that ended in an error before it answered.
+        // A refusal is exit 1 and its first line, and a summary with no
+        // answer that says why; a run that ended in an engine's error before
+        // it answered writes none.
         let ended = match (&row.now.refused, &row.now.error) {
             (Some(want), _) => Some(("refused", "a refusal", want)),
             (None, Some(want)) => Some(("error", "an error", want)),
@@ -708,8 +730,14 @@ pub fn hold(ein: &Path, rows: &[Row], scratch: &Path) -> Outcome {
             if first != want {
                 d.push(format!("{field}: recorded {want:?}, got {first:?}"));
             }
-            if got.summary.is_some() {
-                d.push(format!("{what} wrote a summary"));
+            match &got.summary {
+                Some(s) if !unanswered(s) => {
+                    d.push(format!("{what} wrote a summary with an answer"));
+                }
+                Some(s) if field == "error" => {
+                    d.push(format!("{what} wrote a summary: {}", s["diagnostics"]));
+                }
+                _ => {}
             }
             d
         } else if row.now.is_command() {

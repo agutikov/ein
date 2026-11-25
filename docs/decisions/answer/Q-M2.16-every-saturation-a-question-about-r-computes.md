@@ -5,8 +5,9 @@ judgement of the hypothesis mechanisms and `--trace`'s root among them, by two b
 
 - **the clock**, `-T`: read between a route's steps, as it always was, and inside every saturation, every
   `saturator::CLOCK_EVERY` firings and at each quiescence. A run it stops is no answer, wherever it stops: one line on
-  stderr, nothing on stdout, no summary, exit 2, and `SolveError::Deadline` in the library; under `ein test` the file
-  is an `ERROR`. `ein oracle`'s clock reaches inside its saturations too.
+  stderr, nothing on stdout, exit 2, a summary with no answer whose diagnostic is the deadline's
+  ([Q-M2.9](../diagnostics/Q-M2.9-a-refusal-is-a-value-with-a-kind-a-place-and-its.md)), and `SolveError::Deadline`
+  in the library; under `ein test` the file is an `ERROR`. `ein oracle`'s clock reaches inside its saturations too.
 - **a cap on firings**, `--max-steps N` on `ein solve` and `ein test`, `explore::Options::max_steps`: the most
   firings, a redundant one counted, any one saturation of the run may make. Its default is 2^20
   (`explore::DEFAULT_MAX_STEPS`), far above every saturation a corpus program makes; it depends on no machine. A

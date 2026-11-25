@@ -55,7 +55,7 @@
 //! **One exemption** (Q-M1e2.11, Q-M1e2.30): `:record-alternative-justifications
 //! false` makes the proof a tree, and may change which core a dead node's
 //! refutation names, the read-out's `unsat core` and `source` rows and the
-//! summary's `region.core`; whether its search was cut, the `core search` row
+//! summary's `region.core` and `region.core_sources`; whether its search was cut, the `core search` row
 //! and `region.core_status`; and, where the core moved, the rule its
 //! derivation ends in, the `refuted by` row and
 //! `region.refuted_by`; and nothing else ([`CORE_FLAG`], [`without_core`]).
@@ -93,6 +93,8 @@ use ein_corpus::{Scratch, corpus, regressions, repo_root};
 use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_ir::{Ast, load, parse};
 use serde_json::Value as J;
+
+mod said;
 
 /// The sixteen questions of `ein solve`'s two axes, as flags: which part of R
 /// (all, the minimal line, the maximal line) × what is asked of it (describe,
@@ -524,14 +526,15 @@ fn printed_under(
         },
     );
     let cfg = kb.program().config.clone().unwrap_or_default();
-    let summary = match ein_cli::summary::build_region(&ast, &mut terms, &mut kb, &r, &file, &cfg) {
-        Ok(s) => {
-            let mut j: J = serde_json::from_str(&ein_cli::summary::text(&s)).expect("parses");
-            scrub(&mut j);
-            serde_json::to_string_pretty(&j).expect("serialises")
-        }
-        Err(e) => format!("<summary> {e}"),
-    };
+    let summary =
+        match ein_cli::summary::build_region(&ast, &mut terms, &mut kb, &r, &file, &cfg, &[]) {
+            Ok(s) => {
+                let mut j: J = serde_json::from_str(&ein_cli::summary::text(&s)).expect("parses");
+                scrub(&mut j);
+                serde_json::to_string_pretty(&j).expect("serialises")
+            }
+            Err(e) => format!("<summary> {e}"),
+        };
     format!(
         "{}--- stderr\n{}\n--- exit {}\n--- summary\n{summary}\n",
         t.stdout,
@@ -620,7 +623,8 @@ fn core_moved(want: &str, got: &str) -> bool {
 }
 
 /// [`printed`] less the core: its rows ([`is_core_row`]) and the summary's
-/// `region.core` and `region.core_status`, and, where `refuted` (the core
+/// `region.core`, its sources `region.core_sources` and
+/// `region.core_status`, and, where `refuted` (the core
 /// moved, [`core_moved`]), the `refuted by` row and `region.refuted_by`.
 /// Everything else, and `refuted by` beside a core that did not move, must
 /// not move.
@@ -635,6 +639,7 @@ fn without_core(text: &str, refuted: bool) -> String {
         Ok(mut j) => {
             if let Some(r) = j.get_mut("region").and_then(J::as_object_mut) {
                 r.remove("core");
+                r.remove("core_sources");
                 r.remove("core_status");
                 if refuted {
                     r.remove("refuted_by");
@@ -1232,15 +1237,21 @@ fn no_search_against_full(
         .display()
         .to_string();
     let mut bad = Vec::new();
-    if full.is_null() {
-        if nc != fc || nerr != ferr || !ns.is_null() {
+    // A refused program writes a summary with no answer, its diagnostics
+    // the refusal's, under either question alike.
+    if full.is_null() || said::unanswered(&full) {
+        if nc != fc
+            || nerr != ferr
+            || !(ns.is_null() || said::unanswered(&ns))
+            || ns["diagnostics"] != full["diagnostics"]
+        {
             bad.push(format!(
                 "{at}: refused by the full run (exit {fc}), and --no-search exits {nc}:\n{nerr}"
             ));
         }
         return bad;
     }
-    if ns.is_null() {
+    if ns.is_null() || said::unanswered(&ns) {
         bad.push(format!(
             "{at}: --no-search wrote no summary (exit {nc}): {nerr}"
         ));

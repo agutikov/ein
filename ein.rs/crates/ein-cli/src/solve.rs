@@ -173,8 +173,14 @@ pub(crate) fn events_start(m: &ArgMatches, file: &str, cfg: &SolverConfig) -> Ev
 /// [`07-diagnostics.md` § 2.4](../../../../docs/ein/user/04-reference/07-diagnostics.md#24-an-artefact-flags-failure),
 /// and the additive arm has no exit code of its own
 /// ([Q-M1e.22](../../../../docs/decisions/cli/Q-M1e.22-a-failed-artefact-write-keeps-the-runs-exit-code.md)).
+///
+/// The line is a diagnostic of the kind `artefact` (Q-M2.9), which the run
+/// summary lists where it is written after the failure.
 pub(crate) fn artefact_failed(flag: &str, path: &str, e: impl std::fmt::Display) {
-    eprintln!("error: --{flag} {path}: {e}");
+    crate::common::say(ein_core::Diagnostic::error(
+        ein_core::Kind::Artefact,
+        format!("--{flag} {path}: {e}"),
+    ));
 }
 
 /// The `load` event — what the loader built, in registry order.

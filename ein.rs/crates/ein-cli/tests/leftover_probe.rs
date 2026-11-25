@@ -36,7 +36,7 @@ fn summary(rel: &str) -> J {
     });
     let r = ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts)
         .unwrap_or_else(|e| panic!("{rel}: {e}"));
-    let json = ein_cli::summary::build_region(&ast, &mut terms, &mut kb, &r, rel, &config)
+    let json = ein_cli::summary::build_region(&ast, &mut terms, &mut kb, &r, rel, &config, &[])
         .unwrap_or_else(|e| panic!("{rel}: {e}"));
     serde_json::from_str(&ein_render::dump::json::dumps_indent(&json)).expect("summary is JSON")
 }

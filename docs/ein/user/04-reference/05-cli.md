@@ -208,7 +208,8 @@ before a path takes the path for its level and is refused, exit 2, with the two 
 `--no-search` asks each file root alone, as `ein solve --no-search` does: a claim root decides is held or `FAILED`
 as the full run decides it, and every other is `NOT CHECKED`, which moves no exit code
 ([Q-M1f.257](../../../decisions/cli/Q-M1f.257-under-no-search-a-claim-not-checked-moves-no.md)). `-T` aborts a file
-after N seconds, wherever the run is, and the abort is an `ERROR`: nothing was established either way.
+after N seconds, wherever the run is, and the abort is an `ERROR`: nothing was established either way, and the
+file's rows that state a claim are `error` rows that say it.
 `--region-budget` bounds each question a file is asked, and `--max-steps` each saturation of each question, its load's
 among them, as `ein solve`'s do; a claim no question decided within them is `NOT CHECKED`. `--events` and
 `--json-summary` name one run, so they are refused over a selection of more than one file; where a file was asked
@@ -331,7 +332,8 @@ claim false; `ein test --no-search` decides what root decides, and a claim it le
 asked not to search, moves no exit code.
 
 **A `-T` abort** prints one line on stderr, `** aborted: --max-time S s reached before the question was decided **`,
-nothing on stdout, and exits 2: a machine-dependent limit is never an answer. The clock is read between a route's
+nothing on stdout, and exits 2: a machine-dependent limit is never an answer. Its `--json-summary` has no answer, and
+its diagnostics say the deadline ([`08-read-out.md` § 11.3](08-read-out.md#113-diagnostics-what-the-run-said-as-values)). The clock is read between a route's
 steps and inside every saturation, root's first, every thousand-odd firings and at each quiescence, so a run ends
 at it wherever it is, a saturation with no fixpoint among them ([Q-M2.16](../../../decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md)).
 
@@ -344,7 +346,12 @@ closed pipe ends the process the same way
 **Streams.** The answer, the forms after it and every view's output go to stdout; `note:` lines, warnings, progress
 (`-v`, `--layer-progress`) and errors go to stderr. An artefact option writes its file and changes neither stream
 nor the exit code; a write that fails after the run reports itself and keeps the run's exit code
-([Q-M1e.22](../../../decisions/cli/Q-M1e.22-a-failed-artefact-write-keeps-the-runs-exit-code.md)). Stdout's listings
+([Q-M1e.22](../../../decisions/cli/Q-M1e.22-a-failed-artefact-write-keeps-the-runs-exit-code.md)). **What a run
+prints on stderr, its summary holds as values**: `--json-summary` is written for a program refused at the parse or
+the load and for a run the clock ended too, with no answer, and its `diagnostics` are every line stderr printed but
+progress, each with its kind, its severity, its message and its place
+([`08-read-out.md` § 11.3](08-read-out.md#113-diagnostics-what-the-run-said-as-values),
+[Q-M2.9](../../../decisions/diagnostics/Q-M2.9-a-refusal-is-a-value-with-a-kind-a-place-and-its.md)). Stdout's listings
 share 100 lines, and `--dump-answer DIR` writes each uncut
 ([Q-M1e2.34](../../../decisions/read-out/Q-M1e2.34-stdouts-listings-share-100-lines-and-a-dump.md)).
 
@@ -496,11 +503,13 @@ and a reader of the same version marker on both would be right to expect the sam
 | `outside` | what the universe leaves out beside a claim a run checked; `null` on a row no run checked |
 | `route`, `fell_back_from` | the question the outcome was read off, spelled as `ein solve`'s flags (`--single`, `-n 4`, `--maximal -n 3`) or `describe`; and the question asked first where it left the claim undecided. Both `null` on a row no run checked |
 | `diff` | under `--diff`, the claim's diff: what it was `against` (`states`, `owing` or `classes`), whether the found ones are `exact`, all of what the claim is about, the relations it is compared `over` and the negatives read for their `presence`, how many `models` and `found`, how many `match`, are `near`, `missing` and `extra`, `near_off`, how many near at each number of facts off, `unpaired`, why nothing was paired near where the pairing was past its bound, and under `full` its `items`, each a `kind` (`match`, `near`, `missing`, `extra`), the `model` and the `found` one by their numbers as printed, how many facts `off`, and the facts it `lacks` and `has`, `null` where it has none; `items` is `null` under `stats`, and `diff` is `null` without the option, on a claim no run decided and on the region's `(false)` |
+| `diagnostics` | on an `error` row, why, each `{kind, severity, message, place}` as the run summary writes them ([`08-read-out.md` § 11.3](08-read-out.md#113-diagnostics-what-the-run-said-as-values)): a file that did not load, its refusal's findings; a claim's row of a file whose run the clock ended, the deadline's; `[]` where an engine's error ended it, which no diagnostic of Ein's names. `null` on every other row |
 
 It takes **any selection**, where `--events` and `--json-summary` are refused over more than one file: those name one
 run, and a report has no run to be more than one of. **A file that did not load carries no claim**: its row is
 `queries = 0`, `outcome = "error"`, `expect = null`, since a claim is a property of a program, and a file that
-exists to be refused is not one.
+exists to be refused is not one; its `diagnostics` say why. A file whose run ended before it decided its claims, at
+the clock or in an engine's error, is an `ERROR` whose rows that state a claim are `error` rows.
 
 ---
 

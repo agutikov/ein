@@ -1007,6 +1007,13 @@ def summary_page(p: Pages, s: dict | None) -> None:
                    [[f"`{q.get('goal')}`", q.get("over"), q.get("exact"), len(q.get("classes") or []),
                      cell(q.get("expect"))] for q in qs]) if qs else ["_none_"]
     lines += ["", "## The claim", "", f"`{cell(s.get('claim'))}`", ""]
+    lines += ["## Diagnostics", "", "What the run printed on stderr, each line a value (`diagnostics`).", ""]
+    ds = s.get("diagnostics") or []
+    lines += table(["kind", "severity", "place", "message"],
+                   [[f"`{d.get('kind')}`", d.get("severity"),
+                     cell(d.get("place") and f"{d['place'].get('file')}:{d['place'].get('line')}:{d['place'].get('col')}"),
+                     cell(d.get("message"))] for d in ds]) if ds else ["_none_"]
+    lines.append("")
     meanings = counter_meanings()
     link = doc("docs/ein/user/04-reference/10-answer-dump.md", page) + "#the-run-summary"
     lines += ["## Work", "", f"Meanings are [`10-answer-dump.md` § The run summary]({link})'s, quoted.", ""]

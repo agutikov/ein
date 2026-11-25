@@ -1989,6 +1989,7 @@ impl<'a> Space<'a> {
                 core_status: node.core_status,
                 refuted_by: node.refuted_by,
                 sources: node.sources,
+                core_sources: node.core_sources,
             },
             any_alive: !alive.is_empty(),
             k_c: members.len() as u64,

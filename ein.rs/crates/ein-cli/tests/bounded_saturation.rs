@@ -14,7 +14,8 @@
 //! What each stop says is the pages' (`05-cli.md` § 3, `08-read-out.md`):
 //!
 //! - **the clock** ends the run as a `-T` abort always did: one line on
-//!   stderr, nothing on stdout, no summary, exit 2; `ein test` counts the file
+//!   stderr, nothing on stdout, exit 2, and a summary with no answer whose
+//!   one diagnostic is the deadline's (Q-M2.9); `ein test` counts the file
 //!   an `ERROR`, exit 2; the library's error is `SolveError::Deadline`;
 //! - **the cap** ends it *not decided*, as a budget does: exit 0, the
 //!   `exhausted` row or `--single`'s `verdict` and `decided` saying which
@@ -22,7 +23,8 @@
 //!   `region.exhausted` false, `region.stopped` `{why: steps, steps, saturation}`
 //!   and `verdict.word` `null`. Nothing of R is established, so the summary's
 //!   `monotonicity` and `root` are `null`, no query is answered and no claim
-//!   is checked; `ein test` counts the claim `NOT CHECKED`, exit 1.
+//!   is checked, and its `diagnostics` are the `partial` note stderr printed;
+//!   `ein test` counts the claim `NOT CHECKED`, exit 1.
 //!
 //! That a cap or a clock a run does not reach moves nothing is held over the
 //! corpus by `lever_invariance.rs`' `no_config_flag_moves_a_line_of_any_mode`,
@@ -38,6 +40,8 @@ use ein_corpus::{Scratch, repo_root};
 use ein_infer::explore::{self, Ask, Mode, Stopped, Which};
 use ein_ir::Ast;
 use serde_json::Value as J;
+
+mod said;
 
 /// The fixtures, beside this file.
 fn fixture(name: &str) -> PathBuf {
@@ -66,7 +70,7 @@ fn ein(args: &[&str]) -> Run {
     let dir = Scratch::new("ein-bounded-saturation");
     let json = dir.join("summary.json");
     let mut argv: Vec<String> = args.iter().map(|s| s.to_string()).collect();
-    if args.first() == Some(&"solve") {
+    if matches!(args.first(), Some(&"solve" | &"oracle")) {
         argv.push("--json-summary".into());
         argv.push(json.to_string_lossy().into());
     }
@@ -98,6 +102,36 @@ fn row<'a>(out: &'a str, label: &str) -> Option<&'a str> {
 
 const ABORT: &str = "** aborted: --max-time 0.3 s reached before the question was decided **\n";
 
+/// The abort's message, as its diagnostic holds it.
+const DECIDED: &str = "--max-time 0.3 s reached before the question was decided";
+
+/// Whether `r` wrote a summary with no answer, its one diagnostic the
+/// deadline's, `message`, as stderr printed it.
+fn aborted(r: &Run, message: &str) -> bool {
+    r.summary.as_ref().is_some_and(|s| {
+        [
+            "region",
+            "verdict",
+            "queries",
+            "claim",
+            "work",
+            "monotonicity",
+            "leftover",
+            "root",
+        ]
+        .iter()
+        .all(|k| s[k].is_null())
+            && s["diagnostics"]
+                == serde_json::json!([{
+                    "kind": "deadline",
+                    "severity": "error",
+                    "message": message,
+                    "place": null,
+                }])
+            && said::agree(s, &r.err).is_ok()
+    })
+}
+
 /// A cap no clock run reaches before its clock, whatever the machine: the
 /// default cap is reached in about a second on a fast one, so a clock run
 /// lifts it, and the clock alone ends the run.
@@ -105,7 +139,8 @@ const NO_CAP: &str = "1000000000000";
 
 /// **The clock ends a saturation with no fixpoint, root's and a node's**, on
 /// every question, as `-T` ends a run: one line on stderr, nothing on stdout,
-/// no summary, exit 2. `ein oracle` ends the same way, with its own line.
+/// exit 2, and a summary with no answer whose one diagnostic is the
+/// deadline's. `ein oracle` ends the same way, with its own line.
 #[test]
 fn the_clock_ends_a_saturation_with_no_fixpoint() {
     let grow = fixture("grow.ein");
@@ -130,13 +165,10 @@ fn the_clock_ends_a_saturation_with_no_fixpoint() {
         args.extend(question);
         let r = ein(&args);
         let at = args.join(" ");
-        if r.code != 2 || r.err != ABORT || !r.out.is_empty() || r.summary.is_some() {
+        if r.code != 2 || r.err != ABORT || !r.out.is_empty() || !aborted(&r, DECIDED) {
             failures.push(format!(
-                "{at}: exit {}, stdout {:?}, stderr {:?}, a summary {}",
-                r.code,
-                r.out,
-                r.err,
-                r.summary.is_some()
+                "{at}: exit {}, stdout {:?}, stderr {:?}, summary {:?}",
+                r.code, r.out, r.err, r.summary
             ));
         }
         if r.wall > PATIENCE {
@@ -147,10 +179,11 @@ fn the_clock_ends_a_saturation_with_no_fixpoint() {
     if r.code != 2
         || r.err != "** aborted: --max-time 0.3 s reached before the cube was done **\n"
         || r.wall > PATIENCE
+        || !aborted(&r, "--max-time 0.3 s reached before the cube was done")
     {
         failures.push(format!(
-            "oracle -T 0.3: exit {}, stderr {:?}, after {:?}",
-            r.code, r.err, r.wall
+            "oracle -T 0.3: exit {}, stderr {:?}, after {:?}, summary {:?}",
+            r.code, r.err, r.wall, r.summary
         ));
     }
     // `ein test` asks a file that states a claim: the node's.
@@ -247,6 +280,26 @@ fn the_cap_ends_a_saturation_with_no_fixpoint() {
             }
             if single && s["verdict"]["word"] != J::Null {
                 failures.push(format!("{at}: verdict.word {}", s["verdict"]["word"]));
+            }
+            // The lines beside the answer, as values: the partial note, and
+            // the node's claim, not checked.
+            let kinds: Vec<&str> = s["diagnostics"]
+                .as_array()
+                .map(|d| d.iter().filter_map(|x| x["kind"].as_str()).collect())
+                .unwrap_or_default();
+            let want: &[&str] = if which == "root" {
+                &["partial"]
+            } else {
+                &["partial", "claim-not-checked"]
+            };
+            if kinds != want {
+                failures.push(format!(
+                    "{at}: the summary's diagnostics {}",
+                    s["diagnostics"]
+                ));
+            }
+            if let Err(e) = said::agree(&s, &r.err) {
+                failures.push(format!("{at}: {e}"));
             }
         }
     }

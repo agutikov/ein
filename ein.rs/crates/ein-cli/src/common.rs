@@ -11,18 +11,102 @@
 //! is one line, never a process exit that takes `ein test`'s whole selection
 //! down with it.
 //!
-//! The convention: nothing here exits. A failure comes back as the text the
-//! command prints to stderr, and the exit code is the command's to choose —
-//! 1 for `solve`, `saturate`, `oracle`, `render` and `kb save`, and for `ein
-//! test` an `ERROR` row and 2 (`docs/ein/user/04-reference/07-diagnostics.md` § 2).
+//! The convention: nothing here exits. A failure comes back as a
+//! [`Refusal`], the text the command prints to stderr and its findings as
+//! values, and the exit code is the command's to choose — 1 for `solve`,
+//! `saturate`, `oracle`, `render` and `kb save`, and for `ein test` an `ERROR`
+//! row and 2 (`docs/ein/user/04-reference/07-diagnostics.md` § 2).
+//!
+//! **What a run says on stderr is kept as values** (Q-M2.9): every
+//! diagnostic a command prints goes through [`say`], or [`refuse`] for a
+//! refusal's findings, and the load's notes through [`keep_notes`], so that
+//! the run summary's `diagnostics` ([`said`]) are the lines stderr printed,
+//! in their order.
 
 use std::path::Path;
 use std::time::{Duration, Instant};
 
-use ein_core::{Kb, Terms};
+use ein_core::{Diagnostic, Kb, Kind, Terms};
 use ein_ir::{Ast, NodeId};
 
 pub use ein_ir::read::Held;
+
+/// **A program refused**, as a command meets it: the text it prints on
+/// stderr, byte for byte what it printed before its findings were values,
+/// and the findings, each with its kind and its place (Q-M2.9).
+#[derive(Clone, Debug)]
+pub struct Refusal {
+    /// What stderr prints: a load's findings `; `-joined behind `kb load
+    /// error: `, a parse's report, a judgement's conflicts one a line.
+    pub line: String,
+    /// The refusal's findings.
+    pub findings: Vec<Diagnostic>,
+}
+
+impl Refusal {
+    /// A `.einb` container refused: the stored program's refusal, its
+    /// findings, or the container's own, which a build cannot read
+    /// ([`Kind::Unreadable`]).
+    #[cfg(feature = "einb")]
+    fn of_einb(e: ein_einb::EinbError) -> Refusal {
+        let line = format!("kb load error: {e}");
+        let findings = match &e {
+            ein_einb::EinbError::Program(k) => k.findings().to_vec(),
+            _ => vec![Diagnostic::error(Kind::Unreadable, e.to_string())],
+        };
+        Refusal { line, findings }
+    }
+}
+
+impl std::fmt::Display for Refusal {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.line)
+    }
+}
+
+impl From<Refusal> for String {
+    fn from(r: Refusal) -> String {
+        r.line
+    }
+}
+
+/// **What the run has said on stderr, as values**, in the order it was
+/// printed: every diagnostic [`say`] and [`refuse`] printed. The load's
+/// notes are kept apart until the run ends ([`keep_notes`]).
+static SAID: std::sync::Mutex<Vec<Diagnostic>> = std::sync::Mutex::new(Vec::new());
+
+/// **Print a diagnostic on stderr**, as its line
+/// ([`Diagnostic::line`]), and keep it for the run summary.
+pub fn say(d: Diagnostic) {
+    eprintln!("{}", d.line());
+    SAID.lock().unwrap_or_else(|e| e.into_inner()).push(d);
+}
+
+/// **Print a refusal on stderr**, its line, and keep its findings for the
+/// run summary.
+pub fn refuse(r: &Refusal) {
+    eprintln!("{}", r.line);
+    SAID.lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .extend(r.findings.iter().cloned());
+}
+
+/// **What the run said, for the summary** (Q-M2.9): every diagnostic
+/// printed so far, in its order, then the load's notes not yet printed,
+/// which [`say_notes`] prints when the run ends. So a summary written before
+/// the run ends lists what stderr holds once it has.
+pub fn said() -> Vec<Diagnostic> {
+    let mut out = SAID.lock().unwrap_or_else(|e| e.into_inner()).clone();
+    out.extend(
+        NOTES
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .pending
+            .iter()
+            .cloned(),
+    );
+    out
+}
 
 /// Read a program from `path`: the one read every command makes of one,
 /// [`ein_ir::read::read_program`], its failure the line the command prints.
@@ -33,7 +117,7 @@ pub use ein_ir::read::Held;
 /// error class, the errno text and the quoted path, and a file that is
 /// neither a `.einb` container nor UTF-8 gives
 /// [`ein_ir::read::not_utf8_line`].
-pub fn read_program(path: &Path) -> Result<Held, String> {
+pub fn read_program(path: &Path) -> Result<Held, Refusal> {
     // A hypothesis a state above root holds that root does not makes the
     // program not monotone, found in flight (Q-M1f.574): the warning is said
     // at once, once, on stderr, the static check having found no site.
@@ -44,10 +128,13 @@ pub fn read_program(path: &Path) -> Result<Held, String> {
         let mut said = SAID.lock().unwrap_or_else(|e| e.into_inner());
         if !said.contains(&file) {
             said.push(file.clone());
-            eprintln!("{}", ein_infer::detector::warning_line(&file));
+            say(ein_infer::detector::warning(&file));
         }
     })));
-    ein_ir::read::read_program(path).map_err(|e| e.line)
+    ein_ir::read::read_program(path).map_err(|e| Refusal {
+        findings: vec![e.diagnostic()],
+        line: e.line,
+    })
 }
 
 /// A program loaded from a path, and how it was read.
@@ -93,13 +180,18 @@ pub fn load_options(m: &clap::ArgMatches) -> ein_ir::LoadOptions {
     }
 }
 
-/// The refusal of a container by a build with no `einb` feature.
+/// The refusal of a container by a build with no `einb` feature: a file
+/// this build cannot read ([`Kind::Unreadable`]).
 #[cfg(not(feature = "einb"))]
-fn no_einb_line(path: &Path) -> String {
-    format!(
-        "kb load error: {} is a .einb container and this build has no `einb` feature",
+fn no_einb(path: &Path) -> Refusal {
+    let message = format!(
+        "{} is a .einb container and this build has no `einb` feature",
         path.display()
-    )
+    );
+    Refusal {
+        line: format!("kb load error: {message}"),
+        findings: vec![Diagnostic::error(Kind::Unreadable, message)],
+    }
 }
 
 /// Load what [`read_program`] read, about query number `query` — a program
@@ -125,7 +217,7 @@ pub fn load_held(
     held: Held,
     query: usize,
     load: &ein_ir::LoadOptions,
-) -> Result<Loaded, String> {
+) -> Result<Loaded, Refusal> {
     match held {
         Held::Text(text) => {
             // A program, or a saved file, its program read against the
@@ -141,7 +233,10 @@ pub fn load_held(
                 query,
                 load,
             )
-            .map_err(|e| e.to_string())?;
+            .map_err(|e| Refusal {
+                line: e.to_string(),
+                findings: e.findings(),
+            })?;
             let (parse, loading) = (loaded.parse, t.elapsed().saturating_sub(loaded.parse));
             judge_mechanisms(ast, terms, &loaded.kb, |ast, terms| {
                 ein_ir::saved::load_text(
@@ -170,34 +265,34 @@ pub fn load_held(
         #[cfg(not(feature = "einb"))]
         Held::Container(_) => {
             let _ = (terms, query, load);
-            Err(no_einb_line(path))
+            Err(no_einb(path))
         }
     }
 }
 
-/// **What the load noticed and did not refuse**: each note's line,
-/// `note: <message>` ([`ein_core::Diagnostic::line`]), kept for
-/// [`say_notes`], on every command, since every command that loads a program
-/// loads it through [`load_held`]: the hypothesis mechanisms' notes
-/// (Q-M1f.242). A command may load one file several times, once a query and
-/// once a question, and each line carries its file and position, so a line
-/// is kept the first time the process meets it and never again. No answer
-/// and no exit code moves.
+/// **What the load noticed and did not refuse**: each note, kept as a value
+/// for [`say_notes`], which prints its line, `note: <message>`
+/// ([`ein_core::Diagnostic::line`]), and for the run summary ([`said`]), on
+/// every command, since every command that loads a program loads it through
+/// [`load_held`]: the hypothesis mechanisms' notes (Q-M1f.242). A command may
+/// load one file several times, once a query and once a question, and each
+/// line carries its file and position, so a note is kept the first time the
+/// process meets it and never again. No answer and no exit code moves.
 fn keep_notes(notes: &[ein_core::Diagnostic]) {
     let mut w = NOTES.lock().unwrap_or_else(|e| e.into_inner());
     for note in notes {
         let line = note.line();
         if !w.said.contains(&line) {
-            w.said.push(line.clone());
-            w.pending.push(line);
+            w.said.push(line);
+            w.pending.push(note.clone());
         }
     }
 }
 
-/// The load's note lines: every one met, and those not yet printed.
+/// The load's notes: every line met, and the notes not yet printed.
 struct Notes {
     said: Vec<String>,
-    pending: Vec<String>,
+    pending: Vec<ein_core::Diagnostic>,
 }
 
 static NOTES: std::sync::Mutex<Notes> = std::sync::Mutex::new(Notes {
@@ -214,15 +309,16 @@ pub fn say_notes() {
         let mut w = NOTES.lock().unwrap_or_else(|e| e.into_inner());
         std::mem::take(&mut w.pending)
     };
-    for line in pending {
-        eprintln!("{line}");
+    for note in pending {
+        eprintln!("{}", note.line());
     }
 }
 
 /// **A conflict between the hypothesis mechanisms refuses the program**
 /// (Q-M1f.245), on every command, since
 /// every command that loads a program loads it here: one line per conflict,
-/// each `kb load error: …`, at the command's load-error exit. A list that
+/// each `kb load error: …`, at the command's load-error exit, the conflicts
+/// the refusal's findings. A list that
 /// filters no candidate, or a name another declaration already says, is one
 /// `note:` line, as [`keep_notes`] keeps the loader's, and moves nothing.
 ///
@@ -235,17 +331,20 @@ fn judge_mechanisms(
     terms: &Terms,
     kb: &Kb,
     again: impl FnOnce(&mut Ast, &mut Terms) -> Option<Kb>,
-) -> Result<(), String> {
+) -> Result<(), Refusal> {
     match ein_infer::mechanisms::judge_loaded(ast, terms, kb, again) {
         Ok(notes) => {
             keep_notes(&notes);
             Ok(())
         }
-        Err(conflicts) => Err(conflicts
-            .iter()
-            .map(|d| format!("kb load error: {d}"))
-            .collect::<Vec<_>>()
-            .join("\n")),
+        Err(conflicts) => Err(Refusal {
+            line: conflicts
+                .iter()
+                .map(|d| format!("kb load error: {d}"))
+                .collect::<Vec<_>>()
+                .join("\n"),
+            findings: conflicts,
+        }),
     }
 }
 
@@ -253,27 +352,48 @@ fn judge_mechanisms(
 /// or the program a container stores, parsed under
 /// `ein_einb::program_name`'s name. What `ein render rules`, `rule`,
 /// `constraints` and `program` read.
-pub fn parse_held(ast: &mut Ast, path: &Path, held: Held) -> Result<Vec<NodeId>, String> {
+pub fn parse_held(ast: &mut Ast, path: &Path, held: Held) -> Result<Vec<NodeId>, Refusal> {
     match held {
         // A saved file's program, as written.
         Held::Text(text) => {
-            ein_ir::saved::parse_text(ast, &text, path.to_str()).map_err(|e| e.to_string())
+            ein_ir::saved::parse_text(ast, &text, path.to_str()).map_err(|e| Refusal {
+                line: e.to_string(),
+                findings: e.findings(),
+            })
         }
         #[cfg(feature = "einb")]
         Held::Container(bytes) => {
-            let text =
-                ein_einb::program_of(&bytes, true).map_err(|e| format!("kb load error: {e}"))?;
+            let text = ein_einb::program_of(&bytes, true).map_err(Refusal::of_einb)?;
             let name = ein_einb::program_name(Some(&path.display().to_string()));
             ein_ir::parse(ast, &text, Some(&name))
-                .map_err(|e| format!("kb load error: {}", ein_einb::EinbError::Program(e.into())))
+                .map_err(|e| Refusal::of_einb(ein_einb::EinbError::Program(e.into())))
         }
         #[cfg(not(feature = "einb"))]
-        Held::Container(_) => Err(no_einb_line(path)),
+        Held::Container(_) => Err(no_einb(path)),
     }
 }
 
 /// [`read_program`] and [`load_held`], about query number `query`, with the
-/// failure printed to stderr: `None` is the caller's load-error exit.
+/// refusal printed to stderr ([`refuse`]) and handed back: the caller's
+/// load-error exit, and what its summary says.
+pub fn load_or_refuse(
+    ast: &mut Ast,
+    terms: &mut Terms,
+    path: &Path,
+    query: usize,
+    load: &ein_ir::LoadOptions,
+) -> Result<Kb, Refusal> {
+    match read_program(path).and_then(|held| load_held(ast, terms, path, held, query, load)) {
+        Ok(loaded) => Ok(loaded.kb),
+        Err(e) => {
+            refuse(&e);
+            Err(e)
+        }
+    }
+}
+
+/// [`load_or_refuse`], the refusal printed: `None` is the caller's
+/// load-error exit.
 pub fn load_program_query(
     ast: &mut Ast,
     terms: &mut Terms,
@@ -281,13 +401,7 @@ pub fn load_program_query(
     query: usize,
     load: &ein_ir::LoadOptions,
 ) -> Option<Kb> {
-    match read_program(path).and_then(|held| load_held(ast, terms, path, held, query, load)) {
-        Ok(loaded) => Some(loaded.kb),
-        Err(e) => {
-            eprintln!("{e}");
-            None
-        }
-    }
+    load_or_refuse(ast, terms, path, query, load).ok()
 }
 
 /// [`load_program_query`], about the first query.
@@ -300,12 +414,12 @@ pub fn load_program(
     load_program_query(ast, terms, path, 0, load)
 }
 
-/// [`read_program`] and [`parse_held`], with the failure printed to stderr.
+/// [`read_program`] and [`parse_held`], with the refusal printed to stderr.
 pub fn parse_program(ast: &mut Ast, path: &Path) -> Option<Vec<NodeId>> {
     match read_program(path).and_then(|held| parse_held(ast, path, held)) {
         Ok(forms) => Some(forms),
         Err(e) => {
-            eprintln!("{e}");
+            refuse(&e);
             None
         }
     }
@@ -319,7 +433,7 @@ fn open_einb(
     bytes: &[u8],
     query: usize,
     load: &ein_ir::LoadOptions,
-) -> Result<Loaded, String> {
+) -> Result<Loaded, Refusal> {
     let t = Instant::now();
     let opts = || ein_einb::OpenOptions {
         // The paths the file names, re-hashed where they still exist. One that
@@ -340,8 +454,7 @@ fn open_einb(
         name: Some(path.display().to_string()),
         ..ein_einb::OpenOptions::default()
     };
-    let opened =
-        ein_einb::open_bytes(bytes, terms, &opts()).map_err(|e| format!("kb load error: {e}"))?;
+    let opened = ein_einb::open_bytes(bytes, terms, &opts()).map_err(Refusal::of_einb)?;
     judge_mechanisms(&opened.ast, terms, &opened.kb, |ast, terms| {
         let again = ein_einb::open_bytes(bytes, terms, &opts()).ok()?;
         *ast = again.ast;
@@ -362,7 +475,7 @@ fn open_einb(
                     }
                 ),
             );
-            eprintln!("{}", stale.line());
+            say(stale);
         }
     }
     *ast = opened.ast;

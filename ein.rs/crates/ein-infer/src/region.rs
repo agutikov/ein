@@ -195,6 +195,10 @@ pub struct Node {
     /// "…"`, in the core's order: the sentence a reader looks for in the
     /// program's text.
     pub sources: Vec<String>,
+    /// The `:source` of each fact of [`Self::core`], in the core's order,
+    /// `None` for a fact that carries none: the core's sentences beside it,
+    /// one a fact.
+    pub core_sources: Vec<Option<String>>,
     /// The `absent` premises its derivation of the contradiction rests on —
     /// where a hole's failure is repairable.
     pub absent_premises: Vec<String>,
@@ -734,6 +738,7 @@ pub(crate) fn compute_prepared(
             at.core = out.core;
             at.core_status = out.core_status;
             at.sources = out.sources;
+            at.core_sources = out.core_sources;
             at.refuted_by = out.refuted_by;
         }
     }
@@ -2375,6 +2380,7 @@ fn node_in_region(
         node.core = sorted_text(terms, &e.frontier);
         node.core_status = Some(crate::explain::CoreStatus::of(&e));
         node.sources = sources_of(&fork, terms, &e.frontier);
+        node.core_sources = core_sources_of(&fork, terms, &e.frontier);
         node.refuted_by = rules_of(terms, &e.steps);
     }
     Ok(NodeOut {
@@ -2470,6 +2476,24 @@ fn sources_of(kb: &Kb, terms: &Terms, facts: &[FactId]) -> Vec<String> {
         .collect();
     v.sort();
     v
+}
+
+/// The `:source` of each of `facts`, in [`sorted_text`]'s order, which is the
+/// core's: the source's text, or `None` for a fact whose provenance names
+/// none.
+fn core_sources_of(kb: &Kb, terms: &Terms, facts: &[FactId]) -> Vec<Option<String>> {
+    let mut v: Vec<(String, Option<String>)> = facts
+        .iter()
+        .map(|&f| {
+            let source = kb
+                .primary(f)
+                .and_then(|p| terms.provs.get(p).source)
+                .map(|s| terms.sym(s).to_string());
+            (sexpr(terms, f), source)
+        })
+        .collect();
+    v.sort();
+    v.into_iter().map(|(_, s)| s).collect()
 }
 
 /// The order H's candidates are sorted in: a fact's s-expression with every

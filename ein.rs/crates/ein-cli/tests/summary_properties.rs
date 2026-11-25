@@ -16,7 +16,11 @@
 //!
 //! The file's **first** test is about the frame the numbers arrive in:
 //! [`the_summary_has_one_shape_on_every_arm`] holds every arm — each question,
-//! each kind of R, a partial run, the cube — to one shape at every depth.
+//! each kind of R, a partial run, the cube — to one shape at every depth, and
+//! [`the_diagnostics_and_a_cores_sources_have_one_shape_on_every_arm`] the two
+//! keys a run writes as the binary sees it, `diagnostics` and
+//! `region.core_sources`, through the binary, on the arms with no answer too:
+//! a refusal, the clock, the cap.
 //!
 //! **The `root` block is held to its subject**, not only to itself: on every
 //! cell `root.facts` is root's fixpoint and `root.hypgen.emitted` is H, both
@@ -29,6 +33,8 @@ use ein_corpus::{corpus_files, repo_root};
 use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_ir::{Ast, load_file};
 use serde_json::Value as J;
+
+mod said;
 
 /// The counters that are **zero on every corpus cell**, and why.
 ///
@@ -106,6 +112,7 @@ fn summary(path: &std::path::Path, mode: Mode, budget: u64) -> Option<J> {
         &r,
         &path.to_string_lossy(),
         &config,
+        &[],
     )
     .ok()?;
     serde_json::from_str(&ein_render::dump::json::dumps_indent(&json)).ok()
@@ -127,8 +134,14 @@ fn root_of(path: &std::path::Path) -> Option<(i64, i64, J)> {
         &mut ein_infer::events::Events::off(),
     )
     .ok()?;
-    let mono =
-        ein_cli::summary::build_monotone(&terms, &kb, &checked, &path.to_string_lossy(), &config);
+    let mono = ein_cli::summary::build_monotone(
+        &terms,
+        &kb,
+        &checked,
+        &path.to_string_lossy(),
+        &config,
+        &[],
+    );
     let mono: J = serde_json::from_str(&ein_render::dump::json::dumps_indent(&mono)).ok()?;
     Some((kb.n_facts() as i64, checked.n as i64, mono["root"].clone()))
 }
@@ -559,4 +572,121 @@ fn the_description_is_coherent_on_every_corpus_cell() {
         "the counters that never fire are not the ones with a written reason"
     );
     eprintln!("summary properties: {cells} cells, {described} exhausted descriptions");
+}
+
+/// One run of the binary with `--json-summary`: its stderr and its summary.
+fn through_the_binary(args: &[&str]) -> (String, J) {
+    let dir = ein_corpus::Scratch::new("ein-summary-arms");
+    let json = dir.join("summary.json");
+    let out = std::process::Command::new(env!("CARGO_BIN_EXE_ein"))
+        .args(args)
+        .arg("--json-summary")
+        .arg(&json)
+        .current_dir(repo_root())
+        .output()
+        .expect("the `ein` binary runs");
+    let at = args.join(" ");
+    let text = std::fs::read_to_string(&json)
+        .unwrap_or_else(|e| panic!("{at}: no summary ({e}), exit {:?}", out.status.code()));
+    (
+        String::from_utf8_lossy(&out.stderr).into_owned(),
+        serde_json::from_str(&text).expect("the summary parses"),
+    )
+}
+
+/// **The keys a run writes as the binary sees it have one shape on every
+/// arm** (Q-M2.9): every summary has the same top-level keys, `diagnostics`
+/// last, a list of `{kind, severity, message, place}` that is what stderr
+/// printed (`said::agree`); and wherever `region` is an object it has
+/// `core_sources`, `null` exactly where `region.core` is, and otherwise a list
+/// as long as the core, each entry a string or `null`. The arms: a question
+/// of each kind, a dead root with and without a `:source`, a flagged program,
+/// a note the load made, `--monotone`, the oracle, `ein test`, and the three
+/// with no answer, a refusal at the parse, at the load and by the judgement
+/// of the mechanisms, the clock, and a saturation stopped at the cap.
+#[test]
+fn the_diagnostics_and_a_cores_sources_have_one_shape_on_every_arm() {
+    let grow = "ein.rs/crates/ein-cli/tests/bounded/grow.ein";
+    let arms: [&[&str]; 16] = [
+        &["solve", "examples/branching/05_mini_zebra.ein"],
+        &["solve", "tests/stdlib/algebra/09_irreflexive_violated.ein"],
+        &["solve", "examples/ein-bugs/zebra2-bad.ein"],
+        &["solve", "examples/lattice/06_friends_tables.ein"],
+        &["solve", "examples/word_problems/kinds_listed.ein"],
+        &[
+            "solve",
+            "examples/lattice/02_genuine_3set_death.ein",
+            "--single",
+        ],
+        &[
+            "solve",
+            "examples/lattice/02_genuine_3set_death.ein",
+            "--count",
+        ],
+        &[
+            "solve",
+            "examples/lattice/02_genuine_3set_death.ein",
+            "--no-search",
+        ],
+        &[
+            "solve",
+            "examples/lattice/02_genuine_3set_death.ein",
+            "--monotone",
+        ],
+        &["oracle", "examples/lattice/02_genuine_3set_death.ein"],
+        &["test", "examples/lattice/18_two_candidates.ein"],
+        &["solve", "examples/broken/unclosed_paren.ein"],
+        &["solve", "examples/broken/load/derivation_cycle.ein"],
+        &[
+            "solve",
+            "examples/broken/load/no_hypothesis_beside_open.ein",
+        ],
+        &[
+            "solve",
+            "examples/lattice/02_genuine_3set_death.ein",
+            "-T",
+            "0",
+        ],
+        &["solve", grow, "--max-steps", "1000"],
+    ];
+    let mut tops: std::collections::BTreeSet<Vec<String>> = Default::default();
+    let mut bad: Vec<String> = Vec::new();
+    let (mut with_place, mut with_source) = (false, false);
+    for args in arms {
+        let at = args.join(" ");
+        let (stderr, s) = through_the_binary(args);
+        tops.insert(s.as_object().expect("an object").keys().cloned().collect());
+        if let Err(e) = said::agree(&s, &stderr) {
+            bad.push(format!("{at}: {e}"));
+        }
+        with_place |= s["diagnostics"]
+            .as_array()
+            .is_some_and(|d| d.iter().any(|x| x["place"].is_object()));
+        let region = &s["region"];
+        if !region.is_object() {
+            continue;
+        }
+        let (core, sources) = (&region["core"], &region["core_sources"]);
+        let fits = match (core, sources) {
+            (J::Null, J::Null) => region.get("core_sources").is_some(),
+            (J::Array(c), J::Array(v)) => {
+                with_source |= v.iter().any(J::is_string);
+                c.len() == v.len() && v.iter().all(|x| x.is_string() || x.is_null())
+            }
+            _ => false,
+        };
+        if !fits {
+            bad.push(format!(
+                "{at}: region.core {core} beside region.core_sources {sources}"
+            ));
+        }
+    }
+    assert!(bad.is_empty(), "{}", bad.join("\n"));
+    assert_eq!(tops.len(), 1, "more than one top level: {tops:?}");
+    let top = tops.into_iter().next().unwrap_or_default();
+    assert!(top.contains(&"diagnostics".to_string()), "{top:?}");
+    assert!(
+        with_place && with_source,
+        "an arm with a place and one with a source"
+    );
 }

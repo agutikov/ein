@@ -1965,8 +1965,9 @@ fn the_json_summary_is_order_free_and_reproducible() {
 /// finish. A budget stops a run with an answer — what it
 /// established, and bounds — so it exits 0, writes one `note:` on stderr, and
 /// its summary says `exhausted false` and names the budget. A `-T` abort is
-/// the one stop that is not an answer: it exits 2 and writes no summary,
-/// because nothing was established.
+/// the one stop that is not an answer: it exits 2, and its summary has no
+/// answer, because nothing was established, and says the deadline
+/// (Q-M2.9).
 #[test]
 fn a_stopped_run_writes_its_summary_and_says_why() {
     let scratch = Scratch::new("abort");
@@ -1999,10 +2000,9 @@ fn a_stopped_run_writes_its_summary_and_says_why() {
         &deadline,
     ]);
     assert_eq!(t.code, 2, "a -T abort is exit 2, not {}", t.code);
-    assert!(
-        !PathBuf::from(&deadline).exists(),
-        "a -T abort wrote a summary"
-    );
+    let j = json_at(&deadline);
+    assert!(j["region"].is_null() && j["work"].is_null(), "{j}");
+    assert_eq!(j["diagnostics"][0]["kind"], "deadline", "{j}");
 }
 
 // ── `--events` ──────────────────────────────────────────────────────

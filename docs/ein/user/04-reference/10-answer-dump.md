@@ -240,8 +240,10 @@ A saved file is its program with one commitment of the program's H, and every co
 `--single` only), `queries` and `claim`, each field defined by
 [`08-read-out.md` § 11](08-read-out.md#11---json-summary-the-answer-blocks) beside the row that prints it; `work`,
 `monotonicity` ([`11-region-dump.md` § Monotonicity](11-region-dump.md#monotonicity--the-static-check)), `leftover`, `root`,
-`config`. Every bound in `region` carries `exhausted` beside it, so a reader never has to know which numbers were
-complete.
+`config`, and `diagnostics`, what the run printed on stderr, each line a value
+([`08-read-out.md` § 11.3](08-read-out.md#113-diagnostics-what-the-run-said-as-values)). Every bound in `region` carries `exhausted` beside it, so a reader never has to know which
+numbers were complete. A run with no answer, a program refused or a run the clock ended, writes no file in the
+answer directory: its `--json-summary` is the summary it writes, with its answer keys `null`.
 
 The `work` block is what a reader asks *what did the run cost* of. Each counter is defined here, and so is every field
 of the `root` block below; the test suite fails when a counter or a field appears in a summary without a row here.

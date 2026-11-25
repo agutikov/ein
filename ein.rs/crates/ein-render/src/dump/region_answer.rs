@@ -133,7 +133,7 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
             ])
         })
         .collect();
-    let (frontier, core, status, refuted_by) = match &r.listing {
+    let (frontier, core, sources, status, refuted_by) = match &r.listing {
         Listing::Owing(f) => (
             Json::Array(
                 f.iter()
@@ -150,19 +150,23 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
             Json::Null,
             Json::Null,
             Json::Null,
+            Json::Null,
         ),
         Listing::False => {
             let root = d.map(|d| &d.root);
             (
                 Json::Null,
                 root.map_or(Json::Null, |x| core_field(!x.alive, x.core_status, &x.core)),
+                root.map_or(Json::Null, |x| {
+                    core_sources(!x.alive, x.core_status, &x.core_sources)
+                }),
                 root.map_or(Json::Null, |x| core_status(x.core_status)),
                 root.map_or(Json::Null, |x| {
                     core_field(!x.alive, x.core_status, &x.refuted_by)
                 }),
             )
         }
-        _ => (Json::Null, Json::Null, Json::Null, Json::Null),
+        _ => (Json::Null, Json::Null, Json::Null, Json::Null, Json::Null),
     };
     let Some(d) = d else {
         // A mode: R was not described, so R's numbers are `null` — except
@@ -220,6 +224,7 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
             ("states", states_json(states)),
             ("frontier", frontier),
             ("core", core),
+            ("core_sources", sources),
             ("core_status", status),
             ("refuted_by", refuted_by),
         ]);
@@ -388,6 +393,7 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
             },
         ),
         ("core", core),
+        ("core_sources", sources),
         ("core_status", status),
         ("refuted_by", refuted_by),
     ])
@@ -423,6 +429,73 @@ pub fn core_field(
     } else {
         Json::Null
     }
+}
+
+/// **A core's sentences, beside it** (Q-M2.9): for each fact of the core, in
+/// its order, the `:source` the fact was written with, a string, or `null`
+/// for a fact that carries none; `null` where [`core_field`] writes the core
+/// `null`, so the two lists are one length or both absent.
+pub fn core_sources(
+    dead: bool,
+    status: Option<ein_infer::explain::CoreStatus>,
+    v: &[Option<String>],
+) -> Json {
+    if dead && status.is_some() {
+        Json::Array(
+            v.iter()
+                .map(|s| s.as_deref().map_or(Json::Null, Json::str))
+                .collect(),
+        )
+    } else {
+        Json::Null
+    }
+}
+
+/// **The run's diagnostics**, the summary's `diagnostics` key and a report
+/// row's (Q-M2.9): each `{kind, severity, message, place}`, the kind and the
+/// severity by their names ([`ein_core::Kind::name`],
+/// [`ein_core::Severity::name`]), the message as the diagnostic holds it,
+/// and the place `{file, line, col}`, or `null` where the line names none.
+pub fn diagnostics(ds: &[ein_core::Diagnostic]) -> Json {
+    Json::Array(
+        ds.iter()
+            .map(|d| {
+                Json::obj(vec![
+                    ("kind", Json::str(d.kind.name())),
+                    ("severity", Json::str(d.severity.name())),
+                    ("message", Json::str(d.message.as_str())),
+                    (
+                        "place",
+                        d.place.as_ref().map_or(Json::Null, |p| {
+                            Json::obj(vec![
+                                ("file", Json::str(p.file.as_str())),
+                                ("line", Json::int(i64::from(p.line))),
+                                ("col", Json::int(i64::from(p.col))),
+                            ])
+                        }),
+                    ),
+                ])
+            })
+            .collect(),
+    )
+}
+
+/// The summary's `asked` block: the part of R and the question, as a run of
+/// `mode` asks them, `no-search` where `no_search` reads root alone. What a
+/// run that was refused or aborted was asked, too.
+pub fn asked(mode: ein_infer::explore::Mode, no_search: bool) -> Json {
+    let (ask, n) = match mode.ask {
+        _ if no_search => ("no-search", Json::Null),
+        Ask::Describe => ("describe", Json::Null),
+        Ask::Find(n) => ("find", Json::int(n as i64)),
+        Ask::Single => ("single", Json::Null),
+        Ask::Count => ("count", Json::Null),
+    };
+    Json::obj(vec![
+        ("which", Json::str(which(mode.which))),
+        ("ask", Json::str(ask)),
+        ("n", n),
+    ])
 }
 
 fn route(r: Route) -> &'static str {
@@ -463,13 +536,6 @@ pub fn summary_blocks(r: &ReadOut) -> Vec<(&'static str, Json)> {
     // `--no-search` asks root alone, and states no R (Q-M1f.259): its
     // `region` is `null`, as `--monotone`'s is, and root is the `root` block's.
     let root_alone = a.route == Route::Root;
-    let (ask, n) = match a.mode.ask {
-        _ if root_alone => ("no-search", Json::Null),
-        Ask::Describe => ("describe", Json::Null),
-        Ask::Find(n) => ("find", Json::int(n as i64)),
-        Ask::Single => ("single", Json::Null),
-        Ask::Count => ("count", Json::Null),
-    };
     let verdict = match (a.mode.ask, a.verdict) {
         (Ask::Single, Some(v)) => Json::obj(vec![
             ("word", Json::str(v.word())),
@@ -558,14 +624,7 @@ pub fn summary_blocks(r: &ReadOut) -> Vec<(&'static str, Json)> {
         None => (a.saturations, a.facts, None),
     };
     vec![
-        (
-            "asked",
-            Json::obj(vec![
-                ("which", Json::str(which(a.mode.which))),
-                ("ask", Json::str(ask)),
-                ("n", n),
-            ]),
-        ),
+        ("asked", asked(a.mode, root_alone)),
         (
             "region",
             // A run a saturation stopped says so here under `--no-search`

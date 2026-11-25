@@ -59,12 +59,14 @@ use ein_corpus::{Scratch, corpus, repo_root};
 use ein_ir::{Ast, parse};
 use import_forms::{beside_its_modules, form, module_prefixes, strip};
 
+mod said;
+
 fn include_slow() -> bool {
     std::env::var("EIN_CORPUS_SLOW").as_deref() == Ok("1")
 }
 
 /// The JSON summary of `ein solve FILE`, run in `dir`, or the exit code of a
-/// run that wrote none.
+/// run that wrote none or one with no answer, a refused program's.
 fn summary(dir: &Path, file: &str) -> Result<serde_json::Value, i32> {
     summary_of(dir, file, &[])
 }
@@ -98,7 +100,15 @@ fn summary_of(dir: &Path, file: &str, flags: &[&str]) -> Result<serde_json::Valu
         .expect("the `ein` binary runs");
     let code = out.status.code().unwrap_or(-1);
     match std::fs::read_to_string(&json) {
-        Ok(text) if code == 0 || code == 1 => serde_json::from_str(&text).map_err(|_| code),
+        Ok(text) if code == 0 || code == 1 => {
+            serde_json::from_str(&text).map_err(|_| code).and_then(|v| {
+                if said::unanswered(&v) {
+                    Err(code)
+                } else {
+                    Ok(v)
+                }
+            })
+        }
         _ => Err(code),
     }
 }

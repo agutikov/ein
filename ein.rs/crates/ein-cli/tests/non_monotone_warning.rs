@@ -16,6 +16,8 @@ use std::process::Command;
 use ein_corpus::{Scratch, corpus_files, repo_root};
 use ein_infer::detector::{WARNING, warning_line};
 
+mod said;
+
 struct Run {
     code: i32,
     out: String,
@@ -79,11 +81,15 @@ fn every_flagged_corpus_program_is_warned_of_and_no_monotone_one() {
                 "--json-summary",
                 summary.to_str().expect("utf-8"),
             ]);
-            // A program that does not load writes no summary: nothing to hold.
+            // A program that does not load writes a summary with no answer:
+            // nothing to hold.
             let Ok(text) = std::fs::read_to_string(&summary) else {
                 return (None, Vec::new());
             };
             let s: serde_json::Value = serde_json::from_str(&text).expect("the summary parses");
+            if said::unanswered(&s) {
+                return (None, Vec::new());
+            }
             let flagged = s["monotonicity"]["monotone"] == false;
             let mut bad = Vec::new();
             if r.code != 0 && !r.err.contains(":expect") {

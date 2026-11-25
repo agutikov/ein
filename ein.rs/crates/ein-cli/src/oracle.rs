@@ -69,9 +69,19 @@ pub fn run(m: &ArgMatches) -> i32 {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let load_opts = crate::common::load_options(m);
+    // The oracle's question is the description of R, which a summary with
+    // no answer says too.
+    let asked = ein_render::dump::region_answer::asked(
+        Mode {
+            which: Which::All,
+            ask: Ask::Describe,
+        },
+        false,
+    );
     let Some(mut kb) =
         crate::common::load_program(&mut ast, &mut terms, Path::new(&file), &load_opts)
     else {
+        crate::modes::write_unanswered(summary_path.as_deref(), &file, Some(asked), None, &[]);
         return 1;
     };
     let mut on_projection = |p: &Projection| {
@@ -98,14 +108,21 @@ pub fn run(m: &ArgMatches) -> i32 {
     let outcome = match region::compute(&mut kb, &mut terms, &ast, &opts, &mut on_projection) {
         Ok(o) => o,
         Err(ein_infer::SolveError::Deadline) => {
-            let abort = ein_core::Diagnostic::error(
+            crate::common::say(ein_core::Diagnostic::error(
                 ein_core::Kind::Deadline,
                 format!(
                     "--max-time {} s reached before the cube was done",
                     max_time.unwrap_or(0.0)
                 ),
+            ));
+            let config = kb.program().config.clone().unwrap_or_default();
+            crate::modes::write_unanswered(
+                summary_path.as_deref(),
+                &file,
+                Some(asked),
+                Some(&config),
+                &[],
             );
-            eprintln!("{}", abort.line());
             return 2;
         }
         Err(e) => {
@@ -232,10 +249,12 @@ pub fn run(m: &ArgMatches) -> i32 {
     // `solve`'s is.
     if let Some(path) = summary_path.as_deref() {
         let config = kb.program().config.clone().unwrap_or_default();
-        let written = crate::summary::build_region(&ast, &mut terms, &mut kb, &ro, &file, &config)
-            .and_then(|s| {
-                std::fs::write(path, crate::summary::text(&s)).map_err(|e| e.to_string())
-            });
+        let said = crate::common::said();
+        let written =
+            crate::summary::build_region(&ast, &mut terms, &mut kb, &ro, &file, &config, &said)
+                .and_then(|s| {
+                    std::fs::write(path, crate::summary::text(&s)).map_err(|e| e.to_string())
+                });
         if let Err(e) = written {
             crate::solve::artefact_failed("json-summary", path, e);
         }

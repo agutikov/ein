@@ -184,6 +184,7 @@ fn said(a: &Answer) -> String {
         d.root.core_status = None;
         d.root.refuted_by.clear();
         d.root.sources.clear();
+        d.root.core_sources.clear();
         d.root.owed.sort();
         for x in &mut d.dead {
             x.core.clear();

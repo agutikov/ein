@@ -27,7 +27,12 @@ vocabulary a program that links Ein reads a refusal by, as a value beside the li
 one section; a line two sections list takes the kind of the section that states the check that makes it, which the
 other names; a section whose lines are the parse's says `parse`. A section that states no refusal, a property of the
 lines (§ 1.1 to § 1.5), a shape with no line (§ 2.6) or an end with none (§ 2.19), has no kind. The lines a run
-writes beside an answer have kinds of their own, in [`08-read-out.md` § 10](08-read-out.md#10-stderr).
+writes beside an answer have kinds of their own, in [`08-read-out.md` § 10](08-read-out.md#10-stderr). **A refused
+program's run summary says why**: `ein solve`, `ein oracle` and `ein test` write `--json-summary` for a program they
+refuse, its answer keys `null` and its `diagnostics` the refusal's findings, each `{kind, severity, message, place}`,
+and `ein test --json-report` writes them on the file's `error` row
+([`08-read-out.md` § 11.3](08-read-out.md#113-diagnostics-what-the-run-said-as-values)). No line, stream or exit
+code moves for it.
 
 ## 1. Parse and load diagnostics
 
@@ -184,7 +189,7 @@ answered and saved; its saved file loads again, since what the parser reads of i
 
 ## 2. Errors and exit codes
 
-**Kind:** `unreadable`, a file that cannot be read or is neither UTF-8 text nor a container; an imported module's line is § 2.18's, `module-unreadable`; the command line's own refusal has none.
+**Kind:** `unreadable`, a file that cannot be read, is neither UTF-8 text nor a container, or is a container this build cannot read (its magic, its version, its digest, a truncated or malformed section, a build that reads no container); an imported module's line is § 2.18's, `module-unreadable`; the command line's own refusal has none.
 
 A failure the engine cannot place in a form prints one line and exits non-zero:
 
@@ -229,8 +234,8 @@ its own: [`05-cli.md`](05-cli.md) has the table, and [`08-read-out.md`](08-read-
 **What the load notes, it loads.** A load's `note:` line, a hypothesis declaration that proposes or filters nothing
 ([§ 2.26](#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)), is printed when the command's run
 of the program ends, after a flagged program's `WARNING` line
-([Q-M1f.580](../../../decisions/diagnostics/Q-M1f.580-a-loads-and-a-runs-warnings-are-printed-when.md)), and moves
-no answer and no exit code. An activator that binds a relation parameter to a fact names no relation and activates
+([Q-M1f.580](../../../decisions/diagnostics/Q-M1f.580-a-loads-and-a-runs-warnings-are-printed-when.md)), moves
+no answer and no exit code, and is the last of the run summary's `diagnostics`. An activator that binds a relation parameter to a fact names no relation and activates
 nothing, and nothing says so: a program that writes one, or in which a rule could derive one, loads in silence
 ([§ 2.9](#29-a-rule-shape-that-reads-nothing)).
 
@@ -362,6 +367,7 @@ own `--events` and `--json-summary`). What happens when the write fails:
 | **the exit code** | **unchanged** — 0 on a run that answered. An option whose help says *additive: stdout, stderr and the exit code are unchanged* keeps saying it: the answer on stdout is correct and complete, and the artefact is paperwork |
 | **the exception** | **`--dump-answer`**, **`--dump-lattice`** and **`oracle --dump`** exit 1 when they cannot make their directory, without solving: the directory is made before the run, so a failure there means the run cannot do what it was asked. Their files are written after the answer exists, and a failure there is the additive arm's: the line, and the exit code unchanged |
 | **an empty path** | a **usage error**: exit 2, refused by the command line before anything runs, for all seven |
+| **the run summary** | lists the line among its `diagnostics`, an `error` of the kind `artefact`, its message the line after `error: `, where the summary is written after the failure ([`08-read-out.md` § 11.3](08-read-out.md#113-diagnostics-what-the-run-said-as-values)) |
 | **a pipe whose reader has gone** | the write ends the process by `SIGPIPE`, whichever file it goes to, `/dev/stdout` or a FIFO ([§ 2.19](#219-a-closed-stdout-ends-ein-by-sigpipe), [Q-M1f.100](../../../decisions/cli/Q-M1f.100-an-artefact-written-to-a-closed-pipe-ends.md)) |
 
 ```text
