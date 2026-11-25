@@ -98,7 +98,7 @@ Four layers, defined once, computed from records by one module ([S2.5.3](s2.5.3_
 
 | layer | metrics | on which |
 |---|---|---|
-| **H1** final task | answer accuracy and exact match on **the answer as a short text**, for every arm alike; accuracy on the instances with one answer; ambiguity detection; contradiction detection; for the arms that run Ein, the gold `:expect` claim checked by the kernel, and the seven outcomes against the gold class | all instances |
+| **H1** final task | answer accuracy on **the answer as a sentence**, scored by what it states, for every arm alike, with exact match and containment beside it; accuracy on the instances with one answer; ambiguity detection; contradiction detection; for the arms that run Ein, the gold `:expect` claim checked by the kernel, and the seven outcomes against the gold class | all instances |
 | **H2** formalization | parse success; load success; acceptance; the flagged rate, in a column of its own; faithfulness; constraint recall and precision | the arms that run Ein; the last two against the canonical program, exact on synthetic instances |
 | **H3** repair | fraction repaired; iterations to repair; new errors introduced; hallucination rate; repair-cycle rate; for the tool, calls an episode and whether the answer is what the last run printed | every episode, from its transcript |
 | **H4** system | calls of the model; tokens, prompt and generated, thinking apart; wall; the kernel's questions, saturations and facts; the kernel's own wall and peak memory; **cost per correctly solved instance** | every run |
@@ -219,8 +219,10 @@ Each is this re-plan's, recorded so that it can be corrected; none is a ruling.
     off the outcome and the answer query's classes; a parameter of the evaluation, so another rule scores the
     same records. *Incomplete* is no answer by default. The class each reading's word says is reported in a
     column beside the rule's. P2.3 and P2.4 both leave this to S2.5.3.
-11. **Exact match is string equality after normalisation; the lenient form is containment**, with an answer
-    domain where an instance carries one, which the benchmark's instance does not yet.
+11. **The score is what a sentence states** (the user's ruling on [Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer), after this list was written:
+    the answer is a sentence, not a bare value). Exact match, string equality after normalisation, and
+    containment stand beside it; the values a gold sentence binds and their domain are fields of the benchmark's
+    instance ([S2.3.1](../p2.3_benchmark/s2.3.1_families_and_seed_set.md)).
 12. **The gold claim on a model's program has three verdicts**: held, refuted, and *not comparable* where the
     program does not name what the claim names. *Not comparable* is counted apart, never as wrong.
 13. **The readings of *certified* are taken of an episode's final program**, by three questions (`--single`,

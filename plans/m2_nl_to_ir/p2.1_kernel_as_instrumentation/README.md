@@ -7,9 +7,9 @@ formalization contract names the outcomes and the diagnostics a program gets bac
 [P2.4](../p2.4_loop/README.md): the feedback ladder renders the object this phase defines, and nothing else.
 **Research plan:** [`EinAf.md` § Stage A](../EinAf.md#stage-a--establish-the-symbolic-kernel-as-the-experimental-foundation),
 A1 to A5.
-**The one phase that changes Ein**: [S2.1.2](s2.1.2_diagnostics_surface.md), by the user's ruling on
-[Q-M2.9](../open_questions.md#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics), under Ein's own
-rules.
+**The first phase that changes Ein**: [S2.1.2](s2.1.2_diagnostics_surface.md), by the user's rulings on
+[Q-M2.9](../open_questions.md#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics) and
+[Q-M2.16](../open_questions.md#q-m216--what-of-the-kernel-may-change-inside-m2) (a feature or a bug fix that leaves Ein's syntax and semantics as they are), under Ein's own rules.
 
 ---
 
@@ -51,8 +51,8 @@ the machine surface says in each of A1's situations, and § B what each of the p
 | ID | title | ends with |
 |---|---|---|
 | [S2.1.1](s2.1.1_tree_and_outcomes.md) | EinAf's tree, and the outcomes | `einaf/`, a Cargo package that links the engine's crates, built and tested by a step of the gate and of CI; the process told of it; `docs/einaf/` with its first pages; the seven outcomes as a function over the library's values, held over the corpus |
-| [S2.1.2](s2.1.2_diagnostics_surface.md) | The kernel's diagnostics as values | in Ein: every refusal a value with a kind and, where the source has one, a place; a refusal, an abort and a run's notes on the machine surfaces; a core's sources beside the core; its decision under `docs/decisions/`, its pages and tests in the same commit |
-| [S2.1.3](s2.1.3_feedback_object.md) | The feedback object | EinAf's `einaf-feedback/1`: one value for one program under one question, built from the library's values in a worker process that EinAf can stop, serialised across that boundary and for the record; one for every corpus program, held to what the binary's summary says of the same run |
+| [S2.1.2](s2.1.2_diagnostics_surface.md) | The kernel's diagnostics as values, and its bounds inside a saturation | in Ein: every refusal a value with a kind and, where the source has one, a place; a refusal, an abort and a run's notes on the machine surfaces; a core's sources beside the core; the clock and a limit reaching inside a saturation, so that no program runs without end; its decision under `docs/decisions/`, its pages and tests in the same commit |
+| [S2.1.3](s2.1.3_feedback_object.md) | The feedback object | EinAf's `einaf-feedback/1`: one value for one program under one question, built from the library's values by a call the kernel's own bounds end, serialised for the record; one for every corpus program, held to what the binary's summary says of the same run |
 
 ## Acceptance
 
@@ -70,8 +70,8 @@ the machine surface says in each of A1's situations, and § B what each of the p
 
 ## What the phase does not do
 
-- **It adds no option to `ein`, changes no exit code and no answer.** S2.1.2 makes what the kernel already knows
-  reachable; R is as it was.
+- **It changes no exit code and no answer.** S2.1.2 makes what the kernel already knows reachable and ends a
+  run that would not end; R is as it was, and the only option it may add is the limit on a saturation.
 - **It gives no place to a message that has none today.** A loader message about a top-level form ends `at None`
   ([Q-M1a.6](../../../docs/decisions/diagnostics/Q-M1a.6-a-loader-message-about-a-top-level-form-names-no.md)),
   and that stays [F23](../../followups/f23_diagnostics_in_eins_words.md)'s.
@@ -98,10 +98,11 @@ Each is the coordinator's and the user's to correct.
    banked at all.
 5. **The object is EinAf's and versioned by EinAf** (`einaf-feedback/1`); the plan's `ein-feedback/1`, written by
    `ein-cli`, is not made.
-6. **EinAf bounds the kernel from outside, in a worker process**, and the kernel is not changed for it: nothing in
-   a solve stops a saturation that has no fixpoint, a model will write such programs, and the engine's own word
-   for *did not stop* is [M1g](../../m1g_logic/README.md)'s to give. EinAf links the crates, as ruled; it links
-   them in a process it can stop.
+6. **The kernel bounds its own run, and EinAf calls it in its own process** (the user's ruling, [Q-M2.16](../open_questions.md#q-m216--what-of-the-kernel-may-change-inside-m2),
+   which replaced this re-plan's first answer, a worker process that EinAf stops from outside). Nothing in a solve
+   stops a saturation that has no fixpoint, a model will write such programs, and S2.1.2 gives the kernel the
+   bound. A worker process is built only if a probe shows a case those bounds do not stop, or a measurement needs
+   the kernel alone in a process.
 
 ## Risks
 

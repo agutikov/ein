@@ -4,7 +4,9 @@
 analysis of this plan against the project ([`analysis/`](analysis/README.md)); the user answered its questions
 the same day ([the ledger](open_questions.md) holds each ruling) and stated the milestone's two main ideas
 ([below](#the-two-main-ideas-the-user-2026-11-25)); and the plan is **re-planned** to them, 2026-11-25, on the
-user's word, *"Do not start any phase. Do re-plan if ready and no open questions"*. **No stage has run, and no
+user's word, *"Do not start any phase. Do re-plan if ready and no open questions"*. The user then answered what
+the re-plan asked (what of the kernel may change, the answer as a sentence, the minimal goal, one tree), and those
+rulings are written in below: *"Yet not start stages, write down decisions and stop"*. **No stage has run, and no
 phase starts until the user says so.**
 **Depends on:** the kernel as it stands after M1f's close
 ([Q-M2.1](open_questions.md#q-m21--when-is-the-kernel-frozen)). No other milestone runs for it:
@@ -135,11 +137,12 @@ is the frame every phase and stage file is written to.
 
 | | the ruling | in the plan |
 |---|---|---|
-| the kernel | the one M1f left ([Q-M2.1](open_questions.md#q-m21--when-is-the-kernel-frozen)); it grows a machine surface for diagnostics, in its own terms ([Q-M2.9](open_questions.md#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics)) | [S2.1.2](p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) is that change and the only one; every record names the commit and the library's manifest |
+| the kernel | the one M1f left ([Q-M2.1](open_questions.md#q-m21--when-is-the-kernel-frozen)); it grows a machine surface for diagnostics, in its own terms ([Q-M2.9](open_questions.md#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics)); and it may gain any feature and any bug fix that leaves Ein's syntax and semantics as they are ([Q-M2.16](open_questions.md#q-m216--what-of-the-kernel-may-change-inside-m2)) | [S2.1.2](p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) is the first such change, the diagnostics and a bound that reaches inside a saturation; a stage that needs another names it; every record names the commit and the library's manifest |
 | the language | Rust ([Q-M2.7](open_questions.md#q-m27--what-language-is-the-frontend-written-in)) | EinAf is one Cargo package, `einaf/`, that links `ein-core`, `ein-ir`, `ein-infer` and `ein-render` by path and stands outside the engine's workspace; the kernel's answer reaches it as values, not as JSON read back |
 | the model | local, `qwen3.5:4b` ([Q-M2.2](open_questions.md#q-m22--must-the-model-be-local), [Q-M2.5](open_questions.md#q-m25--local-model-choice)), run in EinAf's process through a Rust binding to llama.cpp, not through ollama ([Q-M2.14](open_questions.md#q-m214--what-runs-the-model)) | [S2.2.2](p2.2_formalizer/s2.2.2_model_runtime.md); the model's file, by its SHA, is a field of every record, and another suitable model is another value of it |
 | the two arrangements | the tool and the filter, both arms ([Q-M2.13](open_questions.md#q-m213--who-calls-the-kernel)) | [P2.4](p2.4_loop/README.md): the filter is the state machine, the tool is [S2.4.6](p2.4_loop/s2.4.6_ein_as_a_tool.md); [S2.5.2](p2.5_harness/s2.5.2_baselines.md) compares them |
-| the answer | Ein's own, by `:goal-text`, with EinAf's formatters; M1p does not run ([Q-M2.12](open_questions.md#q-m212--what-prints-the-answer)) | the query's `:goal-text` is in the contract ([S2.2.1](p2.2_formalizer/s2.2.1_contract.md)); the formatters are [S2.2.5](p2.2_formalizer/s2.2.5_from_text.md)'s; a gold answer is a short text beside an `:expect` claim ([P2.3](p2.3_benchmark/README.md)) |
+| the answer | Ein's own, by `:goal-text`, with EinAf's formatters; M1p does not run; **a sentence**, *"like zebra's “The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”"*; and EinAf's two fixed texts where no program prints one ([Q-M2.12](open_questions.md#q-m212--what-prints-the-answer)) | the query's `:goal-text`, a sentence, is in the contract ([S2.2.1](p2.2_formalizer/s2.2.1_contract.md)); the formatters are [S2.2.5](p2.2_formalizer/s2.2.5_from_text.md)'s; a gold answer is the sentence its canonical program prints, with the values it binds, beside an `:expect` claim ([P2.3](p2.3_benchmark/README.md)); a sentence is scored by what it states ([S2.5.3](p2.5_harness/s2.5.3_metrics.md)) |
+| the minimal goal | the model, which does not solve the Zebra puzzle by reasoning in text, solves it *"with help of Ein or through Ein"* ([Q-M2.17](open_questions.md#q-m217--what-is-the-milestones-minimal-goal)) | the first line of [the acceptance](#acceptance); the model alone on the puzzle is a record of EinAf's, with its context and budget stated |
 | a flagged program | an outcome of its own, never certified ([Q-M2.11](open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop)) | the seventh outcome below; its sites are fed back; no canonical program of the benchmark is flagged |
 | alternatives | a hypothesis, `(open F)`; there is no `hrule` ([Q8](open_questions.md#q8--ambiguous-parses)) | [S2.4.5](p2.4_loop/s2.4.5_alternatives_as_hypotheses.md) keeps the experiment between the two strategies |
 | *certified unique* | open until experiments ([Q-M2.10](open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r)) | every record carries each reading an instance has (`--single`'s word, the maximal line's, a description's two counts) with its family and shape, and both conditional probabilities are computed under each |
@@ -185,7 +188,7 @@ each row run; [S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.m
 | **incomplete** | a state owes: `Open`, with what is owed. It is the kernel's word and not the problem's class: an empty R whose every node owes is also what a problem with no solution looks like where no rule refutes it |
 | **several** | `Ambiguity`, with two states that differ |
 | **one** | `Solution`; over which part of R is [Q-M2.10](open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r)'s |
-| **not decided** | a budget or the clock stopped the run before the question was decided, or EinAf's own bound stopped the kernel, which nothing else does where a saturation has no fixpoint; never read as one of the five above |
+| **not decided** | a budget or the clock stopped the run before the question was decided; today neither reaches inside a saturation that has no fixpoint, and [S2.1.2](p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) makes them; never read as one of the five above |
 | **flagged** | the program is not monotone: an answer is printed and nothing is claimed of it ([Q-M1f.564](../../docs/decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)); never certified |
 
 Beside the outcome stands the query's own axis: a query's classes, their rows, and whether the rows agree. *An
@@ -193,7 +196,7 @@ ambiguous theory with one answer* is a state the outcome alone does not say.
 
 ### Where EinAf's things are
 
-Defaults of the re-plan; none exists yet, and [S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md)
+One tree for EinAf and its documentation apart, as the user ruled ([Q-M2.8](open_questions.md#q-m28--where-does-einaf-live)); the folders inside are the re-plan's. None exists yet, and [S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md)
 creates the first.
 
 | path | what |
@@ -209,24 +212,28 @@ The model's file is not in the repository: a record names it by its SHA, and a r
 
 ### The defaults the re-plan took
 
-Each is the coordinator's, recorded so that the user can correct it; none is a ruling.
+Each is the coordinator's, recorded so that the user can correct it. Four have been ruled on since and say so
+(2, 7, 11 and 15), and one was replaced by a ruling (16).
 
 1. **The ten phases keep their ids and their order.** P2.1 to P2.5 are at stage depth, P2.6 has one stage file,
    P2.7 to P2.10 are phase READMEs, as before (§ How deep this plan is).
-2. **One tree a project**: EinAf's code, grammars, benchmark and records are folders of `einaf/`; the plan's
-   `grammars/`, `benchmark/`, `experiments/` at the root are not made, and `packaging/` is dropped with the
-   Compose service.
+2. **One tree a project** (ruled: *"One tree - yes, preferred, docs/einaf/ - separately"*): EinAf's code,
+   grammars, benchmark and records are folders of `einaf/`; the plan's `grammars/`, `benchmark/`, `experiments/`
+   at the root are not made, and `packaging/` is dropped with the Compose service.
 3. **The benchmark's generators are Rust**, in the package, so that EinAf has one toolchain.
 4. **EinAf has a gate step of its own**, for what needs no model. A run that needs the model's file and the GPU is
    an experiment, by hand, with its record, in no tier.
 5. **`llama-server` is the reference** a binding is compared with, and the fallback if none loads the model.
 6. **The budget is generated tokens**, thinking included, with the kernel's work recorded beside it and not traded
    against it.
-7. **An answer is scored as a short text**, normalised and compared with the gold text, for every arm alike. Every
-   arm is given the same line that says what form the answer takes (a name, a number, an option's label), and a
-   program's answer query prints in that form. For the arms that run Ein the gold `:expect` claim is checked too,
-   by the kernel, where the model's program names what the claim names; where it does not, the claim is *not
-   comparable*, which is neither held nor refuted ([S2.5.3](p2.5_harness/s2.5.3_metrics.md)).
+7. **An answer is a sentence, scored by what it states** (ruled: the re-plan's default was a bare value, and the
+   user meant *"a sentence, like zebra's"*). Every arm is asked for a sentence or two in the problem's words; a
+   program's answer query prints one through its `:goal-text`; a gold answer is the sentence its canonical
+   program prints, with the values that sentence binds. An answer is right when it states each of those values and
+   no other in its place: how that is read off a model's free sentence is
+   [S2.5.3](p2.5_harness/s2.5.3_metrics.md)'s to design, and equality of two sentences is not the score. For the
+   arms that run Ein the gold `:expect` claim is checked too, by the kernel, where the model's program names what
+   the claim names; where it does not, the claim is *not comparable*, which is neither held nor refuted.
 8. **The benchmark keeps the research plan's three classes** (one answer, ambiguous, unsatisfiable) as an
    instance's gold class, with [F26](../followups/f26_consistency_and_completeness.md)'s finer split as metadata;
    the word problems of `examples/word_problems/` are its second domain from the start.
@@ -235,14 +242,18 @@ Each is the coordinator's, recorded so that the user can correct it; none is a r
 10. **A stage that drives the kernel adds to [the evaluation of Ein](ein_evaluation.md)**; a wrong answer goes to
     the wrong-answer register as well; every level's gate is a stop where the evaluation is shown
     ([Q-M2.15](open_questions.md#q-m215--where-does-m2-stop-for-the-next-iteration-of-ein)).
-11. **The kernel is changed inside M2 only where a ruling says so**, which is Q-M2.9.
+11. **The kernel may be changed inside M2 where Ein's syntax and semantics stay as they are** (ruled,
+    [Q-M2.16](open_questions.md#q-m216--what-of-the-kernel-may-change-inside-m2): features such as logs, traces,
+    measurements, timeouts and limits, and bug fixes; the re-plan's default was *only where a ruling says so*).
+    Each such change is a task of the stage that needs it, made under Ein's rules, and the entry of the
+    evaluation it closes says so. A change to the language waits for the iteration of Ein.
 12. **P2.8 states its dependency on [M10](../m10_external_benchmarks/README.md) as work not done**, and the order
     of the two is decided at the Level C gate. **P2.9 does not wait for M5's venue**: its kernel half cites
     [`docs/ein/reasoning/`](../../docs/ein/reasoning/README.md) and does not restate it.
 13. **No file of the plan carries an estimate, or a date as its status** (the user, 2026-11-08).
 14. **Every stage begins by checking what its file says of the tree**, as the stages of this project do: the
     files are written against the kernel at M1f's close, and S2.1.2 changes it.
-15. **Where no program prints the answer, EinAf says it in a fixed text of its own.** A query's `:goal-text` is
+15. **Where no program prints the answer, EinAf says it in a fixed text of its own** (ruled: *"OK"*). A query's `:goal-text` is
     filled once a row, so nothing is printed where the answer is that the statements do not determine it, or that
     they contradict each other. For those two EinAf has one fixed text each, chosen by the answer query's classes
     over R (not by the verdict word: a program with several states and one answer prints its own) and never
@@ -250,9 +261,12 @@ Each is the coordinator's, recorded so that the user can correct it; none is a r
     ([S2.2.5](p2.2_formalizer/s2.2.5_from_text.md) words the texts, [S2.5.3](p2.5_harness/s2.5.3_metrics.md) has
     the rule). It is the one place where the answer is not *the Ein program's own output*
     ([Q-M2.12](open_questions.md#q-m212--what-prints-the-answer)), and is said so.
-16. **EinAf runs the kernel in a worker process it can stop**, at a wall clock and at a memory size
-    ([S2.1.3](p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md)): nothing in a solve stops a saturation
-    that has no fixpoint, and the programs are a model's. The kernel is not changed for it (default 11).
+16. **The kernel bounds its own run, and EinAf calls it in its own process.** Nothing in a solve stops a
+    saturation that has no fixpoint today, and the programs are a model's; by the ruling of default 11 the clock
+    and the budget are made to reach inside a saturation
+    ([S2.1.2](p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md)). A worker process that EinAf can
+    stop, the re-plan's first answer, is built only if a probe shows a case those bounds do not stop
+    ([S2.1.3](p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md)).
 17. **The benchmark's `test` split is opened twice**: at the Level B gate, for the one-shot run, read in
     aggregate only, and for the result ([P2.10](p2.10_result_artifact_demo/README.md)). Everything between is
     developed on the other splits ([S2.3.4](p2.3_benchmark/s2.3.4_splits.md)).
@@ -336,15 +350,20 @@ ends with the defaults its re-plan took, which are the coordinator's and the use
 
 ## Acceptance
 
-Per level; each gate is checked by a phase named above. **A criterion the model misses is reported as missed,
-with its record**: the criteria were written for a larger model than the one the user chose, the first of them
-(the Zebra puzzle in one shot) most of all, and whether a level is reached is the user's to say at its gate.
+**The minimal goal** (the user, [Q-M2.17](open_questions.md#q-m217--what-is-the-milestones-minimal-goal)): the
+chosen model, which does not solve the Zebra puzzle by reasoning in text, solves it from its text *with the help
+of Ein or through Ein*, by the tool or by the filter, the loop included; the two sides are two records of EinAf's,
+the model alone run with its context and budget stated. *"It would be already success."* Every stage that runs
+the model on the puzzle says where the goal stands.
+
+Then per level; each gate is checked by a phase named above. **A criterion the model misses is reported as
+missed, with its record**, and whether a level is reached is the user's to say at its gate.
 
 **Level B** ([P2.3](p2.3_benchmark/README.md) closes it):
 
-1. `einaf from-text` on the Zebra puzzle's text produces a program the kernel solves to the canonical answer, one
-   shot, with the record; and on a word problem, the short answer its gold states. The kernel stays free of any
-   model.
+1. `einaf from-text`, one shot, with the record: on the Zebra puzzle's text, the minimal goal's first attempt, a
+   program the kernel solves to the canonical answer, or the record of where it stopped; on a word problem, the
+   sentence its gold states. The kernel stays free of any model.
 2. One-shot formalization on the benchmark's **test** split, three or more families, reported per family with
    parse, load and outcome rates and answer accuracy; the split is unseen by prompt development
    ([S2.3.4](p2.3_benchmark/s2.3.4_splits.md)).
@@ -421,16 +440,18 @@ kernel grows a machine surface for diagnostics, in its own terms
 ([Q-M2.9](open_questions.md#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics)); a flagged program is
 an outcome of its own ([Q-M2.11](open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop)); the answer is
 Ein's, by `:goal-text` and EinAf's formatters, and M1p does not run
-([Q-M2.12](open_questions.md#q-m212--what-prints-the-answer)); and Ein is both a tool and a filter
-([Q-M2.13](open_questions.md#q-m213--who-calls-the-kernel)).
+([Q-M2.12](open_questions.md#q-m212--what-prints-the-answer)); Ein is both a tool and a filter
+([Q-M2.13](open_questions.md#q-m213--who-calls-the-kernel)); the kernel may gain features and bug fixes that leave
+Ein's syntax and semantics as they are
+([Q-M2.16](open_questions.md#q-m216--what-of-the-kernel-may-change-inside-m2)); and the minimal goal is the Zebra
+puzzle solved by the model with Ein
+([Q-M2.17](open_questions.md#q-m217--what-is-the-milestones-minimal-goal)).
 
 **Open, and the user's:** what *certified unique* means on R, decided after experiments, with the rule that
 scores an answer beside it
-([Q-M2.10](open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r)); where M2 stops for the
-next iteration of Ein, decided at a level's gate
-([Q-M2.15](open_questions.md#q-m215--where-does-m2-stop-for-the-next-iteration-of-ein)); and whether the kernel
-bounds a saturation that has no fixpoint, which EinAf does from outside until then
-([Q-M2.16](open_questions.md#q-m216--is-a-saturation-bounded-inside-the-kernel)). None holds a phase.
+([Q-M2.10](open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r)); and where M2 stops for
+the next iteration of Ein, decided at a level's gate
+([Q-M2.15](open_questions.md#q-m215--where-does-m2-stop-for-the-next-iteration-of-ein)). Neither holds a phase.
 
 **Open, and a stage's:** Q8, by experiment, its form settled; Q9; Q11;
 [Q-M2.3](open_questions.md#q-m23--what-is-the-unit-of-faithfulness-without-a-gold-theory), the unit of

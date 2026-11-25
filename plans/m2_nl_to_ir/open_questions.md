@@ -8,7 +8,7 @@ milestone was *NL → IR*; they keep their numbers. **Q-M2.n** is the milestone-
 [M10](../m10_external_benchmarks/open_questions.md) uses too: Q-M2.1–4 arrived with the 2026-08-23 reshape around
 [`EinAf.md`](EinAf.md), Q-M2.8–11 with the analysis M2 started from, 2026-11-25
 ([`analysis/`](analysis/README.md)), Q-M2.12–13 with the user's answers of that day, Q-M2.14–15 with the
-answers that followed them, and Q-M2.16 with the re-plan.
+answers that followed them, Q-M2.16 with the re-plan, and Q-M2.17 with the user's answers to the re-plan.
 
 **Q-M2.5, Q-M2.6 and Q-M2.7 were this file's Q23, Q24 and Q25 until 2026-11-25.** Those three ids were already the
 root ledger's, given to questions of M1's, and two of them are decision files under `docs/decisions/` (a premise
@@ -41,7 +41,6 @@ about the harness is the second kind.
 | [Q-M2.6](#q-m26--one-gbnf-or-many) | One GBNF grammar per task, or one grammar for everything? | [S2.2.3](p2.2_formalizer/s2.2.3_gbnf.md) |
 | [Q-M2.10](#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r) | What does *Ein certifies a unique model* mean on R? | **the user, after experiments** (*"it depends on problem shape"*) |
 | [Q-M2.15](#q-m215--where-does-m2-stop-for-the-next-iteration-of-ein) | Where does M2 stop for the next iteration of Ein? | **the user**, at a level's gate; until then every gate is a stop |
-| [Q-M2.16](#q-m216--is-a-saturation-bounded-inside-the-kernel) | Is a saturation bounded inside the kernel? | **the user**; until then EinAf bounds the kernel from outside, in a worker process |
 
 ### Ruled by the user
 
@@ -51,12 +50,14 @@ about the harness is the second kind.
 | [Q-M2.2](#q-m22--must-the-model-be-local) | Must the model be local? | *"yes"* |
 | [Q-M2.5](#q-m25--local-model-choice) | Which local model? | *"Qweb3.5:4b"*, read as `qwen3.5:4b` |
 | [Q-M2.7](#q-m27--what-language-is-the-frontend-written-in) | What language is the frontend written in? | *"Rust"* |
-| [Q-M2.8](#q-m28--where-does-einaf-live) | Where does EinAf live? | *"./einaf/, ./docs/einaf/, etc..."*, then *"own tree, in this repository, outside of ein … but inside the development process"* |
+| [Q-M2.8](#q-m28--where-does-einaf-live) | Where does EinAf live? | *"./einaf/, ./docs/einaf/, etc..."*, then *"own tree, in this repository, outside of ein … but inside the development process"*, then *"One tree - yes, preferred, docs/einaf/ - separately"* |
 | [Q-M2.9](#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics) | Does the kernel grow a machine surface for diagnostics? | *"(b)"*: it does, in its own terms |
 | [Q-M2.11](#q-m211--what-is-a-flagged-program-to-the-loop) | What is a flagged program to the loop? | *"(a)"*: an outcome of its own, never certified |
-| [Q-M2.12](#q-m212--what-prints-the-answer) | What prints the answer? | *"don't run M1p now, use as much of existing ein NL features … use additional external formatters"* |
+| [Q-M2.12](#q-m212--what-prints-the-answer) | What prints the answer? | *"don't run M1p now, use as much of existing ein NL features … use additional external formatters"*; the answer is *"a sentence, like zebra's"*; EinAf's fixed texts where no program prints one, *"OK"* |
 | [Q-M2.13](#q-m213--who-calls-the-kernel) | Who calls the kernel: the harness, the model, or both? | both: the tool, *"recommened but optional"*, and the filter, *"forced to write ein code"* |
 | [Q-M2.14](#q-m214--what-runs-the-model) | What runs the model? | *"llama-cpp with rust wrapper, not ollama"* |
+| [Q-M2.16](#q-m216--what-of-the-kernel-may-change-inside-m2) | What of the kernel may change inside M2? | *"we can change kernel without changing ein language syntax and semantics … bug fixes allowed"* |
+| [Q-M2.17](#q-m217--what-is-the-milestones-minimal-goal) | What is the milestone's minimal goal? | the model, *"with help of Ein or through Ein"*, solves the Zebra puzzle: *"this is a minimal goal"* |
 
 The stage files are re-planned to these rulings (the README's [§ The plan as re-planned](README.md#the-plan-as-re-planned)):
 no stage still decides a question that is ruled here.
@@ -322,32 +323,12 @@ is developed again; it does not say after which phase. What the plan does by def
   ([P2.7](p2.7_failure_scaling_generalization/README.md)) and Level D
   ([P2.10](p2.10_result_artifact_demo/README.md)) the evaluation is written up, and the user says whether EinAf
   goes on or an iteration of Ein comes first;
-- between gates the kernel is changed inside M2 only where a ruling says so
-  ([Q-M2.9](#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics)); a bug that is a wrong answer is
-  filed in the wrong-answer register as it is found, whoever fixes it.
+- between gates the kernel gains what the application needs of it and a bug is fixed, where Ein's syntax and
+  semantics stay as they are ([Q-M2.16](#q-m216--what-of-the-kernel-may-change-inside-m2)); what would change the
+  language waits for the iteration of Ein. A bug that is a wrong answer is filed in the wrong-answer register as
+  it is found, whoever fixes it.
 
 Nothing waits for this question: the first gate is the first time it has an answer to give.
-
-## Q-M2.16 — Is a saturation bounded inside the kernel?
-
-**Raised 2026-11-25 by the re-plan.** **The user's; it holds no phase.**
-
-Nothing in a solve stops a saturation that has no fixpoint. A rule that nests its conclusion one deeper than its
-premise ([`grow.ein`](analysis/probes/p2.7/grow.ein)) ran until a timeout killed it after 20 s, under `-T 1`,
-under `-T 2` and under `--region-budget 1000` alike; `ein saturate --max-steps` stops it, and the library's
-saturator takes a cap on its steps that no route passes on. Ein's page says so: *termination is assumed, not given*
-([`02-saturation.md`](../../docs/ein/reasoning/02-kb-evolution/02-saturation.md)). A
-hand-written program is written to end. **A model's program is not**, and EinAf links the kernel into its own
-process ([Q-M2.7](#q-m27--what-language-is-the-frontend-written-in)).
-
-| | what it means | what it costs |
-|---|---|---|
-| **(a) EinAf bounds the kernel from outside** | every call of the kernel runs in a worker process of EinAf's, stopped at a wall clock and at a memory size; a stopped call is *not decided* ([S2.1.3](p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md)) | a process a call, and bounds that depend on the machine; the kernel is as it is |
-| **(b) the kernel bounds a saturation** | the clock is read inside a saturation, or the step cap reaches the routes, and a run that hits it says so in Ein's words | a second kernel change inside M2, beyond [Q-M2.9](#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics); the engine's word for *did not stop* is on [M1g](../m1g_logic/README.md)'s plan, in its stage on a saturation that does not stop |
-
-**Taken by default: (a)**, since the kernel is changed inside M2 only where a ruling says so, and (a) is needed
-either way while a program can exhaust memory before a clock is read. The finding is E-45 of
-[the evaluation](ein_evaluation.md).
 
 ---
 
@@ -452,11 +433,14 @@ inside the development process, make clear projects hierachy in root readme and 
 **Done with the ruling:** the root `README.md` and `AGENTS.md` state the hierarchy. No tree is created by it:
 [S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md) creates them.
 
-**What the ruling does not say, each taken by default and the user's to correct:**
+**Ruled further, 2026-11-25**, to the first of the defaults below: *"One tree - yes, preferred, docs/einaf/ -
+separately"*. So item 1 is the user's; the others stay defaults.
 
-1. **One tree a project at the root.** The plan's other root directories (`grammars/`, `benchmark/`,
-   `experiments/`, `packaging/`) are folders of `einaf/`, so that the root shows the hierarchy; *etc.* is read as
-   *and the rest of what EinAf needs*, not as four more root directories.
+**What the first two answers did not say, each taken by default and the user's to correct, but the first:**
+
+1. **One tree a project at the root** (ruled). The plan's other root directories (`grammars/`, `benchmark/`,
+   `experiments/`, `packaging/`) are folders of `einaf/`, so that the root shows the hierarchy, and EinAf's
+   documentation is `docs/einaf/`, apart from it.
 2. **The checks of Ein's prose are Ein's.** The release-voice check and the rules of `docs/ein/` (the current
    state only, no date, no measurement) are scoped to Ein: `einaf/` and `docs/einaf/` are named in
    `utils/check_release_voice.py`'s `NOT_PROJECT` when they are created. EinAf's own pages use the research
@@ -556,6 +540,22 @@ table.
 key of `ein-summary/2`; a value has no text of its own) is recorded in
 [the evaluation of Ein](ein_evaluation.md), for the iteration of Ein that follows.
 
+**Ruled further, 2026-11-25**, to two defaults of the re-plan:
+
+- **The answer is a sentence.** To the default that every arm is scored on a bare value (*3*, *Cy*): *"no, I meant
+  a sentence, like zebra's “The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”"*. That
+  sentence is what [`zebra.ein`](../../examples/zebra.ein)'s query prints through its `:goal-text`. **Read as:**
+  *short* means a sentence or two in the problem's own words, not a bare value; the answer query's `:goal-text` is
+  such a sentence; every arm is asked for one; and a gold answer is the sentence its canonical program prints.
+  **What it changes:** an answer is no longer scored by equality of a normalised value. How a sentence is scored
+  is [S2.5.3](p2.5_harness/s2.5.3_metrics.md)'s to design, by default **by what it states**: the gold holds, beside
+  its sentence, the values the sentence binds (the answer query's rows), and an answer is right when it states
+  each of them and no other value in its place; for an arm that runs Ein the rows are the program's own and the
+  gold claim is checked by the kernel where it is comparable.
+- **EinAf's fixed texts, where no program prints the answer:** *"OK"*. The two texts
+  ([S2.2.5](p2.2_formalizer/s2.2.5_from_text.md): *The statements do not determine the answer.* and *The
+  statements contradict each other.*) are EinAf's and stand, said as such.
+
 ## Q-M2.13 — Who calls the kernel?
 
 **Ruled by the user, 2026-11-25**, to the coordinator's reading that both are arms of one experiment, compared
@@ -623,3 +623,69 @@ file was pulled to. What *full control* buys, and the plan uses:
 - **`llama-server`, of the same package, is the reference** a binding is compared with (one file, one grammar,
   one seed) and what the plan falls back to if no binding loads the model. The Compose service of the old plan,
   and `packaging/` with it, are dropped.
+
+## Q-M2.16 — What of the kernel may change inside M2?
+
+**Ruled by the user, 2026-11-25:** *"we can change kernel without changing ein language syntax and semantics, any
+additional kernel features (logs, traces, measurement, timeouts, limits, etc) can be added; bug fixes allowed"*.
+
+The question was raised by the re-plan as a narrower one, *is a saturation bounded inside the kernel?*: nothing in
+a solve stops a saturation that has no fixpoint ([`grow.ein`](analysis/probes/p2.7/grow.ein), E-45 of
+[the evaluation](ein_evaluation.md)), and the re-plan's default was to change nothing in the kernel and have EinAf
+stop it from outside. `git show cce0f0ff:plans/m2_nl_to_ir/open_questions.md` has the two options.
+
+**Read as:** inside M2 the kernel may be changed wherever **Ein's syntax and semantics stay as they are**.
+
+- **Allowed, with no further ruling:** a feature that makes the kernel say, measure or bound more (a log, a trace,
+  a measurement, a timeout, a limit, a key of a machine surface, a value of the library), and **a bug fix**. Each
+  is made under Ein's rules, as [S2.1.2](p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) is: its
+  pages and tests in the same commit, the gate, a decision file where it decides something, and no word of EinAf
+  in Ein.
+- **Not allowed by this:** a change to the language (a form, a keyword, a name the kernel reads) or to what a
+  program means and what its answer is. That waits for the iteration of Ein that follows
+  ([Q-M2.15](#q-m215--where-does-m2-stop-for-the-next-iteration-of-ein)), or for a ruling of its own.
+- **It supersedes** the re-plan's default that the kernel changes inside M2 *only where a ruling says so*, and the
+  sentences of the plan that called S2.1.2 the milestone's one kernel change.
+
+**What it changes in the plan:**
+
+- **A saturation is bounded by the kernel.** The clock (`-T`) and the budget the kernel already has reach inside a
+  saturation, and a run they stop says what a stopped run says today: no new word and no new outcome. It is a task
+  of [S2.1.2](p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md). The word of its own for *did not
+  stop*, a bound that is the saturation's own, and a static check are
+  [M1g](../m1g_logic/README.md)'s, in its stage on a saturation that does not stop, with the user's question
+  there.
+- **EinAf calls the kernel in its own process**, as ruled
+  ([Q-M2.7](#q-m27--what-language-is-the-frontend-written-in)). A worker process is built only if a probe shows a
+  case the kernel's own bounds do not stop ([S2.1.3](p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md)).
+- **An entry of the evaluation that is a gap or a bug may be closed inside M2**, by the stage that needs it, and
+  the entry then says so. An entry nothing in M2 needs stays for the iteration of Ein.
+
+## Q-M2.17 — What is the milestone's minimal goal?
+
+**Ruled by the user, 2026-11-25**, to the re-plan's note that a 4B model may not formalize the Zebra puzzle in one
+shot: *"I just checked in ollama Qwen 3.5 started "Step-by-Step Deduction" in default thinking mode, but didn't
+manage to find the solution and stopped (probably on some limit, I'm not aware about). So if this model with help
+of Ein or through Ein will became able to solve the project's signature problem - It would be already success. So
+this is a minimal goal."*
+
+**Read as:** the milestone's minimal goal is that **the chosen model, which does not solve the Zebra puzzle by
+reasoning in text, solves it with Ein**: *with the help of Ein*, the tool, or *through Ein*, the filter
+([Q-M2.13](#q-m213--who-calls-the-kernel)). Reaching it is already a success, whatever the tables then say. It is
+not one shot: any arm that uses Ein counts, the loop included.
+
+**What it changes in the plan:**
+
+- **It is the first line of the milestone's acceptance**, before the levels, and the Level B criterion that asked
+  for the Zebra puzzle in one shot is that goal's first attempt, not a bar of its own
+  ([README](README.md#acceptance)).
+- **The other side is taken as a record, not as an observation.** The user's run was one, through ollama, cut by
+  a limit nobody set on purpose; in the host check ollama had loaded the model with a context of 4 096 tokens
+  ([`analysis/host.md`](analysis/host.md)), which a step-by-step deduction of this puzzle may well exceed. So the
+  model alone on the Zebra text is run by EinAf, thinking on, with the context and the budget stated in the
+  record, first in [S2.2.2](p2.2_formalizer/s2.2.2_model_runtime.md)'s probe and again as arm B1 on the puzzle
+  ([S2.5.2](p2.5_harness/s2.5.2_baselines.md)): *the model alone does not solve it* is then a claim with its
+  evidence, and the goal a difference between two records.
+- **Each stage that runs the model on the Zebra text says where the goal stands**: one shot
+  ([S2.2.5](p2.2_formalizer/s2.2.5_from_text.md)), the filter's loop ([S2.4.1](p2.4_loop/s2.4.1_state_machine.md)),
+  the tool ([S2.4.6](p2.4_loop/s2.4.6_ein_as_a_tool.md)).

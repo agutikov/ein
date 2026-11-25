@@ -402,8 +402,10 @@ paragraph, no register count, no measurement (the user's rule).
   (EinAf is Rust, one package under `einaf/`, a project of its own; the model
   is local, `qwen3.5:4b`, run through a Rust binding to llama.cpp; Ein is
   both a tool the model may call and a filter it cannot avoid; the answer is
-  what the Ein program prints; the kernel grows a machine surface for
-  diagnostics, the one kernel change of the milestone), and it keeps
+  what the Ein program prints, a sentence; the kernel grows a machine surface
+  for diagnostics and a bound inside a saturation, and may gain any feature
+  or bug fix that leaves Ein's syntax and semantics as they are; the minimal
+  goal is the Zebra puzzle solved by the model with Ein), and it keeps
   [an evaluation of Ein](plans/m2_nl_to_ir/ein_evaluation.md), what this
   application finds of the kernel, for the iteration of Ein that follows.
   **No stage has run, and no phase of it starts until the user says so.** M1f, the structure of the hypothesis

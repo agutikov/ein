@@ -53,7 +53,9 @@ An instance is four things, and an external instance the first three:
    *one answer*, *ambiguous*, *unsatisfiable*. It is a property of the problem, not of a run. The finer split of
    [F26](../../followups/f26_consistency_and_completeness.md), item 6 of its last section, stands beside it as
    metadata;
-3. **its gold short answer**, a short text, which is what every arm B0 to B6 is scored against
+3. **its gold short answer**, a sentence in the problem's words (the user's ruling, [Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer):
+   *"a sentence, like zebra's"*), with the values it binds; what it states is what every arm B0 to B6 is scored
+   against
    ([the arms](../README.md#the-arms));
 4. **its canonical Ein program**: ontology, theory, instance and query, with the answer stated as `:expect` claims
    that the kernel checks, and the gold short answer printed through its answer query's `:goal-text`

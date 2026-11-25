@@ -48,7 +48,7 @@ answer depends on, and the answer query's `:goal-text`, which is how the program
 | **theory** | `(import MODULE :symbols (NAME+))` and the facts that activate what was imported; a `rule` with its `:why` only where the catalogue has nothing | **nothing, where the spelling is wrong**: a short name the file lists from no import is the file's own, and the fact is inert with no message ([`04-stdlib/` § What to list](../../../docs/ein/user/04-reference/04-stdlib/README.md#what-to-list)) |
 | **hypothesis mechanism** | what proposes the candidates: the library's obligations, a rule that concludes `(open F)`, a written `(open F)`, `(solve :no-search)`, or a `(solve :hypothesis-relations (…))` list for the blind enumerator | the mechanisms may not contradict one another ([§ 2.26](../../../docs/ein/user/04-reference/07-diagnostics.md#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)); **a program that states none is answered by the blind enumerator**, in silence ([hypotheses, the writers](../../../docs/ein/user/03-syntax-and-semantics/09-hypotheses.md#where-candidates-come-from-the-writers)) |
 | **instance** | `(R a b :source "…")` and `(not (R a b) :source "…")`, the text of each `:source` the sentence it states | a fact takes `:source`, `:rule` and `:using` and no other keyword ([Q-M1e2.28](../../../docs/decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)); names are ASCII; a number is a name, and a quantity that is computed is a numeral of the calculator, `(n z 5)` |
-| **query** | `(query :goal PREMISE :goal-text "…")`: **the answer query**, the one query that carries a `:goal-text`, which prints the short answer in the form every arm is asked for (a name, a number, an option's label); any other query is a check | a goal is held to what a rule's `:match` is held to, and names only relations the program writes ([§ 2.21](../../../docs/ein/user/04-reference/07-diagnostics.md#221-a-goal-is-held-to-what-a-rules-match-is-held-to)) |
+| **query** | `(query :goal PREMISE :goal-text "…")`: **the answer query**, the one query that carries a `:goal-text`, a sentence that says the answer in the problem's words, as every arm is asked for one ([Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer)); any other query is a check | a goal is held to what a rule's `:match` is held to, and names only relations the program writes ([§ 2.21](../../../docs/ein/user/04-reference/07-diagnostics.md#221-a-goal-is-held-to-what-a-rules-match-is-held-to)) |
 
 Four things follow, and each is a stage's subject.
 
@@ -137,7 +137,7 @@ grammar would have prevented. S2.2.3 follows the probe; S2.2.4 follows S2.2.1 an
 
 **How every stage reaches the kernel.** One module of EinAf calls the engine's crates, `einaf::kernel`
 ([S2.1.3](../p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md)'s acceptance), and a program is run only
-through its bounded call, a worker process EinAf holds to a wall clock and a memory size (that stage's
+through its bounded call, which sets the kernel's own clock and limit on every run (that stage's
 T2.1.3.2b; [the frame's default 16](../README.md#the-defaults-the-re-plan-took)): nothing in a solve stops a saturation
 that has no fixpoint, and from S2.2.2's probe on the programs are a model's. Where a file of this phase names a
 function of the crates (`ein_ir::parse`, `ein_ir::dump_canonical`, `ein_core::render_why`), it names what that
@@ -235,8 +235,8 @@ Each is this re-plan's, recorded so that the user can correct it; none is a ruli
    generated assumption; the forms B2 has no word for are rows of the contract's table.
 4. **The answer query is the one query that carries a `:goal-text`**, and any other query is a check: the
    benchmark and the metrics read one ([P2.3](../p2.3_benchmark/README.md#an-instance),
-   [S2.5.3](../p2.5_harness/s2.5.3_metrics.md)). Its `:goal-text` prints the bare answer in the answer line's
-   form. A program with none has no answer; with two, the first is read and the check reports it. The model
+   [S2.5.3](../p2.5_harness/s2.5.3_metrics.md)). Its `:goal-text` is a sentence that says the answer, as the user
+   ruled ([Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer)). A program with none has no answer; with two, the first is read and the check reports it. The model
    writes every `:why`, and EinAf never loads with the `:why` requirement off.
 5. **Texts are English** (the frame's default 9): the Russian half of the old plan is dropped.
 6. **S2.2.1 and S2.2.2 are independent**, and the probe is the phase's first measurement.
@@ -288,7 +288,8 @@ Each is this re-plan's, recorded so that the user can correct it; none is a ruli
     ([S2.4.4](../p2.4_loop/s2.4.4_faithfulness.md)): only a fact stated as holding with no sentence behind it.
     What a program needs to be well formed or to state its lattice (a declaration, an import, a `(solve …)`
     form, a closure, a written `(open F)`) is never one.
-26. **This stage writes the answer lines its own runs need** (a number; the names asked for), since
+26. **This stage writes the answer lines its own runs need** (each asks for a sentence: how many, for the word
+    problems; who drinks water and who owns the zebra, for Zebra), since
     [S2.5.2](../p2.5_harness/s2.5.2_baselines.md), which owns them, comes after it.
 27. **The probes of this re-plan are in the files' own text** (the contract's worked example in three forms, the
     five forms with no mechanism, the rule with no fixpoint, a word problem over the calculator): this re-plan wrote only into its own folder, so

@@ -317,7 +317,7 @@ with what it is read to mean:
 | Q | the question | the user | what it changes |
 |---|---|---|---|
 | [Q-M2.8](../open_questions.md#q-m28--where-does-einaf-live) | where EinAf lives | *"./einaf/, ./docs/einaf/, etc..."*, then *"own tree, in this repository, outside of ein … but inside the development process"* | EinAf is a second project, over ein.rs, under the same process; the root README and `AGENTS.md` state the hierarchy |
-| [Q-M2.9](../open_questions.md#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics) | a machine surface for diagnostics | *"(b)"* | the kernel grows it in its own terms: S2.1.2, the milestone's one kernel change; the feedback object is EinAf's |
+| [Q-M2.9](../open_questions.md#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics) | a machine surface for diagnostics | *"(b)"* | the kernel grows it in its own terms: S2.1.2; the feedback object is EinAf's |
 | [Q-M2.11](../open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop) | a flagged program | *"(a)"* | an outcome of its own, never certified, fed back with its sites |
 | [Q-M2.7](../open_questions.md#q-m27--what-language-is-the-frontend-written-in) | the loop's language | *"Rust"* | EinAf links the crates |
 | [Q-M2.2](../open_questions.md#q-m22--must-the-model-be-local), [Q-M2.5](../open_questions.md#q-m25--local-model-choice) | the model | *"yes"*, *"Qweb3.5:4b"* | local, `qwen3.5:4b` |
@@ -326,6 +326,14 @@ with what it is read to mean:
 | [Q8](../open_questions.md#q8--ambiguous-parses) | ambiguous parses | *"there is no `hrule` anymore, rules emitting open facts replaced them"* | the form is a hypothesis, `(open F)` |
 | [Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer) | what prints the answer | *"don't run M1p now, use as much of existing ein NL features … use additional external formatters"* | `:goal-text`, with EinAf's formatters over values; M1p does not run |
 | [Q-M2.13](../open_questions.md#q-m213--who-calls-the-kernel) | who calls the kernel | both: the tool, *"recommened but optional"*, and the filter, *"forced to write ein code"* | two arrangements, both arms, compared with a chain of thought |
+
+**Ruled after the re-plan, the same day** (the ledger has each): the kernel may gain any feature or bug fix that
+leaves Ein's syntax and semantics as they are
+([Q-M2.16](../open_questions.md#q-m216--what-of-the-kernel-may-change-inside-m2)), so the bound on a saturation is
+the kernel's; the answer is a sentence, and EinAf's fixed texts stand
+([Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer)); the minimal goal is the Zebra puzzle solved by
+the model with Ein ([Q-M2.17](../open_questions.md#q-m217--what-is-the-milestones-minimal-goal)); and EinAf is one
+tree, its documentation apart ([Q-M2.8](../open_questions.md#q-m28--where-does-einaf-live)).
 
 **Open, and holding no phase:** [Q-M2.10](../open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r),
 what *certified unique* means on R (the user, after experiments: every record carries each reading), and

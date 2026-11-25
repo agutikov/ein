@@ -204,9 +204,9 @@ Each is the re-plan's, recorded so that the user or the stage can correct it; no
    the word *flagged* at F2 and above. If the run ends flagged, what the kernel printed is recorded and is not
    the arm's answer.
 5. **Every kernel call is bounded, and a call a bound stopped is *not decided*.** The bounded call is
-   `einaf::kernel`'s, P2.1's to build; this re-plan proposes a worker process of EinAf's own, killed at a wall
-   clock or a memory bound, with a cap on root's firings as a first guard. A clock inside a saturation would be
-   a change to Ein that no ruling asks for.
+   `einaf::kernel`'s, P2.1's to build, over the kernel's own bounds: the clock and a limit that reach inside a
+   saturation, which the user's ruling on [Q-M2.16](../open_questions.md#q-m216--what-of-the-kernel-may-change-inside-m2) lets the kernel have and S2.1.2 gives it. A worker process
+   of EinAf's own is built only if those do not stop a case.
 6. **A level is a set of blocks**: F0 to F3 each include the one below; F4, F5 and F6 each add one block to F3;
    F7 is F4 and F5 with the chains of the facts they name; F8 is every block. Any set of blocks is a value of
    the parameter, so that P2.6's pairs differ in one block.
