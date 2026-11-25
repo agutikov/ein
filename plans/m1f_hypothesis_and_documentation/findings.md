@@ -172,6 +172,24 @@ L-47, L-65, L-91, L-102, L-143 to L-148); [examples](#examples) (L-44, L-49, L-1
 (L-2, L-50, L-51, L-54, L-85, L-89, L-105, L-106, L-118, L-119, L-150 to L-152); [decisions](#decisions) (L-21, L-90, L-92, L-94,
 L-120, L-121).
 
+**At the milestone's close**, 2026-11-25, on the user's word (*"after p1f.22 closed, hand over all remain open
+findings to followups and then close M1f"*), every row below that was still open went to a followup, under its id,
+with its witness, its command and its call as written: [F28](../followups/f28_language_engine_stdlib_left_by_m1f.md)
+the language, the engine and the standard library's rules (L-19, L-30, L-56, L-57, L-62, L-103, L-110, L-122, L-123,
+L-126, L-128 to L-133, L-135 to L-137, and L-69's question); [F29](../followups/f29_renderers_left_by_m1f.md) the
+renderers (L-35, L-63, L-76, L-95, L-111 to L-114, L-138); [F30](../followups/f30_pages_and_decisions_left_by_m1f.md)
+the pages and the decisions (L-21, L-64, L-68, L-72, L-75, L-77 to L-84, L-90, L-115, L-120, L-121);
+[F31](../followups/f31_tests_dead_code_comments_and_examples.md) the tests, the dead code, the comments and the
+examples (L-22, L-41 with L-11 and L-26, L-42, L-44, L-45, L-47, L-49, L-65, L-66, L-74, L-86, L-91, L-108, L-116,
+L-117, L-139 to L-149); [F32](../followups/f32_release_voice_gate_and_censuses.md) the process (L-2, L-50, L-51, L-54,
+L-85, L-89, L-118, L-119, L-150 to L-152); [F22](../followups/f22_exact_core_past_the_cap.md) L-127; and
+[F23](../followups/f23_diagnostics_in_eins_words.md) L-124, L-125 and L-134. The three lists of defaults below went to
+[F33](../followups/f33_defaults_m1f_took.md). **Closed at the close, and gone with the folder**: the rows a ruling and
+its build closed (L-92, L-93, L-94, L-96, L-97, L-98, L-99, L-100, L-101, L-102, L-105, L-107, L-109) and the two the
+user ruled *as it is, nothing to build* (L-104, L-106). L-110 and L-114, left as they are by a default the user
+accepted with every default of P1f.23, were handed over, as the phase's close carried them: a default left as is keeps
+the finding, where a ruling on the row closes it.
+
 ## The language and the engine
 
 | id | what | witness, and the command | the call |

@@ -173,6 +173,21 @@ canonical. A work budget is the opposite trade, a bounded answer that says it is
 alternatives list is long: F22 decides whether a bound on work belongs in the exact core's design or beside it,
 and what `Cut` then promises.
 
+## Handed over by M1f, 2026-11-25: a dead state's explanation names the pairs concluded before it ended (L-127)
+
+At M1f's close, on the user's word of 2026-11-25 (*"hand over all remain open findings to followups and then close
+M1f"*), the milestone's findings page gave its L-127 here, as it stood there, its call *left as is: a core is an
+explanation, which F22 makes canonical*. P1f.21 found it, when the contradiction became rules a program imports and a
+state ended at the firing of `std.core`'s rule; read at that phase's close, not re-run.
+
+| id | what | witness, and the command | the call |
+|---|---|---|---|
+| L-127 | **A dead state's explanation names the pairs concluded before it ended.** A state ends at the firing of `std.core`'s rule, which a rule that refutes a pair reaches at once; where the kernel's check listed every pair a state held, an explanation lists the pairs whose `(false)` was derived by then, and the recorded derivations are capped. No core and no `refuted by` of the corpus moved. P1f.21's V-38 | `ein_core::Kb::ended`, the firing's record a core is taken over (read, not re-run) | Left as is: a core is an explanation, which F22 makes canonical |
+
+**What it bears on here.** A canonical core is taken over what a dead state recorded; since a state ends at its first
+`(false)`, what it recorded depends on which pair the agenda reached first, so the exact core this followup wants is
+over the derivations recorded up to the end, not over every pair the state would have held.
+
 ## Trigger
 
 Any one:
