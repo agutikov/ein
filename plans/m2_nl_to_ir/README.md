@@ -12,8 +12,9 @@ s2.2.0f - it must be not a separate stage, it's my notes about whole formalizer 
 close p2.1 and stop"*; it was started 2026-11-25 on the user's word, *"start implementation of M2, everything in p2.1,
 then stop and let me review; each stage in subagents, subagents commit their work"*, and ran its four stages to their
 end; its plans are deleted (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`), what it
-left open is the milestone's, and [the defaults it took](defaults/p2.1.md) stand. **P2.2 is planned and not started;
-no phase starts until the user says so.**
+left open is the milestone's, and [the defaults it took](defaults/p2.1.md) stand. **P2.2 is started
+2026-11-26** on the user's word, *"start next phase plans/m2_nl_to_ir/p2.2_formalizer, execute s2.2.0a and pause"*: S2.2.0a runs to its end and the phase pauses there for the user;
+**no other stage of it and no other phase starts until the user says so.**
 **Depends on:** the kernel as it stands after M1f's close
 ([Q-M2.1](open_questions/kernel/Q-M2.1-when-is-the-kernel-frozen.md)). No other milestone runs for it:
 [M1p](../m1p_ein_to_natural_language/README.md), Ein to natural language, stays unstarted

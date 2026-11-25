@@ -435,8 +435,8 @@ paragraph, no register count, no measurement (the user's rule).
   application finds of the kernel, for the iteration of Ein that follows.
   **P2.1 is closed on the user's word and its plans deleted**
   (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`);
-  **P2.2 is planned and not started; no phase of M2 starts until the user says
-  so.** M1f, the structure of the hypothesis
+  **P2.2 is started on the user's word, to run S2.2.0a and pause there; no
+  other stage of it and no other phase of M2 starts until the user says so.** M1f, the structure of the hypothesis
   set and the documentation, is closed on the user's word and its plans deleted
   (`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation`): its
   answers are decisions under `docs/decisions/`, its rulings about the process
