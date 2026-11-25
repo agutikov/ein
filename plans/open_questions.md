@@ -19,11 +19,11 @@ file it keeps its id; do not reuse a closed id.
 | Q4  | Rule presentation language — host-language functions, graph-rewrite DSL, or Horn clauses? | [M1](#absorbed--the-m1-milestone-questions-q4q42) |
 | Q5  | What "enough" means for the inference rule set                          | [M1](#absorbed--the-m1-milestone-questions-q4q42) |
 | Q6  | Should symmetry breaking happen pre- or post-trace?                     | [M1](#absorbed--the-m1-milestone-questions-q4q42) |
-| Q7  | Is the surface generator (NL output) allowed to be an LLM?              | [M2](m2_nl_to_ir/open_questions.md) |
-| Q8  | Where do ambiguous NL parses go — branched on the IR, or rejected?      | [M2](m2_nl_to_ir/open_questions.md) |
-| Q9  | Per-puzzle declared ontology vs ontology inferred from text             | [M2](m2_nl_to_ir/open_questions.md) |
-| Q10 | When is direct LLM → constraint emission acceptable (no IR)?            | [M2](m2_nl_to_ir/open_questions.md) |
-| Q11 | Does link-grammar enrich LLM input usefully, or is it dead weight?      | [M2](m2_nl_to_ir/open_questions.md) |
+| Q7  | Is the surface generator (NL output) allowed to be an LLM?              | [M2](m2_nl_to_ir/open_questions/README.md) |
+| Q8  | Where do ambiguous NL parses go — branched on the IR, or rejected?      | [M2](m2_nl_to_ir/open_questions/README.md) |
+| Q9  | Per-puzzle declared ontology vs ontology inferred from text             | [M2](m2_nl_to_ir/open_questions/README.md) |
+| Q10 | When is direct LLM → constraint emission acceptable (no IR)?            | [M2](m2_nl_to_ir/open_questions/README.md) |
+| Q11 | Does link-grammar enrich LLM input usefully, or is it dead weight?      | [M2](m2_nl_to_ir/open_questions/README.md) |
 | Q12 | Which CT reading does the design commit to (A free / B schema / C functor)? | [followups F1](followups/f1_categorical_formulation.md) |
 | Q13 | Self-modifying constraint language — feasibility + bounded problem      | [followups F2](followups/f2_self_modifying_language.md) |
 | Q14 | Rule learning source — hand-written, library, LLM-suggested, or learned from walkthroughs? | [followups F4](followups/f4_cross_cutting.md) |

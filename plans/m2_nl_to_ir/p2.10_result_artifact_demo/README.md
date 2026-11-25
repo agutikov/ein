@@ -8,8 +8,8 @@ for Level D's *comparison* and *formal treatment*; and the frozen `test` split
 ([S2.3.4](../p2.3_benchmark/s2.3.4_splits.md)), which the loop meets here for the first time.
 **Blocks:** [M5](../../m5_presentation/README.md): the paper, Stage P, is written from this phase's result and
 artifact. The **Level D gate** closes with M5's paper and this phase's six other layers, and it is a stop
-([Q-M2.15](../open_questions.md#q-m215--where-does-m2-stop-for-the-next-iteration-of-ein)).
-**Feeds:** the next iteration of Ein's development, by [the evaluation of Ein](../ein_evaluation.md), which this
+([Q-M2.15](../open_questions/milestone/Q-M2.15-where-does-m2-stop-for-the-next-iteration-of-ein.md)).
+**Feeds:** the next iteration of Ein's development, by [the evaluation of Ein](../evaluation/README.md), which this
 phase writes up as a deliverable of the milestone beside the research result.
 **Research plan:** [`EinAf.md` § Stage O](../EinAf.md#stage-o--produce-the-central-research-result),
 [§ Stage Q](../EinAf.md#stage-q--public-research-artifact). Stage P is M5's.
@@ -52,10 +52,10 @@ What the sentence has to carry on today's plan:
   table beside it has B1's row, since the milestone's experiment is a chain of formal reasoning against a chain
   of thought, and both arrangements, the filter and the tool.
 - **The reading of *certified* it is made under.** If the user has decided
-  [Q-M2.10](../open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r) by then, that one;
+  [Q-M2.10](../open_questions/answer/Q-M2.10-what-does-ein-certifies-a-unique-model-mean-on-r.md) by then, that one;
   if not, both conditional probabilities are reported under each reading and the sentence names the one it
   speaks of. A flagged program is certified under none and has a column of its own
-  ([Q-M2.11](../open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop)).
+  ([Q-M2.11](../open_questions/answer/Q-M2.11-what-is-a-flagged-program-to-the-loop.md)).
 - **The kernel it was measured on**: Ein's commit and the library's manifest, as every record has them.
 
 **The milestone is built so that the third shape can be seen.** The gap between `P(correct | certified)` and
@@ -71,7 +71,7 @@ with its reason, and this phase's is the one the claim is made on. Its acceptanc
 
 ## The evaluation of Ein, written up
 
-[The evaluation](../ein_evaluation.md) is kept from the first stage on, an entry a finding, in the user's five
+[The evaluation](../evaluation/README.md) is kept from the first stage on, an entry a finding, in the user's five
 kinds, and shown at every gate. This phase makes of it a document a reader outside the plan can use:
 
 - **every entry with its evidence in a record**: the program, the command or the call, what was expected and what
@@ -134,7 +134,7 @@ In today's words it prints: the text; the first program; the kernel's reply, the
 `Ambiguity` with two states that differ, **rendered at the feedback level that fixed it**; the repaired program
 with its difference from the first; the outcome *one*, with the question that was asked of R named beside the
 word; and **the short answer Ein prints**, the query's `:goal-text` filled, with EinAf's formatters over its
-values ([Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer)). It prints no count of models: a count is
+values ([Q-M2.12](../open_questions/answer/Q-M2.12-what-prints-the-answer.md)). It prints no count of models: a count is
 a description's row, and the word is `--single`'s.
 
 It is the filter's sequence. Whether the same instance is also shown as an episode of the tool
@@ -158,7 +158,7 @@ is by then:
 |---|---|
 | the records, the benchmark, the prompts and grammars | `einaf/experiments/`, `einaf/benchmark/`, `einaf/prompts/`, `einaf/grammars/`: never in the plan |
 | what EinAf is and how it was measured: the architecture, the formal account, the outcomes, the record's format, the result with its tables | `docs/einaf/` |
-| a ruling about EinAf, kept in [the ledger](../open_questions.md) while EinAf was planned | a page of `docs/einaf/`, once the thing it decides is built |
+| a ruling about EinAf, kept in [the ledger](../open_questions/README.md) while EinAf was planned | a page of `docs/einaf/`, once the thing it decides is built |
 | a decision about Ein made in this milestone | a file under `docs/decisions/`, under its id, written with the change that made it true |
 | the evaluation of Ein | its write-up in `docs/einaf/`; each entry still open in a followup or in the plan of the iteration of Ein |
 | a wrong answer of the kernel | a row of [the register](../../wrong_answers/README.md), from the day it was found |
@@ -227,7 +227,7 @@ it re-aimed, the folder deleted.
 
 - [`EinAf.md` § Stage O](../EinAf.md#stage-o--produce-the-central-research-result),
   [§ Stage Q](../EinAf.md#stage-q--public-research-artifact), [§ Level progression](../EinAf.md#level-progression).
-- [The evaluation of Ein](../ein_evaluation.md); [the wrong-answer register](../../wrong_answers/README.md); the
+- [The evaluation of Ein](../evaluation/README.md); [the wrong-answer register](../../wrong_answers/README.md); the
   followups, [`plans/followups/`](../../followups/README.md), where an entry with no other owner goes.
 - [M5](../../m5_presentation/README.md), the paper: § 9.3 of [Stage P's outline](../EinAf.md#stage-p--research-paper),
   *Faithfulness vs satisfiability*, is this phase's result read twice. Its own README is older than the reshape

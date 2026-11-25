@@ -13,10 +13,10 @@ there is no set of systems it installed, no runner and no corpus of encodings to
 **Blocks:** nothing on the critical path. Level D's *comparison* is this phase, and the paper's discussion of the
 boundary between the neural and the symbolic (§ 9.4 of [Stage P's outline](../EinAf.md#stage-p--research-paper))
 reads it.
-**Feeds:** [the evaluation of Ein](../ein_evaluation.md). Ein beside four other targets, each written by the same
+**Feeds:** [the evaluation of Ein](../evaluation/README.md). Ein beside four other targets, each written by the same
 model, is the widest view the milestone gets of what Ein's representation is good and bad at.
 **Research plan:** [`EinAf.md` § Stage L](../EinAf.md#stage-l--compare-symbolic-representations).
-[Q10](../open_questions.md#q10--direct-llm--constraint) lives here.
+[Q10](../open_questions/formalizer/Q10-direct-llm-constraint.md) lives here.
 
 ---
 
@@ -25,8 +25,8 @@ model, is the widest view the milestone gets of what Ein's representation is goo
 Stage L asks whether Ein's representation has specific advantages **as a target a model writes**. It does not ask
 whether Ein is a better solver. The research plan is explicit: *do not attempt to prove that one representation is
 universally superior*; ask five narrow questions instead. The model is the one of the plan, `qwen3.5:4b`, in
-EinAf's process ([Q-M2.5](../open_questions.md#q-m25--local-model-choice),
-[Q-M2.14](../open_questions.md#q-m214--what-runs-the-model)); the instances, the prompt skeleton and the budget of
+EinAf's process ([Q-M2.5](../open_questions/model/Q-M2.5-local-model-choice.md),
+[Q-M2.14](../open_questions/model/Q-M2.14-what-runs-the-model.md)); the instances, the prompt skeleton and the budget of
 generated tokens are the same for every target.
 
 | the question | how it is measured | where the number comes from |
@@ -38,23 +38,23 @@ generated tokens are the same for every target.
 | Which requires the least generated formal text? | generated tokens an instance, and a correctly solved instance | the record |
 
 **For Ein, three of the five have more than one value today, and the phase reports each.** *Certifies* has the
-readings of [Q-M2.10](../open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r) until the
+readings of [Q-M2.10](../open_questions/answer/Q-M2.10-what-does-ein-certifies-a-unique-model-mean-on-r.md) until the
 user decides, and a flagged program is certified under none
-([Q-M2.11](../open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop)). *Detects incompleteness* is said
+([Q-M2.11](../open_questions/answer/Q-M2.11-what-is-a-flagged-program-to-the-loop.md)). *Detects incompleteness* is said
 by the kernel in three ways: `Ambiguity`, with two states that differ; `Open`, with what is owed; and the
 read-out's `outside` row, which names the relations H holds no candidate of
 ([`10-satisfiability.md` § 5](../../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md#5-a-state-of-r-is-a-model-of-the-program-as-h-scopes-it)).
 *Easiest to synthesise* is measured with the filter's grammar on and with it off.
 
 **The first question is asked of this model, not of the representations in the abstract.** The user's remark on
-[Q-M2.13](../open_questions.md#q-m213--who-calls-the-kernel): the model was most probably not trained to write
+[Q-M2.13](../open_questions/einaf/Q-M2.13-who-calls-the-kernel.md): the model was most probably not trained to write
 Ein, and Ein's semantics are near Datalog's and its syntax Lisp's and SMT-LIB's. The other four targets are
 widely published languages, which a model has most probably met. So the table compares each target *as this
 model meets it*, and the reading says so where the number appears.
 
 ### Q10, asked properly
 
-[Q10](../open_questions.md#q10--direct-llm--constraint) was *when is direct LLM → constraint emission
+[Q10](../open_questions/formalizer/Q10-direct-llm-constraint.md) was *when is direct LLM → constraint emission
 acceptable?* Stage L is the form in which it can be answered: not *is the intermediate representation ever
 skipped*, but *what does each target cost the model, and what does each target tell it back*. The old working
 answer's use of a second target, **agreement between two targets as a check on either**, is one of this phase's
@@ -143,7 +143,7 @@ strength for the evaluation.
 - For Ein, every row under each reading of *certified* the user has not ruled out, with the grammar on and off,
   and flagged programs in a column of their own.
 - Every instance on which two targets certify different answers is listed.
-- What the comparison shows of Ein, for and against, is in [the evaluation of Ein](../ein_evaluation.md).
+- What the comparison shows of Ein, for and against, is in [the evaluation of Ein](../evaluation/README.md).
 
 ## Risks
 

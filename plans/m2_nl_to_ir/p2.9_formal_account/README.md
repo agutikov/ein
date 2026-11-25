@@ -65,11 +65,11 @@ in the kernel's notation.
 | `Tᵢ₊₁ = A_θ(x, Tᵢ, E(Tᵢ))` | the filter's step, with the rendering between the judgement and the model | [S2.4.1](../p2.4_loop/s2.4.1_state_machine.md), [S2.4.2](../p2.4_loop/s2.4.2_repair.md) |
 | the verified answer | the short text Ein prints for a program the kernel passes: the query's `:goal-text` filled from a row of the query's class, with EinAf's formatters over its values | [S2.2.5](../p2.2_formalizer/s2.2.5_from_text.md); on the kernel's side the projection $\pi_g$ of a state on the goal |
 | `correct`, `faithful` | predicates of a run against the instance's gold. *Correct*: the answer's text is the gold's, and for an arm that runs Ein the gold claim, a claim $\Gamma$ of the kernel's, is held. *Faithful*: by the unit [S2.4.4](../p2.4_loop/s2.4.4_faithfulness.md) settles | [S2.5.3](../p2.5_harness/s2.5.3_metrics.md); [satisfiability § 3](../../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md#3-claims-about-the-set-of-states) |
-| *certified* | a predicate of a judgement, one for each reading of [Q-M2.10](../open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r) still in force; false of a flagged program under every reading | [S2.5.3](../p2.5_harness/s2.5.3_metrics.md) |
+| *certified* | a predicate of a judgement, one for each reading of [Q-M2.10](../open_questions/answer/Q-M2.10-what-does-ein-certifies-a-unique-model-mean-on-r.md) still in force; false of a flagged program under every reading | [S2.5.3](../p2.5_harness/s2.5.3_metrics.md) |
 
 ### Two arrangements, two shapes
 
-The ruling on [Q-M2.13](../open_questions.md#q-m213--who-calls-the-kernel) makes the loop two things, and the
+The ruling on [Q-M2.13](../open_questions/einaf/Q-M2.13-who-calls-the-kernel.md) makes the loop two things, and the
 account states both.
 
 - **The filter is an iteration.** A sequence of texts, each judged, the harness deciding that the kernel runs and
@@ -104,7 +104,7 @@ argument only. The list is a starting point; the stage that writes the account a
    ([satisfiability § 5](../../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md#5-a-state-of-r-is-a-model-of-the-program-as-h-scopes-it)).
    What *Ein certifies* claims is cited from there, not argued again.
 5. **A flagged program is never certified**, by definition, and nothing is claimed of its answer.
-6. **The two fixed points** of [Q-M2.4](../open_questions.md#q-m24--is-the-fixed-point-syntactic-or-semantic).
+6. **The two fixed points** of [Q-M2.4](../open_questions/answer/Q-M2.4-is-the-fixed-point-syntactic-or-semantic.md).
    Equal texts have equal answers, by 1; the converse fails, and
    [transformations](../../../docs/ein/reasoning/03-rule-evolution/03-transformations.md) is the kernel's own
    list of rewrites that change a program's text and not its answer. The account states the fixed point the loop
@@ -138,7 +138,7 @@ and Stage M's letters collide with it:
 | `n`, the last step | $n = \lvert H \rvert$ |
 
 Outside the mathematics two more things carry these letters: the entries of
-[the evaluation of Ein](../ein_evaluation.md) are `E-n`, and the feedback levels are F0 to F8 beside $F$, the
+[the evaluation of Ein](../evaluation/README.md) are `E-n`, and the feedback levels are F0 to F8 beside $F$, the
 facts.
 
 **The rule the account keeps.** A symbol of the notation table means in the account what it means there. An object
@@ -160,7 +160,7 @@ than single letters, since few letters are free.
   the kernel page and the test that holds it*, cannot be met inside a page of `reasoning/`, which names no test;
   it is met by `08-reasoning-in-code/` as it stands.
 - **A sentence of `docs/ein/` found wrong while the account is written** is an entry of
-  [the evaluation of Ein](../ein_evaluation.md), not an edit made here.
+  [the evaluation of Ein](../evaluation/README.md), not an edit made here.
 - **The conventions**: by default those of `docs/ein/` for a formula and a diagram (TeX; a diagram a file with its
   picture), so that the two halves read as one. The checks that hold them are Ein's and do not read
   `docs/einaf/`.

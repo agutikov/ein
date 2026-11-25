@@ -5,15 +5,19 @@ same day and waits for the user's review**: [the phase report](report/README.md)
 findings fixed, is planned on the user's word after the report and not started. No phase after it starts until the
 user says so.
 **Depends on:** the kernel as it stands after M1f's close
-([Q-M2.1](../open_questions.md#q-m21--when-is-the-kernel-frozen)), and nothing else.
+([Q-M2.1](../open_questions/kernel/Q-M2.1-when-is-the-kernel-frozen.md)), and nothing else.
 **Blocks:** [P2.2](../p2.2_formalizer/README.md): its code goes into the package this phase creates, and the
 formalization contract names the outcomes and the diagnostics a program gets back;
 [P2.4](../p2.4_loop/README.md): the feedback ladder renders the object this phase defines, and nothing else.
 **Research plan:** [`EinAf.md` § Stage A](../EinAf.md#stage-a--establish-the-symbolic-kernel-as-the-experimental-foundation),
 A1 to A5.
+**The phase's items**, one file each under a topic folder: [its evaluation](evaluation/README.md) (E-62 to E-101),
+[its open questions](open_questions/README.md) (Q-M2.18 to Q-M2.21) and [its findings](findings/README.md) (L-M2.1 to
+L-M2.4); at the phase's close what is open, and a strength of Ein's, moves into the milestone's folders, and what is
+closed stays with the phase.
 **The first phase that changes Ein**: [S2.1.2](s2.1.2_diagnostics_surface.md), by the user's rulings on
-[Q-M2.9](../open_questions.md#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics) and
-[Q-M2.16](../open_questions.md#q-m216--what-of-the-kernel-may-change-inside-m2) (a feature or a bug fix that leaves Ein's syntax and semantics as they are), under Ein's own rules.
+[Q-M2.9](../open_questions/kernel/Q-M2.9-does-the-kernel-grow-a-machine-surface-for-diagnostics.md) and
+[Q-M2.16](../open_questions/kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md) (a feature or a bug fix that leaves Ein's syntax and semantics as they are), under Ein's own rules.
 
 ---
 
@@ -26,8 +30,8 @@ engine says for itself nearly all of it, and the phase is three things:
 
 1. **EinAf has to exist.** A package under `einaf/` that links the engine's crates, a step of the gate that builds
    and tests it, the process told where it is, and its first page under `docs/einaf/`
-   ([Q-M2.7](../open_questions.md#q-m27--what-language-is-the-frontend-written-in),
-   [Q-M2.8](../open_questions.md#q-m28--where-does-einaf-live)). With it, the first thing EinAf knows about the
+   ([Q-M2.7](../open_questions/einaf/Q-M2.7-what-language-is-the-frontend-written-in.md),
+   [Q-M2.8](../open_questions/einaf/Q-M2.8-where-does-einaf-live.md)). With it, the first thing EinAf knows about the
    kernel: which of [the seven outcomes](../README.md#the-outcomes) a run is.
 2. **The kernel has to say a diagnostic to a program, not to a terminal.** It is the one thing of Stage A still
    missing: a refusal, an abort and a run's notes are text on stderr, and four of the library's load errors are
@@ -71,7 +75,7 @@ the machine surface says in each of A1's situations, and § B what each of the p
   surface the stage defines. A `-T` abort and a load's notes are there too. The gate is green on the change.
 - A feedback object is produced for every corpus program, and what it says agrees with `ein-summary/2` of the same
   program under the same question.
-- [The evaluation of Ein](../ein_evaluation.md) has what the phase found, and is shown at the close.
+- [The evaluation of Ein](../evaluation/README.md) has what the phase found, and is shown at the close.
 
 ## What the phase does not do
 
@@ -103,7 +107,7 @@ Each is the coordinator's and the user's to correct.
    banked at all.
 5. **The object is EinAf's and versioned by EinAf** (`einaf-feedback/1`); the plan's `ein-feedback/1`, written by
    `ein-cli`, is not made.
-6. **The kernel bounds its own run, and EinAf calls it in its own process** (the user's ruling, [Q-M2.16](../open_questions.md#q-m216--what-of-the-kernel-may-change-inside-m2),
+6. **The kernel bounds its own run, and EinAf calls it in its own process** (the user's ruling, [Q-M2.16](../open_questions/kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md),
    which replaced this re-plan's first answer, a worker process that EinAf stops from outside). Nothing in a solve
    stops a saturation that has no fixpoint, a model will write such programs, and S2.1.2 gives the kernel the
    bound. A worker process is built only if a probe shows a case those bounds do not stop, or a measurement needs
@@ -121,7 +125,7 @@ Each is the coordinator's and the user's to correct.
   use; if depending on it from outside the workspace costs more than reading `corpus/corpus.toml`, EinAf reads the
   file.
 - **Freezing what a later milestone will change.** The kernel is fixed a record at a time, by its commit
-  ([Q-M2.1](../open_questions.md#q-m21--when-is-the-kernel-frozen)); the object carries the commit and the
+  ([Q-M2.1](../open_questions/kernel/Q-M2.1-when-is-the-kernel-frozen.md)); the object carries the commit and the
   library's manifest so that the freeze is a field.
 
 ## Connections

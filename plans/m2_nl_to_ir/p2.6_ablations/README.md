@@ -5,7 +5,7 @@ ablation is more rows in that table's vocabulary. [P2.4](../p2.4_loop/README.md)
 parameter the filter or the tool already has.
 **Blocks:** [P2.7](../p2.7_failure_scaling_generalization/README.md): the failure sample is drawn from these
 runs; the **Level C gate**.
-**Feeds:** [the evaluation of Ein](../ein_evaluation.md): each ablation of the feedback is also a measurement of
+**Feeds:** [the evaluation of Ein](../evaluation/README.md): each ablation of the feedback is also a measurement of
 one thing the kernel says.
 **Research plan:** [`EinAf.md` § Stage G](../EinAf.md#stage-g--ablation-program), G1 to G9.
 **Depth:** one stage file, [S2.6.4](s2.6.4_representation_ablations.md), which carries the link-grammar
@@ -58,20 +58,20 @@ so the curve costs one run an instance, not one a depth; for the tool the same c
 the earlier phases hand over belong here, since each is another way of spending the same budget: *repair* against
 *regenerate* ([S2.4.2](../p2.4_loop/s2.4.2_repair.md)), and a reading left open emitted as hypotheses and pruned
 by the kernel against one reading committed and caught by the loop
-([S2.4.5](../p2.4_loop/s2.4.5_alternatives_as_hypotheses.md); [Q8](../open_questions.md#q8--ambiguous-parses)).
+([S2.4.5](../p2.4_loop/s2.4.5_alternatives_as_hypotheses.md); [Q8](../open_questions/formalizer/Q8-ambiguous-parses.md)).
 **Thinking before the program** is the third way (below).
 
 **[S2.6.4](s2.6.4_representation_ablations.md) — Representation and library (G8, G9, the link-grammar arm, the
 grammar off).** Direct generation of Ein against *text, then a structured semantic representation, then Ein*
 (G8), with the user's four oracle ablations from [F13](../../followups/f13_puzzles_beyond_zebra/ideas.md) (*text
 or program, known or unknown theory*) made arms; the link-grammar arm, which is the same question about the
-input side, [Q11](../open_questions.md#q11--link-grammar-value); the library's three conditions (G9), which
+input side, [Q11](../open_questions/formalizer/Q11-link-grammar-value.md); the library's three conditions (G9), which
 answers *how much of the performance is reusable theory a person wrote* and also reads on
 [F8](../../followups/f8_FCA_RCA_odis_tptp/ideas.md)'s `C(n)`; and **the filter with its grammar off** (below).
 
 ## The three the rulings added
 
-Each follows from [Q-M2.13](../open_questions.md#q-m213--who-calls-the-kernel), and each is a pair of configs of
+Each follows from [Q-M2.13](../open_questions/einaf/Q-M2.13-who-calls-the-kernel.md), and each is a pair of configs of
 arms the main table already has.
 
 | ablation | the pair | its stage | the question, and the reading written before it |
@@ -109,12 +109,12 @@ the kernel stands, so that a pre-registered reading does not rest on something t
   what each condition's programs may import, and the closure that gives; the grammar off reports parse success
   beside accuracy.
 - Every table shows both conditional probabilities under each reading of *certified*
-  ([Q-M2.10](../open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r)), and the flagged in
+  ([Q-M2.10](../open_questions/answer/Q-M2.10-what-does-ein-certifies-a-unique-model-mean-on-r.md)), and the flagged in
   a column of its own.
-- [Q11](../open_questions.md#q11--link-grammar-value) is resolved by the old rule, and the code matches the
+- [Q11](../open_questions/formalizer/Q11-link-grammar-value.md) is resolved by the old rule, and the code matches the
   verdict.
 - What each ablation showed of the kernel (a level that did not help, a thing the kernel could not say, a cost)
-  is in [the evaluation of Ein](../ein_evaluation.md).
+  is in [the evaluation of Ein](../evaluation/README.md).
 
 ## Risks
 
@@ -137,7 +137,7 @@ the kernel stands, so that a pre-registered reading does not rest on something t
 - [P2.4](../p2.4_loop/README.md): the knobs; [P2.5](../p2.5_harness/README.md): the table these rows join;
   [P2.7](../p2.7_failure_scaling_generalization/README.md): where the failures these runs produce are classified.
 - [The frame § The arms](../README.md#the-arms): where the grammar off and the filter after a chain of thought
-  are named as ablations; [the ledger](../open_questions.md): Q-M2.13, Q8, Q11.
+  are named as ablations; [the ledger](../open_questions/README.md): Q-M2.13, Q8, Q11.
 - [F22](../../followups/f22_exact_core_past_the_cap.md), the exact core, whose trigger is a consumer that needs
   the minimal core; [F24](../../followups/f24_written_provenance.md), what a written provenance does to a core,
   whose trigger is a consumer that reads cores of programs it did not write. G3 is both.

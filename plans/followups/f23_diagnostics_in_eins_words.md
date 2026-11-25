@@ -6,11 +6,13 @@
 
 **Planned.** D-1's missing file, one line from the library and every command (`ein test` prints a third spelling),
 is [S2.1.4](../m2_nl_to_ir/p2.1_kernel_as_instrumentation/s2.1.4_bugs_the_phase_found.md)'s, as M2's E-74; the
-line stays the page's unless the user rules otherwise, and D-1's other halves stay here.
+line stays the page's unless the user rules otherwise
+([Q-M2.21](../m2_nl_to_ir/p2.1_kernel_as_instrumentation/open_questions/kernel/Q-M2.21-a-missing-files-line-the-pages-python-spelling-or-eins-own.md)),
+and D-1's other halves stay here.
 
 **Taken up.** D-18 and L-125, a load's and a run's lines that reach stderr and no machine surface, are
 [M2](../m2_nl_to_ir/README.md)'s by the user's ruling of 2026-11-25 on
-[Q-M2.9](../m2_nl_to_ir/open_questions.md#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics), *"(b)"*:
+[Q-M2.9](../m2_nl_to_ir/open_questions/kernel/Q-M2.9-does-the-kernel-grow-a-machine-surface-for-diagnostics.md), *"(b)"*:
 the kernel grows a machine surface for its diagnostics, in its own terms. Its stage
 [S2.1.2](../m2_nl_to_ir/p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) is that change, and **both are
 closed** by its commit `e74139cf` (the values, `62a8ee45`): every line a load or a run prints is a diagnostic of the run

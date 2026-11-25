@@ -9,7 +9,7 @@
 ([S2.4.6](../p2.4_loop/s2.4.6_ein_as_a_tool.md)). The first stage runs before the phase it belongs to: § Order.
 **Blocks:** [P2.6](../p2.6_ablations/README.md) and [P2.7](../p2.7_failure_scaling_generalization/README.md):
 both are more rows of the table this phase defines, over the same records.
-**Feeds:** [the evaluation of Ein](../ein_evaluation.md): [S2.5.3](s2.5.3_metrics.md) is where the kernel's cost
+**Feeds:** [the evaluation of Ein](../evaluation/README.md): [S2.5.3](s2.5.3_metrics.md) is where the kernel's cost
 and limits get numbers.
 **Research plan:** [`EinAf.md` § Stage D](../EinAf.md#stage-d--establish-baselines),
 [§ Stage H](../EinAf.md#stage-h--define-rigorous-metrics),
@@ -111,16 +111,16 @@ P(formalization faithful | Ein certifies)     or a formally valid lie?
 ```
 
 **What *certifies* means is open, and the user's**
-([Q-M2.10](../open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r)). Until it is decided
+([Q-M2.10](../open_questions/answer/Q-M2.10-what-does-ein-certifies-a-unique-model-mean-on-r.md)). Until it is decided
 no table fixes it. Every record carries **each reading** a final program has (the word `--single` says over all
 of R; the word it says over the maximal line; a description's two counts, `k_s` and `k_c`, with whether the run
 exhausted), beside the instance's family and shape, and both probabilities are computed under each. A flagged
-program ([Q-M2.11](../open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop)) is certified under none
+program ([Q-M2.11](../open_questions/answer/Q-M2.11-what-is-a-flagged-program-to-the-loop.md)) is certified under none
 and has a column of its own. The gap between the two probabilities is the research plan's distinction between
 faithfulness and satisfiability as a number, and every table that shows one shows both.
 
 **H4's kernel half is the second main idea's**: what Ein cost and where it stopped in this application are
-numbers of [the evaluation of Ein](../ein_evaluation.md), taken by [S2.5.3](s2.5.3_metrics.md) and shown at the
+numbers of [the evaluation of Ein](../evaluation/README.md), taken by [S2.5.3](s2.5.3_metrics.md) and shown at the
 phase's close.
 
 ## Stages
@@ -146,7 +146,7 @@ phase's close.
   for and what it is not, before any ablation runs.
 - EinAf's own gate step holds what needs no model: the record's tests, the metrics' fixtures, the report's
   regeneration. A run that needs the model's file and the GPU is an experiment, by hand, in no tier.
-- What the phase found of Ein is in [the evaluation of Ein](../ein_evaluation.md), and is shown at the close.
+- What the phase found of Ein is in [the evaluation of Ein](../evaluation/README.md), and is shown at the close.
 
 ## Risks
 
@@ -172,7 +172,7 @@ phase's close.
   [§ Stage H](../EinAf.md#stage-h--define-rigorous-metrics),
   [§ Stage N](../EinAf.md#stage-n--reproducibility).
 - [The frame](../README.md#the-plan-as-re-planned): the arms, the seven outcomes, where EinAf's things are; and
-  [the ledger](../open_questions.md): Q-M2.10, Q-M2.11, Q-M2.12, Q-M2.13, Q-M2.14.
+  [the ledger](../open_questions/README.md): Q-M2.10, Q-M2.11, Q-M2.12, Q-M2.13, Q-M2.14.
 - [`analysis/audit_p2.5_p2.6.md`](../analysis/audit_p2.5_p2.6.md): what these stages said of the kernel against
   what the tree says, claim by claim; a stage looks there for the evidence of what its file says changed.
 - [`08-read-out.md`](../../../docs/ein/user/04-reference/08-read-out.md) and
@@ -219,7 +219,7 @@ Each is this re-plan's, recorded so that it can be corrected; none is a ruling.
     off the outcome and the answer query's classes; a parameter of the evaluation, so another rule scores the
     same records. *Incomplete* is no answer by default. The class each reading's word says is reported in a
     column beside the rule's. P2.3 and P2.4 both leave this to S2.5.3.
-11. **The score is what a sentence states** (the user's ruling on [Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer), after this list was written:
+11. **The score is what a sentence states** (the user's ruling on [Q-M2.12](../open_questions/answer/Q-M2.12-what-prints-the-answer.md), after this list was written:
     the answer is a sentence, not a bare value). Exact match, string equality after normalisation, and
     containment stand beside it; the values a gold sentence binds and their domain are fields of the benchmark's
     instance ([S2.3.1](../p2.3_benchmark/s2.3.1_families_and_seed_set.md)).

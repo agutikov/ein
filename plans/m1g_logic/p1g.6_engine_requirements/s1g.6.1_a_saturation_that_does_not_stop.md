@@ -10,7 +10,7 @@ shrink or keep a term's depth. It is the one gap here that a real program can me
 **Stops for the user:** its first task ([Q-M1g.6](../open_questions.md#q-m1g6--the-word-for-a-saturation-that-does-not-stop)).
 
 **Taken up in part by M2.** By the user's ruling of 2026-11-25 on
-[Q-M2.16](../../m2_nl_to_ir/open_questions.md#q-m216--what-of-the-kernel-may-change-inside-m2) (the kernel may
+[Q-M2.16](../../m2_nl_to_ir/open_questions/kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md) (the kernel may
 gain timeouts and limits where Ein's syntax and semantics do not change),
 [M2's S2.1.2](../../m2_nl_to_ir/p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) makes the clock and
 a limit reach inside a saturation, so that a run under them ends and says what a stopped run says today. It

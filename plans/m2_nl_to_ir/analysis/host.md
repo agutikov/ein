@@ -24,7 +24,7 @@ machine on one day**: re-take it (§ How it was taken) before leaning on it.
 | GPU | NVIDIA GeForce RTX 4060 Laptop, 8 GB (CUDA sees 7 834 MiB); `cuda 13.4.3` |
 | the driver | **the loaded kernel module is 610.57.04 and the user-space libraries are 620.70.06** (`nvidia-utils`, `nvidia-open-dkms`, upgraded 13:23 and 13:25 with no reboot since). `nvidia-smi` refuses (*Failed to initialize NVML: Driver/library version mismatch*); **CUDA works all the same**, by the probe below. A reboot loads the new module |
 | memory | 31 GiB, 31 GiB swap |
-| containers | Docker, Compose, `nvidia-container-toolkit 1.20.1`; no `llama` or `ollama` image is pulled, and none is needed by the route the user chose ([Q-M2.14](../open_questions.md#q-m214--what-runs-the-model)) |
+| containers | Docker, Compose, `nvidia-container-toolkit 1.20.1`; no `llama` or `ollama` image is pulled, and none is needed by the route the user chose ([Q-M2.14](../open_questions/model/Q-M2.14-what-runs-the-model.md)) |
 | toolchains | `rustc` and `cargo` 1.97.1, Python 3.14.7, `uv` 0.12.5 |
 
 ## The model runtimes
@@ -37,7 +37,7 @@ machine on one day**: re-take it (§ How it was taken) before leaning on it.
 
 ## The model
 
-`qwen3.5:4b`, the model the user chose ([Q-M2.5](../open_questions.md#q-m25--local-model-choice)), as
+`qwen3.5:4b`, the model the user chose ([Q-M2.5](../open_questions/model/Q-M2.5-local-model-choice.md)), as
 `ollama show` reads it from the system store:
 
 | | |

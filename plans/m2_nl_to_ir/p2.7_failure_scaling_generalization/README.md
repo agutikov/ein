@@ -8,9 +8,9 @@ generators produce every set of this phase with other arguments, and whose knobs
 [P2.4](../p2.4_loop/README.md), both arrangements, since the sample and the combined curves are of the filter and
 of the tool ([S2.4.6](../p2.4_loop/s2.4.6_ein_as_a_tool.md)).
 **Blocks:** the **Level C gate**, which closes here and is a stop
-([Q-M2.15](../open_questions.md#q-m215--where-does-m2-stop-for-the-next-iteration-of-ein));
+([Q-M2.15](../open_questions/milestone/Q-M2.15-where-does-m2-stop-for-the-next-iteration-of-ein.md));
 [P2.10](../p2.10_result_artifact_demo/README.md), which tests on the `test` split the sentence this phase writes.
-**Feeds:** [the evaluation of Ein](../ein_evaluation.md). The failure sample's symbolic, interface and
+**Feeds:** [the evaluation of Ein](../evaluation/README.md). The failure sample's symbolic, interface and
 representation sides and Stage J's solver curve are the largest measured input it gets.
 **Research plan:** [`EinAf.md` § Stage I](../EinAf.md#stage-i--failure-taxonomy),
 [§ Stage J](../EinAf.md#stage-j--scaling-experiments),
@@ -31,7 +31,7 @@ makes the failure sample at the largest size the one to read.
 ([README § The two main ideas](../README.md#the-two-main-ideas-the-user-2026-11-25)). Two of the taxonomy's five
 sides are about the kernel, the *symbolic* and the *interface*, and a third, the *representation*, is about the
 language; Stage J's solver curve is the kernel's limits, measured on programs nobody wrote by hand. What they find
-is written as entries of [the evaluation of Ein](../ein_evaluation.md), in its five kinds, and nothing of the
+is written as entries of [the evaluation of Ein](../evaluation/README.md), in its five kinds, and nothing of the
 kernel is fixed here ([README § The defaults the re-plan took](../README.md#the-defaults-the-re-plan-took), 10
 and 11).
 
@@ -116,7 +116,7 @@ last run printed.
 **Who reads.** By default the stage's agent reads and labels every sampled failure, the label recording who gave
 it, and the user reads what stays ambiguous and whatever the user picks. What is built for the user's reading
 lists the failures still open, each with every artefact of the kernel, raw and rendered. This sample is also where
-the human-read part of [Q-M2.3](../open_questions.md#q-m23--what-is-the-unit-of-faithfulness-without-a-gold-theory)
+the human-read part of [Q-M2.3](../open_questions/answer/Q-M2.3-what-is-the-unit-of-faithfulness-without-a-gold-theory.md)
 is sized.
 
 **Output:** the table of categories by side; the sample with its labels, a record under `einaf/experiments/`,
@@ -146,7 +146,7 @@ defaults it starts from:
 
 | knob | why it has no single reading | the default |
 |---|---|---|
-| **model count** | R has two counts, `k_s` (states) and `k_c` (commitments), which differ by orders of magnitude on one program, and a third reading, the states of the maximal line. Where a program states no obligation R holds partial commitments, so `k_s` counts more than the full assignments. A description may stop at the budget with `k_c` a lower bound and the minimal line not established | the x-axis is **the generator's own count**, the number of answers it built the instance to have, checked against **the states of the maximal line** (`--maximal`), which is defined whether or not the program owes, and which on the clue-dropped Zebra is established where a description stops at the budget (the runs above). `k_s` and `k_c` are recorded where a description finishes and reported beside it. If the user's decision on [Q-M2.10](../open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r) names another reading, the axis follows it |
+| **model count** | R has two counts, `k_s` (states) and `k_c` (commitments), which differ by orders of magnitude on one program, and a third reading, the states of the maximal line. Where a program states no obligation R holds partial commitments, so `k_s` counts more than the full assignments. A description may stop at the budget with `k_c` a lower bound and the minimal line not established | the x-axis is **the generator's own count**, the number of answers it built the instance to have, checked against **the states of the maximal line** (`--maximal`), which is defined whether or not the program owes, and which on the clue-dropped Zebra is established where a description stops at the budget (the runs above). `k_s` and `k_c` are recorded where a description finishes and reported beside it. If the user's decision on [Q-M2.10](../open_questions/answer/Q-M2.10-what-does-ein-certifies-a-unique-model-mean-on-r.md) names another reading, the axis follows it |
 | **hypothesis depth** | no depth exists: a depth cap changed answers and is retired. What a description reports nearest to it: `region.minimal.least`, the size of the least commitment that reaches R; `region.root_owes`, the instances root owes, which on a monotone program bounds the length of any branch ([`10-satisfiability.md` § 4](../../../docs/ein/reasoning/02-kb-evolution/10-satisfiability.md#4-why-an-obligations-alternatives-are-jointly-exhaustive)); `region.universe.candidates`, the size of H, which every question reports. The first two are a description's keys, `null` under `--single` and under a line's question, and `least` is `null` where the description stops first | plot against `region.minimal.least` where the description finishes, with `root_owes` and the candidates recorded at every point; the generator's knob that moves it is how much of the instance is given |
 | **proof depth** | no surface carries the depth of a derivation. The summary's `work` has saturations, facts and layers; the steps of a derivation are in `--events` and in the library's provenance | the x-axis is **the generator's own chain length**, exact by construction. If a stage needs the engine's figure, EinAf computes it from the library's provenance of the answer's facts, and the missing number is an entry of the evaluation |
 
@@ -211,9 +211,9 @@ ablations, and **it is a stop**. What is put in front of the user:
 2. **the sentence the claim will be**, in one of the three shapes of
    [§ Stage O](../EinAf.md#stage-o--produce-the-central-research-result), as the validation split supports it,
    naming the arms and the conditions, before [P2.10](../p2.10_result_artifact_demo/README.md) tests it on `test`;
-3. **[the evaluation of Ein](../ein_evaluation.md), written up**: the user says whether EinAf goes on or an
-   iteration of Ein comes first ([Q-M2.15](../open_questions.md#q-m215--where-does-m2-stop-for-the-next-iteration-of-ein));
-4. the table [Q-M2.10](../open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r) waits for,
+3. **[the evaluation of Ein](../evaluation/README.md), written up**: the user says whether EinAf goes on or an
+   iteration of Ein comes first ([Q-M2.15](../open_questions/milestone/Q-M2.15-where-does-m2-stop-for-the-next-iteration-of-ein.md));
+4. the table [Q-M2.10](../open_questions/answer/Q-M2.10-what-does-ein-certifies-a-unique-model-mean-on-r.md) waits for,
    both conditional probabilities under each reading of *certified*, per family, if the user has not decided on
    it before;
 5. what the plan defers to this gate: the order of [P2.8](../p2.8_representations/README.md) and
@@ -240,7 +240,7 @@ ablations, and **it is a stop**. What is put in front of the user:
   before it is drawn and is not enlarged afterwards to reach a significance.
 - **A kernel finding is a temptation to fix the kernel.** It is recorded and the application works with the kernel
   as it is; the kernel changes inside M2 only where a ruling says so. Every record names Ein's commit
-  ([Q-M2.1](../open_questions.md#q-m21--when-is-the-kernel-frozen)), so a figure says which kernel it is of.
+  ([Q-M2.1](../open_questions/kernel/Q-M2.1-when-is-the-kernel-frozen.md)), so a figure says which kernel it is of.
 - **The model may be the limit at every size.** Then no curve crosses, the taxonomy is mostly *neural*, and the
   phase's result about the kernel is the solver curve alone. That is a result, and it is reported as one.
 - **A description may not finish.** Past the budget `k_c` is a lower bound and the minimal line is not
@@ -254,7 +254,7 @@ ablations, and **it is a stop**. What is put in front of the user:
 - [`EinAf.md` § Stage I](../EinAf.md#stage-i--failure-taxonomy),
   [§ Stage J](../EinAf.md#stage-j--scaling-experiments),
   [§ Stage K](../EinAf.md#stage-k--generalization-experiments).
-- [The evaluation of Ein](../ein_evaluation.md), where what this phase finds of the kernel goes;
+- [The evaluation of Ein](../evaluation/README.md), where what this phase finds of the kernel goes;
   [the wrong-answer register](../../wrong_answers/README.md).
 - [`analysis/audit_p2.7_p2.10_neighbours.md`](../analysis/audit_p2.7_p2.10_neighbours.md) § A.3 and § B.1: what
   of the old text was stale, with the evidence.

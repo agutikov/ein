@@ -7,9 +7,9 @@ stage here adds to, and writes the operational test of the seven outcomes;
 place, as values; [S2.1.3](../p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md) is the feedback object
 `einaf from-text` reads the kernel through, and the bounded call every stage runs a generated program by. The
 language (Rust,
-[Q-M2.7](../open_questions.md#q-m27--what-language-is-the-frontend-written-in)), the model (`qwen3.5:4b`,
-[Q-M2.5](../open_questions.md#q-m25--local-model-choice)) and what runs it (a Rust binding to llama.cpp,
-[Q-M2.14](../open_questions.md#q-m214--what-runs-the-model)) are the user's rulings: no stage here decides one.
+[Q-M2.7](../open_questions/einaf/Q-M2.7-what-language-is-the-frontend-written-in.md)), the model (`qwen3.5:4b`,
+[Q-M2.5](../open_questions/model/Q-M2.5-local-model-choice.md)) and what runs it (a Rust binding to llama.cpp,
+[Q-M2.14](../open_questions/model/Q-M2.14-what-runs-the-model.md)) are the user's rulings: no stage here decides one.
 **Blocks:** [P2.4](../p2.4_loop/README.md): the filter's GENERATE state is this phase's one shot, and the tool
 ([S2.4.6](../p2.4_loop/s2.4.6_ein_as_a_tool.md)) writes Ein through this phase's runtime with no grammar;
 [P2.5](../p2.5_harness/README.md): baseline B2 is this phase's output unchanged. The **Level B gate** is
@@ -42,14 +42,14 @@ re-plans the stages after it to them.
 
 The phase also takes the milestone's cheapest early measurement: **whether the model writes loadable Ein with no
 grammar at all** ([S2.2.2](s2.2.2_model_runtime.md)), which the user expects may be possible
-([Q-M2.13](../open_questions.md#q-m213--who-calls-the-kernel)) and which bears on every stage after it.
+([Q-M2.13](../open_questions/einaf/Q-M2.13-who-calls-the-kernel.md)) and which bears on every stage after it.
 
 ## What the formalizer emits
 
 Research plan B1 allows *an Ein program* and, optionally, a decomposition first. The decomposition here is the one
 the kernel's own input has, with two parts the plan of August did not carry: the hypothesis mechanism, which the
 answer depends on, and the answer query's `:goal-text`, which is how the program prints its answer
-([Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer)).
+([Q-M2.12](../open_questions/answer/Q-M2.12-what-prints-the-answer.md)).
 
 | part | what it is, in today's Ein | what the kernel holds it to |
 |---|---|---|
@@ -57,7 +57,7 @@ answer depends on, and the answer query's `:goal-text`, which is how the program
 | **theory** | `(import MODULE :symbols (NAME+))` and the facts that activate what was imported; a `rule` with its `:why` only where the catalogue has nothing | **nothing, where the spelling is wrong**: a short name the file lists from no import is the file's own, and the fact is inert with no message ([`04-stdlib/` § What to list](../../../docs/ein/user/04-reference/04-stdlib/README.md#what-to-list)) |
 | **hypothesis mechanism** | what proposes the candidates: the library's obligations, a rule that concludes `(open F)`, a written `(open F)`, `(solve :no-search)`, or a `(solve :hypothesis-relations (…))` list for the blind enumerator | the mechanisms may not contradict one another ([§ 2.26](../../../docs/ein/user/04-reference/07-diagnostics.md#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)); **a program that states none is answered by the blind enumerator**, in silence ([hypotheses, the writers](../../../docs/ein/user/03-syntax-and-semantics/09-hypotheses.md#where-candidates-come-from-the-writers)) |
 | **instance** | `(R a b :source "…")` and `(not (R a b) :source "…")`, the text of each `:source` the sentence it states | a fact takes `:source`, `:rule` and `:using` and no other keyword ([Q-M1e2.28](../../../docs/decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)); names are ASCII; a number is a name, and a quantity that is computed is a numeral of the calculator, `(n z 5)` |
-| **query** | `(query :goal PREMISE :goal-text "…")`: **the answer query**, the one query that carries a `:goal-text`, a sentence that says the answer in the problem's words, as every arm is asked for one ([Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer)); any other query is a check | a goal is held to what a rule's `:match` is held to, and names only relations the program writes ([§ 2.21](../../../docs/ein/user/04-reference/07-diagnostics.md#221-a-goal-is-held-to-what-a-rules-match-is-held-to)) |
+| **query** | `(query :goal PREMISE :goal-text "…")`: **the answer query**, the one query that carries a `:goal-text`, a sentence that says the answer in the problem's words, as every arm is asked for one ([Q-M2.12](../open_questions/answer/Q-M2.12-what-prints-the-answer.md)); any other query is a check | a goal is held to what a rule's `:match` is held to, and names only relations the program writes ([§ 2.21](../../../docs/ein/user/04-reference/07-diagnostics.md#221-a-goal-is-held-to-what-a-rules-match-is-held-to)) |
 
 Four things follow, and each is a stage's subject.
 
@@ -136,8 +136,8 @@ what both use and the formalizer of one of them.
 | [S2.2.0f](s2.2.0f_formalization_in_steps.md) | Formalization in steps: the facts first, then the ontology, then the theory | the three steps stated; the Zebra puzzle and other texts through them by hand, each step's program judged; the model's first step probed by hand; S2.2.1, S2.2.3, S2.2.4 and S2.2.5 re-planned to the steps |
 | [S2.2.1](s2.2.1_contract.md) | The formalization contract: B1 to B4 | one page, `docs/einaf/contract.md`: the input, the five-part output with the hypothesis mechanism and the answer query, what a flagged program is, the categories with which of them is a faithfulness event, what the model receives, what is recorded |
 | [S2.2.2](s2.2.2_model_runtime.md) | The model's runtime, and whether the model writes Ein | the binding chosen and built for the GPU, the model's file pinned by its SHA, the envelope every call returns, the binding held to `llama-server` on the same file; **the probe**: parse rate, load rate and the kinds of error of Ein written with no grammar |
-| [S2.2.3](s2.2.3_gbnf.md) | The grammars | a GBNF grammar generated from `ein.l` and `ein.y`, held to the parser in both directions; the restricted grammars, parameterised on a program's own vocabulary; where a grammar begins and how an output ends; [Q-M2.6](../open_questions.md#q-m26--one-gbnf-or-many) decided |
-| [S2.2.4](s2.2.4_passes.md) | The passes: ontology, theory, instance, query | the catalogue of the library, each entry run by the kernel; four passes with their prompts; the theory pass selecting, stating the hypothesis mechanism and synthesising only on a named condition; the contract's check on the assembled program; [Q9](../open_questions.md#q9--ontology-provenance) decided |
+| [S2.2.3](s2.2.3_gbnf.md) | The grammars | a GBNF grammar generated from `ein.l` and `ein.y`, held to the parser in both directions; the restricted grammars, parameterised on a program's own vocabulary; where a grammar begins and how an output ends; [Q-M2.6](../open_questions/formalizer/Q-M2.6-one-gbnf-or-many.md) decided |
+| [S2.2.4](s2.2.4_passes.md) | The passes: ontology, theory, instance, query | the catalogue of the library, each entry run by the kernel; four passes with their prompts; the theory pass selecting, stating the hypothesis mechanism and synthesising only on a named condition; the contract's check on the assembled program; [Q9](../open_questions/formalizer/Q9-ontology-provenance.md) decided |
 | [S2.2.5](s2.2.5_from_text.md) | From a text to a short answer | `einaf from-text`, one shot, the kernel run through EinAf's bounded call; the answer formatters, written to be [M1p](../../m1p_ein_to_natural_language/README.md)'s starting point; the fixed texts EinAf answers with where no program prints an answer; the record per run; the Zebra puzzle and the word problems from their texts to their answers |
 
 ### Order
@@ -182,10 +182,10 @@ first part of [S2.5.3](../p2.5_harness/s2.5.3_metrics.md)) before this phase's n
   from the probe on.
 - No prompt holds a benchmark instance's solution: every corpus program a prompt quotes is listed in the record,
   and the list is handed to [S2.3.4](../p2.3_benchmark/s2.3.4_splits.md) as out of every split.
-- The probe's record exists, and [Q-M2.6](../open_questions.md#q-m26--one-gbnf-or-many) and
-  [Q9](../open_questions.md#q9--ontology-provenance) are decided in the ledger, each with the measurement it
+- The probe's record exists, and [Q-M2.6](../open_questions/formalizer/Q-M2.6-one-gbnf-or-many.md) and
+  [Q9](../open_questions/formalizer/Q9-ontology-provenance.md) are decided in the ledger, each with the measurement it
   rests on.
-- [The evaluation of Ein](../ein_evaluation.md) holds what each stage found of the kernel, and is shown at the
+- [The evaluation of Ein](../evaluation/README.md) holds what each stage found of the kernel, and is shown at the
   phase's close.
 
 ## Risks
@@ -204,7 +204,7 @@ first part of [S2.5.3](../p2.5_harness/s2.5.3_metrics.md)) before this phase's n
   than nobody* is flagged where a commitment can add an `older` fact and is monotone under `(solve :no-search)`
   ([S2.2.1](s2.2.1_contract.md) has both runs). A formalizer will write such programs; a flagged program is an
   outcome of its own and never certified
-  ([Q-M2.11](../open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop)).
+  ([Q-M2.11](../open_questions/answer/Q-M2.11-what-is-a-flagged-program-to-the-loop.md)).
 - **A model's program may never finish.** A rule that builds a fact out of the fact it matched has no fixpoint,
   and neither the clock nor the facts budget of a solve stops it ([S2.2.5](s2.2.5_from_text.md) has the run). Every
   stage that runs a generated program does so through EinAf's bounded kernel call, and such a run is *not
@@ -255,7 +255,7 @@ Each is this re-plan's, recorded so that the user can correct it; none is a ruli
 4. **The answer query is the one query that carries a `:goal-text`**, and any other query is a check: the
    benchmark and the metrics read one ([P2.3](../p2.3_benchmark/README.md#an-instance),
    [S2.5.3](../p2.5_harness/s2.5.3_metrics.md)). Its `:goal-text` is a sentence that says the answer, as the user
-   ruled ([Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer)). A program with none has no answer; with two, the first is read and the check reports it. The model
+   ruled ([Q-M2.12](../open_questions/answer/Q-M2.12-what-prints-the-answer.md)). A program with none has no answer; with two, the first is read and the check reports it. The model
    writes every `:why`, and EinAf never loads with the `:why` requirement off.
 5. **Texts are English** (the frame's default 9): the Russian half of the old plan is dropped.
 6. **S2.2.1 and S2.2.2 are independent**, and the probe is the phase's first measurement.

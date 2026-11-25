@@ -18,18 +18,18 @@ tool; [P2.6](../p2.6_ablations/README.md): every ablation is a parameter named h
 [§ Stage F](../EinAf.md#stage-f--make-symbolic-feedback-progressively-richer); the tool is what
 [§ Stage D](../EinAf.md#stage-d--establish-baselines) invites (*where possible add another … structured reasoning
 approach*).
-**Rulings it carries out:** [Q-M2.13](../open_questions.md#q-m213--who-calls-the-kernel) (the tool and the
-filter), [Q-M2.11](../open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop) (a flagged program),
-[Q8](../open_questions.md#q8--ambiguous-parses) (an alternative is a hypothesis),
-[Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer) (the answer is Ein's),
-[Q-M2.14](../open_questions.md#q-m214--what-runs-the-model) (the model runs in EinAf's process).
+**Rulings it carries out:** [Q-M2.13](../open_questions/einaf/Q-M2.13-who-calls-the-kernel.md) (the tool and the
+filter), [Q-M2.11](../open_questions/answer/Q-M2.11-what-is-a-flagged-program-to-the-loop.md) (a flagged program),
+[Q8](../open_questions/formalizer/Q8-ambiguous-parses.md) (an alternative is a hypothesis),
+[Q-M2.12](../open_questions/answer/Q-M2.12-what-prints-the-answer.md) (the answer is Ein's),
+[Q-M2.14](../open_questions/model/Q-M2.14-what-runs-the-model.md) (the model runs in EinAf's process).
 
 ---
 
 ## What closes here
 
 The one-shot formalizer becomes `Tᵢ₊₁ = A_θ(x, Tᵢ, E(Tᵢ))`, in **two arrangements of one model and one kernel**
-([the frame](../README.md#the-arms), [Q-M2.13](../open_questions.md#q-m213--who-calls-the-kernel)):
+([the frame](../README.md#the-arms), [Q-M2.13](../open_questions/einaf/Q-M2.13-who-calls-the-kernel.md)):
 
 | | **the filter** | **the tool** |
 |---|---|---|
@@ -50,7 +50,7 @@ with two readings written as hypotheses ([S2.4.5](s2.4.5_alternatives_as_hypothe
 ### The filter's state machine, on this kernel
 
 The research plan's [E1](../EinAf.md#e1-define-the-state-machine) has GENERATE, PARSE, ANALYZE, SOLVE and ANSWER,
-with three repair edges. EinAf links the engine ([Q-M2.7](../open_questions.md#q-m27--what-language-is-the-frontend-written-in)),
+with three repair edges. EinAf links the engine ([Q-M2.7](../open_questions/einaf/Q-M2.7-what-language-is-the-frontend-written-in.md)),
 so the machine reads no exit code and no line of text: an edge is taken on a field of the feedback object, and
 the object's first field is one of [the seven outcomes](../README.md#the-outcomes).
 
@@ -65,14 +65,14 @@ GENERATE ──► CHECK ──► ASK ──► one ─────────
 
 - **Seven outcomes, each with an edge.** *Flagged* is an outcome of its own and is read before any word the run
   printed: the kernel answers a flagged program and claims nothing of the answer, so the machine never takes it
-  for *one* ([Q-M2.11](../open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop)). *Not decided* is a
+  for *one* ([Q-M2.11](../open_questions/answer/Q-M2.11-what-is-a-flagged-program-to-the-loop.md)). *Not decided* is a
   budget or the clock stopping the run, and is never read as one of the others; after S2.1.2 an abort is a value.
 - **Which question the machine asks is a choice with a cost.** A bare solve describes R, `--single` asks whether
   it is one state, `--maximal` lists the maximal line; on the under-determined Zebra variant `--single` is decided
   after two states and a description runs to the facts budget
   ([`audit_p2.4.md`](../analysis/audit_p2.4.md) § B.0). The default is root alone, then `--single` over all of R,
   with the wider questions asked once, of the final program, so that the record carries every reading of *one
-  answer* ([Q-M2.10](../open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r) is the
+  answer* ([Q-M2.10](../open_questions/answer/Q-M2.10-what-does-ein-certifies-a-unique-model-mean-on-r.md) is the
   user's, after experiments). [S2.4.1](s2.4.1_state_machine.md) confirms it by measurement.
 - **A run is its transcript**: one record a transition, with the program, the feedback object of every question
   asked, the level, the prompt's hash, the raw generation and the tokens, replayable without the model.
@@ -106,7 +106,7 @@ things the kernel says have no rung in the research plan's ladder (what is owed,
 wrote H) and [S2.4.3](s2.4.3_feedback_ladder.md) gives each one. A fact reads as English through what Ein has
 today (a stated fact's `:source`, a derived fact's rule's `:why`, a query's `:goal-text`) and EinAf's formatters
 for values ([S2.2.5](../p2.2_formalizer/s2.2.5_from_text.md)); M1p does not run
-([Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer)).
+([Q-M2.12](../open_questions/answer/Q-M2.12-what-prints-the-answer.md)).
 
 ### Repair, faithfulness, termination, alternatives
 
@@ -119,14 +119,14 @@ program again, which the machine reads as a fixed point. [S2.4.2](s2.4.2_repair.
 *several → the model invents a constraint → one*. Every program and every repair is judged against the source,
 in both arrangements, and no finding of the judge is fed back: the loop's only reviewer is the kernel.
 [S2.4.4](s2.4.4_faithfulness.md) builds the judge and decides
-[Q-M2.3](../open_questions.md#q-m23--what-is-the-unit-of-faithfulness-without-a-gold-theory).
+[Q-M2.3](../open_questions/answer/Q-M2.3-what-is-the-unit-of-faithfulness-without-a-gold-theory.md).
 
 **Termination** ([E4](../EinAf.md#e4-termination-policy)): the seven conditions as predicates over the
 transcript. A cycle is found by two identities, the program's canonical dump and what the program answers;
-which of them stops the run is [Q-M2.4](../open_questions.md#q-m24--is-the-fixed-point-syntactic-or-semantic),
+which of them stops the run is [Q-M2.4](../open_questions/answer/Q-M2.4-is-the-fixed-point-syntactic-or-semantic.md),
 decided in S2.4.1.
 
-**Alternatives** ([Q8](../open_questions.md#q8--ambiguous-parses)). A reading the formalizer cannot resolve is a
+**Alternatives** ([Q8](../open_questions/formalizer/Q8-ambiguous-parses.md)). A reading the formalizer cannot resolve is a
 hypothesis, `(open F)`, with a reading owed; the corpus has the pattern. What is left is the experiment between
 emitting both readings and committing to one. [S2.4.5](s2.4.5_alternatives_as_hypotheses.md).
 
@@ -134,7 +134,7 @@ emitting both readings and committing to one. [S2.4.5](s2.4.5_alternatives_as_hy
 
 The ladder is where the kernel's diagnostics are judged as feedback, and the tool is where a model meets Ein with
 nothing between them. Each stage has a task that writes what it found (a strength, a weakness, a gap, a bug, a
-limit) into [the evaluation of Ein](../ein_evaluation.md), and the phase shows the page at its close.
+limit) into [the evaluation of Ein](../evaluation/README.md), and the phase shows the page at its close.
 
 ## Stages
 
@@ -165,7 +165,7 @@ limit) into [the evaluation of Ein](../ein_evaluation.md), and the phase shows t
   record says whether the final answer is what the last run printed.
 - A level's rendering shows nothing the feedback object does not hold, and the filter and the tool render one
   object to the same text at the same level.
-- [The evaluation of Ein](../ein_evaluation.md) holds what the six stages found, and is shown.
+- [The evaluation of Ein](../evaluation/README.md) holds what the six stages found, and is shown.
 
 ## Risks
 
@@ -205,7 +205,7 @@ Each is the re-plan's, recorded so that the user or the stage can correct it; no
    the arm's answer.
 5. **Every kernel call is bounded, and a call a bound stopped is *not decided*.** The bounded call is
    `einaf::kernel`'s, P2.1's to build, over the kernel's own bounds: the clock and a limit that reach inside a
-   saturation, which the user's ruling on [Q-M2.16](../open_questions.md#q-m216--what-of-the-kernel-may-change-inside-m2) lets the kernel have and S2.1.2 gives it. A worker process
+   saturation, which the user's ruling on [Q-M2.16](../open_questions/kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md) lets the kernel have and S2.1.2 gives it. A worker process
    of EinAf's own is built only if those do not stop a case.
 6. **A level is a set of blocks**: F0 to F3 each include the one below; F4, F5 and F6 each add one block to F3;
    F7 is F4 and F5 with the chains of the facts they name; F8 is every block. Any set of blocks is a value of
@@ -236,7 +236,7 @@ Each is the re-plan's, recorded so that the user or the stage can correct it; no
 16. **EinAf's tests of a renderer are over feedback objects written by hand and properties over the corpus**; a
     banked rendering is of a monotone program, and none banks a flagged program's answer.
 17. **Where a stage's answer lands**: Q-M2.3 and Q-M2.4 are answers about EinAf, so each is written beside its
-    question in [the ledger](../open_questions.md) and becomes a page of `docs/einaf/` with the code.
+    question in [the ledger](../open_questions/README.md) and becomes a page of `docs/einaf/` with the code.
 
 ## Connections
 

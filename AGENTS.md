@@ -10,7 +10,7 @@ constrained-reasoning research.
 
 **The repository holds two projects, one over the other, and one process
 over both** (the user's ruling,
-[Q-M2.8](plans/m2_nl_to_ir/open_questions.md#q-m28--where-does-einaf-live)):
+[Q-M2.8](plans/m2_nl_to_ir/open_questions/einaf/Q-M2.8-where-does-einaf-live.md)):
 
 | | what it is | where | depends on |
 |---|---|---|---|
@@ -423,7 +423,7 @@ paragraph, no register count, no measurement (the user's rule).
   stage files described the engine M1a shipped and none ran as written: the
   analysis and the six audits beside it were the worklist of the re-plan.
   **The plan is re-planned** to the user's rulings, which
-  [its ledger](plans/m2_nl_to_ir/open_questions.md) holds in the user's words
+  [its ledger](plans/m2_nl_to_ir/open_questions/README.md) holds in the user's words
   (EinAf is Rust, one package under `einaf/`, a project of its own; the model
   is local, `qwen3.5:4b`, run through a Rust binding to llama.cpp; Ein is
   both a tool the model may call and a filter it cannot avoid; the answer is
@@ -431,7 +431,7 @@ paragraph, no register count, no measurement (the user's rule).
   for diagnostics and a bound inside a saturation, and may gain any feature
   or bug fix that leaves Ein's syntax and semantics as they are; the minimal
   goal is the Zebra puzzle solved by the model with Ein), and it keeps
-  [an evaluation of Ein](plans/m2_nl_to_ir/ein_evaluation.md), what this
+  [an evaluation of Ein](plans/m2_nl_to_ir/evaluation/README.md), what this
   application finds of the kernel, for the iteration of Ein that follows.
   **P2.1 ran to its end on the user's word and waits for the user's review**
   ([its report](plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation/report/README.md));
@@ -458,9 +458,14 @@ paragraph, no register count, no measurement (the user's rule).
   [`plans/followups/`](plans/followups/README.md), each finding under its own id
   (M1f's L-n are F22, F23 and F28 to F32's, its defaults F33's); a default
   stands until the user revises it. A phase keeps what it finds outside its
-  scope in a findings page of its own, beside its README, and shows it; at the
-  phase's close what is open moves to its milestone's page or to its owner, and
-  at the milestone's close to the followups.
+  scope apart from its stages, and shows it; at the phase's close what is open
+  moves to its milestone or to its owner, and at the milestone's close to the
+  followups. **From M2 on these are folders**: the milestone and each of its
+  phases keep `findings/`, `open_questions/` and (M2) `evaluation/`, one item a
+  file under a topic folder, ids from the milestone's sequence; at a phase's
+  close what is open moves into the milestone's folder of the same name and
+  what is closed goes with the phase. A milestone planned before keeps its
+  single files (`findings.md`, `open_questions.md`).
 - **The wrong-answer register** is
   [`plans/wrong_answers/register.toml`](plans/wrong_answers/register.toml), the
   open wrong answers, with its rules in [its README](plans/wrong_answers/README.md);
@@ -794,7 +799,7 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   (`check_release_voice.py`'s `NOT_PROJECT` names both); the link check reads
   EinAf's pages as it reads every tracked page, and a decision they cite is
   Ein's. What EinAf's own pages hold themselves to is proposed in
-  [Q-M2.8](plans/m2_nl_to_ir/open_questions.md#q-m28--where-does-einaf-live)'s
+  [Q-M2.8](plans/m2_nl_to_ir/open_questions/einaf/Q-M2.8-where-does-einaf-live.md)'s
   entry, for the user to rule on. A decision about the process
   stays in `plans/`; a generated project file says it is generated and names
   no tool; a measurement lives beside the script that takes it.

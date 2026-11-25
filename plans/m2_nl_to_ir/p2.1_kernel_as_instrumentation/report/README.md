@@ -269,19 +269,29 @@ come first.
 
 1. **EinAf's `cargo fmt` and `cargo clippy -D warnings` as gate steps** (S2.1.1 default 3): proposed, not done;
    both run clean by hand. Two more static checks move the gate's count of static checks.
+   [Q-M2.18](../open_questions/einaf/Q-M2.18-are-einafs-fmt-and-clippy-steps-of-the-gate.md).
 2. **What EinAf's pages hold themselves to** (S2.1.1 default 5;
-   [Q-M2.8](../../open_questions.md#q-m28--where-does-einaf-live)'s entry): today the link check reads them, the
+   [Q-M2.8](../../open_questions/einaf/Q-M2.8-where-does-einaf-live.md)'s entry): today the link check reads them, the
    release-voice check and `check_doc_blocks.py` do not.
 3. **The schema numbers** (S2.1.2, E-92): `ein-summary/2` and `ein-test-report/6` were kept although each gained
    a key, by § 11's reading that the number names the shape's rule (every key on every run); bumping either moves
    `help_shape.txt`, whose option help names the number.
+   [Q-M2.19](../open_questions/kernel/Q-M2.19-do-ein-summary-2-and-ein-test-report-6-keep-their-numbers.md).
 4. ~~**The 38 kinds' names**~~ (S2.1.2 default 1). **Ruled 2026-11-25, accepted**: the user, *"Ok, I agree, it's
    ein.rs surface names, not ein language"*. A kind is a name of ein.rs's machine surface, one a section of the
    reference, and no word of the language; renaming one is a change to ein.rs (Q-M2.16), not to Ein.
 5. **`--max-steps`, its name and its default 2²⁰** (S2.1.2 bound defaults 1, 2): the unit is a firing, an engine
    count (E-85); the corpus's largest saturation is 17 587 firings.
-6. **Which reading certifies *unique*** ([Q-M2.10](../../open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r)),
+   [Q-M2.20](../open_questions/kernel/Q-M2.20-what-are-max-steps-name-unit-and-default.md).
+6. **Which reading certifies *unique*** ([Q-M2.10](../../open_questions/answer/Q-M2.10-what-does-ein-certifies-a-unique-model-mean-on-r.md)),
    open until the experiments: the outcome function gives every reading and certifies none.
+7. **The missing file's one line** ([S2.1.4](../s2.1.4_bugs_the_phase_found.md)'s design point 2, F23's D-1),
+   added when S2.1.4 was planned: the reference page's `FileNotFoundError: [Errno 2] …`, kept by default, or a line
+   in Ein's own words, which moves the page's row and every fixture that holds it.
+   [Q-M2.21](../open_questions/kernel/Q-M2.21-a-missing-files-line-the-pages-python-spelling-or-eins-own.md).
+
+Items 1, 3, 5 and 7 are the phase's questions, Q-M2.18 to Q-M2.21, in [its open questions](../open_questions/README.md);
+items 2 and 6 are the milestone's; item 4 is ruled.
 
 **Every default, by stage** (the record has each with its reason):
 
@@ -321,7 +331,8 @@ come first.
 
 ## 8. What the phase found of Ein
 
-[The evaluation](../../ein_evaluation.md) gained E-62 to E-101 in this phase (E-62 to E-67 S2.1.1's, E-68 to E-93
+[The evaluation](../../evaluation/README.md) gained E-62 to E-101 in this phase, which live in
+[the phase's `evaluation/`](../evaluation/README.md) until it closes (E-62 to E-67 S2.1.1's, E-68 to E-93
 S2.1.2's, E-94 to E-101 S2.1.3's), and closed E-20, E-21, E-45, E-62, E-64, E-65, E-67 (for EinAf), E-76, E-77,
 E-78, E-88. Open, by section:
 
@@ -332,6 +343,10 @@ E-78, E-88. Open, by section:
 | gaps | E-73 a refusal about a top-level form has no place; E-75 two refusals only a library caller meets; E-82 a run the cap stops hands back nothing it established; E-89 a line with no kind stays off every summary; E-91 a core's sentences beside root's core alone; E-95 no library value says which kernel it is; E-96 the abort's line is the binary's; E-97 a run's diagnostics come from the rendered read-out; E-100 nothing bounds a call's memory |
 | bugs | E-74 the library spells a missing file a second way; **E-79 `ein saturate --max-steps N` crashes (stack overflow) on a term nested past ~30 000** |
 | limits | E-80 `--events` grows quadratically on a deepening term; E-81 the default cap costs ~1 GB on a runaway; E-83 a program with no fixpoint cannot be a corpus program; E-84 four readers of root take no bound; E-98 the clock is not read where nothing fires; E-99 a deep term's read-out is outside the clock |
+
+What the phase found that is neither Ein's nor a question for the user, L-M2.1 to L-M2.4 (the host's toolchain,
+EinAf's missing pin, EinAf's load judged with no bound, Ein's API change leaving EinAf unbuilt until its own commit),
+is in [the phase's findings](../findings/README.md).
 
 ## 9. Verification
 

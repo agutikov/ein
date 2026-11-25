@@ -16,10 +16,10 @@ open when the analysis was written, and **the audits cite the plan's files as th
 names and line numbers of that commit. Four stage files have other names since (`s2.1.1_census.md` is `s2.1.1_tree_and_outcomes.md`; `s2.1.2_feedback_object.md` is `s2.1.3_feedback_object.md`;
 `s2.1.3_boundary.md`, whose question the user ruled, is gone, and S2.1.2 is `s2.1.2_diagnostics_surface.md`;
 `s2.2.2_llama_server_and_client.md` is `s2.2.2_model_runtime.md`), and every file was rewritten:
-`git show 5d678042:plans/m2_nl_to_ir/<path>` has what an audit read. [The ledger](../open_questions.md) says what
+`git show 5d678042:plans/m2_nl_to_ir/<path>` has what an audit read. [The ledger](../open_questions/README.md) says what
 is open now. **[`probes/`](probes/)** holds the small programs the re-plan's writers ran to check what the plan
 says of the kernel, a folder a phase: each is the evidence of an entry of
-[the evaluation of Ein](../ein_evaluation.md), which names the command it was run under.
+[the evaluation of Ein](../evaluation/README.md), which names the command it was run under.
 
 | audit | covers | stale | found true |
 |---|---|---:|---:|
@@ -280,14 +280,14 @@ These are the conflicts that are not a matter of re-aiming a sentence. Each is a
    ([Q-M1f.341](../../../docs/decisions/docs/Q-M1f.341-the-project-documents-only-its-current-state.md)) and no
    name of a stage; **the research plan's own labels F0 to F8 match the followup-id pattern and fail the check**.
    As the process, under `plans/`, they are deleted with the folder at the close.
-   → [Q-M2.8](../open_questions.md#q-m28--where-does-einaf-live).
+   → [Q-M2.8](../open_questions/einaf/Q-M2.8-where-does-einaf-live.md).
 2. **A machine surface for diagnostics is a kernel change**, on F23's ground, and the plan's form of it names the
-   loop inside the project. → [Q-M2.9](../open_questions.md#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics).
+   loop inside the project. → [Q-M2.9](../open_questions/kernel/Q-M2.9-does-the-kernel-grow-a-machine-surface-for-diagnostics.md).
 3. **A flagged program has no outcome in the plan**: not in A1's six, the state machine, *certified*, either
-   conditional probability, or the benchmark's gold. → [Q-M2.11](../open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop).
+   conditional probability, or the benchmark's gold. → [Q-M2.11](../open_questions/answer/Q-M2.11-what-is-a-flagged-program-to-the-loop.md).
 4. **The loop has to choose a question and a reading of *unique***: which of `--single`, a description and
    `--maximal`; over all of R or its maximal line; `k_s` or `k_c`.
-   → [Q-M2.10](../open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r).
+   → [Q-M2.10](../open_questions/answer/Q-M2.10-what-does-ein-certifies-a-unique-model-mean-on-r.md).
 5. **Ids.** M2's Q23, Q24 and Q25 reused ids the root ledger gave M1's questions, two of which are decision
    files ([`Q23`](../../../docs/decisions/language/Q23-a-premise-says-what-a-variable-ranges-over.md),
    [`Q25`](../../../docs/decisions/stdlib/Q25-ein-has-no-ordinal-form-an-order-is-a-relation.md)). Renumbered
@@ -311,39 +311,39 @@ Nothing else of the plan is edited: the stage files read as they did.
 ## 7. What the user ruled, and where the re-plan is
 
 **The user, 2026-11-25**, in two rounds of answers, on the questions this analysis raised, on four older ones and
-on three the answers themselves raised. Each ruling is in [the ledger](../open_questions.md) in the user's words,
+on three the answers themselves raised. Each ruling is in [the ledger](../open_questions/README.md) in the user's words,
 with what it is read to mean:
 
 | Q | the question | the user | what it changes |
 |---|---|---|---|
-| [Q-M2.8](../open_questions.md#q-m28--where-does-einaf-live) | where EinAf lives | *"./einaf/, ./docs/einaf/, etc..."*, then *"own tree, in this repository, outside of ein … but inside the development process"* | EinAf is a second project, over ein.rs, under the same process; the root README and `AGENTS.md` state the hierarchy |
-| [Q-M2.9](../open_questions.md#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics) | a machine surface for diagnostics | *"(b)"* | the kernel grows it in its own terms: S2.1.2; the feedback object is EinAf's |
-| [Q-M2.11](../open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop) | a flagged program | *"(a)"* | an outcome of its own, never certified, fed back with its sites |
-| [Q-M2.7](../open_questions.md#q-m27--what-language-is-the-frontend-written-in) | the loop's language | *"Rust"* | EinAf links the crates |
-| [Q-M2.2](../open_questions.md#q-m22--must-the-model-be-local), [Q-M2.5](../open_questions.md#q-m25--local-model-choice) | the model | *"yes"*, *"Qweb3.5:4b"* | local, `qwen3.5:4b` |
-| [Q-M2.14](../open_questions.md#q-m214--what-runs-the-model) | what runs it | *"llama-cpp with rust wrapper, not ollama"* | in EinAf's process, through a binding to llama.cpp |
-| [Q-M2.1](../open_questions.md#q-m21--when-is-the-kernel-frozen) | when the kernel is frozen | *"use current state - after M1f closed"* | the instrument is the kernel M1f left |
-| [Q8](../open_questions.md#q8--ambiguous-parses) | ambiguous parses | *"there is no `hrule` anymore, rules emitting open facts replaced them"* | the form is a hypothesis, `(open F)` |
-| [Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer) | what prints the answer | *"don't run M1p now, use as much of existing ein NL features … use additional external formatters"* | `:goal-text`, with EinAf's formatters over values; M1p does not run |
-| [Q-M2.13](../open_questions.md#q-m213--who-calls-the-kernel) | who calls the kernel | both: the tool, *"recommened but optional"*, and the filter, *"forced to write ein code"* | two arrangements, both arms, compared with a chain of thought |
+| [Q-M2.8](../open_questions/einaf/Q-M2.8-where-does-einaf-live.md) | where EinAf lives | *"./einaf/, ./docs/einaf/, etc..."*, then *"own tree, in this repository, outside of ein … but inside the development process"* | EinAf is a second project, over ein.rs, under the same process; the root README and `AGENTS.md` state the hierarchy |
+| [Q-M2.9](../open_questions/kernel/Q-M2.9-does-the-kernel-grow-a-machine-surface-for-diagnostics.md) | a machine surface for diagnostics | *"(b)"* | the kernel grows it in its own terms: S2.1.2; the feedback object is EinAf's |
+| [Q-M2.11](../open_questions/answer/Q-M2.11-what-is-a-flagged-program-to-the-loop.md) | a flagged program | *"(a)"* | an outcome of its own, never certified, fed back with its sites |
+| [Q-M2.7](../open_questions/einaf/Q-M2.7-what-language-is-the-frontend-written-in.md) | the loop's language | *"Rust"* | EinAf links the crates |
+| [Q-M2.2](../open_questions/model/Q-M2.2-must-the-model-be-local.md), [Q-M2.5](../open_questions/model/Q-M2.5-local-model-choice.md) | the model | *"yes"*, *"Qweb3.5:4b"* | local, `qwen3.5:4b` |
+| [Q-M2.14](../open_questions/model/Q-M2.14-what-runs-the-model.md) | what runs it | *"llama-cpp with rust wrapper, not ollama"* | in EinAf's process, through a binding to llama.cpp |
+| [Q-M2.1](../open_questions/kernel/Q-M2.1-when-is-the-kernel-frozen.md) | when the kernel is frozen | *"use current state - after M1f closed"* | the instrument is the kernel M1f left |
+| [Q8](../open_questions/formalizer/Q8-ambiguous-parses.md) | ambiguous parses | *"there is no `hrule` anymore, rules emitting open facts replaced them"* | the form is a hypothesis, `(open F)` |
+| [Q-M2.12](../open_questions/answer/Q-M2.12-what-prints-the-answer.md) | what prints the answer | *"don't run M1p now, use as much of existing ein NL features … use additional external formatters"* | `:goal-text`, with EinAf's formatters over values; M1p does not run |
+| [Q-M2.13](../open_questions/einaf/Q-M2.13-who-calls-the-kernel.md) | who calls the kernel | both: the tool, *"recommened but optional"*, and the filter, *"forced to write ein code"* | two arrangements, both arms, compared with a chain of thought |
 
 **Ruled after the re-plan, the same day** (the ledger has each): the kernel may gain any feature or bug fix that
 leaves Ein's syntax and semantics as they are
-([Q-M2.16](../open_questions.md#q-m216--what-of-the-kernel-may-change-inside-m2)), so the bound on a saturation is
+([Q-M2.16](../open_questions/kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md)), so the bound on a saturation is
 the kernel's; the answer is a sentence, and EinAf's fixed texts stand
-([Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer)); the minimal goal is the Zebra puzzle solved by
-the model with Ein ([Q-M2.17](../open_questions.md#q-m217--what-is-the-milestones-minimal-goal)); and EinAf is one
-tree, its documentation apart ([Q-M2.8](../open_questions.md#q-m28--where-does-einaf-live)).
+([Q-M2.12](../open_questions/answer/Q-M2.12-what-prints-the-answer.md)); the minimal goal is the Zebra puzzle solved by
+the model with Ein ([Q-M2.17](../open_questions/milestone/Q-M2.17-what-is-the-milestones-minimal-goal.md)); and EinAf is one
+tree, its documentation apart ([Q-M2.8](../open_questions/einaf/Q-M2.8-where-does-einaf-live.md)).
 
-**Open, and holding no phase:** [Q-M2.10](../open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r),
+**Open, and holding no phase:** [Q-M2.10](../open_questions/answer/Q-M2.10-what-does-ein-certifies-a-unique-model-mean-on-r.md),
 what *certified unique* means on R (the user, after experiments: every record carries each reading), and
-[Q-M2.15](../open_questions.md#q-m215--where-does-m2-stop-for-the-next-iteration-of-ein), where the milestone stops
+[Q-M2.15](../open_questions/milestone/Q-M2.15-where-does-m2-stop-for-the-next-iteration-of-ein.md), where the milestone stops
 for the next iteration of Ein (the user, at a level's gate).
 
 **The frame of the re-plan is the user's two main ideas**, kept verbatim in
 [the README](../README.md#the-two-main-ideas-the-user-2026-11-25): a chain of formal reasoning in place of a chain
 of thought, with Ein as a tool and as a filter and the answer Ein's own; and the milestone as an evaluation of
-ein.rs, for the iteration of Ein that follows ([`ein_evaluation.md`](../ein_evaluation.md), seeded from this
+ein.rs, for the iteration of Ein that follows ([`evaluation/`](../evaluation/README.md), seeded from this
 analysis).
 
 **The re-plan is done** (2026-11-25, on the user's word, *"Do re-plan if ready and no open questions"*): the

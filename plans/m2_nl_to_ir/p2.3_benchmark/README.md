@@ -1,6 +1,6 @@
 # P2.3 — The benchmark (Stage C)
 
-**Depends on:** the kernel as it stands ([Q-M2.1](../open_questions.md#q-m21--when-is-the-kernel-frozen));
+**Depends on:** the kernel as it stands ([Q-M2.1](../open_questions/kernel/Q-M2.1-when-is-the-kernel-frozen.md));
 [S2.1.1](../p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md), which creates the package `einaf/` and its
 gate step, where the generators and the benchmark's check live; [S2.2.5](../p2.2_formalizer/s2.2.5_from_text.md)
 for the formatters, which one check of an instance needs (that its canonical program prints the gold short
@@ -22,10 +22,10 @@ and paraphrase sets are this phase's generators with other arguments.
 |---|---|---|
 | ground truth is *certified by the kernel, exhaustively*, by `ein solve -e` | a canonical program states its answer as `:expect` claims and `ein test` checks them; the answer itself is known before the kernel is asked, by construction or from its author | audit § A.1, § B.3; [§ An instance](#an-instance) |
 | the gold of an instance is a verdict (`unique`, `ambiguous`, `unsat`) and bindings, a count `k`, or a core | a gold **class**, a gold **short answer** and a canonical program; no count `k`, and no core as an answer | the frame's defaults 7 and 8; audit § C.4 |
-| the verdict is read off the kernel's word | the kernel's word is not the problem's class, so the class is stated by the shape of the program's claims | audit § B.3; [E-14](../ein_evaluation.md) |
-| `benchmark/` at the repository's root, generators in Python | `einaf/benchmark/`, outside every corpus root; generators in Rust, in the package | [Q-M2.8](../open_questions.md#q-m28--where-does-einaf-live), [Q-M2.7](../open_questions.md#q-m27--what-language-is-the-frontend-written-in); the frame's defaults 2 and 3 |
+| the verdict is read off the kernel's word | the kernel's word is not the problem's class, so the class is stated by the shape of the program's claims | audit § B.3; [E-14](../evaluation/answer/E-14-the-kernels-word-is-not-the-problems-class.md) |
+| `benchmark/` at the repository's root, generators in Python | `einaf/benchmark/`, outside every corpus root; generators in Rust, in the package | [Q-M2.8](../open_questions/einaf/Q-M2.8-where-does-einaf-live.md), [Q-M2.7](../open_questions/einaf/Q-M2.7-what-language-is-the-frontend-written-in.md); the frame's defaults 2 and 3 |
 | eight families, seeded by five old puzzles | eight families and the word problems of `examples/word_problems/`; of the five old puzzles only Zebra was ever written | the frame's default 8; audit § B.2, § B.4 |
-| a closed-world `(absent …)` in three canonical theories | no canonical program is flagged; each such family has an encoding that is not, or it has no canonical program | [Q-M2.11](../open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop); [§ Risks](#risks) |
+| a closed-world `(absent …)` in three canonical theories | no canonical program is flagged; each such family has an encoding that is not, or it has no canonical program | [Q-M2.11](../open_questions/answer/Q-M2.11-what-is-a-flagged-program-to-the-loop.md); [§ Risks](#risks) |
 | texts in English, Russian realisations later | English, names ASCII | the frame's default 9 |
 | estimates per stage | none | the frame's default 13 |
 
@@ -53,13 +53,13 @@ An instance is four things, and an external instance the first three:
    *one answer*, *ambiguous*, *unsatisfiable*. It is a property of the problem, not of a run. The finer split of
    [F26](../../followups/f26_consistency_and_completeness.md), item 6 of its last section, stands beside it as
    metadata;
-3. **its gold short answer**, a sentence in the problem's words (the user's ruling, [Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer):
+3. **its gold short answer**, a sentence in the problem's words (the user's ruling, [Q-M2.12](../open_questions/answer/Q-M2.12-what-prints-the-answer.md):
    *"a sentence, like zebra's"*), with the values it binds; what it states is what every arm B0 to B6 is scored
    against
    ([the arms](../README.md#the-arms));
 4. **its canonical Ein program**: ontology, theory, instance and query, with the answer stated as `:expect` claims
    that the kernel checks, and the gold short answer printed through its answer query's `:goal-text`
-   ([Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer)).
+   ([Q-M2.12](../open_questions/answer/Q-M2.12-what-prints-the-answer.md)).
 
 ### How a class is established
 
@@ -109,7 +109,7 @@ and counted in a column of its own ([§ Defaults](#defaults-taken-at-the-re-plan
 - its canonical program loads, with `:why` required
   ([Q-M1f.57](../../../docs/decisions/corpus/Q-M1f.57-every-fixture-the-loader-reads-carries-a-why.md));
 - **it is not flagged**: the static check finds no site
-  ([Q-M2.11](../open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop));
+  ([Q-M2.11](../open_questions/answer/Q-M2.11-what-is-a-flagged-program-to-the-loop.md));
 - **it states its lattice**: its hypotheses are a rule's, the program's or an activated obligation's, or it
   writes `(solve :no-search)`. A program that states facts and rules and no lattice is answered by the blind
   enumerator (probed: three people, one stated order and one rule that reads the order under `absent` are
@@ -178,7 +178,7 @@ of the package, under `einaf/src/`, and subcommands of `einaf bench`.
 
 - **It is no corpus root.** `examples/`, `stdlib/` and `tests/` are Ein's; a program under `einaf/benchmark/`
   has no `corpus/corpus.toml` entry and joins no sweep of Ein's gate
-  ([Q-M2.8](../open_questions.md#q-m28--where-does-einaf-live), default 4 of the ruling). Nothing of Ein reads,
+  ([Q-M2.8](../open_questions/einaf/Q-M2.8-where-does-einaf-live.md), default 4 of the ruling). Nothing of Ein reads,
   links or names the benchmark.
 - **EinAf's gate step** holds what needs no model: the seed set whole, a stated sample of the generated
   instances, the generators' determinism, the manifest's and the split's invariants. The whole benchmark is
@@ -214,15 +214,15 @@ of the package, under `einaf/src/`, and subcommands of `einaf bench`.
   ([Stage Q](../EinAf.md#stage-q--public-research-artifact)'s second layer, early).
 - **The Level B gate** ([the milestone's acceptance](../README.md#acceptance), items 1 to 5): the one-shot run on
   `test` over three families or more, reported per family; the three classes distinguished; every run a record;
-  and **[the evaluation of Ein](../ein_evaluation.md) written up as P2.1 to P2.3 found it and shown to the
+  and **[the evaluation of Ein](../evaluation/README.md) written up as P2.1 to P2.3 found it and shown to the
   user**. The gate is a stop: the user says whether EinAf goes on or an iteration of Ein comes first
-  ([Q-M2.15](../open_questions.md#q-m215--where-does-m2-stop-for-the-next-iteration-of-ein)).
+  ([Q-M2.15](../open_questions/milestone/Q-M2.15-where-does-m2-stop-for-the-next-iteration-of-ein.md)).
 
 ## Risks
 
 - **A family's natural encoding is flagged.** A minimum, a *can* question and a closed world are each most
   easily written with `absent`, and the static check flags a rule whose `absent` reads a relation a commitment
-  can change ([E-31](../ein_evaluation.md); audit § C.3). Probed at the re-plan: *the youngest is who is older
+  can change ([E-31](../evaluation/answer/E-31-of-a-flagged-program-nothing-is-claimed.md); audit § C.3). Probed at the re-plan: *the youngest is who is older
   than nobody*, as an `absent` over `older`, is monotone where nothing of `older` is hypothesised and flagged
   beside candidates of `older`, which the family's *ambiguous* sibling needs. Two encodings that are not flagged
   were probed too: an order as a bijection onto named ranks (`functional`, `injective`, `total-owed`), where the
@@ -247,12 +247,12 @@ of the package, under `einaf/src/`, and subcommands of `einaf bench`.
 - **An ambiguous instance of Zebra's size has an answer that is not short**: with clue 15 dropped, the puzzle's
   query has 18 classes over the 32 states of the maximal line (run at the re-plan, `--maximal`). The short
   answer of such an instance is its class.
-- **What a check costs depends on the question** ([E-17](../ein_evaluation.md)): `ein test` asks the least
+- **What a check costs depends on the question** ([E-17](../evaluation/bounds/E-17-what-a-run-costs-depends-on-the-question-asked-of-it.md)): `ein test` asks the least
   question a file's claims need, and a region claim asks for a description. A claim the budget leaves undecided
   is `NOT CHECKED`, and the instance is not admitted.
 - **External benchmarks have answers and no theories.** Constraint precision and recall are undefined on them;
   faithfulness falls back to
-  [Q-M2.3](../open_questions.md#q-m23--what-is-the-unit-of-faithfulness-without-a-gold-theory)'s candidates. An
+  [Q-M2.3](../open_questions/answer/Q-M2.3-what-is-the-unit-of-faithfulness-without-a-gold-theory.md)'s candidates. An
   adapter records which metrics an instance supports.
 - **Contamination.** BBH is in every training set. The synthetic families are the half no model has seen, and
   [K4](../EinAf.md#k4-novel-relation-vocabulary)'s novel vocabulary is the test of whether a number is memory.
@@ -262,7 +262,7 @@ of the package, under `einaf/src/`, and subcommands of `einaf bench`.
 - [`EinAf.md` § Stage C](../EinAf.md#stage-c--construct-a-heterogeneous-benchmark); [the frame](../README.md#the-plan-as-re-planned);
   [the audit](../analysis/audit_p2.3.md), and [the analysis](../analysis/README.md#p23--the-benchmark-audit)'s
   summary of it.
-- [The evaluation of Ein](../ein_evaluation.md): writing canonical programs for nine families is the largest
+- [The evaluation of Ein](../evaluation/README.md): writing canonical programs for nine families is the largest
   test of the language's expressiveness this milestone has, and each stage that writes or runs them has a task
   for it.
 - [`12-query.md`](../../../docs/ein/user/03-syntax-and-semantics/12-query.md), claims and who checks them;
