@@ -160,6 +160,15 @@ fn read(run: &Run, part: Part) -> (Outcome, String) {
                 "the clock ran out before the question was decided".to_string(),
             );
         }
+        Some(Stopped::Steps { cap, root }) => {
+            return (
+                Outcome::NotDecided,
+                format!(
+                    "stopped at --max-steps {cap}: {} saturation had no fixpoint within it",
+                    if *root { "root's" } else { "a node's" }
+                ),
+            );
+        }
         Some(Stopped::NoSearch) | None => {}
     }
     match run.question {

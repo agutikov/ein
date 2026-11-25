@@ -148,8 +148,11 @@ impl Question {
 /// gets.
 pub const DEFAULT_LIMIT: u32 = ein_infer::region::DEFAULT_LIMIT;
 
+/// The default cap on the firings of one saturation, `--max-steps`' default.
+pub const DEFAULT_MAX_STEPS: u64 = explore::DEFAULT_MAX_STEPS;
+
 /// What may stop a run before it decides its question: `--region-budget`,
-/// `--region-limit` and `-T`. None changes an answer; a run a bound stops is
+/// `--region-limit`, `--max-steps` and `-T`. None changes an answer; a run a bound stops is
 /// *not decided*.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Bounds {
@@ -158,6 +161,9 @@ pub struct Bounds {
     /// The largest count of candidates whose whole cube a program the static
     /// check flags gets; a monotone program never reads it.
     pub limit: u32,
+    /// The firings one saturation may take, root's included; past it the run
+    /// is *not decided*. `None` is no cap.
+    pub max_steps: Option<u64>,
     /// The wall clock, from the moment the question is asked.
     pub clock: Option<Duration>,
 }
@@ -167,6 +173,7 @@ impl Default for Bounds {
         Bounds {
             budget: DEFAULT_BUDGET,
             limit: DEFAULT_LIMIT,
+            max_steps: Some(DEFAULT_MAX_STEPS),
             clock: None,
         }
     }
@@ -316,6 +323,7 @@ impl Program {
         opts.budget = bounds.budget;
         opts.limit = bounds.limit;
         opts.no_search = question == Question::NoSearch;
+        opts.max_steps = bounds.max_steps;
         opts.deadline = bounds.clock.map(|c| Instant::now() + c);
         let answered =
             match ein_infer::read_out::run(&mut copy.kb, &mut copy.terms, &copy.ast, &opts) {

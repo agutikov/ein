@@ -13,7 +13,7 @@ use einaf::kernel::{Bounds, Part, Program, Question, Run, outcome};
 
 const USAGE: &str = "\
 usage: einaf outcome FILE [QUESTION] [--region-budget N] [--region-limit N]
-                         [-T SECONDS] [--read-out]
+                         [--max-steps N] [-T SECONDS] [--read-out]
 
 The outcome of an Ein program under one question about its answer, R: invalid,
 flagged, not decided, inconsistent, incomplete, several or one, under each
@@ -29,6 +29,7 @@ QUESTION, as `ein solve` asks it (none: describe all of R):
 
   --region-budget N      the facts budget, 1048576 by default
   --region-limit N       the largest cube a flagged program gets, 16 by default
+  --max-steps N          the firings one saturation may take, 1048576 by default
   -T, --max-time SECONDS the wall clock
   --read-out             also print `ein solve`'s read-out of the run
 ";
@@ -86,6 +87,16 @@ fn parse(args: &[String]) -> Result<Asked, String> {
                 bounds.limit = v
                     .parse()
                     .map_err(|_| format!("--region-limit {v}: not a number of candidates"))?;
+            }
+            "--max-steps" => {
+                let v = it.next().ok_or("--max-steps takes a number")?;
+                let n: u64 = v
+                    .parse()
+                    .map_err(|_| format!("--max-steps {v}: not a number of firings"))?;
+                if n == 0 {
+                    return Err("--max-steps takes 1 or more".to_string());
+                }
+                bounds.max_steps = Some(n);
             }
             "-T" | "--max-time" => {
                 let v = it.next().ok_or("-T takes a number of seconds")?;

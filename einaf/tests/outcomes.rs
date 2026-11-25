@@ -159,7 +159,29 @@ fn not_decided_is_a_run_a_bound_stopped() {
         read(rel, Question::NoSearch, Part::All, Bounds::default()),
         Outcome::NotDecided
     );
+    let cap = Bounds {
+        max_steps: Some(100),
+        ..Bounds::default()
+    };
+    assert_eq!(
+        read(rel, Question::Single(Part::All), Part::All, cap),
+        Outcome::NotDecided
+    );
     assert_eq!(single(rel), Outcome::One);
+}
+
+/// **not decided**, of a program whose saturation has no fixpoint: a rule
+/// that nests its conclusion one deeper than its premise. The cap on
+/// firings ends root's saturation, under every question.
+#[test]
+fn a_saturation_with_no_fixpoint_is_not_decided_at_the_cap() {
+    let rel = "ein.rs/crates/ein-cli/tests/bounded/grow.ein";
+    let cap = Bounds {
+        max_steps: Some(10_000),
+        ..Bounds::default()
+    };
+    let all = under_every_question(rel, cap);
+    assert!(all.iter().all(|&o| o == Outcome::NotDecided), "{all:?}");
 }
 
 /// **inconsistent**: R is empty and every node is dead, under `--single`, a
