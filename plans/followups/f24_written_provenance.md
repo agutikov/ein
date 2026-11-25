@@ -51,7 +51,7 @@ with a corpus entry, held to today's engine by `utils/wrong_answers.py` (the wit
 
 **No `right` is ruled.** The question above is the user's. Each row states the answer under one named reading and
 the others as alternatives, as W8's rows record Q-M1e2.2 for F21
-([Q-M1f.134](../m1f_hypothesis_and_documentation/open_questions.md#q-m1f134--what-a-register-row-records-as-right-while-f24s-question-is-not-ruled),
+([Q-M1f.134](../open_questions.md#q-m1f134--what-a-register-row-records-as-right-while-f24s-question-is-not-ruled),
 defaulted). The ruling restates each row's `right` before its fix flips it.
 
 **What S1f.7.9's T1 added** (release, at `91b12be8`, 2026-11-11). The surfaces that name a written `:rule`: `ein

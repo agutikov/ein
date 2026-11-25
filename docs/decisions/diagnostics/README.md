@@ -17,3 +17,4 @@ What a refusal prints: where its line places the fault, how it words it, and the
 - [Q-M1f.95](Q-M1f.95-a-file-is-refused-at-its-first-character-that-is.md) — A file is refused at its first character that is not ASCII
 - [Q-M1f.121](Q-M1f.121-a-goals-relation-variable-is-refused-with.md) — A goal's relation variable is refused with the goal's line at every depth
 - [Q-M1f.580](Q-M1f.580-a-loads-and-a-runs-warnings-are-printed-when.md) — A load's and a run's warnings are printed when the command's run ends
+- [Q-M1f.670](Q-M1f.670-a-conflict-with-an-open-fact-the-program-writes.md) — A conflict with an `open` fact the program writes names where it is written

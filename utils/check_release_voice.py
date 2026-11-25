@@ -36,7 +36,7 @@ A line fails on any of
   `CLAUDE.md`;
 - an ISO date, `YYYY-MM-DD`: in this scope a date dates a development event.
 
-**A decision id passes**: `Q-M1f.304` names a decision, which a page or a
+**A decision id passes**: `Q-M1f.313` names a decision, which a page or a
 comment may cite. A line carrying `release-voice-ok: <reason>` passes too, the
 reason required, as `determinism-ok:` is in `check_hashmap_iteration.py`: a
 test's list of the strings no output may contain, say. There is no baseline:

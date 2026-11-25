@@ -2,7 +2,9 @@
 
 Questions that span multiple milestones, are parked indefinitely, or
 aren't bound to any specific milestone. Milestone-scoped questions
-live in their milestone's `open_questions.md`.
+live in their milestone's `open_questions.md`. The rulings about the
+process that a closed milestone left binding are here too, under their
+ids ([§ The rulings about the process M1f left binding](#the-rulings-about-the-process-m1f-left-binding)).
 
 Question IDs are **sticky** — when a question moves to a milestone
 file it keeps its id; do not reuse a closed id.
@@ -46,6 +48,33 @@ file it keeps its id; do not reuse a closed id.
 | Q41 | Rule priority — scale (100/200/…) and placement (per-rule vs config)          | [M1](#absorbed--the-m1-milestone-questions-q4q42) — resolved 2026-05-20 |
 | Q42 | P1.3 scope — path (a) narrow vs (b) all 10 with deferred                       | [M1](#absorbed--the-m1-milestone-questions-q4q42) — resolved 2026-05-20 |
 | Q-M1e.19 | Algorithmic pathology has no owner: where does the search degrade?        | [here](#q-m1e19--algorithmic-pathology-has-no-owner) — moved from M1e's ledger at M1f S1f.20.8 (2026-11-17), id kept; open, no owner |
+| Q-M1f.13 | F3's cause reaches a disjunction: whose row is it? | [here](#q-m1f13--f3s-cause-reaches-a-disjunction-whose-row-is-it) — moved from M1f's ledger at its close (2026-11-25), id kept; defaulted on the user's instruction: `W39/or-one-key` filed open and deferred to F22, which owns it; binds while the row is open |
+| Q-M1f.51 | Three more tests whose slow half no CI tier runs | [here](#q-m1f51--three-more-tests-whose-slow-half-no-ci-tier-runs) — moved from M1f's ledger at its close (2026-11-25), id kept; taken by tier: every test's slow half runs in a tier (`nightly.yml`) |
+| Q-M1f.53 | How the per-commit gate catches a register row the bundle cannot read | [here](#q-m1f53--how-the-per-commit-gate-catches-a-register-row-the-bundle-cannot-read) — moved from M1f's ledger at its close (2026-11-25), id kept; defaulted (b): the review bundle's smoke builds a command case and reads every register row with no run |
+| Q-M1f.55 | A `container` on a solve's `now` | [here](#q-m1f55--a-container-on-a-solves-now) — moved from M1f's ledger at its close (2026-11-25), id kept; defaulted (a): a register case page runs the container, as `wrong_answers.rs` did |
+| Q-M1f.77 | When is `utils/ci_container.sh` part of done? | [here](#q-m1f77--when-is-utilsci_containersh-part-of-done) — moved from M1f's ledger at its close (2026-11-25), id kept; defaulted (a): a stage that changes a DOT writer, the review bundle or what CI installs is not done until `utils/ci_container.sh` is green on its commit (AGENTS.md) |
+| Q-M1f.78 | Where the runner's missing `fdp` is fixed | [here](#q-m1f78--where-the-runners-missing-fdp-is-fixed) — moved from M1f's ledger at its close (2026-11-25), id kept; defaulted (a): the runner installs `libgvplugin-neato-layout8`, and `run_tests.sh` exits 127 where `fdp` lays out no graph |
+| Q-M1f.79 | Does a refused DOT fail the whole bundle? | [here](#q-m1f79--does-a-refused-dot-fail-the-whole-bundle) — moved from M1f's ledger at its close (2026-11-25), id kept; defaulted (a): a DOT Graphviz refuses fails the whole review bundle, as in the smoke |
+| Q-M1f.102 | What the CI nightly keeps, and what the dev host runs | [here](#q-m1f102--what-the-ci-nightly-keeps-and-what-the-dev-host-runs) — moved from M1f's ledger at its close (2026-11-25), id kept; defaulted (a): the nightly keeps what guards an answer or a contract no per-commit step guards, each step within 5 min on the runner; the dev host runs the rest (AGENTS.md) |
+| Q-M1f.103 | The fuzzer's budget in the CI nightly | [here](#q-m1f103--the-fuzzers-budget-in-the-ci-nightly) — moved from M1f's ledger at its close (2026-11-25), id kept; defaulted (a): the nightly's fuzzer, 20 000 inputs a seed; the dev host's, 1 000 000 |
+| Q-M1f.105 | How the dev host's list is held | [here](#q-m1f105--how-the-dev-hosts-list-is-held) — moved from M1f's ledger at its close (2026-11-25), id kept; defaulted (a): the dev host's list is a superset of the nightly's, every other step named in `DEV_HOST_ONLY` with why |
+| Q-M1f.106 | The whole review bundle on the runner's Graphviz | [here](#q-m1f106--the-whole-review-bundle-on-the-runners-graphviz) — moved from M1f's ledger at its close (2026-11-25), id kept; defaulted (a): the whole review bundle runs on the dev host, here or in the runner's image |
+| Q-M1f.134 | What a register row records as `right` while F24's question is not ruled | [here](#q-m1f134--what-a-register-row-records-as-right-while-f24s-question-is-not-ruled) — moved from M1f's ledger at its close (2026-11-25), id kept; defaulted: a register row records `right` under one named reading of F24's question, each other reading an alternative (F24, F21) |
+| Q-M1f.150 | The counter, and how the measured test is in the gate | [here](#q-m1f150--the-counter-and-how-the-measured-test-is-in-the-gate) — moved from M1f's ledger at its close (2026-11-25), id kept; overruled by the user: the calculator's batch is out of the gate, run by hand (AGENTS.md) |
+| Q-M1f.284 | The worker pool's count, its heavy lane and its memory bound | [here](#q-m1f284--the-worker-pools-count-its-heavy-lane-and-its-memory-bound) — moved from M1f's ledger at its close (2026-11-25), id kept; defaulted (a): the corpus sweeps' pool, 16 workers, a quarter of them the heavy lane (AGENTS.md) |
+| Q-M1f.285 | The nightly's and the dev host's test steps on the gate profile | [here](#q-m1f285--the-nightlys-and-the-dev-hosts-test-steps-on-the-gate-profile) — moved from M1f's ledger at its close (2026-11-25), id kept; defaulted (a): every test step of every tier on the gate profile (AGENTS.md) |
+| Q-M1f.287 | One pass for `corpus_shapes` and `id_order_invariance` | [here](#q-m1f287--one-pass-for-corpus_shapes-and-id_order_invariance) — moved from M1f's ledger at its close (2026-11-25), id kept; ruled (a): one pass for `corpus_shapes` and `id_order_invariance` (AGENTS.md) |
+| Q-M1f.288 | `jobs_invariance` over the programs that search | [here](#q-m1f288--jobs_invariance-over-the-programs-that-search) — moved from M1f's ledger at its close (2026-11-25), id kept; ruled (a): `jobs_invariance` per commit over the programs that search (AGENTS.md) |
+| Q-M1f.289 | `id_order_invariance` over the programs that search | [here](#q-m1f289--id_order_invariance-over-the-programs-that-search) — moved from M1f's ledger at its close (2026-11-25), id kept; ruled (a): `id_order_invariance` permutes per commit the programs that search, the full corpus in the nightly (AGENTS.md) |
+| Q-M1f.290 | `tests/` out of the render and determinism sweeps | [here](#q-m1f290--tests-out-of-the-render-and-determinism-sweeps) — moved from M1f's ledger at its close (2026-11-25), id kept; ruled (a): `tests/` out of the per-commit render and determinism sweeps (AGENTS.md) |
+| Q-M1f.291 | The five sweeps that set modes and routes against one another | [here](#q-m1f291--the-five-sweeps-that-set-modes-and-routes-against-one-another) — moved from M1f's ledger at its close (2026-11-25), id kept; ruled (a): the five sweeps that set modes and routes against one another kept, a `slow` entry in the slow half (AGENTS.md) |
+| Q-M1f.292 | One load a program, shared by the outputs that do not change it | [here](#q-m1f292--one-load-a-program-shared-by-the-outputs-that-do-not-change-it) — moved from M1f's ledger at its close (2026-11-25), id kept; ruled (a): one load a program, cloned for each output (AGENTS.md) |
+| Q-M1f.293 | The nightly's steps against five minutes | [here](#q-m1f293--the-nightlys-steps-against-five-minutes) — moved from M1f's ledger at its close (2026-11-25), id kept; ruled: a nightly step over five minutes on the runner runs in shards, staying in CI (AGENTS.md, `nightly.yml`) |
+| Q-M1f.294 | `answer_dump`'s `heavy_dump` witness, and the feature tests the pool does not reach | [here](#q-m1f294--answer_dumps-heavy_dump-witness-and-the-feature-tests-the-pool-does-not-reach) — moved from M1f's ledger at its close (2026-11-25), id kept; ruled (a) and (a): `answer_dump`'s `heavy_dump` witness in the nightly, and the feature tests the pool does not reach (`nightly.yml`) |
+| Q-M1f.296 | The bit tables, by the digit tables' generator | [here](#q-m1f296--the-bit-tables-by-the-digit-tables-generator) — moved from M1f's ledger at its close (2026-11-25), id kept; defaulted (a): `utils/gen_arith_tables.py` writes the digit and the bit tables, one `--check` |
+| Q-M1f.304 | `route_invariance` past the default budget, past any shard's five minutes | [here](#q-m1f304--route_invariance-past-the-default-budget-past-any-shards-five-minutes) — moved from M1f's ledger at its close (2026-11-25), id kept; ruled (d): no test runs past the default `--region-budget` (AGENTS.md, `nightly.yml`, `run_tests.sh`) |
+| Q-M1f.314 | What the release-voice check reads, and what fails a line | [here](#q-m1f314--what-the-release-voice-check-reads-and-what-fails-a-line) — moved from M1f's ledger at its close (2026-11-25), id kept; ruled as defaulted: what the release-voice check reads, and what fails a line (`utils/check_release_voice.py`) |
+| Q-M1f.496 | The `fdp` provisioning, now that no view suggests `fdp` | [here](#q-m1f496--the-fdp-provisioning-now-that-no-view-suggests-fdp) — moved from M1f's ledger at its close (2026-11-25), id kept; ruled, the default: the `fdp` provisioning left as it is (AGENTS.md's Graphviz paragraph) |
 
 ---
 
@@ -911,6 +940,614 @@ phase, a family of generated inputs, a harness, a fitted exponent and a
 written conclusion, and no milestone has taken one. It is the natural
 neighbour of [F22](followups/f22_exact_core_past_the_cap.md)'s unbounded core
 search (K-82), which is one such pathology found by accident.
+
+---
+
+## The rulings about the process M1f left binding
+
+**Moved here at M1f's close (2026-11-25)**, ids kept and each section as the milestone's ledger had it, when that
+ledger went with the milestone's folder (`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation`). Each is
+a ruling, or a default the user accepted or never revised, about **the process**, not about Ein: the gate and its
+tiers, the nightly and the dev host, the CI image, the review bundle, the wrong-answer register and the scripts under
+`utils/`. A decision about the process stays in `plans/` (the decisions under `docs/decisions/` are about Ein,
+Q-M1f.346), and these still bind: `AGENTS.md`, `.github/workflows/`, `run_tests.sh`, `utils/` or a followup cites each
+or states its rule. The milestone's other questions went to decision files under `docs/decisions/` where they answer a
+question about Ein, and to git where they were spent; none was left open. Each stands until the user revises it. A
+link in a section that pointed into the milestone's folder is its label text, or the decision file that now carries
+the question it named.
+
+### Q-M1f.13 — F3's cause reaches a disjunction: whose row is it?
+
+**Raised** 2026-11-09 by S1f.5.1's T1f.5.1.3, step 1
+(its record), which traced
+P1f.5's F3: `_` in a rule's pattern reported root's core as four facts where a variable used once reported two. The
+cause is a rule application's identity, its rule, activator and register file (`firing::BindingKey`): the saturator
+drops a match whose key it has seen or fired, so a second match that binds every register as the first did is never
+fired redundantly and never recorded as an alternative, whatever facts it matched. A premise's fact is a function of
+the register file except through `Slot::Any`, which bound nothing, and across the disjuncts of one top-level `(or …)`,
+which share their registers by name. With `_` refused since S1f.5.5's swap, the disjunction is left:
+`examples/ein-bugs/wrong-answers/or-one-key.ein`, one rule `(or (p ?y) (q ?y))`, reports four facts where the same
+rule written as two rules reports two. The brief: *a reach is a wrong answer, filed as a register row before anything
+moves, and fixed if it is in scope*.
+
+- **(a) File it `open`, deferred to F22**, as the user put W25 there on 2026-11-05 (Q-M1e2.16 (2) and (5): a
+  derivation the saturator never offers to the store, from an activator a node derived). F22 decides which
+  derivations a core is the smallest over, and how it gets them.
+- **(b) Fix it in S1f.5.1**: the disjunct joins the application's identity (the `seen` and `fired` keys), so the
+  second disjunct's match fires redundantly and records its alternative. It moves the cores of programs that write
+  such a disjunction and the redundant firings `--events` narrates, and it changes the identity every fork inherits.
+- **(c) Not a wrong answer**: the promise is *the smallest frontier over every derivation the program records*, and
+  this derivation is never recorded. The register's W25 reads the promise over every derivation, recorded or not.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The user, 2026-11-09: *"just continue with default decisions
+till the end of the phase"*. (a) is the agent's recommendation: it follows the user's ruling on W25, the same class of
+defect, and keeps S1f.5.1, whose subject is `_`, from moving the saturator's dedup, which every match crosses. In the corpus at `1e751131` one program reaches the cause, `wild-in-head-twin.ein`, whose run
+reports no core, so no printed answer moves today (the census, T1f.5.1.3's record). `W39/or-one-key` is the row.
+Re-opening it means (b), in F22 or before it.
+
+### Q-M1f.51 — Three more tests whose slow half no CI tier runs
+
+**Raised** 2026-11-09 by S1f.5.13's
+T1f.5.13.3, outside its brief. The stage's case was that `answer_round_trip`'s slow half ran in no CI tier, and the
+same is true of others. Eight test targets read `EIN_CORPUS_SLOW` (`grep -rln EIN_CORPUS_SLOW ein.rs/crates`,
+2026-11-09, less the three files that only name it): `corpus_cli`, `lever_invariance` and `corpus_cores` were nightly
+steps before the stage, and `answer_round_trip` is one since. Of the other four, `read_out_examples`' slow branch adds
+the page's blocks at `--region-budget 33554432`, and today's page has none. The other three have a slow half that only
+`./run_tests.sh --slow`, run by hand, reaches:
+
+| target | what `EIN_CORPUS_SLOW` adds | release, without · with the flag |
+|---|---|---:|
+| `ein-cli`'s `route_invariance` | the zebra family and the six `square-*`, at `--region-budget` 2²⁵ | 24.8 s · 857.3 s |
+| `ein-infer`'s `region` | `the_state_route_is_route_1_on_zebra2_minus_15_through_layer_6` | 13.0 s · 37.6 s |
+| `ein-infer`'s `obligation_rung` | `the_theory_finds_what_the_hrule_finds` on `zebra2-minus-15`'s 32 states | 3.4 s · 71.0 s |
+
+Each passes at its slow depth (`build/s1f.5.13/t3_other_slow_halves.log`, 2026-11-09; run beside this stage's gate and
+the second lane's tests, so the times are under load). No wrong answer is hiding there today, but if one of the three
+started failing, nothing would notice.
+
+- **(a) Recorded, not scheduled.** The stage carries P-16's ruling, which is about one test; the three stay under
+  `--slow` until the user places them.
+- **(b) A nightly step each**, beside the round trip's in `deep-corpus`, `route_invariance`'s the largest, and a test
+  in `nightly_steps.rs` that fails on a target reading `EIN_CORPUS_SLOW` with no nightly step, so that the next one
+  cannot slip in the same way.
+
+**Defaulted 2026-11-09 (the user's instruction): (a)**, parked for the phase's close beside
+[Q-M1f.8](../docs/decisions/engine/Q-M1f.8-the-lexer-is-lrlexs-unpatched.md): the stage stays in its scope, and nothing it
+measured fails. Re-opening it means (b).
+
+**Taken by S1f.5.27 on 2026-11-10**, when the user had accepted
+(a) as parked and the close review's finding 8 re-opened the nightly: (b), by tier, under the stage's rule
+([Q-M1f.102](#q-m1f102--what-the-ci-nightly-keeps-and-what-the-dev-host-runs)). `region`'s and `obligation_rung`'s slow
+halves are CI nightly steps, each a second route held to an answer on the `zebra2-minus-15` family that no per-commit
+test reaches; `route_invariance`'s is a dev-host step, over 5 min, its programs' answers digested per commit by
+`corpus_shapes`. The guard (b) asked for is `nightly_steps.rs`' `every_slow_half_runs_on_a_tier`: a target that reads
+`EIN_CORPUS_SLOW` and that neither the nightly nor `--dev-host` runs with it fails, but `read_out_examples`, whose slow
+branch reads only the page's blocks at `--region-budget 33554432`, and the page has none, which the test checks. Each
+slow half's time is in the stage's records.
+
+### Q-M1f.53 — How the per-commit gate catches a register row the bundle cannot read
+
+**Raised** 2026-11-09 by S1f.5.19,
+on the coordinator's brief: *make the per-commit gate catch this class of break*. The gate's `review_bundle.py
+--smoke` builds `W2/forced-2` and one program, so its index read one row shape, a walk's verdict; the whole bundle,
+the nightly's, is the only run that read W40's to W56's.
+
+- **(a) The smoke builds a command case** beside its solve case, `W40/kb-save` or `W41/saturate-import`, so the index
+  reads a refusal and a command's run. It catches today's shapes, and a shape the next stage files waits for the
+  nightly again.
+- **(b) (a), and every register row read with no run**: the index's register cells, each case page's § 1 table, its
+  fixed callout and its checklist, written from `corpus/wrong_answers.toml` alone for all of its rows, each row named
+  where one fails. A row shape the bundle cannot read fails the commit that files it. It runs no engine, so it costs
+  milliseconds.
+
+**Defaulted 2026-11-09 (the user's instruction): (b).** It is (a) and the class besides, at no measurable cost.
+Re-opening it means dropping the register pass from `cmd_smoke`.
+
+### Q-M1f.55 — A `container` on a solve's `now`
+
+**Raised** 2026-11-09 by S1f.5.19.
+`W43/einb-dump-answer`'s `now` is a solve with `container = true` (schema `/16`'s field, on a solve since `/19`):
+`wrong_answers.rs` saves the witness with `ein kb save` and runs `ein solve` on the `.einb`. The case page ran it on
+the `.ein`, and said *this build re-ran it*.
+
+- **(a) Run the container**, as `wrong_answers.rs` does: the case page saves the witness first, shows that step, and
+  every invocation of the run reads the `.einb`, the program page showing the witness's source as the program the
+  container stores.
+- **(b) Run the `.ein`**, and say so on the page.
+
+**Defaulted 2026-11-09 (the user's instruction): (a).** The page then shows the run the register holds, and every
+command the run drives takes a container since S1f.5.5's T13 and S1f.5.12's W43.
+
+### Q-M1f.77 — When is `utils/ci_container.sh` part of done?
+
+**Raised** 2026-11-10 by S1f.5.29. Twice a Graphviz refusal reached the per-commit CI behind
+a green `./run_tests.sh` here: S1f.5.17's, the runner's x86-64-v3 `libpathplan` failing to route 20 views, and
+S1f.5.29's, the runner's `fdp` with no layout plugin behind it, which refused every KB view the review bundle's smoke
+draws, red on GitHub from `00c4ed34` on. In both, `utils/ci_container.sh`'s image, built like the runner, showed what
+the runner showed. It runs HEAD as committed, so it is a check on a commit, not on a working tree.
+
+- **(a) A stage that changes a DOT writer, the review bundle or what CI installs is not done until
+  `utils/ci_container.sh` is green on its commit**, the gate's run in the image beside the local one, and the stage's
+  commit or record says both. Cost: one more gate run per such stage, in the image, which needs an x86-64-v3 CPU and
+  `docker`.
+- **(b) Install the baseline Graphviz build in CI**, `runs-on` pinned or the amd64 variant forced, so the runner meets
+  the build the local gate meets. It answers S1f.5.17's case only: S1f.5.29's plugin is missing from both 26.04
+  builds, and the local Graphviz is neither.
+- **(c) Run the smoke's drawings in the container from `run_tests.sh` itself**, so every local gate draws them on the
+  runner's build. Every developer's gate then needs `docker`, a built image and the CPU, which the gate needs nowhere
+  else.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** It is the stage file's default: it costs only the stages that
+can break the drawing, and it would have caught both cases. Re-opening it means (b) or (c).
+
+### Q-M1f.78 — Where the runner's missing `fdp` is fixed
+
+**Raised** 2026-11-10 by S1f.5.29's T1. The runner's Graphviz 14.1.2 refuses every KB view the review bundle
+draws, 612 of the whole bundle's 3 885 laid-out DOTs, with *There is no layout engine support for "fdp"*: every KB
+view suggests `fdp` (`kb_dot::to_dot`), and Ubuntu 26.04's `graphviz` links `fdp` to `dot` without
+`libgvplugin-neato-layout8`, the plugin behind it, which it neither depends on nor recommends. The stage file had
+presumed S1f.5.17's cause and asked for a view-side fix; no DOT is at fault. Each fix below draws all 3 885 on the
+runner's build (the stage's T1 record).
+
+- **(a) The runner installs the plugin**: `libgvplugin-neato-layout8` beside `graphviz` on the apt line of
+  `per-commit.yml`, `nightly.yml` and `release.yml` (its two, for parity), in `utils/ci_container.sh`'s image (only
+  where the archive has the package: 24.04's `libgvc6` carries the plugin), and in the provisioning lines
+  `gate_steps.rs` and `nightly_steps.rs` name; `run_tests.sh` exits 127 where `fdp` lays out no graph, as it does
+  where there is no `dot`. No view, golden, answer or drawing moves, and the CI lays out what the user's bundle lays
+  out. Cost: a 26.04 package name on the apt line, which a later image renames loudly (the install fails).
+- **(b) The bundle falls back to `dot`** where the suggested engine does not load (one probe a run), and says so on
+  the page. No golden moves, but on the runner the smoke checks a drawing the user's bundle does not make.
+- **(c) The KB view stops suggesting `fdp`** (`kb_dot.rs`), so every KB view is laid out by `dot` everywhere. It moves
+  the four DOT goldens that carry the line (`kb_render_to_dot.dot`, `slice_render_solution.dot`,
+  `slice_render_state.dot`, `kb_zebra_unified.dot`), at least the 2 346 `dot[kb…]` lines of `corpus_shapes.md5`, the
+  worked fragment in `04_dot_rendering.md`, and every KB drawing the user reviews, from force-directed to ranked.
+
+**Defaulted 2026-11-10 (the coordinator's default): (a).** It fixes the cause, a package, and moves nothing. No user
+ruling is reversed: the user's ruling on S1f.5.17 was not to report the Graphviz bug upstream, and *view-side* was
+the stage file's presumption, not a ruling. Re-opening it means (b) or (c).
+
+### Q-M1f.79 — Does a refused DOT fail the whole bundle?
+
+**Raised** 2026-11-10 by S1f.5.29's T1. Since `00c4ed34` the smoke fails on a DOT with no SVG beside it, but
+the whole bundle, the nightly's step, wrote a refused drawing on its page as *Graphviz refused this graph* and exited
+0, a case failing only on an exception. So the GitHub nightly's bundle step drew no KB view from 2026-11-06, when the
+runner moved to 26.04, and passed (the nightly was red then on later steps, S1f.5.17's mutants and S1f.5.19's row
+shape), as S1f.5.17's in-container nightly at `76ede241` (*137 cases, 0 failed*) did in the same
+image. Five DOTs in the whole bundle are kept undrawn on purpose: lattices past `DAG_NODES_DRAWN` (1 000 nodes),
+whose page says so.
+
+- **(a) Yes, as in the smoke**: `cmd_bundle` exits 1 on a DOT Graphviz refused, printing its path and what Graphviz
+  said (kept beside the DOT as `.refused.txt`), over the cases it built. A DOT kept undrawn by design says so beside it
+  (`.undrawn.txt`, `review.util.keep_undrawn`) and is not a refusal, told apart by what the bundle wrote, not by its
+  size or path. The summary line counts the refused DOTs.
+- **(b) No**: the nightly's bundle stays a review artefact, a refusal a line on its page, and only the smoke gates.
+  A drawing the user reviews can then go missing with the nightly green, as every KB view did.
+
+**Defaulted 2026-11-10 (the coordinator's default): (a).** A review artefact missing its drawings is what the user's
+rule against incomplete review artefacts forbids, and the nightly is the only run that builds the whole bundle.
+Re-opening it means (b).
+
+### Q-M1f.102 — What the CI nightly keeps, and what the dev host runs
+
+**Raised** 2026-11-10 by S1f.5.27, on the user's ruling on the close
+review's finding 8: *"reduce nightly job, remove long running tests, we will eventually run them on dev host, retain
+critical tests in CI"*. The ruling names two kinds of step and leaves their line to be drawn. The nightly took 81 min
+54 s here on 2026-11-09, two fuzz seeds 51 min of it, and the latest run on GitHub 74 min 44 s, its fuzz jobs 75 and
+59 min, one a seed beside the others (run 42802597417, 2026-11-10).
+
+- **(a) The stage file's rule.** *Critical*: a step that guards an answer or a contract no per-commit step guards (the
+  slow entries' answers, the config principle on the slow cells, the cores and dumps of the entries the per-commit tier
+  leaves out, the suite's sensitivity). *Long-running*: over 5 min on the runner, or measuring rather than checking. A
+  critical step stays in CI at a budget that fits and runs whole on the dev host; the rest run on the dev host only.
+  `./run_tests.sh --dev-host` runs every nightly step at full budget and the steps that left, and nothing schedules it.
+- **(b) A wall-clock budget for the nightly as a whole**, filled by priority. It needs a priority order the ruling does
+  not give, and a step's place would move with the runner's speed, which varies up to 2× between runs (the stage's T1).
+- **(c) Keep every step in CI, spread over more parallel jobs.** It keeps the long-running tests in CI, which the
+  ruling removes.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** T1 re-took every step here and read three runs on the runner, and
+confirmed the stage file's classification row by row, but the fuzzer's budget
+([Q-M1f.103](#q-m1f103--the-fuzzers-budget-in-the-ci-nightly)): kept, the slow corpus entries' cells, `answer_dump`,
+the round trip's, the levers' and the cores' slow halves, the mutation census and the bench smoke; added, `region`'s and
+`obligation_rung`'s slow halves
+([Q-M1f.51](#q-m1f51--three-more-tests-whose-slow-half-no-ci-tier-runs)); to the dev host, the id space permuted eight
+ways, `stdlib_census.py --check`, the whole review bundle with its link check, and `route_invariance`'s slow half.
+Re-opening it means (b), or a line other than 5 min.
+
+### Q-M1f.103 — The fuzzer's budget in the CI nightly
+
+**Raised** 2026-11-10 by S1f.5.27's T1. The stage file proposed 100 000
+inputs a seed, *about 2.5 min*, from this machine's rate, a million in 1 532.7 s (S1f.5.19's T3 record). The runner's
+rate is what the rule reads: a million took 4 410 s and 3 494 s (run 42802597417, 2026-11-10, six properties on four
+vCPUs; seven since S1f.5.21), and 2 572 s and 3 020 s the day before (run 42605782048). Here, on four P-core threads,
+the runner's count, 20 000 take 106.3 s and 100.1 s, and the properties that parse every input ran 1.13× and 1.34×
+slower an input on the runner than here, so on the runner 20 000 come to about 2.7 and 3.3 min with the step's build
+of about 50 s, and 100 000 to about 10 and 13 min.
+
+- **(a) 20 000 a seed** in the nightly, ten times the per-commit tier's 2 000 and a fiftieth of the dev host's million.
+- **(b) 100 000 a seed**, the stage file's number, past the rule's 5 min on the runner.
+- **(c) Make an input cheaper**, so a larger budget fits: S1f.5.28's item 10 and
+  [Q-M1f.8](../docs/decisions/engine/Q-M1f.8-the-lexer-is-lrlexs-unpatched.md), not this stage's.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** It is the rule's own budget, *a budget that fits*, read on the
+runner's rate rather than this machine's. `nightly_steps.rs`' `the_fuzzer_runs_at_each_tiers_budget` holds it between
+the per-commit 2 000 and the dev host's million. The first nightly after the push measures it on the runner.
+Re-opening it means (b), or (c) first and a larger budget after.
+
+### Q-M1f.105 — How the dev host's list is held
+
+**Raised** 2026-11-10 by S1f.5.27's T2. The stage asks that a test pin the
+dev-host list as `nightly_steps.rs` pins the nightly's, and that a step leaving the nightly appear in it.
+
+- **(a) A third copy, held to the nightly's.** `run_tests.sh --dev-host` lists its steps under `dev_host_step "…"`
+  banners; `nightly_steps.rs` holds every nightly step to be one of them, in order, at the dev host's fuzz budget, every
+  other one to be named in `DEV_HOST_ONLY` with why, and the list to a floor of 17, so a step taken out of the nightly
+  and left there fails until named, and one taken out of all three copies fails the floor. It pins the two fuzz
+  budgets, which the diff reads past, the checked `TMPDIR`, and every target that reads `EIN_CORPUS_SLOW` to a step on
+  one of the two lists (Q-M1f.51's (b)).
+- **(b) One copy**, `--dev-host` calling `--nightly`'s steps with a budget variable: the nightly's steps are then not
+  the workflow's text, which is what the diff compares, and the moved steps sit outside the shared block.
+- **(c) A file of its own**, `dev_host_steps.rs`, with the workflow parse moved to `steps/mod.rs`: the same checks, and
+  a restructure of `nightly_steps.rs` for no new property.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** Each step is read from the file that runs it, as `gate_steps.rs`
+and `nightly_steps.rs` already do, and every way the copies can drift fails a test (the stage's T2 record checks each
+by mutation). Re-opening it means (b) or (c).
+
+### Q-M1f.106 — The whole review bundle on the runner's Graphviz
+
+**Raised** 2026-11-10 by S1f.5.27's T1. Since
+S1f.5.29 a DOT Graphviz refuses fails the
+whole bundle, and the nightly's bundle step was the one CI run that drew all its DOTs on the runner's Graphviz with the
+engine each suggests. The rule moves the bundle to the dev host: 372 s on the latest run, 740 s and 752 s on the two
+before, and what it guards is the review's pages, not an answer.
+
+- **(a) The dev host draws it**, here or in the runner's image (`utils/ci_container.sh --dev-host`). Per commit the
+  runner still lays every view `ein-render` writes out with `dot` (`dot_wellformed`) and the smoke's 31 DOTs with the
+  engine each suggests, `fdp`'s KB views and the trace blocks among them, and
+  [Q-M1f.77](#q-m1f77--when-is-utilsci_containersh-part-of-done) is unchanged.
+- **(b) Widen Q-M1f.77**: a stage that changes a DOT writer or the bundle also builds the whole bundle in the runner's
+  image, `utils/ci_container.sh --dev-host` or the bundle alone in its `--shell`.
+- **(c) Keep the bundle in the nightly**, past the rule's 5 min.
+
+**Defaulted 2026-11-10 (the stage's default): (a).** The 612 refusals S1f.5.29 found were every `fdp` view, which the
+smoke draws, and no view kind the bundle draws is outside `dot_wellformed`'s and the smoke's. Re-opening it means (b).
+
+### Q-M1f.134 — What a register row records as `right` while F24's question is not ruled
+
+**Raised** 2026-11-11 by S1f.7.9's T2. The stage files F24's three table rows `open`, owned by F24, and the right
+answer of each depends on F24's question, (a) refused, (b) checked, (c) as given and marked, which is the user's
+and is not ruled.
+
+- **(a) One named reading, the others as alternatives**, the review `deferred`: how W8's rows record Q-M1e2.2 for
+  F21 (`[case.right]` with a `reading`, `[[case.right.alternative]]` per other reading, class *contested*).
+- **(b) No `right`**: the schema requires one.
+
+**Defaulted 2026-11-11: (a).** `W87/written-rule-no-such-rule` states (b)'s refusal, which was S1f.7.9's own first
+direction, with (a) and (c) as alternatives. The two core rows state (c)'s core, `(paid Ann)`, with (a)'s and (b)'s
+refusals as alternatives: a row whose `right` is a refusal may not hold today's core beside it while a live row can
+show it (`ein-corpus`'s `beside_a_refusal_now_records_what_today_reports`), and the core is what F24's table says
+is wrong. The choice of reading rules nothing: F24's question stays the user's.
+
+### Q-M1f.150 — The counter, and how the measured test is in the gate
+
+**Raised** 2026-11-11 by S1f.6.3's T4, which asks for *a deterministic count of the matcher's work per request (a
+counter of `ein_core::counters`, which the stage picks and names, not the wall clock)*. The counters are behind
+the `counters` feature and compiled out of every build the gate made: an increment on the engine's hottest
+path.
+
+- **(a) `candidates`, in a gate step of its own:** `cargo test -p ein-infer --features counters --test
+  arith_batch`, in `run_tests.sh` and `per-commit.yml`. `ein-infer` is built a second time with the feature,
+  for one test; 15 s the first time here.
+- **(b) The static check alone,** and the measured test run by hand: the check reads the module's text, and a
+  cost that is not a second premise is not in the text.
+- **(c) The feature on in the workspace's test build,** by a dev-dependency: every test binary, the `ein` the
+  corpus sweep times among them, would count.
+
+**Defaulted 2026-11-11: (a).** `candidates` is the facts the matcher offered to a premise and unified against,
+which is what a scan inflates and nothing else does: 181.38 a request at 250, 1 000 and 4 000 requests. Without
+the feature the same file holds the firings a request, in `cargo test --workspace`.
+
+**Overruled 2026-11-12, and built** (S1f.6.21). The user,
+on reply 46, option (b): *"(b) - we don't need this proportional gate"*. The step left `run_tests.sh` and
+`per-commit.yml`; the test, the feature and the bounds stay, run by hand, in no tier.
+
+### Q-M1f.284 — The worker pool's count, its heavy lane and its memory bound
+
+**Raised** 2026-11-15 by S1f.6.39's T4. The stage file set the
+count, `EIN_TEST_JOBS`, at 16 by default and at most the machine's threads, and left the lane and the bound to T1's
+measurement: no corpus program's process went past 529 MB through the CLI or 272 MB in-process, and no pooled binary
+past 1.80 GiB at sixteen workers (the stage's record).
+
+- **(a) 16, a quarter of them for the heavy lane, the bound 24 GB**: the P-cores' sixteen threads' worth here, the
+  runner's four by the cap; a program on `ein_corpus::pool::HEAVY` (T1's 256 MB or more: `send_more_money`,
+  `features/04_open`) runs at most four at once.
+- **(b) Every thread, 32**: the E-cores beside the P-cores, each E-core 1.7 times slower a thread (§ Today).
+- **(c) The P-cores alone, by `taskset`**: no unit on an E-core.
+
+**Defaulted 2026-11-15: (a), the user's to revise.**
+
+### Q-M1f.285 — The nightly's and the dev host's test steps on the gate profile
+
+**Raised** 2026-11-15 by S1f.6.39's T5. The nightly ran its test
+steps `--release` (release codegen, no debug checks), the per-commit tier the dev profile (`opt-level = 1`, the checks
+on); the gate profile is release codegen with the checks.
+
+- **(a) Every test step of every tier on the gate profile**: the debug assertions and the overflow checks run on the
+  slow cells too, which no tier checked them on; `corpus_cli`'s cost band reads release codegen as before; the
+  mutation census runs the gate profile's `ein`, which the nightly's steps built.
+- **(b) The per-commit tier on the gate profile, the nightly and the dev host `--release`**, as they were.
+
+**Defaulted 2026-11-15: (a), the user's to revise.** `release.yml`, the release tier, is unchanged: it tests the
+binary that ships.
+
+### Q-M1f.287 — One pass for `corpus_shapes` and `id_order_invariance`
+
+**Raised** 2026-11-15 by S1f.6.39's
+T6, from E-72. `id_order_invariance`'s plain run of every (file, output) is the run
+`corpus_shapes` digests: the same bytes, computed twice a commit, 30.6 s of `corpus_shapes` here (`b8c931f3`).
+
+- **(a) Merge**: `id_order_invariance` digests its plain run against the golden, its floors and `EIN_BLESS` with it,
+  and `corpus_shapes`' own pass goes; the re-bless command and the pages that name `corpus_shapes` follow. Leaves the
+  two at about 65 s here, where they are 96 s.
+- **(b) Keep both.**
+
+**Ruled 2026-11-15: (a)** (the user, 2026-11-15: *"T6 rulings: all as you recommended"*). Built by S1f.6.39's T7: `id_order_invariance`
+digests its plain run against `corpus_shapes.md5`, its floors, the checkout's stdlib and `EIN_BLESS` with it, and
+`corpus_shapes.rs` is gone; every check it made is made by the merged pass. Probe (T6, before the ruling): `id-leak`
+moved 273 renderings of the golden and 483 pairs of the permuted sweep; a merged test asserts both.
+
+### Q-M1f.288 — `jobs_invariance` over the programs that search
+
+**Raised** 2026-11-15 by S1f.6.39's T6. A job count reaches only a region route's fan-out, which has more than one node
+to fan out only in a program that searches: the 188 corpus programs whose describe saturates more than root
+(`probes/sets.py`).
+
+- **(a) The 188**, the list computed by the test from the program (a describe that saturates past root) rather than
+  banked. `jobs-leak` moved 983 cells over them, of 987 over all (`t6.tsv.sets`). Leaves 7.5 s here, where it is
+  20.2 s.
+- **(b) Every program**, as now.
+
+**Ruled 2026-11-15: (a)** (the user, 2026-11-15: *"T6 rulings: all as you recommended"*). Built by S1f.6.39's T7, with Q-M1f.290 (a): per commit
+the programs outside `tests/` that search, `corpus_ops::searches` (describe at the sweep's budget saturates more than
+root), asked of each program; under `EIN_CORPUS_SLOW=1` every corpus program, the nightly's. Five other binaries catch
+the same leak on fixed programs at four and eight jobs (`explore`, `region`, `register_region`, `region_modes`,
+`line_modes_past_the_limit`).
+
+### Q-M1f.289 — `id_order_invariance` over the programs that search
+
+**Raised** 2026-11-15 by S1f.6.39's T6.
+
+- **(a) The 188 programs that search**: `id-leak` moved 144 pairs over them (483 over all); the 33 frontend and shape
+  outputs of the 629 others are no longer permuted, the load's shape and refusals still being `kb_semantics`' on every
+  file. Leaves 14.6 s here, where it is 65.1 s.
+- **(b) Every program, the region outputs over the 188 only.**
+- **(c) Every program**, as now.
+
+**Ruled 2026-11-15: (a), the full-corpus sweep moved to the nightly** (the user, 2026-11-15: *"T6 rulings: all as you recommended"*). Built by S1f.6.39's T7, with
+Q-M1f.290 (a): per commit the permutation runs over the programs outside `tests/` that search, the golden over every
+program outside `tests/`; the nightly runs both over every corpus program, in shards (Q-M1f.293).
+
+### Q-M1f.290 — `tests/` out of the render and determinism sweeps
+
+**Raised** 2026-11-15 by S1f.6.39's T6, § Today's candidate. The 220 programs under `tests/` are each written for one
+stdlib rule's claim, and are 48 % of `corpus_shapes`' work and 52 % of `id_order_invariance`'s; their claims are
+checked by `ein test` (`corpus_cli`'s and `test_cli`'s cells), the coverage census and the mutants.
+
+- **(a) `corpus_shapes`, `id_order_invariance`, `jobs_invariance` and `dot_wellformed` over the 597 programs outside
+  `tests/`**, the golden and `dot_wellformed`'s skip list re-banked for them. Every probe each caught over the corpus
+  it still caught (`id-leak` 269 pairs, `jobs-leak` 942 cells, `neq-nested` and `states-maximal` renderings moved
+  outside `tests/`); `neq-nested` is caught on `tests/` itself by `corpus_cli`, `test_cli` and `arith_search_free`.
+  Leaves the four at 66.5 s here, where they are 129.5 s.
+- **(b) With Q-M1f.288 and .289**: the determinism sweeps over the 179 programs that search outside `tests/`.
+- **(c) As now.**
+
+**Ruled 2026-11-15: (a), the same way** (the user, 2026-11-15: *"T6 rulings: all as you recommended"*): `tests/` leaves `corpus_shapes`' golden (now
+`id_order_invariance`'s), the two determinism sweeps and `dot_wellformed` per commit; the nightly runs them over the
+full corpus. Built by S1f.6.39's T7: the golden is one file, held per commit over the lines of the programs a run reads and
+in the nightly over all of them, so nothing was re-banked; `dot_wellformed`'s skip list per commit is its entries
+outside `tests/`. A corpus program with no golden line fails per commit.
+
+### Q-M1f.291 — The five sweeps that set modes and routes against one another
+
+**Raised** 2026-11-15 by S1f.6.39's T6, § Today's candidate: `explore`, `lever_invariance`, `route_invariance`,
+`region_modes`, `claim_routes`. The probes: a state-route bug (`states-maximal`) was caught by `explore`,
+`route_invariance`, `region_modes` and `claim_routes`, and by `region`'s, `register_region`'s and the golden's own
+checks; a route-1 bug (`route1-maximal`) only by `region::route_1_is_the_oracle…` (within the oracle's limit) and by
+`route_invariance`, on programs past the limit where nothing else holds route 1; `lever_invariance` caught none of the
+six, its claim, that no config moves an answer, being held by no other sweep.
+
+- **(a) Keep the five**; `route_invariance` per commit without the `slow` entries (the zebra family and
+  `send_more_money`, 127.8 of its 165.0 s at one worker, `units-gate-j1.tsv`), which its slow half on the dev host
+  runs at both budgets. Leaves it at about 8 s here, where it is 26.8 s; the zebra family's route equality leaves CI
+  unless the nightly takes the slow half (Q-M1f.293).
+- **(b) `route_invariance` over the programs past the oracle's limit only**, the rest being `region`'s two oracle
+  sweeps' claim.
+- **(c) As now.**
+
+**Ruled 2026-11-15: (a)** (the user, 2026-11-15: *"T6 rulings: all as you recommended"*): keep the five; `route_invariance`'s `slow` entries go to its slow half,
+the nightly's. Built by S1f.6.39's T7 (where its 2²⁵ half runs: the record). No probe here argues for removing
+`explore`, `region_modes` or `claim_routes`: each was one of four to catch the state-route bug, so the overlap is real,
+but no single probe shows which one a fault would reach alone.
+
+### Q-M1f.292 — One load a program, shared by the outputs that do not change it
+
+**Raised** 2026-11-15 by S1f.6.39's T6, § Today's candidate. Of a `corpus_shapes` pass at the gate profile, 6.2 s is
+`ir[resolve]` alone, reading and parsing the program's stdlib modules, and about 30 of the 41 outputs resolve again:
+about 61 % of each of the three A sweeps' work.
+
+- **(a) Load once a program and clone the loaded state for each output**: `Ast`, `Terms` and `Kb` would need
+  `Clone`, which `Terms` and `Ast` do not derive — a change under `ein.rs/crates/*/src` beyond a test helper, so the
+  user's to allow. Proven by invariance: `corpus_shapes`' golden reproduced byte for byte, and `id_order_invariance`'s
+  permuted runs from the clone. Would leave the A sweeps at roughly half their 116 s here.
+- **(b) Cache the resolved stdlib modules in the test helper** without a clone: not possible without the resolver's
+  cooperation, which is the engine's.
+- **(c) As now.**
+
+**Ruled 2026-11-15: (a)** (the user, 2026-11-15: *"T6 rulings: all as you recommended"*): one load a program, cloned for each output, `Clone` on `Ast` and `Terms` (and
+`Kb`), an engine source change under which no output may move. Built by S1f.6.39's T7 (`corpus_ops::Loads`), and
+verified by invariance: `corpus_shapes.md5` reproduced byte for byte from the copies, every other golden unchanged, and
+the gate green (the run at one worker stopped after 99 binaries, every one `ok`, as redundant: T4 holds the count).
+
+### Q-M1f.293 — The nightly's steps against five minutes
+
+**Raised** 2026-11-15 by S1f.6.39's
+T6, against [Q-M1f.102](#q-m1f102--what-the-ci-nightly-keeps-and-what-the-dev-host-runs)'s rule that a nightly step fits
+in five minutes on the runner. On four P-core threads with four workers, the runner's count (`taskset -c 0-3 env
+EIN_TEST_JOBS=4 ./run_tests.sh --nightly`, 2026-11-15): the mutation census 1 382.9 s, `corpus_cores`' slow entries
+376.3 s, `answer_round_trip`'s slow and `heavy_dump` entries 353.0 s, and `region`'s slow half 271.7 s here, over five
+minutes at the runner's 1.13 to 1.34 times (Q-M1f.103). The deep-corpus job is 47.7 min at that count.
+
+- **(a) The four to the dev host**, each named in `DEV_HOST_ONLY` with why; the nightly keeps the slow cells, the
+  levers', the imports' and `obligation_rung`'s slow halves, the fuzzer and the bench, about 8 min; the census and
+  the four slow halves run where nothing schedules them.
+- **(b) The census by shards**: a seventh of the mutants a night, the shard named by the weekday, `--check` on the
+  shard's banked survivors, the week covering all 572; about 3.3 min a night. The three slow halves split by program
+  the same way, or (a) for them.
+- **(c) The rule relaxed for the census** (it guards the suite's sensitivity, which no per-commit step guards), the
+  three slow halves to (a) or (b).
+- **(d) As now**, past the rule.
+
+**Ruled 2026-11-15: split into parallel nightly jobs (shards), staying in CI** (the user, 2026-11-15: *"T6 rulings: all as you recommended"*). The nightly steps over five
+minutes at the runner's four threads (the mutation census, `corpus_cores`' and `answer_round_trip`'s slow halves,
+`region`'s slow half) and the full sweeps Q-M1f.289 and .290 add are sharded into parallel nightly jobs, each shard
+at most five minutes measured as T6 did (`taskset -c 0-3`, `EIN_TEST_JOBS=4`, on AC). Built by S1f.6.39's T7:
+`EIN_TEST_SHARD=k/n`, `ein_corpus::shard` and `stdlib_mutants.py --shard`; the shards and their times are the record's.
+
+### Q-M1f.294 — `answer_dump`'s `heavy_dump` witness, and the feature tests the pool does not reach
+
+**Raised** 2026-11-15 by S1f.6.39's T6. Two per-commit costs no sweep's program set explains:
+
+- `answer_dump` dumps W8's witness `square-unique/corner-house.ein`, a `heavy_dump` entry, 33.2 s of its 33.8 s here;
+  `answer_round_trip` left the `heavy_dump` entries to the nightly on the user's ruling of 2026-11-08 (P-16). **(a)**
+  the same for `answer_dump` (leaves about 5 s); **(b)** as now.
+- `int_theory`, `arith_batch`, `read_out_reference`, `read_out_examples` and `arith_theory`, feature tests, are
+  65.5, 36.0, 23.3, 18.7 and 16.4 s here, 160 s of the gate's 887: **(a)** their loops on the pool (no check moves);
+  **(b)** their long halves to the nightly; **(c)** as now.
+
+**Ruled 2026-11-15: (a) and (a)** (the user, 2026-11-15: *"T6 rulings: all as you recommended"*): the `heavy_dump` witness to the nightly, and the five feature tests
+on the pool where their loops allow it. Built by S1f.6.39's T7: `answer_dump` per commit leaves the `heavy_dump`
+entries' runs, `EIN_CORPUS_SLOW=1` reads them; `int_theory`'s, `arith_theory`'s and `arith_batch`'s loops over
+operations, `read_out_reference`'s example runs and `read_out_examples`' blocks are units of the pool. Neither is a
+corpus sweep of § Today's 31.
+
+### Q-M1f.296 — The bit tables, by the digit tables' generator
+
+**Raised** 2026-11-15 by S1f.6.16's build (T1f.6.16.6, *"generator in `utils/`"*).
+
+- **(a) `utils/gen_arith_tables.py` writes both** `stdlib/math/digits.ein` and `stdlib/math/bits.ein`, one
+  `--check` over the two, held in the gate by `ein-ir/tests/digit_tables.rs`, which holds every row of both to Rust's
+  integers; `digits.ein` byte for byte as before.
+- **(b) A generator of its own**, `utils/gen_bits.py`, and a test of its own.
+
+**Defaulted 2026-11-15: (a), the user's to revise.** The tables are one family at two bases, computed by one function
+each in the script.
+
+### Q-M1f.304 — `route_invariance` past the default budget, past any shard's five minutes
+
+**Raised** 2026-11-15 by S1f.6.39's
+T7, applying [Q-M1f.291](#q-m1f291--the-five-sweeps-that-set-modes-and-routes-against-one-another) (a) and
+[.293](#q-m1f293--the-nightlys-steps-against-five-minutes): `route_invariance`'s `slow` entries go to its slow half,
+the nightly's, each nightly step in shards of at most five minutes on the runner. Its slow half was two things: the
+`slow` entries at the default budget, and every program route 1 finishes only past it (the zebra family, the six
+`square-*` cubes) at `--region-budget` 2²⁵. Measured as T6 measured (`taskset -c 0-3`, `EIN_TEST_JOBS=4`, AC,
+2026-11-15, `build/s1f.6.39/t7/slow-4.log`), the slow half ran 29 min unfinished, three workers busy throughout its
+last 20, and was stopped there; and route 1 alone took 495 s at `-j 16` to reach a 2²² ceiling on `zebra2-minus-15`
+(`alive_set_reach.md` § 2.3, 2026-11-03), where the
+test asks 2²⁵ of one unit, one program. No sharding by program fits it.
+
+- **(a) The default-budget half in the nightly, the 2²⁵ half on the dev host**: the test split in two,
+  `the_state_route_and_route_1_print_one_read_out` (per commit the programs but the `slow` entries, under
+  `EIN_CORPUS_SLOW=1` every one), which the nightly runs by name, and
+  `route_1_and_the_state_route_agree_past_the_default_budget`, which `--dev-host` runs with the target whole
+  (`DEV_HOST_ONLY`), as the whole slow half ran there since S1f.5.27.
+- **(b) The 2²⁵ half in the nightly past the rule**, a step of its own over five minutes.
+- **(c) A larger budget that fits**, between 2²⁰ and 2²⁵: the zebra family's route equality at a budget route 1
+  does not exhaust is no comparison, so it holds of fewer programs.
+- **(d) No test past the default budget.** Describe on a monotone program always takes the state route, and no
+  option routes one to route 1, so the 2²⁵ half ran an internal route, `explore::describe_by`, at 32 times the
+  default `--region-budget` of 2²⁰ the user ruled on 2026-11-03 after 2²⁴ ran the gate out of memory, on inputs no
+  command sends it. The 2²⁵ test goes. In the default-budget test, a program the state route finishes and route 1
+  does not is held by the cut, the state route's saturations and facts no more than route 1 spent before it
+  stopped, and its read-outs are not compared; each is named on stderr. One neither route finishes is skipped, as
+  before.
+
+**Defaulted 2026-11-15: (a), the user's to revise.**
+
+**Ruled 2026-11-15: (d).** The user: *"(d)"*, after the main session set out the default budget's ruling and what
+the 2²⁵ half ran. Built at P1f.6's close: `route_1_and_the_state_route_agree_past_the_default_budget` deleted, and
+with it the per-budget fold; `the_state_route_and_route_1_print_one_read_out` holds the cut's premise and names the
+programs it holds by the cut and those it skips, and reads `EIN_CORPUS_SLOW` itself, so the nightly's step that
+names it runs the target's whole slow half. Under `EIN_CORPUS_SLOW=1` (2026-11-15, the gate profile): 582 programs
+compared; 5 held by the cut, `examples/zebra.ein`, `zebra2.ein`, `zebra2-obligations.ein` and the register's
+`count-past-2-64.ein` and `count-past-2-128.ein`; 9 skipped, neither route finishing, the six `square-bwd` and
+`square-fwd` programs, `send_more_money.ein` and `zebra2-minus-15.ein` with its `-obligations` twin. The dev
+host's step and its `DEV_HOST_ONLY` entry are gone (`nightly_steps.rs`, `run_tests.sh`), and the pages that named
+the half (`corpus/README.md`'s table, the workflow's comments).
+
+### Q-M1f.314 — What the release-voice check reads, and what fails a line
+
+**Raised** 2026-11-16 by S1f.20.1's
+T1f.20.1.3. **Defaulted, to be shown at S1f.20.2's
+review**, with the sweep's defaults. The stage file names the check's scope (`docs/ein/`, the shipped crates' doc
+comments, `.ein` header comments, `corpus.toml`, `AGENTS.md` but § Where the work is, `README.md`) and what fails
+(a milestone, phase, stage or task id, a path into `plans/`, a date that dates a development event; a decision id
+passes). Seven readings it left open, each taken as below and built that way (`utils/check_release_voice.py`); the
+baseline, 6 743 lines in 1 041 files, is of these readings.
+
+1. **A shipped crate's doc comments** are every `///` and `//!` line of a `.rs` file under the six shipped crates,
+   their `tests/`, `examples/` and `benches/` included: 3 271 baseline lines. *Alternative:* `src/` only. Plain `//`
+   comments are not read; S1f.20.9 widens the check to code,
+   comments and tests.
+2. **A `.ein` file's comments** are all of them, not only the leading block: 2 501 baseline lines. One reader serves
+   both checks (`doc_audit.py`'s, the text after a `;` outside a string), and a body comment speaks the same voice
+   as the header. *Alternative:* the header block only.
+3. **A date** is any ISO date, `YYYY-MM-DD`, in scope: no rule tells a development event from another date, and
+   the escape, `release-voice-ok: <reason>`, covers the exception. *Alternative:* a date after *since*, *on*,
+   *ruled*, *measured* and the like.
+4. **A path into `plans/`** is `plans/` followed by a name, bare or relative; the folder named alone (*the stage
+   records under `plans/`*) passes. *Alternative:* the folder's name fails too.
+5. **What it does not read yet**: followup ids (`F21`), finding and register ids (`E-33`, `W93`, `K-82`), the M1e
+   review's ids (`CD-H1`, `TE-L3`), and the strings of a `.ein` file (`:why`, `:source`, `:goal-text`), of which at
+   least `stdlib/elim.ein`'s `:why "M1-blocking stdlib"` and the dates in `examples/lattice/synth/*.ein`'s carry
+   the development. S1f.20.9 counts `E-n` and `D-n` as plan ids, so it widens the patterns with the scope.
+6. **A count that falls is reported, not failed**: the check exits 0 and names the file to re-bank with `--bless`,
+   as the stage file states the failure (*"where a count rises or a new file appears"*). *Alternative:* fail both
+   ways, the baseline held exact as `tests/mutation_survivors.txt` is, so that a count lowered without a re-bank
+   cannot later rise back to its banked number unnoticed.
+7. **The check reads itself**, so its own docstring is held to the voice it enforces; its two lines of examples
+   carry the escape, which were its first findings.
+
+**Ruled 2026-11-17 as defaulted.** The user, at S1f.20.2's review, item 13, verbatim: *"Q-M1f.314: the release-voice
+check reads every doc comment and every .ein comment, and every ISO date fails a line. A falling count is reported,
+not failed. F/E/W/K ids are not read yet."*
+
+**The readings S1f.20.9 changed**, when it widened the check and deleted its baseline: (1) every comment of every
+crate, plain, trailing and block, the dev-only crates and the grammar's sources too, not a shipped crate's doc
+comments; (4) `plans/` named alone fails, as `utils/` does: the project names no process; (5) followup, finding,
+register and review ids are read now, and what is still not read is a `.ein` string (`:why`, `:source`,
+`:goal-text`), a Rust string, a plan's `D<n>`, a `C<n>` case and a commit hash (L-2, L-49, L-54 and L-85 of
+the milestone's findings page); (6) moot: with no baseline nothing is banked, so nothing falls; (7)
+the check does not read itself. The scope also widened from `docs/ein/`, `docs/decisions/` and `README.md` to
+every `.md` of the project, and gained `corpus/regressions.toml`; `AGENTS.md` left it, being the process's.
+Readings (2) and (3) stand. P1f.20's folder, with both stages' records, is deleted
+(`git log --diff-filter=D -- 'plans/m1f_hypothesis_and_documentation/p1f.20_*'`).
+
+### Q-M1f.496 — The `fdp` provisioning, now that no view suggests `fdp`
+
+**Raised** 2026-11-18 by S1f.23.6's build, reading 10. **Put, not ruled.** The layered layout dropped the KB view's
+`// suggested layout: fdp`, so the layout plugin guards no drawing the gate makes; `render_examples.sh` alone still
+picks `fdp`, for files named `*ontology*` or `*constraints*`.
+
+- **(a)** left as it is: the CI's `libgvplugin-neato-layout8`, `run_tests.sh`'s exit 127 where `fdp` lays out
+  nothing, and the comments in `AGENTS.md`, the two workflows, `run_tests.sh`, `utils/ci_container.sh`,
+  `utils/review_bundle.py` and `utils/review/util.py` that say every KB view suggests `fdp`, which are wrong from the
+  stage on. **Default.**
+- **(b)** the comments brought to the layered layout, and what CI installs and `run_tests.sh`'s check taken again.
+
+**Default taken: (a).** Nothing built: what CI installs, and the comments, the stage left to the main session.
+
+**Ruled 2026-11-19: the default**, by the user's *"accept all remain defaults in this phase"* (P1f.23).
 
 ---
 

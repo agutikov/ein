@@ -5,7 +5,7 @@
 # 5 min on the runner: M1f S1f.5.27's rule, on the user's ruling of
 # 2026-11-10, *"reduce nightly job, remove long running tests, we will
 # eventually run them on dev host, retain critical tests in CI"*
-# (plans/m1f_hypothesis_and_documentation/open_questions.md, Q-M1f.102). A step
+# (plans/open_questions.md, Q-M1f.102). A step
 # over 5 min on the runner, or one that measures rather than checks, runs on
 # the dev host instead, `./run_tests.sh --dev-host`, which runs every step here
 # at full budget and the steps that left: the id space permuted eight ways,

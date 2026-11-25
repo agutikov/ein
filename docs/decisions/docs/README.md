@@ -34,3 +34,5 @@ how the pages of `docs/ein/` are named and what each is written in. The format a
 - [Q-M1f.470](Q-M1f.470-only-a-knowledge-base-is-drawn-in-the-canonical.md) — Only a knowledge base is drawn in the canonical form
 - [Q-M1f.473](Q-M1f.473-a-program-a-page-draws-and-no-file-holds.md) — A program a page draws and no file holds is drawn from the page's text
 - [Q-M1f.474](Q-M1f.474-a-hand-schematic-may-draw-an-arrow-the-graph.md) — A hand schematic may draw an arrow the graph lacks, a view never
+- [Q-M1f.546](Q-M1f.546-a-pages-drawing-of-a-derivation-is-drawn.md) — A page's drawing of a derivation is drawn at the three levels a view draws
+- [Q-M1f.700](Q-M1f.700-a-cut-of-a-knowledge-bases-drawing-keeps.md) — A cut of a knowledge base's drawing keeps the `open` facts about what it draws

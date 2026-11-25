@@ -18,6 +18,7 @@ Decisions on hypotheses: the rules that conclude one, obligations, the writers o
 - [Q-M1f.254](Q-M1f.254-solve-no-search-relaxes-no-conflict.md) — `(solve :no-search)` relaxes no conflict
 - [Q-M1f.306](Q-M1f.306-the-guessable-atoms-are-the-programs-names-never.md) — The guessable atoms are the program's names, never a kernel dunder
 - [Q-M1f.308](Q-M1f.308-an-obligation-activated-at-root-writes.md) — An obligation activated at root writes what would pay what root owes
+- [Q-M1f.310](Q-M1f.310-a-group-is-a-maximal-set-of-candidates.md) — A group is a maximal set of candidates that pairwise exclude by the theory alone
 - [Q-M1f.390](Q-M1f.390-open-r-carries-no-justification-and-the-instance.md) — `(open R)` carries no justification, and the instance is the engine's record
 - [Q-M1f.549](Q-M1f.549-a-hypothesis-is-a-fact-open-f-whoever-writes.md) — A hypothesis is a fact `(open F)`, whoever writes it
 - [Q-M1f.566](Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md) — What a state owes is `(open R)`, a fact, and `(open F)` is a hypothesis
@@ -29,4 +30,9 @@ Decisions on hypotheses: the rules that conclude one, obligations, the writers o
 - [Q-M1f.578](Q-M1f.578-the-two-lists-and-a-closure-configure-the-blind.md) — The two lists and a closure configure the blind enumerator, and one that disagrees with root’s open facts is an error
 - [Q-M1f.579](Q-M1f.579-an-obligation-whose-guard-or-trigger-reads-what.md) — An obligation whose guard or trigger reads what a commitment can change writes at root, and is flagged
 - [Q-M1f.590](Q-M1f.590-a-hypothesis-rule-is-matched-as-it-is-reached.md) — A hypothesis rule is matched as it is reached
+- [Q-M1f.609](Q-M1f.609-above-root-the-blind-enumerator-and-a-later-debt.md) — Above root, the blind enumerator and a later debt write what root proposed, held to the state
+- [Q-M1f.610](Q-M1f.610-an-obligation-whose-witness-does-not-resolve.md) — An obligation whose witness does not resolve under its activator proposes nothing, and nothing proposes in its place
+- [Q-M1f.612](Q-M1f.612-an-open-facts-provenance-names-what-wrote.md) — An `open` fact's provenance names what wrote it
+- [Q-M1f.619](Q-M1f.619-the-puzzles-share-of-a-program-is-read-off.md) — The puzzle's share of a program is read off the writers that built H
+- [Q-M1f.637](Q-M1f.637-beside-an-obligation-a-rules-hypotheses-make.md) — Beside an obligation a rule's hypotheses make the rung `union`, and stuck is owing with an empty H
 - [Q-M1f.685](Q-M1f.685-a-rule-that-concludes-a-hypothesis-reads-its.md) — A rule that concludes a hypothesis reads its `absent` premises

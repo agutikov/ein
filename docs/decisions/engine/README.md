@@ -16,6 +16,7 @@ Decisions on `ein.rs` as built: the parser, the compiler's invariants, the store
 - [Q-M1f.9](Q-M1f.9-a-shape-the-grammar-refuses-is-a-loader.md) — A shape the grammar refuses is a loader invariant
 - [Q-M1f.10](Q-M1f.10-a-einb-file-holds-no-integer-table.md) — A `.einb` file holds no integer table
 - [Q-M1f.14](Q-M1f.14-a-keyword-pair-is-only-ever-a-forms-clause.md) — A keyword pair is only ever a form's clause
+- [Q-M1f.40](Q-M1f.40-no-firing-meets-an-unbound-variable.md) — No firing meets an unbound variable
 - [Q-M1f.43](Q-M1f.43-a-plans-activator-is-every-argument.md) — A plan's activator is every argument of its activator fact
 - [Q-M1f.73](Q-M1f.73-a-rule-binds-at-most-256-variables-counted.md) — A rule binds at most 256 variables, counted by the loader
 - [Q-M1f.75](Q-M1f.75-the-compilers-errors-are-a-library-callers.md) — The compiler's errors are a library caller's, in Ein's words
@@ -27,5 +28,12 @@ Decisions on `ein.rs` as built: the parser, the compiler's invariants, the store
 - [Q-M1f.413](Q-M1f.413-a-nodes-container-opens-as-the-node.md) — A node's container opens as the node
 - [Q-M1f.313](Q-M1f.313-the-agenda-fires-first-what-leads-to-false.md) — The agenda fires first what leads to `(false)`
 - [Q-M1f.436](Q-M1f.436-the-kernel-reads-no-theorys-name.md) — The kernel reads no theory's name
+- [Q-M1f.503](Q-M1f.503-a-nodes-container-is-a-cache-it-compares.md) — A node's container is a cache: it compares the standard library, where its saved file compares nothing
+- [Q-M1f.505](Q-M1f.505-ein-kb-save-saturate-of-a-node-banks-roots.md) — `ein kb save --saturate` of a node banks root's fixpoint, and the open commits the node
 - [Q-M1f.589](Q-M1f.589-the-static-check-reads-not-as-any-relation.md) — The static check reads `not` as any relation
+- [Q-M1f.644](Q-M1f.644-a-debug-build-checks-the-compile-walks-shortcut.md) — A debug build checks the compile walk's shortcut by the rules' facts counted by relation
 - [Q-M1f.655](Q-M1f.655-open-facts-are-written-at-root-and-where-a-state.md) — Open facts are written at root and where a state is used
+- [Q-M1f.659](Q-M1f.659-a-rule-whose-whole-match-is-a-pair-is-matched.md) — A rule whose whole match is a pair is matched by one probe, never seeded
+- [Q-M1f.661](Q-M1f.661-a-nested-facts-relation-is-a-key.md) — A nested fact's relation is a key of the participation index
+- [Q-M1f.674](Q-M1f.674-a-resumed-nodes-new-facts-are-read-off-its-own.md) — A resumed node's new facts are read off its own layers, above root's mark
+- [Q-M1f.696](Q-M1f.696-a-search-keys-a-node-by-its-facts-beyond-roots.md) — A search keys a node by its facts beyond root's, and a state compared with one built another way by all of them

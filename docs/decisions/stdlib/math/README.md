@@ -28,3 +28,5 @@ Decisions about the calculator as a whole: its rule, its tables, `std.math.arith
 - [Q-M1f.365](Q-M1f.365-the-calculator-closes-the-held-extents.md) — The calculator closes the held extents of its own relations, so arithmetic searches nothing
 - [Q-M1f.366](Q-M1f.366-the-calculators-tables-are-generated-facts-every.md) — The calculator's tables are generated facts, every row held to the integers
 - [Q-M1f.404](Q-M1f.404-a-numeral-is-checked-where-an-operation-takes-it.md) — A numeral is checked where an operation takes it
+- [Q-M1f.518](Q-M1f.518-the-calculators-own-constants-are-not-checked.md) — The calculator's own constants are not checked
+- [Q-M1f.520](Q-M1f.520-a-shared-rules-words-are-one-text-under-every.md) — A shared rule's words are one text under every base

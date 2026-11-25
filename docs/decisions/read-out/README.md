@@ -31,8 +31,13 @@ Decisions on what `ein solve` and `ein test` print: the read-out's rows and word
 - [Q-M1f.340](Q-M1f.340-every-name-is-a-json-string.md) — Every name is a JSON string
 - [Q-M1f.400](Q-M1f.400-a-saved-file-states-the-choices-made-in-one.md) — A saved file states the choices made in one `(commit …)`
 - [Q-M1f.401](Q-M1f.401-a-saved-file-carries-its-program-and-modules.md) — A saved file carries its program and modules as written, and reads no other file
+- [Q-M1f.454](Q-M1f.454-ein-test-diff-shows-how-a-claims-models-differ.md) — `ein test --diff` shows how a claim's models differ from what its run found, and decides nothing
 - [Q-M1f.532](Q-M1f.532-an-or-goals-class-lists-the-facts.md) — An `(or …)` goal's class lists the facts of the disjuncts that hold
 - [Q-M1f.552](Q-M1f.552-ein-saturate-dump-lists-each-kind-of-rule-in.md) — `ein saturate --dump` lists each kind of rule in a section of its own
 - [Q-M1f.553](Q-M1f.553-a-dead-state-holds-a-contradiction-in-the-words.md) — A dead state holds a contradiction, in the words of every surface
+- [Q-M1f.554](Q-M1f.554-the-answer-directory-saves-an-owing-node-only.md) — The answer directory saves an owing node only where R is empty
 - [Q-M1f.572](Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md) — A state's `open` facts are part of it: listed, drawn and counted
 - [Q-M1f.577](Q-M1f.577-p-leaves-out-the-open-facts-as-it-leaves-out.md) — `-P` leaves out the `open` facts as it leaves out the `(not …)`
+- [Q-M1f.626](Q-M1f.626-the-rules-that-conclude-a-hypothesis-are-named.md) — The rules that conclude a hypothesis are named `hypothesis-rules` on every surface
+- [Q-M1f.639](Q-M1f.639-ein-saturate-events-narrates-roots-saturation.md) — `ein saturate --events` narrates root's saturation and nothing after it
+- [Q-M1f.666](Q-M1f.666-as-expect-says-not-printed-where-a-class-lists.md) — `as :expect` says *not printed* where a class lists an `open` fact

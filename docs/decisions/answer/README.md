@@ -35,3 +35,4 @@ Decisions on the answer: the region R, a dead node's core, how a claim is decide
 - [Q-M1f.403](Q-M1f.403-a-saved-file-with-a-commitment-checks-none.md) — A saved file with a commitment checks none of its program's claims
 - [Q-M1f.564](Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md) — A non-monotone program loads with a warning, and nothing is claimed of its answer
 - [Q-M1f.574](Q-M1f.574-a-hypothesis-first-held-above-root-makes-its.md) — A hypothesis first held above root makes its program not monotone
+- [Q-M1f.638](Q-M1f.638-a-core-lists-only-facts-its-state-holds.md) — A core lists only facts its state holds, a written `(open F)` in root's alone

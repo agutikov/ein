@@ -877,14 +877,14 @@ step of `.github/workflows/nightly.yml`, its jobs one after another
 once per seed, the bench smoke), so the nightly can be run before a push;
 `utils/check_gate_steps.py` diffs its list against the workflow's.
 **A nightly step over 5 min on the runner runs in shards**
-([Q-M1f.293](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f293--the-nightlys-steps-against-five-minutes)):
+([Q-M1f.293](plans/open_questions.md#q-m1f293--the-nightlys-steps-against-five-minutes)):
 a matrix job a shard, `EIN_TEST_SHARD=k/n`, `ein_corpus::shard` dealing every
 program to exactly one shard and `utils/stdlib_mutants.py --shard` every
 `n`-th mutant; each shard is measured on four P-core threads with
 `EIN_TEST_JOBS=4`, the runner's count, on AC, and `check_gate_steps.py` holds a
 sharded step to every one of its shards. **The nightly holds only what guards an answer or a
 contract no per-commit step guards**, each step within 5 min on the runner
-([Q-M1f.102](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f102--what-the-ci-nightly-keeps-and-what-the-dev-host-runs)).
+([Q-M1f.102](plans/open_questions.md#q-m1f102--what-the-ci-nightly-keeps-and-what-the-dev-host-runs)).
 **`./run_tests.sh --dev-host` is the tier nothing schedules**, which the user
 runs here or in the runner's image (`utils/ci_container.sh --dev-host`):
 every nightly step at full budget and the steps that left or never ran in
@@ -946,7 +946,7 @@ about that build. **`utils/ci_container.sh`** runs
 HEAD as committed, so an image move can be checked before a push.
 
 **When `utils/ci_container.sh` is part of done**
-([Q-M1f.77](plans/m1f_hypothesis_and_documentation/open_questions.md#q-m1f77--when-is-utilsci_containersh-part-of-done)).
+([Q-M1f.77](plans/open_questions.md#q-m1f77--when-is-utilsci_containersh-part-of-done)).
 A stage that changes a DOT writer, the review bundle or what CI installs is
 not done until `utils/ci_container.sh` is green on its commit. A Graphviz
 refusal can reach CI behind a green gate here: the router above, and `fdp`,

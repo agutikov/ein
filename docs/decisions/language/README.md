@@ -76,6 +76,7 @@ macros, and the shapes the parser and the loader refuse.
 - [Q-M1f.393](Q-M1f.393-a-rule-unpacks-a-fact-by-its-count.md) — A rule unpacks a fact by its count
 - [Q-M1f.394](Q-M1f.394-a-fact-is-in-the-global-context-in-a-facts.md) — A fact is in the global context, in a fact's context, or in both
 - [Q-M1f.399](Q-M1f.399-a-rule-states-facts-or-a-word-to-the-engine.md) — A rule states facts, or a word to the engine
+- [Q-M1f.440](Q-M1f.440-enable-symmetric-mirror-is-a-retired-flag.md) — `enable-symmetric-mirror` is a retired flag, refused with why it went
 - [Q-M1f.447](Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md) — A relation is overloaded by its count of arguments, and a declaration holds no form to it
 - [Q-M1f.522](Q-M1f.522-a-relation-of-the-program-is-any-atom-it-writes.md) — A relation of the program is any atom it writes first in a tuple
 - [Q-M1f.550](Q-M1f.550-the-engines-word-is-inconsistent.md) — The engine's word is `inconsistent`
@@ -83,3 +84,4 @@ macros, and the shapes the parser and the loader refuse.
 - [Q-M1f.571](Q-M1f.571-absent-takes-a-premise-and-open-a-name-or-a-fact.md) — `absent` takes a premise and `open` a name or a fact; under an ordinary relation both are names
 - [Q-M1f.575](Q-M1f.575-open-r-is-a-rules-whole-assert-and-open-f-stands.md) — `(open R)` is a rule’s whole `:assert`, and `(open F)` stands in a conjunction
 - [Q-M1f.593](Q-M1f.593-not-is-a-name-everywhere-but-at-a-forms-head.md) — `not` is a name everywhere but at a form's head
+- [Q-M1f.618](Q-M1f.618-absent-and-open-heading-a-fact-that-is-a-value.md) — `absent` and `open` heading a fact that is a value are names

@@ -828,7 +828,7 @@ which differ in nothing a stratified program's meaning depends on, have one answ
 records: (A) or (B) in FIFO order, today's answer (at root the two are one node); (C) over (A), under which root
 holds a stale fact and is no solution, so R is empty on the witness and {∅} on its twins; (D), which does not
 refuse it, there being no cycle. The row is not reviewed, and its reading rules nothing
-([Q-M1f.134](../m1f_hypothesis_and_documentation/open_questions.md#q-m1f134--what-a-register-row-records-as-right-while-f24s-question-is-not-ruled)).
+([Q-M1f.134](../open_questions.md#q-m1f134--what-a-register-row-records-as-right-while-f24s-question-is-not-ruled)).
 
 **What it adds to D2**, beyond `W8/fifo-gap`:
 
