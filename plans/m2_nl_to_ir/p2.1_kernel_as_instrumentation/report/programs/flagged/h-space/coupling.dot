@@ -1,0 +1,6 @@
+graph coupling {
+  label="examples/lattice/04_obligation_trigger_hole.ein: the questions' hypergraph, the whole node's edges. 2 questions, 0 edges (0 a debt's alone, dashed)";
+  node [shape=box, fontsize=10];
+  q0 [label="q0 (meal Ann Soup)\n1 open of 1", color=gray, fontcolor=gray];
+  q1 [label="q1 (seats Ann C1)\n1 open of 1", color=gray, fontcolor=gray];
+}

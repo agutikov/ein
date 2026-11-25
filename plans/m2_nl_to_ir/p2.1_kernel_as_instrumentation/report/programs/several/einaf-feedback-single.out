@@ -1,0 +1,110 @@
+{
+  "schema": "einaf-feedback/1",
+  "program": {
+    "name": "examples/lattice/03_state_hash_collision.ein",
+    "digest": "sha256:037961171910595ca20052205f8243e334bdc7687dbe132faacf519c27c5df05",
+    "of": "canonical-dump"
+  },
+  "kernel": {
+    "version": "0.1.0",
+    "protocol": "ein-events/1",
+    "stdlib": "sha256:292894befd300e536cdd1181db772f44fe3f3f7ad6ff52b1467f1735ff83d681",
+    "commit": null
+  },
+  "asked": {
+    "question": "--single",
+    "which": "all",
+    "ask": "single",
+    "budget": 1048576,
+    "limit": 16,
+    "max_steps": 1048576,
+    "clock_us": null
+  },
+  "outcome": [
+    {
+      "part": "all",
+      "outcome": "several",
+      "why": "Ambiguity: two states found, which differ"
+    }
+  ],
+  "readings": {
+    "word": {
+      "part": "all",
+      "word": "Ambiguity"
+    },
+    "k_s": null,
+    "k_c": null,
+    "minimal": null,
+    "maximal": null,
+    "exhausted": false,
+    "stopped": null
+  },
+  "diagnostics": [],
+  "flagged": null,
+  "queries": [
+    {
+      "goal": "(h1 ?x)",
+      "goal_text": null,
+      "over": "all",
+      "exact": false,
+      "agree": false,
+      "classes": [
+        {
+          "facts": [],
+          "rows": [],
+          "lines": [],
+          "states": [
+            1
+          ]
+        },
+        {
+          "facts": [
+            "(h1 X)"
+          ],
+          "rows": [
+            {
+              "x": "X"
+            }
+          ],
+          "lines": [],
+          "states": [
+            2
+          ]
+        }
+      ],
+      "expect": null
+    }
+  ],
+  "claim": null,
+  "states": [
+    {
+      "facts": [],
+      "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "of": "model",
+      "lines": [],
+      "listed": true
+    },
+    {
+      "facts": [
+        "(h1 X)"
+      ],
+      "digest": "sha256:558d08a547481ae4f30a0a993ea48e6c4a761698fe0c3afe86663ac2b35c1a01",
+      "of": "model",
+      "lines": [],
+      "listed": true
+    }
+  ],
+  "owed": null,
+  "core": null,
+  "work": {
+    "saturations": 2,
+    "facts": 1,
+    "layers": null,
+    "run_us": 267,
+    "load_us": 4506,
+    "ask_us": 539
+  },
+  "dependencies": null,
+  "provenance": null,
+  "fault": null
+}

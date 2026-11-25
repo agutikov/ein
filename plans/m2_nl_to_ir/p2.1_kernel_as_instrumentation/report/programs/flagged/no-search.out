@@ -1,0 +1,26 @@
+solve · examples/lattice/04_obligation_trigger_hole.ein --no-search
+──────────────────────────────────────────────────────────────
+  WARNING           THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER.
+                    IT IS NOT CLAIMED TO BE RIGHT, SOUND OR COMPLETE (Q-M1f.564).
+                    THE `lattice` ROWS BELOW NAME THE SITES.
+  asked             root alone — --no-search: root's fixpoint, and R is not searched
+  ∅                 in R — root is alive and owes nothing
+  R                 not searched — --no-search builds no node past root: a bare `ein solve FILE` describes R
+  lattice           not monotone: 4 sites (the static check) — holes not known: the cube was not enumerated
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
+    site            dine: hypothesis reads is-a at absent depth 0, concludes (open …) — at stake: the hypotheses: a state can hold one root does not
+    site            seat: hypothesis reads is-a at absent depth 0, concludes (open …) — at stake: the hypotheses: a state can hold one root does not
+    site            total-owed [activator meal is-a]: obligation-trigger reads is-a at absent depth 0, concludes (open …) — at stake: the status: owes
+    site            total-owed [activator meal is-a]: obligation-guard reads is-a at absent depth 1, concludes (open …) — at stake: the hypotheses: a state can hold one root does not
+    status          not known — this run stopped before it read the cube's 2^2 nodes: `ein oracle FILE` reads them, and so does a bare `ein solve FILE`
+    state           no stale fact in the 1 node the run computed
+    paths           no state the read-out prints has an alive parent to check
+  universe          2 candidates, none visited: R was not searched
+    outside         is-a — no candidate: no obligation owes it. R holds of it only what the program states and saturation derives
+  route             none — --no-search: root's node, and no node past it
+  work              1 saturation · 0 facts beyond root
+
+  query             (meal ?g ?f)
+  over              all of R — 1 state → 1 projection class  (∅ alone: R was not searched past it)
+    class 1 of 1    1 state — the goal has no row: undetermined here
+  as :expect        not printed: these classes are a lower bound, and the claim would say they are all

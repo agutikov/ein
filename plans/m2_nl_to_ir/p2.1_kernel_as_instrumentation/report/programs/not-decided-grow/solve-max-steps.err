@@ -1,0 +1,1 @@
+note: ein.rs/crates/ein-cli/tests/bounded/grow.ein: partial — root's saturation needed more than --max-steps 10000 firings, and was stopped before its fixpoint. Established: nothing of R, neither root's standing nor H. A larger --max-steps lets every saturation run further

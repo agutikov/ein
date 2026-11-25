@@ -1,0 +1,457 @@
+{
+  "schema": "ein-h-space/1",
+  "program": "examples/lattice/04_obligation_trigger_hole.ein",
+  "asked": {
+    "region_budget": 1048576,
+    "supports": false
+  },
+  "n": 2,
+  "rung": "union",
+  "monotone": false,
+  "root_dead": false,
+  "whole": true,
+  "unread": [],
+  "says": [
+    "no table of what root owes is read, so no group is owed: the static check flags the program"
+  ],
+  "domain": {
+    "pair_layer": "the static check flags this program: every statement of the pair layer is true of root's nodes, and nothing above root follows from them",
+    "cover": "the static check flags this program: the members of a group exclude pairwise at the small KB's root, and nothing above root follows from that",
+    "coupling": "the static check flags this program: a tie is true of the nodes it was read from, and nothing above them follows from it"
+  },
+  "cost": {
+    "root_layer": {
+      "saturations": 4,
+      "facts_beyond_root": 6
+    },
+    "small_kb_layer": {
+      "saturations": 4,
+      "facts_beyond_its_own_root": 6
+    },
+    "supports": {
+      "saturations": 0
+    },
+    "cover": {
+      "saturations": 0,
+      "clique_calls": 0,
+      "root_clique_calls": 0,
+      "bound": 1048576
+    },
+    "exactly_one": {
+      "saturations": 0
+    },
+    "whole_node": {
+      "saturations": 1,
+      "facts_beyond_root": 3,
+      "applications": 1,
+      "steps": 1,
+      "contradictions": 0,
+      "rounds": 2,
+      "merged": 0
+    },
+    "saturations": 9
+  },
+  "graphs": [
+    {
+      "graph": "exclusion",
+      "file": "exclusion.dot",
+      "nodes": 0,
+      "lines": 0
+    },
+    {
+      "graph": "cover",
+      "file": "cover.dot",
+      "nodes": 0,
+      "lines": 0
+    },
+    {
+      "graph": "coupling",
+      "file": "coupling.dot",
+      "nodes": 2,
+      "lines": 0
+    },
+    {
+      "graph": "one-step",
+      "file": "coupling_one_step.dot",
+      "nodes": 2,
+      "lines": 0
+    }
+  ],
+  "candidates": [
+    {
+      "candidate": "(meal Ann Soup)",
+      "at_root": "alive alone",
+      "killed_by_the_theory_alone": false,
+      "groups": [],
+      "in_an_owed_group": false,
+      "questions": [
+        0
+      ],
+      "component": 0,
+      "conflict_component": 0,
+      "implies": [],
+      "implied_by": [],
+      "equivalent_to": [],
+      "pairs_the_theory_excludes": 0,
+      "pairs_the_puzzle_excludes": 0
+    },
+    {
+      "candidate": "(seats Ann C1)",
+      "at_root": "alive alone",
+      "killed_by_the_theory_alone": false,
+      "groups": [],
+      "in_an_owed_group": false,
+      "questions": [
+        1
+      ],
+      "component": 1,
+      "conflict_component": 1,
+      "implies": [],
+      "implied_by": [],
+      "equivalent_to": [],
+      "pairs_the_theory_excludes": 0,
+      "pairs_the_puzzle_excludes": 0
+    }
+  ],
+  "pairs": {
+    "n": 2,
+    "monotone": false,
+    "domain": "the static check flags this program: every statement of the pair layer is true of root's nodes, and nothing above root follows from them",
+    "root_dead": false,
+    "complete": true,
+    "stopped": null,
+    "singles_left": 0,
+    "pairs": {
+      "all": 1,
+      "dead_member": 0,
+      "implied": 0,
+      "saturated": 1,
+      "left": 0
+    },
+    "work": {
+      "saturations": 4,
+      "facts": 6
+    },
+    "candidates": [
+      "(meal Ann Soup)",
+      "(seats Ann C1)"
+    ],
+    "at_root": [],
+    "dead_alone": [],
+    "implies": [],
+    "equivalent": [],
+    "excluded": [],
+    "interacting": [],
+    "against_l1": [],
+    "against_l3": [],
+    "licences": []
+  },
+  "theory": {
+    "small_kb": {
+      "kept": 4,
+      "dropped": 0,
+      "by_clause": [
+        {
+          "clause": "a fact of a relation the writers that built H read",
+          "kept": true,
+          "facts": 3
+        },
+        {
+          "clause": "names none of the candidates' objects",
+          "kept": true,
+          "facts": 1
+        }
+      ],
+      "error": null
+    },
+    "stated": [
+      {
+        "fact": "(relation is-a T T)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation is-a)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation seats Guest Chair)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation seats)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation meal Diner Food)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation meal)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(is-a Ann Guest)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": false
+      },
+      {
+        "fact": "(is-a C1 Chair)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": false
+      },
+      {
+        "fact": "(is-a Soup Food)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": false
+      },
+      {
+        "fact": "(total-owed meal is-a)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": false
+      }
+    ],
+    "theory_dead_alone": [],
+    "theory_excluded": [],
+    "against_root": {
+      "singles": [],
+      "pairs": []
+    },
+    "small_beyond_root": 0,
+    "root_excluded": [],
+    "rules_naming_objects": [],
+    "small_kb_layer": {
+      "n": 2,
+      "monotone": false,
+      "domain": "the static check flags this program: every statement of the pair layer is true of root's nodes, and nothing above root follows from them",
+      "root_dead": false,
+      "complete": true,
+      "stopped": null,
+      "singles_left": 0,
+      "pairs": {
+        "all": 1,
+        "dead_member": 0,
+        "implied": 0,
+        "saturated": 1,
+        "left": 0
+      },
+      "work": {
+        "saturations": 4,
+        "facts": 6
+      },
+      "candidates": [
+        "(meal Ann Soup)",
+        "(seats Ann C1)"
+      ],
+      "at_root": [],
+      "dead_alone": [],
+      "implies": [],
+      "equivalent": [],
+      "excluded": [],
+      "interacting": [],
+      "against_l1": [],
+      "against_l3": [],
+      "licences": []
+    }
+  },
+  "cover": {
+    "n": 2,
+    "complete": true,
+    "monotone": false,
+    "small_monotone": false,
+    "domain": "the static check flags this program: the members of a group exclude pairwise at the small KB's root, and nothing above root follows from that",
+    "stopped": null,
+    "bound": 1048576,
+    "steps": 0,
+    "cut": null,
+    "candidates": [
+      {
+        "candidate": "(meal Ann Soup)",
+        "at_root": "alive alone",
+        "killed_by_the_theory_alone": false,
+        "groups": []
+      },
+      {
+        "candidate": "(seats Ann C1)",
+        "at_root": "alive alone",
+        "killed_by_the_theory_alone": false,
+        "groups": []
+      }
+    ],
+    "groups": [],
+    "in_no_group": [
+      "(meal Ann Soup)",
+      "(seats Ann C1)"
+    ],
+    "components": [],
+    "pairs_alive_at_root": [],
+    "root_cliques": {
+      "steps": 0,
+      "cut": null,
+      "cliques": []
+    }
+  },
+  "exactly_one": {
+    "n": 2,
+    "domain": "the static check flags this program: the members of a group exclude pairwise at the small KB's root, and nothing above root follows from that",
+    "root_owes": 0,
+    "no_table": "the static check flags the program",
+    "singles_read": false,
+    "theory_read": false,
+    "instances": [],
+    "groups": [],
+    "owed_groups": [],
+    "groups_nothing_owes": [],
+    "owed_sets_not_a_group": [],
+    "unlicensed": [],
+    "grids": [],
+    "components_that_are_no_grid": []
+  },
+  "coupling": {
+    "reading": "node",
+    "complete": true,
+    "domain": "the static check flags this program: a tie is true of the nodes it was read from, and nothing above them follows from it",
+    "questions": [
+      {
+        "is": "a candidate in no group",
+        "name": "(meal Ann Soup)",
+        "open": 1,
+        "members": [
+          [
+            "(meal Ann Soup)",
+            "alive alone"
+          ]
+        ]
+      },
+      {
+        "is": "a candidate in no group",
+        "name": "(seats Ann C1)",
+        "open": 1,
+        "members": [
+          [
+            "(seats Ann C1)",
+            "alive alone"
+          ]
+        ]
+      }
+    ],
+    "ties": [],
+    "edges": [],
+    "edges_one_step_back": [],
+    "components": [
+      [
+        "(meal Ann Soup)"
+      ],
+      [
+        "(seats Ann C1)"
+      ]
+    ],
+    "conflict_components": [
+      [
+        "(meal Ann Soup)"
+      ],
+      [
+        "(seats Ann C1)"
+      ]
+    ],
+    "debts": [],
+    "debts_across_conflict_components": [],
+    "unlicensed_instances": 0,
+    "committed": [
+      "(meal Ann Soup)",
+      "(seats Ann C1)"
+    ],
+    "pairs_read": true,
+    "payers_read": true,
+    "node_stopped": null,
+    "cut": {
+      "ways": 0,
+      "descriptions": 0,
+      "unsettled": false
+    }
+  },
+  "declared": {
+    "mechanisms": {
+      "hypothesis_rules": 2,
+      "hypothesis_plans": 2,
+      "obligation_rules": 2,
+      "obligation_plans": 1,
+      "proposed": [
+        "meal",
+        "seats"
+      ],
+      "owable": [
+        "meal"
+      ],
+      "closed": [],
+      "listed": null,
+      "excluded": [],
+      "no_search": false
+    },
+    "relations": [
+      {
+        "relation": "meal",
+        "candidates": 1,
+        "stated_of_it": [
+          "(total-owed meal is-a)"
+        ],
+        "a_hypothesis_rule_proposes_it": true,
+        "an_obligation_can_owe_it": true,
+        "closed": false,
+        "listed": null,
+        "excluded": false,
+        "candidates_in_no_group": 1,
+        "grids": [],
+        "bijections": []
+      },
+      {
+        "relation": "seats",
+        "candidates": 1,
+        "stated_of_it": [],
+        "a_hypothesis_rule_proposes_it": true,
+        "an_obligation_can_owe_it": false,
+        "closed": false,
+        "listed": null,
+        "excluded": false,
+        "candidates_in_no_group": 1,
+        "grids": [],
+        "bijections": []
+      }
+    ]
+  }
+}

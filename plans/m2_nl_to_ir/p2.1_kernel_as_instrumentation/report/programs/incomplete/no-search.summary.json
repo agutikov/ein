@@ -1,0 +1,108 @@
+{
+  "schema": "ein-summary/2",
+  "source": "tests/region/04_owing.ein",
+  "asked": {
+    "which": "all",
+    "ask": "no-search",
+    "n": null
+  },
+  "region": null,
+  "verdict": null,
+  "queries": [
+    {
+      "goal": "(likes ?who ?what)",
+      "over": "all",
+      "exact": false,
+      "classes": [],
+      "expect": null
+    }
+  ],
+  "claim": {
+    "outcome": "not-checked",
+    "lines": [
+      "the claim is about all of R, and --no-search reads root alone: root owes 1 instance, so \u2205 is not in R, and R was not searched"
+    ]
+  },
+  "work": {
+    "saturations": 1,
+    "facts": 0,
+    "layers": null
+  },
+  "monotonicity": {
+    "monotone": true,
+    "warning": null,
+    "hypothesised": [],
+    "dynamic": [],
+    "plans": {
+      "saturation": 20,
+      "obligation": 1
+    },
+    "reads": {
+      "static": 34,
+      "dynamic_monotone": 0,
+      "dynamic_non_monotone": 0
+    },
+    "absent_reads": {
+      "static": 2,
+      "dynamic_monotone": 0,
+      "dynamic_non_monotone": 0
+    },
+    "sites": [],
+    "in_flight": null,
+    "assumes": null,
+    "cycles": [],
+    "order": [],
+    "status": null,
+    "state": null,
+    "paths": null
+  },
+  "leftover": {
+    "taken": false,
+    "states": [],
+    "states_by_relation": []
+  },
+  "root": {
+    "facts": 17,
+    "facts_by_relation": {
+      "is-a": 4,
+      "likes": 1,
+      "open": 3,
+      "relation": 4,
+      "std.contradiction.clash-0": 2,
+      "std.contradiction.clash-2": 2,
+      "total-owed": 1
+    },
+    "dead": false,
+    "owes": 1,
+    "owed": [
+      "likes owes Ann a Food."
+    ],
+    "commit": [],
+    "plans": 20,
+    "saturator": {
+      "naf_rounds": 0,
+      "naf_admitted": 0,
+      "naf_retired": 0,
+      "naf_dropped": 0
+    },
+    "hypgen": {
+      "raw": 0,
+      "emitted": 0,
+      "filtered": {},
+      "pre_candidate": {},
+      "outside": []
+    }
+  },
+  "config": {
+    "lattice-sanity-check": false,
+    "record-alternative-justifications": true
+  },
+  "diagnostics": [
+    {
+      "kind": "claim-not-checked",
+      "severity": "note",
+      "message": "tests/region/04_owing.ein: (solve :expect) NOT CHECKED \u2014 the claim is about all of R, and --no-search reads root alone: root owes 1 instance, so \u2205 is not in R, and R was not searched",
+      "place": null
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+solve · examples/ein-bugs/zebra2-bad.ein --no-search
+──────────────────────────────────────────────────────────────
+  asked             root alone — --no-search: root's fixpoint, and R is not searched
+  ∅                 dead — root's own fixpoint holds a contradiction
+  R                 not searched — --no-search builds no node past root: a bare `ein solve FILE` describes R
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate
+    outside         is-a*, next-to — no candidate: no obligation owes them. R holds of them only what the program states and saturation derives
+  route             none — --no-search: root's node, and no node past it
+  work              1 saturation · 0 facts beyond root
+
+  unsat core        (color-loc Green House-1)
+  unsat core        (is-a House-1 House)
+  unsat core        (relation color-loc Color House)
+  source            (color-loc Green House-1) :source "injected contradiction"
+  refuted by        (given), co-located-negative
+
+  query             (and (drink-loc Water ?h_water) (nation-loc ?who_water ?h_water) (pet-loc Zebra ?h_zebra) (nation-loc ?who_zebra ?h_zebra))
+  over              all of R — root is dead, and a fork only adds, so every node is (L0): no state to answer from
+  as :expect        (false)

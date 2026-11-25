@@ -1,0 +1,23 @@
+solve · examples/lattice/04_obligation_trigger_hole.ein --count
+──────────────────────────────────────────────────────────────
+  WARNING           THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER.
+                    IT IS NOT CLAIMED TO BE RIGHT, SOUND OR COMPLETE (Q-M1f.564).
+                    THE `lattice` ROWS BELOW NAME THE SITES.
+  asked             how many states and commitments R holds (--count)
+  states (k_s)      3
+  commitments (k_c) 3
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 in R — root is alive and owes nothing
+  lattice           not monotone: 4 sites (the static check) — 1 hole
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
+    site            dine: hypothesis reads is-a at absent depth 0, concludes (open …) — at stake: the hypotheses: a state can hold one root does not
+    site            seat: hypothesis reads is-a at absent depth 0, concludes (open …) — at stake: the hypotheses: a state can hold one root does not
+    site            total-owed [activator meal is-a]: obligation-trigger reads is-a at absent depth 0, concludes (open …) — at stake: the status: owes
+    site            total-owed [activator meal is-a]: obligation-guard reads is-a at absent depth 1, concludes (open …) — at stake: the hypotheses: a state can hold one root does not
+    status          non-monotone here (exercised, by total-owed [activator meal is-a]) — the cube: 1 hole · 0 dead nodes with an alive superset · 1 discharged node with an owing superset
+    state           no stale fact in the cube's 4 nodes
+    paths           not checked — the read-out prints no state of two commitments or more; its 3 members met would cost up to 4 saturations
+  universe          2 candidates, 0 dead alone
+    outside         is-a — no candidate: no obligation owes it. R holds of it only what the program states and saturation derives
+  route             2, the cube — no licence: the static check flags the program
+  work              4 saturations · 6 facts beyond root

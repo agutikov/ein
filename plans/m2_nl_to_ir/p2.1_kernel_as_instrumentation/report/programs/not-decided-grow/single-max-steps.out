@@ -1,0 +1,8 @@
+solve · ein.rs/crates/ein-cli/tests/bounded/grow.ein --single --max-steps 10000
+──────────────────────────────────────────────────────────────
+  asked             is R one state? (--single)
+  verdict           not decided — the run stopped first
+  decided           no — root's saturation needed more than --max-steps 10000 firings, and was stopped before its fixpoint: nothing of R is established
+
+  query             (num ?x)
+  over              all of R — no state to answer from: root's saturation needed more than --max-steps 10000 firings, and was stopped before its fixpoint

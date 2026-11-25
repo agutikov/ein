@@ -1,0 +1,60 @@
+{
+  "schema": "einaf-feedback/1",
+  "program": {
+    "name": "examples/broken/load/no_hypothesis_beside_open.ein",
+    "digest": "sha256:53c48268834cbe8e6ffd10d9306cfea7fb904427cde3d376f32cc2470b23e047",
+    "of": "canonical-dump"
+  },
+  "kernel": {
+    "version": "0.1.0",
+    "protocol": "ein-events/1",
+    "stdlib": "sha256:292894befd300e536cdd1181db772f44fe3f3f7ad6ff52b1467f1735ff83d681",
+    "commit": null
+  },
+  "asked": {
+    "question": "--single",
+    "which": "all",
+    "ask": "single",
+    "budget": 1048576,
+    "limit": 16,
+    "max_steps": 1048576,
+    "clock_us": null
+  },
+  "outcome": [
+    {
+      "part": "all",
+      "outcome": "invalid",
+      "why": "refused at the load (mechanisms): examples/broken/load/no_hypothesis_beside_open.ein:41:24: solve: its :no-hypothesis names likes, and root holds (open likes), which obligation 'total-owed' writes — the two lists and a closure configure the blind enumerator, which does not run beside an open fact, and one that disagrees with the open facts root holds is an error: drop likes from the list"
+    }
+  ],
+  "readings": null,
+  "diagnostics": [
+    {
+      "kind": "mechanisms",
+      "severity": "error",
+      "message": "examples/broken/load/no_hypothesis_beside_open.ein:41:24: solve: its :no-hypothesis names likes, and root holds (open likes), which obligation 'total-owed' writes — the two lists and a closure configure the blind enumerator, which does not run beside an open fact, and one that disagrees with the open facts root holds is an error: drop likes from the list",
+      "place": {
+        "file": "examples/broken/load/no_hypothesis_beside_open.ein",
+        "line": 41,
+        "col": 24
+      }
+    }
+  ],
+  "flagged": null,
+  "queries": null,
+  "claim": null,
+  "states": null,
+  "owed": null,
+  "core": null,
+  "work": {
+    "saturations": null,
+    "facts": null,
+    "layers": null,
+    "run_us": null,
+    "load_us": 12235,
+    "ask_us": 5
+  },
+  "dependencies": null,
+  "provenance": null,
+  "fault": null
+}

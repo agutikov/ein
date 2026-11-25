@@ -1,0 +1,164 @@
+{
+  "schema": "einaf-feedback/1",
+  "program": {
+    "name": "examples/lattice/04_obligation_trigger_hole.ein",
+    "digest": "sha256:8e31448b46b163500ddb169209a014cd81cee6f7a98a8fa47d998fe71a8b42ad",
+    "of": "canonical-dump"
+  },
+  "kernel": {
+    "version": "0.1.0",
+    "protocol": "ein-events/1",
+    "stdlib": "sha256:292894befd300e536cdd1181db772f44fe3f3f7ad6ff52b1467f1735ff83d681",
+    "commit": null
+  },
+  "asked": {
+    "question": "--single",
+    "which": "all",
+    "ask": "single",
+    "budget": 1048576,
+    "limit": 16,
+    "max_steps": 1048576,
+    "clock_us": null
+  },
+  "outcome": [
+    {
+      "part": "all",
+      "outcome": "flagged",
+      "why": "not monotone: 4 sites of the static check"
+    }
+  ],
+  "readings": {
+    "word": {
+      "part": "all",
+      "word": "Ambiguity"
+    },
+    "k_s": null,
+    "k_c": null,
+    "minimal": null,
+    "maximal": null,
+    "exhausted": false,
+    "stopped": null
+  },
+  "diagnostics": [
+    {
+      "kind": "not-monotone",
+      "severity": "warning",
+      "message": "examples/lattice/04_obligation_trigger_hole.ein: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)",
+      "place": null
+    }
+  ],
+  "flagged": {
+    "sites": [
+      {
+        "rule": "dine",
+        "activator": [],
+        "kind": "hypothesis",
+        "relation": "is-a",
+        "depth": 0,
+        "concludes": "(open …)",
+        "at_stake": "hypotheses"
+      },
+      {
+        "rule": "seat",
+        "activator": [],
+        "kind": "hypothesis",
+        "relation": "is-a",
+        "depth": 0,
+        "concludes": "(open …)",
+        "at_stake": "hypotheses"
+      },
+      {
+        "rule": "total-owed",
+        "activator": [
+          "meal",
+          "is-a"
+        ],
+        "kind": "obligation-trigger",
+        "relation": "is-a",
+        "depth": 0,
+        "concludes": "(open …)",
+        "at_stake": "status: owes"
+      },
+      {
+        "rule": "total-owed",
+        "activator": [
+          "meal",
+          "is-a"
+        ],
+        "kind": "obligation-guard",
+        "relation": "is-a",
+        "depth": 1,
+        "concludes": "(open …)",
+        "at_stake": "hypotheses"
+      }
+    ],
+    "in_flight": null
+  },
+  "queries": [
+    {
+      "goal": "(meal ?g ?f)",
+      "goal_text": null,
+      "over": "all",
+      "exact": false,
+      "agree": false,
+      "classes": [
+        {
+          "facts": [],
+          "rows": [],
+          "lines": [],
+          "states": [
+            1
+          ]
+        },
+        {
+          "facts": [
+            "(meal Ann Soup)"
+          ],
+          "rows": [
+            {
+              "f": "Soup",
+              "g": "Ann"
+            }
+          ],
+          "lines": [],
+          "states": [
+            2
+          ]
+        }
+      ],
+      "expect": null
+    }
+  ],
+  "claim": null,
+  "states": [
+    {
+      "facts": [],
+      "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "of": "model",
+      "lines": [],
+      "listed": true
+    },
+    {
+      "facts": [
+        "(meal Ann Soup)"
+      ],
+      "digest": "sha256:17375447b6abf892732b5c124636313b6346092f2c8a97159eac244e33916ec9",
+      "of": "model",
+      "lines": [],
+      "listed": true
+    }
+  ],
+  "owed": null,
+  "core": null,
+  "work": {
+    "saturations": 2,
+    "facts": 1,
+    "layers": null,
+    "run_us": 649,
+    "load_us": 11821,
+    "ask_us": 1407
+  },
+  "dependencies": null,
+  "provenance": null,
+  "fault": null
+}

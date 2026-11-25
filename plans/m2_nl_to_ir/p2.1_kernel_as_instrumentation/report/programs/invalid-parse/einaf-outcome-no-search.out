@@ -1,0 +1,2 @@
+einaf outcome · examples/broken/unclosed_paren.ein --no-search
+  invalid       over all of R           refused at the parse (parse): examples/broken/unclosed_paren.ein:4:10: unexpected `a`: a name

@@ -1,0 +1,4 @@
+einaf outcome · tests/region/04_owing.ein
+  incomplete    over all of R           R is empty and every alive node owes
+  incomplete    over the minimal line   R is empty and every alive node owes
+  incomplete    over the maximal line   R is empty and every alive node owes

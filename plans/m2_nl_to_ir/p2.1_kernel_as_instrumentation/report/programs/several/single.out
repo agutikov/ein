@@ -1,0 +1,21 @@
+solve · examples/lattice/03_state_hash_collision.ein --single
+──────────────────────────────────────────────────────────────
+  asked             is R one state? (--single)
+  verdict           Ambiguity — R holds two states or more; two of them below
+  decided           yes — two states settle it; the rest of R was not visited
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          3 candidates
+  route             the state route, each state at most once — L1 dead is upward-closed · L2 discharged is upward-closed
+  work              2 saturations · 1 fact beyond root
+
+  ;; state 1 of 2 — ∅, root itself
+  (model)
+  ;; state 2 of 2 — 1 candidate · from {(h1 X)}
+  (model (h1 X))
+
+  query             (h1 ?x)
+  over              all of R — 2 states → 2 projection classes  (a lower bound)
+    class 1 of 2    1 state — the goal has no row: undetermined here
+    class 2 of 2    1 state
+                      ?x = X
+  as :expect        not printed: these classes are a lower bound, and the claim would say they are all

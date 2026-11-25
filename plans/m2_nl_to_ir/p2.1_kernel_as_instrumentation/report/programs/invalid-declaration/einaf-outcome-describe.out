@@ -1,0 +1,4 @@
+einaf outcome · examples/broken/load/rule_duplicate_name.ein
+  invalid       over all of R           refused at the load (declaration): duplicate rule name 'r' at None
+  invalid       over the minimal line   refused at the load (declaration): duplicate rule name 'r' at None
+  invalid       over the maximal line   refused at the load (declaration): duplicate rule name 'r' at None

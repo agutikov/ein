@@ -1,0 +1,33 @@
+solve · examples/lattice/04_obligation_trigger_hole.ein --single
+──────────────────────────────────────────────────────────────
+  WARNING           THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER.
+                    IT IS NOT CLAIMED TO BE RIGHT, SOUND OR COMPLETE (Q-M1f.564).
+                    THE `lattice` ROWS BELOW NAME THE SITES.
+  asked             is R one state? (--single)
+  verdict           Ambiguity — R holds two states or more; two of them below
+  decided           yes — two states settle it; the rest of R was not visited
+  lattice           not monotone: 4 sites (the static check) — holes not known: the cube was not enumerated
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
+    site            dine: hypothesis reads is-a at absent depth 0, concludes (open …) — at stake: the hypotheses: a state can hold one root does not
+    site            seat: hypothesis reads is-a at absent depth 0, concludes (open …) — at stake: the hypotheses: a state can hold one root does not
+    site            total-owed [activator meal is-a]: obligation-trigger reads is-a at absent depth 0, concludes (open …) — at stake: the status: owes
+    site            total-owed [activator meal is-a]: obligation-guard reads is-a at absent depth 1, concludes (open …) — at stake: the hypotheses: a state can hold one root does not
+    status          not known — this run stopped before it read the cube's 2^2 nodes: `ein oracle FILE` reads them, and so does a bare `ein solve FILE`
+    state           no stale fact in the 2 nodes the run computed
+    paths           no state the read-out prints has an alive parent to check
+  universe          2 candidates
+    outside         is-a — no candidate: no obligation owes it. R holds of it only what the program states and saturation derives
+  route             2, the cube — L7 the cube
+  work              2 saturations · 1 fact beyond root
+
+  ;; state 1 of 2 — ∅, root itself
+  (model)
+  ;; state 2 of 2 — 1 candidate · from {(meal Ann Soup)}
+  (model (meal Ann Soup))
+
+  query             (meal ?g ?f)
+  over              all of R — 2 states → 2 projection classes  (a lower bound)
+    class 1 of 2    1 state — the goal has no row: undetermined here
+    class 2 of 2    1 state
+                      ?f = Soup · ?g = Ann
+  as :expect        not printed: these classes are a lower bound, and the claim would say they are all

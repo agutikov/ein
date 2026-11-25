@@ -1,0 +1,4 @@
+graph coupling {
+  label="tests/region/04_owing.ein: the questions' hypergraph, the edges read one application back. 0 questions, 0 edges (0 a debt's alone, dashed)";
+  node [shape=box, fontsize=10];
+}

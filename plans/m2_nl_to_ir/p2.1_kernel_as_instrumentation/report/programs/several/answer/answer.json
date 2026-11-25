@@ -1,0 +1,272 @@
+{
+  "schema": "ein-summary/2",
+  "source": "examples/lattice/03_state_hash_collision.ein",
+  "asked": {
+    "which": "all",
+    "ask": "describe",
+    "n": null
+  },
+  "region": {
+    "k_s": 5,
+    "k_c": 8,
+    "exhausted": true,
+    "stopped": null,
+    "complete_up_to": null,
+    "root": "in-r",
+    "root_owes": 0,
+    "root_owed": [],
+    "empty": null,
+    "minimal": {
+      "states": 1,
+      "commitments": 1,
+      "least": 0,
+      "trivial": true
+    },
+    "maximal": {
+      "states": 1,
+      "trivial": true
+    },
+    "components": [
+      8
+    ],
+    "subcubes": [
+      3
+    ],
+    "merged": {
+      "states": 1,
+      "minimal": 1
+    },
+    "nogoods": 0,
+    "discharging": null,
+    "holes": null,
+    "universe": {
+      "candidates": 3,
+      "dead_alone": 0
+    },
+    "route": "states",
+    "licences": [
+      "L1 dead is upward-closed",
+      "L3 a commitment's state is its closure's",
+      "L4 the lines are local"
+    ],
+    "states": [
+      {
+        "facts": [],
+        "closure": [],
+        "from": [],
+        "minimal_generators": [
+          []
+        ],
+        "commitments": 1,
+        "lines": [
+          "minimal"
+        ],
+        "listed": true
+      },
+      {
+        "facts": [
+          "(h1 X)"
+        ],
+        "closure": [
+          "(h1 X)"
+        ],
+        "from": [
+          "(h1 X)"
+        ],
+        "minimal_generators": [
+          [
+            "(h1 X)"
+          ]
+        ],
+        "commitments": 1,
+        "lines": [],
+        "listed": true
+      },
+      {
+        "facts": [
+          "(h3 X)"
+        ],
+        "closure": [
+          "(h3 X)"
+        ],
+        "from": [
+          "(h3 X)"
+        ],
+        "minimal_generators": [
+          [
+            "(h3 X)"
+          ]
+        ],
+        "commitments": 1,
+        "lines": [],
+        "listed": true
+      },
+      {
+        "facts": [
+          "(h1 X)",
+          "(h3 X)"
+        ],
+        "closure": [
+          "(h1 X)",
+          "(h3 X)"
+        ],
+        "from": [
+          "(h1 X)",
+          "(h3 X)"
+        ],
+        "minimal_generators": [
+          [
+            "(h1 X)",
+            "(h3 X)"
+          ]
+        ],
+        "commitments": 1,
+        "lines": [],
+        "listed": true
+      },
+      {
+        "facts": [
+          "(h1 X)",
+          "(h2 X)",
+          "(h3 X)"
+        ],
+        "closure": [
+          "(h1 X)",
+          "(h2 X)",
+          "(h3 X)"
+        ],
+        "from": [
+          "(h2 X)"
+        ],
+        "minimal_generators": [
+          [
+            "(h2 X)"
+          ]
+        ],
+        "commitments": 4,
+        "lines": [
+          "maximal"
+        ],
+        "listed": true
+      }
+    ],
+    "frontier": null,
+    "core": null,
+    "core_sources": null,
+    "core_status": null,
+    "refuted_by": null
+  },
+  "verdict": null,
+  "queries": [
+    {
+      "goal": "(h1 ?x)",
+      "over": "all",
+      "exact": true,
+      "classes": [
+        {
+          "facts": [],
+          "rows": [],
+          "states": [
+            1,
+            3
+          ]
+        },
+        {
+          "facts": [
+            "(h1 X)"
+          ],
+          "rows": [
+            {
+              "x": "X"
+            }
+          ],
+          "states": [
+            2,
+            4,
+            5
+          ]
+        }
+      ],
+      "expect": null
+    }
+  ],
+  "claim": null,
+  "work": {
+    "saturations": 7,
+    "facts": 13,
+    "layers": 5
+  },
+  "monotonicity": {
+    "monotone": true,
+    "warning": null,
+    "hypothesised": [
+      "h1",
+      "h2",
+      "h3"
+    ],
+    "dynamic": [
+      "h1",
+      "h2",
+      "h3"
+    ],
+    "plans": {
+      "saturation": 3,
+      "obligation": 0
+    },
+    "reads": {
+      "static": 1,
+      "dynamic_monotone": 2,
+      "dynamic_non_monotone": 0
+    },
+    "absent_reads": {
+      "static": 0,
+      "dynamic_monotone": 0,
+      "dynamic_non_monotone": 0
+    },
+    "sites": [],
+    "in_flight": null,
+    "assumes": null,
+    "cycles": [],
+    "order": [],
+    "status": null,
+    "state": null,
+    "paths": null
+  },
+  "leftover": {
+    "taken": false,
+    "states": [],
+    "states_by_relation": []
+  },
+  "root": {
+    "facts": 16,
+    "facts_by_relation": {
+      "guess": 3,
+      "is-a": 2,
+      "open": 3,
+      "relation": 8
+    },
+    "dead": false,
+    "owes": 0,
+    "owed": [],
+    "commit": [],
+    "plans": 3,
+    "saturator": {
+      "naf_rounds": 0,
+      "naf_admitted": 0,
+      "naf_retired": 0,
+      "naf_dropped": 0
+    },
+    "hypgen": {
+      "raw": 3,
+      "emitted": 3,
+      "filtered": {},
+      "pre_candidate": {},
+      "outside": []
+    }
+  },
+  "config": {
+    "lattice-sanity-check": false,
+    "record-alternative-justifications": true
+  },
+  "diagnostics": []
+}

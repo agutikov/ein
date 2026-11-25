@@ -1,0 +1,176 @@
+solve · examples/zebra2.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      1
+  commitments (k_c) 261 982
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 not in R — root owes 36 instances
+    owed            color-loc owes Red a House.
+    owed            color-loc owes Green a House.
+    owed            color-loc owes Ivory a House.
+    owed            nation-loc owes Englishman a House.
+    owed            nation-loc owes Spaniard a House.
+    owed            nation-loc owes Ukrainian a House.
+    owed            nation-loc owes Japanese a House.
+    owed            drink-loc owes Coffee a House.
+    owed            drink-loc owes Tea a House.
+    owed            drink-loc owes Juice a House.
+    owed            smoke-loc owes Old_Gold a House.
+    owed            smoke-loc owes Chesterfields a House.
+    owed            smoke-loc owes Lucky_Strike a House.
+    owed            smoke-loc owes Parliament a House.
+    owed            pet-loc owes Dog a House.
+    owed            pet-loc owes Snail a House.
+    owed            pet-loc owes Fox a House.
+    owed            pet-loc owes Zebra a House.
+    owed            color-loc owes House-3 a preimage in Color.
+    owed            color-loc owes House-4 a preimage in Color.
+    owed            color-loc owes House-5 a preimage in Color.
+    owed            nation-loc owes House-2 a preimage in Nationality.
+    owed            nation-loc owes House-3 a preimage in Nationality.
+    owed            nation-loc owes House-4 a preimage in Nationality.
+    owed            nation-loc owes House-5 a preimage in Nationality.
+    owed            drink-loc owes House-2 a preimage in Drink.
+    owed            drink-loc owes House-4 a preimage in Drink.
+    owed            drink-loc owes House-5 a preimage in Drink.
+    owed            smoke-loc owes House-2 a preimage in Cigarette.
+    owed            smoke-loc owes House-3 a preimage in Cigarette.
+    owed            smoke-loc owes House-4 a preimage in Cigarette.
+    owed            smoke-loc owes House-5 a preimage in Cigarette.
+    owed            pet-loc owes House-1 a preimage in Pet.
+    owed            pet-loc owes House-3 a preimage in Pet.
+    owed            pet-loc owes House-4 a preimage in Pet.
+    owed            pet-loc owes House-5 a preimage in Pet.
+  minimal line      1 state, from 63 commitments — the least guess is 1 candidate
+  maximal line      1 state
+  components        1
+  sub-cubes         63, 4 of dimension 17, 59 of dimension 16
+  merged            1 state reached by more than one commitment, with 63 minimal
+  N                 not computed by the tree and the classes — ≥ 21 minimal dead sets, the candidates dead alone; --describe-route states computes N
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          56 candidates, 21 dead alone
+    outside         is-a*, next-to — no candidate: no obligation owes them. R holds of them only what the program states and saturation derives
+  route             the tree and the classes: R's states by the obligation tree, each state's class by dualise and advance — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
+  work              120 saturations · 5 411 facts beyond root
+
+  (region
+    ;; state 1 of 1 — 18 candidates · minimal and maximal · 261 982 commitments, 63 minimal
+    (model (color-loc Blue House-2) (color-loc Green House-5)
+           (color-loc Ivory House-4) (color-loc Red House-3)
+           (color-loc Yellow House-1) (drink-loc Coffee House-5)
+           (drink-loc Juice House-4) (drink-loc Milk House-3)
+           (drink-loc Tea House-2) (drink-loc Water House-1)
+           (nation-loc Englishman House-3) (nation-loc Japanese House-5)
+           (nation-loc Norwegian House-1) (nation-loc Spaniard House-4)
+           (nation-loc Ukrainian House-2) (pet-loc Dog House-4)
+           (pet-loc Fox House-1) (pet-loc Horse House-2)
+           (pet-loc Snail House-3) (pet-loc Zebra House-5)
+           (smoke-loc Chesterfields House-2) (smoke-loc Kools House-1)
+           (smoke-loc Lucky_Strike House-4) (smoke-loc Old_Gold House-3)
+           (smoke-loc Parliament House-5))
+    ;; state 1 is reached by 261 982 commitments; its 63 minimal
+    (merged (model (color-loc Blue House-2) (color-loc Green House-5)
+                   (color-loc Ivory House-4) (color-loc Red House-3)
+                   (color-loc Yellow House-1) (drink-loc Coffee House-5)
+                   (drink-loc Juice House-4) (drink-loc Milk House-3)
+                   (drink-loc Tea House-2) (drink-loc Water House-1)
+                   (nation-loc Englishman House-3)
+                   (nation-loc Japanese House-5)
+                   (nation-loc Norwegian House-1)
+                   (nation-loc Spaniard House-4)
+                   (nation-loc Ukrainian House-2) (pet-loc Dog House-4)
+                   (pet-loc Fox House-1) (pet-loc Horse House-2)
+                   (pet-loc Snail House-3) (pet-loc Zebra House-5)
+                   (smoke-loc Chesterfields House-2) (smoke-loc Kools House-1)
+                   (smoke-loc Lucky_Strike House-4)
+                   (smoke-loc Old_Gold House-3) (smoke-loc Parliament House-5))
+            (or (model (color-loc Green House-5) (drink-loc Tea House-2))
+                (model (color-loc Green House-5) (nation-loc Spaniard House-4))
+                (model (color-loc Green House-5)
+                       (nation-loc Ukrainian House-2))
+                (model (color-loc Green House-5) (pet-loc Dog House-4))
+                (model (color-loc Green House-5) (pet-loc Fox House-1))
+                (model (color-loc Green House-5) (pet-loc Zebra House-5))
+                (model (color-loc Green House-5)
+                       (smoke-loc Chesterfields House-2))
+                (model (color-loc Ivory House-4) (drink-loc Tea House-2))
+                (model (color-loc Ivory House-4) (nation-loc Spaniard House-4))
+                (model (color-loc Ivory House-4)
+                       (nation-loc Ukrainian House-2))
+                (model (color-loc Ivory House-4) (pet-loc Dog House-4))
+                (model (color-loc Ivory House-4) (pet-loc Fox House-1))
+                (model (color-loc Ivory House-4) (pet-loc Zebra House-5))
+                (model (color-loc Ivory House-4)
+                       (smoke-loc Chesterfields House-2))
+                (model (color-loc Red House-3) (drink-loc Tea House-2))
+                (model (color-loc Red House-3) (nation-loc Spaniard House-4))
+                (model (color-loc Red House-3) (nation-loc Ukrainian House-2))
+                (model (color-loc Red House-3) (pet-loc Dog House-4))
+                (model (color-loc Red House-3) (pet-loc Fox House-1))
+                (model (color-loc Red House-3) (pet-loc Zebra House-5))
+                (model (color-loc Red House-3)
+                       (smoke-loc Chesterfields House-2))
+                (model (drink-loc Coffee House-5) (drink-loc Tea House-2))
+                (model (drink-loc Coffee House-5)
+                       (nation-loc Spaniard House-4))
+                (model (drink-loc Coffee House-5)
+                       (nation-loc Ukrainian House-2))
+                (model (drink-loc Coffee House-5) (pet-loc Dog House-4))
+                (model (drink-loc Coffee House-5) (pet-loc Fox House-1))
+                (model (drink-loc Coffee House-5) (pet-loc Zebra House-5))
+                (model (drink-loc Coffee House-5)
+                       (smoke-loc Chesterfields House-2))
+                (model (drink-loc Juice House-4))
+                (model (drink-loc Tea House-2) (nation-loc Englishman House-3))
+                (model (drink-loc Tea House-2) (nation-loc Spaniard House-4))
+                (model (drink-loc Tea House-2) (pet-loc Dog House-4))
+                (model (drink-loc Tea House-2) (pet-loc Snail House-3))
+                (model (drink-loc Tea House-2) (smoke-loc Old_Gold House-3))
+                (model (nation-loc Englishman House-3)
+                       (nation-loc Spaniard House-4))
+                (model (nation-loc Englishman House-3)
+                       (nation-loc Ukrainian House-2))
+                (model (nation-loc Englishman House-3) (pet-loc Dog House-4))
+                (model (nation-loc Englishman House-3) (pet-loc Fox House-1))
+                (model (nation-loc Englishman House-3) (pet-loc Zebra House-5))
+                (model (nation-loc Englishman House-3)
+                       (smoke-loc Chesterfields House-2))
+                (model (nation-loc Japanese House-5))
+                (model (nation-loc Spaniard House-4)
+                       (nation-loc Ukrainian House-2))
+                (model (nation-loc Spaniard House-4) (pet-loc Fox House-1))
+                (model (nation-loc Spaniard House-4) (pet-loc Snail House-3))
+                (model (nation-loc Spaniard House-4) (pet-loc Zebra House-5))
+                (model (nation-loc Spaniard House-4)
+                       (smoke-loc Chesterfields House-2))
+                (model (nation-loc Spaniard House-4)
+                       (smoke-loc Old_Gold House-3))
+                (model (nation-loc Ukrainian House-2) (pet-loc Dog House-4))
+                (model (nation-loc Ukrainian House-2) (pet-loc Snail House-3))
+                (model (nation-loc Ukrainian House-2)
+                       (smoke-loc Old_Gold House-3))
+                (model (pet-loc Dog House-4) (pet-loc Fox House-1))
+                (model (pet-loc Dog House-4) (pet-loc Snail House-3))
+                (model (pet-loc Dog House-4) (pet-loc Zebra House-5))
+                (model (pet-loc Dog House-4) (smoke-loc Chesterfields House-2))
+                (model (pet-loc Dog House-4) (smoke-loc Old_Gold House-3))
+                (model (pet-loc Fox House-1) (pet-loc Snail House-3))
+                (model (pet-loc Fox House-1) (smoke-loc Old_Gold House-3))
+                (model (pet-loc Snail House-3) (pet-loc Zebra House-5))
+                (model (pet-loc Snail House-3)
+                       (smoke-loc Chesterfields House-2))
+                (model (pet-loc Zebra House-5) (smoke-loc Old_Gold House-3))
+                (model (smoke-loc Chesterfields House-2)
+                       (smoke-loc Old_Gold House-3))
+                (model (smoke-loc Lucky_Strike House-4))
+                (model (smoke-loc Parliament House-5)))))
+
+  query             (and (drink-loc Water ?h_water) (nation-loc ?who_water ?h_water) (pet-loc Zebra ?h_zebra) (nation-loc ?who_zebra ?h_zebra))
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?h_water = House-1 · ?h_zebra = House-5 · ?who_water = Norwegian · ?who_zebra = Japanese
+                        “The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”
+  as :expect        (model (drink-loc Water House-1)
+                           (nation-loc Japanese House-5)
+                           (nation-loc Norwegian House-1)
+                           (pet-loc Zebra House-5))

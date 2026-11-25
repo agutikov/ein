@@ -1,0 +1,344 @@
+{
+  "schema": "ein-h-space/1",
+  "program": "tests/region/04_owing.ein",
+  "asked": {
+    "region_budget": 1048576,
+    "supports": false
+  },
+  "n": 0,
+  "rung": "no-search",
+  "monotone": true,
+  "root_dead": false,
+  "whole": true,
+  "unread": [],
+  "says": [
+    "H is empty: the program proposes no candidate, so it does not search and there is no structure to read"
+  ],
+  "domain": {
+    "pair_layer": null,
+    "cover": null,
+    "coupling": null
+  },
+  "cost": {
+    "root_layer": {
+      "saturations": 1,
+      "facts_beyond_root": 0
+    },
+    "small_kb_layer": {
+      "saturations": 1,
+      "facts_beyond_its_own_root": 0
+    },
+    "supports": {
+      "saturations": 0
+    },
+    "cover": {
+      "saturations": 0,
+      "clique_calls": 0,
+      "root_clique_calls": 0,
+      "bound": 1048576
+    },
+    "exactly_one": {
+      "saturations": 0
+    },
+    "whole_node": null,
+    "saturations": 2
+  },
+  "graphs": [
+    {
+      "graph": "exclusion",
+      "file": "exclusion.dot",
+      "nodes": 0,
+      "lines": 0
+    },
+    {
+      "graph": "cover",
+      "file": "cover.dot",
+      "nodes": 0,
+      "lines": 0
+    },
+    {
+      "graph": "coupling",
+      "file": "coupling.dot",
+      "nodes": 0,
+      "lines": 0
+    },
+    {
+      "graph": "one-step",
+      "file": "coupling_one_step.dot",
+      "nodes": 0,
+      "lines": 0
+    }
+  ],
+  "candidates": [],
+  "pairs": {
+    "n": 0,
+    "monotone": true,
+    "domain": null,
+    "root_dead": false,
+    "complete": true,
+    "stopped": null,
+    "singles_left": 0,
+    "pairs": {
+      "all": 0,
+      "dead_member": 0,
+      "implied": 0,
+      "saturated": 0,
+      "left": 0
+    },
+    "work": {
+      "saturations": 1,
+      "facts": 0
+    },
+    "candidates": [],
+    "at_root": [],
+    "dead_alone": [],
+    "implies": [],
+    "equivalent": [],
+    "excluded": [],
+    "interacting": [],
+    "against_l1": [],
+    "against_l3": [],
+    "licences": []
+  },
+  "theory": {
+    "small_kb": {
+      "kept": 6,
+      "dropped": 0,
+      "by_clause": [
+        {
+          "clause": "names none of the candidates' objects",
+          "kept": true,
+          "facts": 6
+        }
+      ],
+      "error": null
+    },
+    "stated": [
+      {
+        "fact": "(relation is-a T T)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation is-a)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation likes Person Food)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation likes)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(is-a Ann Person)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(is-a Bob Person)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(is-a Soup Food)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(is-a Stew Food)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(total-owed likes is-a)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(likes Bob Stew)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": false
+      }
+    ],
+    "theory_dead_alone": [],
+    "theory_excluded": [],
+    "against_root": {
+      "singles": [],
+      "pairs": []
+    },
+    "small_beyond_root": 0,
+    "root_excluded": [],
+    "rules_naming_objects": [],
+    "small_kb_layer": {
+      "n": 0,
+      "monotone": true,
+      "domain": null,
+      "root_dead": false,
+      "complete": true,
+      "stopped": null,
+      "singles_left": 0,
+      "pairs": {
+        "all": 0,
+        "dead_member": 0,
+        "implied": 0,
+        "saturated": 0,
+        "left": 0
+      },
+      "work": {
+        "saturations": 1,
+        "facts": 0
+      },
+      "candidates": [],
+      "at_root": [],
+      "dead_alone": [],
+      "implies": [],
+      "equivalent": [],
+      "excluded": [],
+      "interacting": [],
+      "against_l1": [],
+      "against_l3": [],
+      "licences": []
+    }
+  },
+  "cover": {
+    "n": 0,
+    "complete": true,
+    "monotone": true,
+    "small_monotone": true,
+    "domain": null,
+    "stopped": null,
+    "bound": 1048576,
+    "steps": 0,
+    "cut": null,
+    "candidates": [],
+    "groups": [],
+    "in_no_group": [],
+    "components": [],
+    "pairs_alive_at_root": [],
+    "root_cliques": {
+      "steps": 0,
+      "cut": null,
+      "cliques": []
+    }
+  },
+  "exactly_one": {
+    "n": 0,
+    "domain": null,
+    "root_owes": 1,
+    "no_table": null,
+    "singles_read": true,
+    "theory_read": true,
+    "instances": [
+      {
+        "instance": "(total-owed likes is-a) R=likes isa=is-a A=Person B=Food a=Ann",
+        "rule": "total-owed",
+        "standing": "unlicensed",
+        "licensed": false,
+        "witnesses_denied_at_root": 0,
+        "witnesses": [
+          {
+            "fact": "(likes Ann Soup)",
+            "is": "no candidate, not denied",
+            "held_at_root_by": [],
+            "held_in_the_theory_by": []
+          },
+          {
+            "fact": "(likes Ann Stew)",
+            "is": "no candidate, not denied",
+            "held_at_root_by": [],
+            "held_in_the_theory_by": []
+          }
+        ],
+        "why": "a fact can witness it that is no candidate and that root does not deny",
+        "pay_by_the_theory_alone": [],
+        "about_group": null,
+        "witnesses_no_candidate_and_not_denied": 2,
+        "of_them_brought_by_a_candidate_at_root": 0
+      }
+    ],
+    "groups": [],
+    "owed_groups": [],
+    "groups_nothing_owes": [],
+    "owed_sets_not_a_group": [],
+    "unlicensed": [
+      0
+    ],
+    "grids": [],
+    "components_that_are_no_grid": []
+  },
+  "coupling": {
+    "reading": "node",
+    "complete": false,
+    "domain": null,
+    "questions": [],
+    "ties": [],
+    "edges": [],
+    "edges_one_step_back": [],
+    "components": [],
+    "conflict_components": [],
+    "debts": [],
+    "debts_across_conflict_components": [],
+    "unlicensed_instances": 1,
+    "committed": [],
+    "pairs_read": true,
+    "payers_read": true,
+    "node_stopped": "no candidate is alive alone",
+    "cut": {
+      "ways": 0,
+      "descriptions": 0,
+      "unsettled": false
+    }
+  },
+  "declared": {
+    "mechanisms": {
+      "hypothesis_rules": 0,
+      "hypothesis_plans": 0,
+      "obligation_rules": 2,
+      "obligation_plans": 1,
+      "proposed": [],
+      "owable": [
+        "likes"
+      ],
+      "closed": [],
+      "listed": null,
+      "excluded": [],
+      "no_search": true
+    },
+    "relations": []
+  }
+}

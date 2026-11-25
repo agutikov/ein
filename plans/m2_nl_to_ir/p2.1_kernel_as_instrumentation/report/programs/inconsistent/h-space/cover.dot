@@ -1,0 +1,4 @@
+graph cover {
+  graph [label="examples/ein-bugs/zebra2-bad.ein: the cover. 0 groups (0 owed, double border), 0 grids, 0 candidates in no group not drawn", labelloc=t, fontsize=11, rankdir=LR];
+  node [fontsize=9];
+}

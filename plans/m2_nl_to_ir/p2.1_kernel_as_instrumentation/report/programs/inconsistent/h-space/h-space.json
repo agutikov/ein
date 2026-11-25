@@ -1,0 +1,982 @@
+{
+  "schema": "ein-h-space/1",
+  "program": "examples/ein-bugs/zebra2-bad.ein",
+  "asked": {
+    "region_budget": 1048576,
+    "supports": false
+  },
+  "n": 0,
+  "rung": "union",
+  "monotone": true,
+  "root_dead": true,
+  "whole": true,
+  "unread": [],
+  "says": [
+    "H is empty: the program proposes no candidate, so it does not search and there is no structure to read"
+  ],
+  "domain": {
+    "pair_layer": null,
+    "cover": null,
+    "coupling": null
+  },
+  "cost": {
+    "root_layer": {
+      "saturations": 0,
+      "facts_beyond_root": 0
+    },
+    "small_kb_layer": {
+      "saturations": 1,
+      "facts_beyond_its_own_root": 0
+    },
+    "supports": {
+      "saturations": 0
+    },
+    "cover": {
+      "saturations": 0,
+      "clique_calls": 0,
+      "root_clique_calls": 0,
+      "bound": 1048576
+    },
+    "exactly_one": {
+      "saturations": 0
+    },
+    "whole_node": null,
+    "saturations": 1
+  },
+  "graphs": [
+    {
+      "graph": "exclusion",
+      "file": "exclusion.dot",
+      "nodes": 0,
+      "lines": 0
+    },
+    {
+      "graph": "cover",
+      "file": "cover.dot",
+      "nodes": 0,
+      "lines": 0
+    },
+    {
+      "graph": "coupling",
+      "file": "coupling.dot",
+      "nodes": 0,
+      "lines": 0
+    },
+    {
+      "graph": "one-step",
+      "file": "coupling_one_step.dot",
+      "nodes": 0,
+      "lines": 0
+    }
+  ],
+  "candidates": [],
+  "pairs": {
+    "n": 0,
+    "monotone": true,
+    "domain": null,
+    "root_dead": true,
+    "complete": true,
+    "stopped": null,
+    "singles_left": 0,
+    "pairs": {
+      "all": 0,
+      "dead_member": 0,
+      "implied": 0,
+      "saturated": 0,
+      "left": 0
+    },
+    "work": {
+      "saturations": 0,
+      "facts": 0
+    },
+    "candidates": [],
+    "at_root": [],
+    "dead_alone": [],
+    "implies": [],
+    "equivalent": [],
+    "excluded": [],
+    "interacting": [],
+    "against_l1": [],
+    "against_l3": [],
+    "licences": [
+      "L0 a fork only adds: root is dead, so every node is"
+    ]
+  },
+  "theory": {
+    "small_kb": {
+      "kept": 53,
+      "dropped": 19,
+      "by_clause": [
+        {
+          "clause": "(a) a fact of a candidates' relation",
+          "kept": false,
+          "facts": 3
+        },
+        {
+          "clause": "(b) names one of the candidates' objects",
+          "kept": false,
+          "facts": 16
+        },
+        {
+          "clause": "a fact of a relation the writers that built H read",
+          "kept": true,
+          "facts": 30
+        },
+        {
+          "clause": "names none of the candidates' objects",
+          "kept": true,
+          "facts": 23
+        }
+      ],
+      "error": null
+    },
+    "stated": [
+      {
+        "fact": "(relation is-a T T)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation is-a)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation is-a* T T)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation is-a*)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation color-loc Color House)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation color-loc)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation nation-loc Nationality House)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation nation-loc)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation drink-loc Drink House)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation drink-loc)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation smoke-loc Cigarette House)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation smoke-loc)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation pet-loc Pet House)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation pet-loc)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation right-of House House)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation right-of)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation next-to House House)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(relation next-to)",
+        "source": null,
+        "origin": "declaration",
+        "kept": true,
+        "clause": "a declaration is kept",
+        "read_absent": false
+      },
+      {
+        "fact": "(bijection-hierarchy is-a)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(typecheck-hierarchy is-a*)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(includes is-a is-a*)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": true
+      },
+      {
+        "fact": "(transitive is-a*)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": true
+      },
+      {
+        "fact": "(symmetric next-to)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": true
+      },
+      {
+        "fact": "(includes right-of next-to)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": true
+      },
+      {
+        "fact": "(bijective color-loc)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(bijective nation-loc)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(bijective drink-loc)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(bijective smoke-loc)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(bijective pet-loc)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(is-a Attribute T)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a House Attribute)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Color Attribute)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Nationality Attribute)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Pet Attribute)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Cigarette Attribute)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Drink Attribute)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a House-1 House)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a House-2 House)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a House-3 House)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a House-4 House)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a House-5 House)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Red Color)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Green Color)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Ivory Color)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Yellow Color)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Blue Color)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Englishman Nationality)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Spaniard Nationality)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Ukrainian Nationality)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Norwegian Nationality)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Japanese Nationality)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Dog Pet)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Snail Pet)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Fox Pet)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Horse Pet)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Zebra Pet)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Old_Gold Cigarette)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Kools Cigarette)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Chesterfields Cigarette)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Lucky_Strike Cigarette)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Parliament Cigarette)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Coffee Drink)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Tea Drink)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Milk Drink)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Juice Drink)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(is-a Water Drink)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "a fact of a relation the writers that built H read",
+        "read_absent": true
+      },
+      {
+        "fact": "(right-of House-2 House-1)",
+        "source": "condition (1)",
+        "origin": "fact",
+        "kept": false,
+        "clause": "(b) names one of the candidates' objects",
+        "read_absent": true
+      },
+      {
+        "fact": "(right-of House-3 House-2)",
+        "source": "condition (1)",
+        "origin": "fact",
+        "kept": false,
+        "clause": "(b) names one of the candidates' objects",
+        "read_absent": true
+      },
+      {
+        "fact": "(right-of House-4 House-3)",
+        "source": "condition (1)",
+        "origin": "fact",
+        "kept": false,
+        "clause": "(b) names one of the candidates' objects",
+        "read_absent": true
+      },
+      {
+        "fact": "(right-of House-5 House-4)",
+        "source": "condition (1)",
+        "origin": "fact",
+        "kept": false,
+        "clause": "(b) names one of the candidates' objects",
+        "read_absent": true
+      },
+      {
+        "fact": "(co-located nation-loc Englishman color-loc Red)",
+        "source": "condition (2)",
+        "origin": "fact",
+        "kept": false,
+        "clause": "(b) names one of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(co-located nation-loc Spaniard pet-loc Dog)",
+        "source": "condition (3)",
+        "origin": "fact",
+        "kept": false,
+        "clause": "(b) names one of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(co-located drink-loc Coffee color-loc Green)",
+        "source": "condition (4)",
+        "origin": "fact",
+        "kept": false,
+        "clause": "(b) names one of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(co-located nation-loc Ukrainian drink-loc Tea)",
+        "source": "condition (5)",
+        "origin": "fact",
+        "kept": false,
+        "clause": "(b) names one of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(adjacent-via right-of color-loc Ivory color-loc Green)",
+        "source": "condition (6)",
+        "origin": "fact",
+        "kept": false,
+        "clause": "(b) names one of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(co-located smoke-loc Old_Gold pet-loc Snail)",
+        "source": "condition (7)",
+        "origin": "fact",
+        "kept": false,
+        "clause": "(b) names one of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(co-located smoke-loc Kools color-loc Yellow)",
+        "source": "condition (8)",
+        "origin": "fact",
+        "kept": false,
+        "clause": "(b) names one of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(drink-loc Milk House-3)",
+        "source": "condition (9)",
+        "origin": "fact",
+        "kept": false,
+        "clause": "(a) a fact of a candidates' relation",
+        "read_absent": false
+      },
+      {
+        "fact": "(nation-loc Norwegian House-1)",
+        "source": "condition (10)",
+        "origin": "fact",
+        "kept": false,
+        "clause": "(a) a fact of a candidates' relation",
+        "read_absent": false
+      },
+      {
+        "fact": "(adjacent-via next-to smoke-loc Chesterfields pet-loc Fox)",
+        "source": "condition (11)",
+        "origin": "fact",
+        "kept": false,
+        "clause": "(b) names one of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(adjacent-via next-to smoke-loc Kools pet-loc Horse)",
+        "source": "condition (12)",
+        "origin": "fact",
+        "kept": false,
+        "clause": "(b) names one of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(co-located smoke-loc Lucky_Strike drink-loc Juice)",
+        "source": "condition (13)",
+        "origin": "fact",
+        "kept": false,
+        "clause": "(b) names one of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(co-located nation-loc Japanese smoke-loc Parliament)",
+        "source": "condition (14)",
+        "origin": "fact",
+        "kept": false,
+        "clause": "(b) names one of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(adjacent-via next-to nation-loc Norwegian color-loc Blue)",
+        "source": "condition (15)",
+        "origin": "fact",
+        "kept": false,
+        "clause": "(b) names one of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(color-loc Green House-1)",
+        "source": "injected contradiction",
+        "origin": "fact",
+        "kept": false,
+        "clause": "(a) a fact of a candidates' relation",
+        "read_absent": false
+      },
+      {
+        "fact": "(guess color-loc Color House)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(guess nation-loc Nationality House)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(guess drink-loc Drink House)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(guess smoke-loc Cigarette House)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": false
+      },
+      {
+        "fact": "(guess pet-loc Pet House)",
+        "source": null,
+        "origin": "fact",
+        "kept": true,
+        "clause": "names none of the candidates' objects",
+        "read_absent": false
+      }
+    ],
+    "theory_dead_alone": [],
+    "theory_excluded": [],
+    "against_root": {
+      "singles": [],
+      "pairs": []
+    },
+    "small_beyond_root": 0,
+    "root_excluded": [],
+    "rules_naming_objects": [],
+    "small_kb_layer": {
+      "n": 0,
+      "monotone": true,
+      "domain": null,
+      "root_dead": false,
+      "complete": true,
+      "stopped": null,
+      "singles_left": 0,
+      "pairs": {
+        "all": 0,
+        "dead_member": 0,
+        "implied": 0,
+        "saturated": 0,
+        "left": 0
+      },
+      "work": {
+        "saturations": 1,
+        "facts": 0
+      },
+      "candidates": [],
+      "at_root": [],
+      "dead_alone": [],
+      "implies": [],
+      "equivalent": [],
+      "excluded": [],
+      "interacting": [],
+      "against_l1": [],
+      "against_l3": [],
+      "licences": []
+    }
+  },
+  "cover": {
+    "n": 0,
+    "complete": true,
+    "monotone": true,
+    "small_monotone": true,
+    "domain": null,
+    "stopped": null,
+    "bound": 1048576,
+    "steps": 0,
+    "cut": null,
+    "candidates": [],
+    "groups": [],
+    "in_no_group": [],
+    "components": [],
+    "pairs_alive_at_root": [],
+    "root_cliques": {
+      "steps": 0,
+      "cut": null,
+      "cliques": []
+    }
+  },
+  "exactly_one": {
+    "n": 0,
+    "domain": null,
+    "root_owes": 0,
+    "no_table": null,
+    "singles_read": true,
+    "theory_read": true,
+    "instances": [],
+    "groups": [],
+    "owed_groups": [],
+    "groups_nothing_owes": [],
+    "owed_sets_not_a_group": [],
+    "unlicensed": [],
+    "grids": [],
+    "components_that_are_no_grid": []
+  },
+  "coupling": {
+    "reading": "node",
+    "complete": false,
+    "domain": null,
+    "questions": [],
+    "ties": [],
+    "edges": [],
+    "edges_one_step_back": [],
+    "components": [],
+    "conflict_components": [],
+    "debts": [],
+    "debts_across_conflict_components": [],
+    "unlicensed_instances": 0,
+    "committed": [],
+    "pairs_read": true,
+    "payers_read": true,
+    "node_stopped": "root is dead",
+    "cut": {
+      "ways": 0,
+      "descriptions": 0,
+      "unsettled": false
+    }
+  },
+  "declared": {
+    "mechanisms": {
+      "hypothesis_rules": 1,
+      "hypothesis_plans": 5,
+      "obligation_rules": 2,
+      "obligation_plans": 10,
+      "proposed": [
+        "color-loc",
+        "drink-loc",
+        "nation-loc",
+        "pet-loc",
+        "smoke-loc"
+      ],
+      "owable": [
+        "color-loc",
+        "drink-loc",
+        "nation-loc",
+        "pet-loc",
+        "smoke-loc"
+      ],
+      "closed": [],
+      "listed": null,
+      "excluded": [],
+      "no_search": false
+    },
+    "relations": []
+  }
+}

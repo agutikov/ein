@@ -1,0 +1,1 @@
+derivation cycle: (r a b) -> (r c d) -> (r a b)

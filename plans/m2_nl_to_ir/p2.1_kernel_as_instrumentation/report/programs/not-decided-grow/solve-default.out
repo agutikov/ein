@@ -1,0 +1,7 @@
+solve · ein.rs/crates/ein-cli/tests/bounded/grow.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  exhausted         no — root's saturation needed more than --max-steps 1048576 firings, and was stopped before its fixpoint: nothing of R is established
+
+  query             (num ?x)
+  over              all of R — no state to answer from: root's saturation needed more than --max-steps 1048576 firings, and was stopped before its fixpoint

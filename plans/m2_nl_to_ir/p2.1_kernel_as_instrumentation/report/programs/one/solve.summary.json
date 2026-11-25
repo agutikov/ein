@@ -1,0 +1,679 @@
+{
+  "schema": "ein-summary/2",
+  "source": "examples/zebra2.ein",
+  "asked": {
+    "which": "all",
+    "ask": "describe",
+    "n": null
+  },
+  "region": {
+    "k_s": 1,
+    "k_c": 261982,
+    "exhausted": true,
+    "stopped": null,
+    "complete_up_to": null,
+    "root": "owing",
+    "root_owes": 36,
+    "root_owed": [
+      "color-loc owes Red a House.",
+      "color-loc owes Green a House.",
+      "color-loc owes Ivory a House.",
+      "nation-loc owes Englishman a House.",
+      "nation-loc owes Spaniard a House.",
+      "nation-loc owes Ukrainian a House.",
+      "nation-loc owes Japanese a House.",
+      "drink-loc owes Coffee a House.",
+      "drink-loc owes Tea a House.",
+      "drink-loc owes Juice a House.",
+      "smoke-loc owes Old_Gold a House.",
+      "smoke-loc owes Chesterfields a House.",
+      "smoke-loc owes Lucky_Strike a House.",
+      "smoke-loc owes Parliament a House.",
+      "pet-loc owes Dog a House.",
+      "pet-loc owes Snail a House.",
+      "pet-loc owes Fox a House.",
+      "pet-loc owes Zebra a House.",
+      "color-loc owes House-3 a preimage in Color.",
+      "color-loc owes House-4 a preimage in Color.",
+      "color-loc owes House-5 a preimage in Color.",
+      "nation-loc owes House-2 a preimage in Nationality.",
+      "nation-loc owes House-3 a preimage in Nationality.",
+      "nation-loc owes House-4 a preimage in Nationality.",
+      "nation-loc owes House-5 a preimage in Nationality.",
+      "drink-loc owes House-2 a preimage in Drink.",
+      "drink-loc owes House-4 a preimage in Drink.",
+      "drink-loc owes House-5 a preimage in Drink.",
+      "smoke-loc owes House-2 a preimage in Cigarette.",
+      "smoke-loc owes House-3 a preimage in Cigarette.",
+      "smoke-loc owes House-4 a preimage in Cigarette.",
+      "smoke-loc owes House-5 a preimage in Cigarette.",
+      "pet-loc owes House-1 a preimage in Pet.",
+      "pet-loc owes House-3 a preimage in Pet.",
+      "pet-loc owes House-4 a preimage in Pet.",
+      "pet-loc owes House-5 a preimage in Pet."
+    ],
+    "empty": null,
+    "minimal": {
+      "states": 1,
+      "commitments": 63,
+      "least": 1,
+      "trivial": false
+    },
+    "maximal": {
+      "states": 1,
+      "trivial": false
+    },
+    "components": [
+      261982
+    ],
+    "subcubes": [
+      17,
+      17,
+      17,
+      17,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "merged": {
+      "states": 1,
+      "minimal": 63
+    },
+    "nogoods": null,
+    "discharging": null,
+    "holes": null,
+    "universe": {
+      "candidates": 56,
+      "dead_alone": 21
+    },
+    "route": "tree-classes",
+    "licences": [
+      "L1 dead is upward-closed",
+      "L2 discharged is upward-closed",
+      "L3 a commitment's state is its closure's",
+      "L4 the lines are local",
+      "L5 an owed instance's alternatives are exhaustive",
+      "L8 what a state denies is dead above it"
+    ],
+    "states": [
+      {
+        "facts": [
+          "(color-loc Blue House-2)",
+          "(color-loc Green House-5)",
+          "(color-loc Ivory House-4)",
+          "(color-loc Red House-3)",
+          "(color-loc Yellow House-1)",
+          "(drink-loc Coffee House-5)",
+          "(drink-loc Juice House-4)",
+          "(drink-loc Milk House-3)",
+          "(drink-loc Tea House-2)",
+          "(drink-loc Water House-1)",
+          "(nation-loc Englishman House-3)",
+          "(nation-loc Japanese House-5)",
+          "(nation-loc Norwegian House-1)",
+          "(nation-loc Spaniard House-4)",
+          "(nation-loc Ukrainian House-2)",
+          "(pet-loc Dog House-4)",
+          "(pet-loc Fox House-1)",
+          "(pet-loc Horse House-2)",
+          "(pet-loc Snail House-3)",
+          "(pet-loc Zebra House-5)",
+          "(smoke-loc Chesterfields House-2)",
+          "(smoke-loc Kools House-1)",
+          "(smoke-loc Lucky_Strike House-4)",
+          "(smoke-loc Old_Gold House-3)",
+          "(smoke-loc Parliament House-5)"
+        ],
+        "closure": [
+          "(color-loc Green House-5)",
+          "(color-loc Ivory House-4)",
+          "(color-loc Red House-3)",
+          "(drink-loc Coffee House-5)",
+          "(drink-loc Juice House-4)",
+          "(drink-loc Tea House-2)",
+          "(nation-loc Englishman House-3)",
+          "(nation-loc Japanese House-5)",
+          "(nation-loc Spaniard House-4)",
+          "(nation-loc Ukrainian House-2)",
+          "(pet-loc Dog House-4)",
+          "(pet-loc Fox House-1)",
+          "(pet-loc Snail House-3)",
+          "(pet-loc Zebra House-5)",
+          "(smoke-loc Chesterfields House-2)",
+          "(smoke-loc Lucky_Strike House-4)",
+          "(smoke-loc Old_Gold House-3)",
+          "(smoke-loc Parliament House-5)"
+        ],
+        "from": [
+          "(drink-loc Juice House-4)"
+        ],
+        "minimal_generators": [
+          [
+            "(drink-loc Juice House-4)"
+          ],
+          [
+            "(nation-loc Japanese House-5)"
+          ],
+          [
+            "(smoke-loc Lucky_Strike House-4)"
+          ],
+          [
+            "(smoke-loc Parliament House-5)"
+          ],
+          [
+            "(color-loc Green House-5)",
+            "(drink-loc Tea House-2)"
+          ],
+          [
+            "(color-loc Green House-5)",
+            "(nation-loc Spaniard House-4)"
+          ],
+          [
+            "(color-loc Green House-5)",
+            "(nation-loc Ukrainian House-2)"
+          ],
+          [
+            "(color-loc Green House-5)",
+            "(pet-loc Dog House-4)"
+          ],
+          [
+            "(color-loc Green House-5)",
+            "(pet-loc Fox House-1)"
+          ],
+          [
+            "(color-loc Green House-5)",
+            "(pet-loc Zebra House-5)"
+          ],
+          [
+            "(color-loc Green House-5)",
+            "(smoke-loc Chesterfields House-2)"
+          ],
+          [
+            "(color-loc Ivory House-4)",
+            "(drink-loc Tea House-2)"
+          ],
+          [
+            "(color-loc Ivory House-4)",
+            "(nation-loc Spaniard House-4)"
+          ],
+          [
+            "(color-loc Ivory House-4)",
+            "(nation-loc Ukrainian House-2)"
+          ],
+          [
+            "(color-loc Ivory House-4)",
+            "(pet-loc Dog House-4)"
+          ],
+          [
+            "(color-loc Ivory House-4)",
+            "(pet-loc Fox House-1)"
+          ],
+          [
+            "(color-loc Ivory House-4)",
+            "(pet-loc Zebra House-5)"
+          ],
+          [
+            "(color-loc Ivory House-4)",
+            "(smoke-loc Chesterfields House-2)"
+          ],
+          [
+            "(color-loc Red House-3)",
+            "(drink-loc Tea House-2)"
+          ],
+          [
+            "(color-loc Red House-3)",
+            "(nation-loc Spaniard House-4)"
+          ],
+          [
+            "(color-loc Red House-3)",
+            "(nation-loc Ukrainian House-2)"
+          ],
+          [
+            "(color-loc Red House-3)",
+            "(pet-loc Dog House-4)"
+          ],
+          [
+            "(color-loc Red House-3)",
+            "(pet-loc Fox House-1)"
+          ],
+          [
+            "(color-loc Red House-3)",
+            "(pet-loc Zebra House-5)"
+          ],
+          [
+            "(color-loc Red House-3)",
+            "(smoke-loc Chesterfields House-2)"
+          ],
+          [
+            "(drink-loc Coffee House-5)",
+            "(drink-loc Tea House-2)"
+          ],
+          [
+            "(drink-loc Coffee House-5)",
+            "(nation-loc Spaniard House-4)"
+          ],
+          [
+            "(drink-loc Coffee House-5)",
+            "(nation-loc Ukrainian House-2)"
+          ],
+          [
+            "(drink-loc Coffee House-5)",
+            "(pet-loc Dog House-4)"
+          ],
+          [
+            "(drink-loc Coffee House-5)",
+            "(pet-loc Fox House-1)"
+          ],
+          [
+            "(drink-loc Coffee House-5)",
+            "(pet-loc Zebra House-5)"
+          ],
+          [
+            "(drink-loc Coffee House-5)",
+            "(smoke-loc Chesterfields House-2)"
+          ],
+          [
+            "(drink-loc Tea House-2)",
+            "(nation-loc Englishman House-3)"
+          ],
+          [
+            "(drink-loc Tea House-2)",
+            "(nation-loc Spaniard House-4)"
+          ],
+          [
+            "(drink-loc Tea House-2)",
+            "(pet-loc Dog House-4)"
+          ],
+          [
+            "(drink-loc Tea House-2)",
+            "(pet-loc Snail House-3)"
+          ],
+          [
+            "(drink-loc Tea House-2)",
+            "(smoke-loc Old_Gold House-3)"
+          ],
+          [
+            "(nation-loc Englishman House-3)",
+            "(nation-loc Spaniard House-4)"
+          ],
+          [
+            "(nation-loc Englishman House-3)",
+            "(nation-loc Ukrainian House-2)"
+          ],
+          [
+            "(nation-loc Englishman House-3)",
+            "(pet-loc Dog House-4)"
+          ],
+          [
+            "(nation-loc Englishman House-3)",
+            "(pet-loc Fox House-1)"
+          ],
+          [
+            "(nation-loc Englishman House-3)",
+            "(pet-loc Zebra House-5)"
+          ],
+          [
+            "(nation-loc Englishman House-3)",
+            "(smoke-loc Chesterfields House-2)"
+          ],
+          [
+            "(nation-loc Spaniard House-4)",
+            "(nation-loc Ukrainian House-2)"
+          ],
+          [
+            "(nation-loc Spaniard House-4)",
+            "(pet-loc Fox House-1)"
+          ],
+          [
+            "(nation-loc Spaniard House-4)",
+            "(pet-loc Snail House-3)"
+          ],
+          [
+            "(nation-loc Spaniard House-4)",
+            "(pet-loc Zebra House-5)"
+          ],
+          [
+            "(nation-loc Spaniard House-4)",
+            "(smoke-loc Chesterfields House-2)"
+          ],
+          [
+            "(nation-loc Spaniard House-4)",
+            "(smoke-loc Old_Gold House-3)"
+          ],
+          [
+            "(nation-loc Ukrainian House-2)",
+            "(pet-loc Dog House-4)"
+          ],
+          [
+            "(nation-loc Ukrainian House-2)",
+            "(pet-loc Snail House-3)"
+          ],
+          [
+            "(nation-loc Ukrainian House-2)",
+            "(smoke-loc Old_Gold House-3)"
+          ],
+          [
+            "(pet-loc Dog House-4)",
+            "(pet-loc Fox House-1)"
+          ],
+          [
+            "(pet-loc Dog House-4)",
+            "(pet-loc Snail House-3)"
+          ],
+          [
+            "(pet-loc Dog House-4)",
+            "(pet-loc Zebra House-5)"
+          ],
+          [
+            "(pet-loc Dog House-4)",
+            "(smoke-loc Chesterfields House-2)"
+          ],
+          [
+            "(pet-loc Dog House-4)",
+            "(smoke-loc Old_Gold House-3)"
+          ],
+          [
+            "(pet-loc Fox House-1)",
+            "(pet-loc Snail House-3)"
+          ],
+          [
+            "(pet-loc Fox House-1)",
+            "(smoke-loc Old_Gold House-3)"
+          ],
+          [
+            "(pet-loc Snail House-3)",
+            "(pet-loc Zebra House-5)"
+          ],
+          [
+            "(pet-loc Snail House-3)",
+            "(smoke-loc Chesterfields House-2)"
+          ],
+          [
+            "(pet-loc Zebra House-5)",
+            "(smoke-loc Old_Gold House-3)"
+          ],
+          [
+            "(smoke-loc Chesterfields House-2)",
+            "(smoke-loc Old_Gold House-3)"
+          ]
+        ],
+        "commitments": 261982,
+        "lines": [
+          "minimal",
+          "maximal"
+        ],
+        "listed": true
+      }
+    ],
+    "frontier": null,
+    "core": null,
+    "core_sources": null,
+    "core_status": null,
+    "refuted_by": null
+  },
+  "verdict": null,
+  "queries": [
+    {
+      "goal": "(and (drink-loc Water ?h_water) (nation-loc ?who_water ?h_water) (pet-loc Zebra ?h_zebra) (nation-loc ?who_zebra ?h_zebra))",
+      "over": "all",
+      "exact": true,
+      "classes": [
+        {
+          "facts": [
+            "(drink-loc Water House-1)",
+            "(nation-loc Japanese House-5)",
+            "(nation-loc Norwegian House-1)",
+            "(pet-loc Zebra House-5)"
+          ],
+          "rows": [
+            {
+              "h_water": "House-1",
+              "h_zebra": "House-5",
+              "who_water": "Norwegian",
+              "who_zebra": "Japanese"
+            }
+          ],
+          "states": [
+            1
+          ]
+        }
+      ],
+      "expect": null
+    }
+  ],
+  "claim": null,
+  "work": {
+    "saturations": 120,
+    "facts": 5411,
+    "layers": null
+  },
+  "monotonicity": {
+    "monotone": true,
+    "warning": null,
+    "hypothesised": [
+      "color-loc",
+      "drink-loc",
+      "nation-loc",
+      "pet-loc",
+      "smoke-loc"
+    ],
+    "dynamic": [
+      "color-loc",
+      "drink-loc",
+      "false",
+      "nation-loc",
+      "not",
+      "pet-loc",
+      "smoke-loc"
+    ],
+    "plans": {
+      "saturation": 160,
+      "obligation": 10
+    },
+    "reads": {
+      "static": 282,
+      "dynamic_monotone": 156,
+      "dynamic_non_monotone": 0
+    },
+    "absent_reads": {
+      "static": 80,
+      "dynamic_monotone": 30,
+      "dynamic_non_monotone": 0
+    },
+    "sites": [],
+    "in_flight": null,
+    "assumes": null,
+    "cycles": [],
+    "order": [],
+    "status": null,
+    "state": null,
+    "paths": null
+  },
+  "leftover": {
+    "taken": false,
+    "states": [],
+    "states_by_relation": []
+  },
+  "root": {
+    "facts": 543,
+    "facts_by_relation": {
+      "adjacent-via": 4,
+      "adjacent-via-bwd": 4,
+      "adjacent-via-bwd-negative": 4,
+      "adjacent-via-endpoint-bwd": 4,
+      "adjacent-via-endpoint-fwd": 4,
+      "adjacent-via-fwd": 4,
+      "adjacent-via-fwd-negative": 4,
+      "bijection-hierarchy": 1,
+      "bijective": 5,
+      "co-located": 16,
+      "co-located-negative": 16,
+      "color-loc": 2,
+      "disjunctive-prune-bwd": 4,
+      "disjunctive-prune-fwd": 4,
+      "drink-loc": 2,
+      "guess": 5,
+      "includes": 2,
+      "is-a": 37,
+      "is-a*": 103,
+      "nation-loc": 1,
+      "next-to": 8,
+      "not": 62,
+      "open": 130,
+      "pet-loc": 1,
+      "relation": 18,
+      "right-of": 4,
+      "smoke-loc": 1,
+      "std.algebra.converse": 1,
+      "std.algebra.functional": 5,
+      "std.algebra.injective": 5,
+      "std.algebra.surjective": 10,
+      "std.algebra.surjective-owed": 5,
+      "std.algebra.symmetric-negative": 1,
+      "std.algebra.total": 10,
+      "std.algebra.total-owed": 5,
+      "std.bijection.domain-elimination": 5,
+      "std.bijection.functional-negative": 5,
+      "std.bijection.injective-negative": 5,
+      "std.bijection.range-elimination": 5,
+      "std.bijection.typecheck-arg-0": 5,
+      "std.bijection.typecheck-arg-1": 5,
+      "std.contradiction.clash-0": 9,
+      "std.contradiction.clash-2": 9,
+      "symmetric": 1,
+      "transitive": 1,
+      "typecheck-hierarchy": 1
+    },
+    "dead": false,
+    "owes": 36,
+    "owed": [
+      "color-loc owes Red a House.",
+      "color-loc owes Green a House.",
+      "color-loc owes Ivory a House.",
+      "nation-loc owes Englishman a House.",
+      "nation-loc owes Spaniard a House.",
+      "nation-loc owes Ukrainian a House.",
+      "nation-loc owes Japanese a House.",
+      "drink-loc owes Coffee a House.",
+      "drink-loc owes Tea a House.",
+      "drink-loc owes Juice a House.",
+      "smoke-loc owes Old_Gold a House.",
+      "smoke-loc owes Chesterfields a House.",
+      "smoke-loc owes Lucky_Strike a House.",
+      "smoke-loc owes Parliament a House.",
+      "pet-loc owes Dog a House.",
+      "pet-loc owes Snail a House.",
+      "pet-loc owes Fox a House.",
+      "pet-loc owes Zebra a House.",
+      "color-loc owes House-3 a preimage in Color.",
+      "color-loc owes House-4 a preimage in Color.",
+      "color-loc owes House-5 a preimage in Color.",
+      "nation-loc owes House-2 a preimage in Nationality.",
+      "nation-loc owes House-3 a preimage in Nationality.",
+      "nation-loc owes House-4 a preimage in Nationality.",
+      "nation-loc owes House-5 a preimage in Nationality.",
+      "drink-loc owes House-2 a preimage in Drink.",
+      "drink-loc owes House-4 a preimage in Drink.",
+      "drink-loc owes House-5 a preimage in Drink.",
+      "smoke-loc owes House-2 a preimage in Cigarette.",
+      "smoke-loc owes House-3 a preimage in Cigarette.",
+      "smoke-loc owes House-4 a preimage in Cigarette.",
+      "smoke-loc owes House-5 a preimage in Cigarette.",
+      "pet-loc owes House-1 a preimage in Pet.",
+      "pet-loc owes House-3 a preimage in Pet.",
+      "pet-loc owes House-4 a preimage in Pet.",
+      "pet-loc owes House-5 a preimage in Pet."
+    ],
+    "commit": [],
+    "plans": 160,
+    "saturator": {
+      "naf_rounds": 44,
+      "naf_admitted": 43,
+      "naf_retired": 84,
+      "naf_dropped": 0
+    },
+    "hypgen": {
+      "raw": 305,
+      "emitted": 56,
+      "filtered": {
+        "fact_already_exists": 7,
+        "negated_fact": 130,
+        "seen_in_call": 112
+      },
+      "pre_candidate": {},
+      "outside": [
+        {
+          "relation": "is-a*",
+          "arity": 2,
+          "why": "not-owed"
+        },
+        {
+          "relation": "next-to",
+          "arity": 2,
+          "why": "not-owed"
+        }
+      ]
+    }
+  },
+  "config": {
+    "lattice-sanity-check": false,
+    "record-alternative-justifications": true
+  },
+  "diagnostics": []
+}

@@ -1,0 +1,177 @@
+{
+  "schema": "einaf-feedback/1",
+  "program": {
+    "name": "examples/zebra2.ein",
+    "digest": "sha256:4e1c13bfa8ee06ab6533a8e6e9c7b20a53171bc8df4548835d7ad031ea1ab4cf",
+    "of": "canonical-dump"
+  },
+  "kernel": {
+    "version": "0.1.0",
+    "protocol": "ein-events/1",
+    "stdlib": "sha256:292894befd300e536cdd1181db772f44fe3f3f7ad6ff52b1467f1735ff83d681",
+    "commit": null
+  },
+  "asked": {
+    "question": "describe",
+    "which": "all",
+    "ask": "describe",
+    "budget": 1048576,
+    "limit": 16,
+    "max_steps": 1048576,
+    "clock_us": null
+  },
+  "outcome": [
+    {
+      "part": "all",
+      "outcome": "one",
+      "why": "one state"
+    },
+    {
+      "part": "minimal",
+      "outcome": "one",
+      "why": "one state"
+    },
+    {
+      "part": "maximal",
+      "outcome": "one",
+      "why": "one state"
+    }
+  ],
+  "readings": {
+    "word": null,
+    "k_s": 1,
+    "k_c": 261982,
+    "minimal": 1,
+    "maximal": 1,
+    "exhausted": true,
+    "stopped": null
+  },
+  "diagnostics": [],
+  "flagged": null,
+  "queries": [
+    {
+      "goal": "(and (drink-loc Water ?h_water) (nation-loc ?who_water ?h_water) (pet-loc Zebra ?h_zebra) (nation-loc ?who_zebra ?h_zebra))",
+      "goal_text": "The {?who_water} drinks water in {?h_water}; the {?who_zebra} owns zebra in {?h_zebra}",
+      "over": "all",
+      "exact": true,
+      "agree": true,
+      "classes": [
+        {
+          "facts": [
+            "(drink-loc Water House-1)",
+            "(nation-loc Japanese House-5)",
+            "(nation-loc Norwegian House-1)",
+            "(pet-loc Zebra House-5)"
+          ],
+          "rows": [
+            {
+              "h_water": "House-1",
+              "h_zebra": "House-5",
+              "who_water": "Norwegian",
+              "who_zebra": "Japanese"
+            }
+          ],
+          "lines": [
+            "The Norwegian drinks water in House-1; the Japanese owns zebra in House-5"
+          ],
+          "states": [
+            1
+          ]
+        }
+      ],
+      "expect": null
+    }
+  ],
+  "claim": null,
+  "states": [
+    {
+      "facts": [
+        "(color-loc Blue House-2)",
+        "(color-loc Green House-5)",
+        "(color-loc Ivory House-4)",
+        "(color-loc Red House-3)",
+        "(color-loc Yellow House-1)",
+        "(drink-loc Coffee House-5)",
+        "(drink-loc Juice House-4)",
+        "(drink-loc Milk House-3)",
+        "(drink-loc Tea House-2)",
+        "(drink-loc Water House-1)",
+        "(nation-loc Englishman House-3)",
+        "(nation-loc Japanese House-5)",
+        "(nation-loc Norwegian House-1)",
+        "(nation-loc Spaniard House-4)",
+        "(nation-loc Ukrainian House-2)",
+        "(pet-loc Dog House-4)",
+        "(pet-loc Fox House-1)",
+        "(pet-loc Horse House-2)",
+        "(pet-loc Snail House-3)",
+        "(pet-loc Zebra House-5)",
+        "(smoke-loc Chesterfields House-2)",
+        "(smoke-loc Kools House-1)",
+        "(smoke-loc Lucky_Strike House-4)",
+        "(smoke-loc Old_Gold House-3)",
+        "(smoke-loc Parliament House-5)"
+      ],
+      "digest": "sha256:7302ac6dd08241bd926fd7fdaac9f238b7db01f2887d3a5edf7682f45e1fee3a",
+      "of": "model",
+      "lines": [
+        "minimal",
+        "maximal"
+      ],
+      "listed": true
+    }
+  ],
+  "owed": {
+    "root": [
+      "color-loc owes Red a House.",
+      "color-loc owes Green a House.",
+      "color-loc owes Ivory a House.",
+      "nation-loc owes Englishman a House.",
+      "nation-loc owes Spaniard a House.",
+      "nation-loc owes Ukrainian a House.",
+      "nation-loc owes Japanese a House.",
+      "drink-loc owes Coffee a House.",
+      "drink-loc owes Tea a House.",
+      "drink-loc owes Juice a House.",
+      "smoke-loc owes Old_Gold a House.",
+      "smoke-loc owes Chesterfields a House.",
+      "smoke-loc owes Lucky_Strike a House.",
+      "smoke-loc owes Parliament a House.",
+      "pet-loc owes Dog a House.",
+      "pet-loc owes Snail a House.",
+      "pet-loc owes Fox a House.",
+      "pet-loc owes Zebra a House.",
+      "color-loc owes House-3 a preimage in Color.",
+      "color-loc owes House-4 a preimage in Color.",
+      "color-loc owes House-5 a preimage in Color.",
+      "nation-loc owes House-2 a preimage in Nationality.",
+      "nation-loc owes House-3 a preimage in Nationality.",
+      "nation-loc owes House-4 a preimage in Nationality.",
+      "nation-loc owes House-5 a preimage in Nationality.",
+      "drink-loc owes House-2 a preimage in Drink.",
+      "drink-loc owes House-4 a preimage in Drink.",
+      "drink-loc owes House-5 a preimage in Drink.",
+      "smoke-loc owes House-2 a preimage in Cigarette.",
+      "smoke-loc owes House-3 a preimage in Cigarette.",
+      "smoke-loc owes House-4 a preimage in Cigarette.",
+      "smoke-loc owes House-5 a preimage in Cigarette.",
+      "pet-loc owes House-1 a preimage in Pet.",
+      "pet-loc owes House-3 a preimage in Pet.",
+      "pet-loc owes House-4 a preimage in Pet.",
+      "pet-loc owes House-5 a preimage in Pet."
+    ],
+    "frontier": null
+  },
+  "core": null,
+  "work": {
+    "saturations": 120,
+    "facts": 5411,
+    "layers": null,
+    "run_us": 151461,
+    "load_us": 27559,
+    "ask_us": 156567
+  },
+  "dependencies": null,
+  "provenance": null,
+  "fault": null
+}

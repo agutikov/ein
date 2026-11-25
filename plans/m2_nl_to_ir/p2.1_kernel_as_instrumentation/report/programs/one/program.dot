@@ -1,0 +1,1075 @@
+digraph kb {
+  rankdir=TB;
+  ranksep=0.55;
+  node [fontname="Inter", shape=box];
+
+  // facts
+  f_1f1a2cc2f3 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "relation" -> f_1f1a2cc2f3 [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_1f1a2cc2f3 -> "is-a" [xlabel="2", color="#bcbd22", style=solid];
+  f_1f1a2cc2f3 -> "T" [xlabel="3", color="#bcbd22", style=solid];
+  f_1f1a2cc2f3 -> "T" [xlabel="4", color="#bcbd22", style=solid];
+  f_f0640dee2c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "relation" -> f_f0640dee2c [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_f0640dee2c -> "is-a*" [xlabel="2", color="#bcbd22", style=solid];
+  f_f0640dee2c -> "T" [xlabel="3", color="#bcbd22", style=solid];
+  f_f0640dee2c -> "T" [xlabel="4", color="#bcbd22", style=solid];
+  f_cdda784d89 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "relation" -> f_cdda784d89 [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_cdda784d89 -> "color-loc" [xlabel="2", color="#bcbd22", style=solid];
+  f_cdda784d89 -> "Color" [xlabel="3", color="#bcbd22", style=solid];
+  f_cdda784d89 -> "House" [xlabel="4", color="#bcbd22", style=solid];
+  f_4405c3d64e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "relation" -> f_4405c3d64e [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_4405c3d64e -> "nation-loc" [xlabel="2", color="#bcbd22", style=solid];
+  f_4405c3d64e -> "Nationality" [xlabel="3", color="#bcbd22", style=solid];
+  f_4405c3d64e -> "House" [xlabel="4", color="#bcbd22", style=solid];
+  f_6859c6b66f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "relation" -> f_6859c6b66f [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_6859c6b66f -> "drink-loc" [xlabel="2", color="#bcbd22", style=solid];
+  f_6859c6b66f -> "Drink" [xlabel="3", color="#bcbd22", style=solid];
+  f_6859c6b66f -> "House" [xlabel="4", color="#bcbd22", style=solid];
+  f_e21de4c89e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "relation" -> f_e21de4c89e [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_e21de4c89e -> "smoke-loc" [xlabel="2", color="#bcbd22", style=solid];
+  f_e21de4c89e -> "Cigarette" [xlabel="3", color="#bcbd22", style=solid];
+  f_e21de4c89e -> "House" [xlabel="4", color="#bcbd22", style=solid];
+  f_6828837a6f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "relation" -> f_6828837a6f [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_6828837a6f -> "pet-loc" [xlabel="2", color="#bcbd22", style=solid];
+  f_6828837a6f -> "Pet" [xlabel="3", color="#bcbd22", style=solid];
+  f_6828837a6f -> "House" [xlabel="4", color="#bcbd22", style=solid];
+  f_0792b5790f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "relation" -> f_0792b5790f [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_0792b5790f -> "right-of" [xlabel="2", color="#bcbd22", style=solid];
+  f_0792b5790f -> "House" [xlabel="3", color="#bcbd22", style=solid];
+  f_0792b5790f -> "House" [xlabel="4", color="#bcbd22", style=solid];
+  f_d39eca4f99 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "relation" -> f_d39eca4f99 [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_d39eca4f99 -> "next-to" [xlabel="2", color="#bcbd22", style=solid];
+  f_d39eca4f99 -> "House" [xlabel="3", color="#bcbd22", style=solid];
+  f_d39eca4f99 -> "House" [xlabel="4", color="#bcbd22", style=solid];
+  f_5981be2501 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+  "bijection-hierarchy" -> f_5981be2501 [xlabel="1", dir=back, color="#8c564b", style=solid];
+  f_5981be2501 -> "is-a" [xlabel="2", color="#8c564b", style=solid];
+  f_3d897f084b [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "typecheck-hierarchy" -> f_3d897f084b [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_3d897f084b -> "is-a*" [xlabel="2", color="#7f7f7f", style=solid];
+  f_0e33886db0 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "includes" -> f_0e33886db0 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_0e33886db0 -> "is-a" [xlabel="2", color="#7f7f7f", style=solid];
+  f_0e33886db0 -> "is-a*" [xlabel="3", color="#7f7f7f", style=solid];
+  f_e4c15df8ac [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "transitive" -> f_e4c15df8ac [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_e4c15df8ac -> "is-a*" [xlabel="2", color="#7f7f7f", style=solid];
+  f_f72996c255 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "symmetric" -> f_f72996c255 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_f72996c255 -> "next-to" [xlabel="2", color="#7f7f7f", style=solid];
+  f_3f8678f6e9 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "includes" -> f_3f8678f6e9 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_3f8678f6e9 -> "right-of" [xlabel="2", color="#7f7f7f", style=solid];
+  f_3f8678f6e9 -> "next-to" [xlabel="3", color="#7f7f7f", style=solid];
+  f_632dca8824 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=solid];
+  "bijective" -> f_632dca8824 [xlabel="1", dir=back, color="#17becf", style=solid];
+  f_632dca8824 -> "color-loc" [xlabel="2", color="#17becf", style=solid];
+  f_def2f5095a [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=solid];
+  "bijective" -> f_def2f5095a [xlabel="1", dir=back, color="#17becf", style=solid];
+  f_def2f5095a -> "nation-loc" [xlabel="2", color="#17becf", style=solid];
+  f_f180ec6958 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=solid];
+  "bijective" -> f_f180ec6958 [xlabel="1", dir=back, color="#17becf", style=solid];
+  f_f180ec6958 -> "drink-loc" [xlabel="2", color="#17becf", style=solid];
+  f_a4a0d09343 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=solid];
+  "bijective" -> f_a4a0d09343 [xlabel="1", dir=back, color="#17becf", style=solid];
+  f_a4a0d09343 -> "smoke-loc" [xlabel="2", color="#17becf", style=solid];
+  f_d7ad2dad92 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", fontcolor="#17becf", style=solid];
+  "bijective" -> f_d7ad2dad92 [xlabel="1", dir=back, color="#17becf", style=solid];
+  f_d7ad2dad92 -> "pet-loc" [xlabel="2", color="#17becf", style=solid];
+  f_2fd85b479f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_2fd85b479f [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_2fd85b479f -> "Attribute" [xlabel="2", color="#7f7f7f", style=solid];
+  f_2fd85b479f -> "T" [xlabel="3", color="#7f7f7f", style=solid];
+  f_8108d687ed [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_8108d687ed [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_8108d687ed -> "House" [xlabel="2", color="#7f7f7f", style=solid];
+  f_8108d687ed -> "Attribute" [xlabel="3", color="#7f7f7f", style=solid];
+  f_9950ff09f9 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_9950ff09f9 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_9950ff09f9 -> "Color" [xlabel="2", color="#7f7f7f", style=solid];
+  f_9950ff09f9 -> "Attribute" [xlabel="3", color="#7f7f7f", style=solid];
+  f_17c4551680 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_17c4551680 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_17c4551680 -> "Nationality" [xlabel="2", color="#7f7f7f", style=solid];
+  f_17c4551680 -> "Attribute" [xlabel="3", color="#7f7f7f", style=solid];
+  f_51815d6281 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_51815d6281 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_51815d6281 -> "Pet" [xlabel="2", color="#7f7f7f", style=solid];
+  f_51815d6281 -> "Attribute" [xlabel="3", color="#7f7f7f", style=solid];
+  f_522e782e33 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_522e782e33 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_522e782e33 -> "Cigarette" [xlabel="2", color="#7f7f7f", style=solid];
+  f_522e782e33 -> "Attribute" [xlabel="3", color="#7f7f7f", style=solid];
+  f_c402d774af [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_c402d774af [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_c402d774af -> "Drink" [xlabel="2", color="#7f7f7f", style=solid];
+  f_c402d774af -> "Attribute" [xlabel="3", color="#7f7f7f", style=solid];
+  f_81380bf2fd [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_81380bf2fd [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_81380bf2fd -> "House-1" [xlabel="2", color="#7f7f7f", style=solid];
+  f_81380bf2fd -> "House" [xlabel="3", color="#7f7f7f", style=solid];
+  f_7606ea80bf [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_7606ea80bf [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_7606ea80bf -> "House-2" [xlabel="2", color="#7f7f7f", style=solid];
+  f_7606ea80bf -> "House" [xlabel="3", color="#7f7f7f", style=solid];
+  f_69c2227c0a [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_69c2227c0a [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_69c2227c0a -> "House-3" [xlabel="2", color="#7f7f7f", style=solid];
+  f_69c2227c0a -> "House" [xlabel="3", color="#7f7f7f", style=solid];
+  f_5524c7f358 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_5524c7f358 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_5524c7f358 -> "House-4" [xlabel="2", color="#7f7f7f", style=solid];
+  f_5524c7f358 -> "House" [xlabel="3", color="#7f7f7f", style=solid];
+  f_c3df1ec0fd [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_c3df1ec0fd [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_c3df1ec0fd -> "House-5" [xlabel="2", color="#7f7f7f", style=solid];
+  f_c3df1ec0fd -> "House" [xlabel="3", color="#7f7f7f", style=solid];
+  f_5cc5b4a1d2 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_5cc5b4a1d2 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_5cc5b4a1d2 -> "Red" [xlabel="2", color="#7f7f7f", style=solid];
+  f_5cc5b4a1d2 -> "Color" [xlabel="3", color="#7f7f7f", style=solid];
+  f_deab25ebcc [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_deab25ebcc [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_deab25ebcc -> "Green" [xlabel="2", color="#7f7f7f", style=solid];
+  f_deab25ebcc -> "Color" [xlabel="3", color="#7f7f7f", style=solid];
+  f_6ffb1fdc1d [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_6ffb1fdc1d [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_6ffb1fdc1d -> "Ivory" [xlabel="2", color="#7f7f7f", style=solid];
+  f_6ffb1fdc1d -> "Color" [xlabel="3", color="#7f7f7f", style=solid];
+  f_06f9467607 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_06f9467607 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_06f9467607 -> "Yellow" [xlabel="2", color="#7f7f7f", style=solid];
+  f_06f9467607 -> "Color" [xlabel="3", color="#7f7f7f", style=solid];
+  f_d3bae237df [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_d3bae237df [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_d3bae237df -> "Blue" [xlabel="2", color="#7f7f7f", style=solid];
+  f_d3bae237df -> "Color" [xlabel="3", color="#7f7f7f", style=solid];
+  f_44a51b0731 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_44a51b0731 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_44a51b0731 -> "Englishman" [xlabel="2", color="#7f7f7f", style=solid];
+  f_44a51b0731 -> "Nationality" [xlabel="3", color="#7f7f7f", style=solid];
+  f_7c281ed22d [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_7c281ed22d [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_7c281ed22d -> "Spaniard" [xlabel="2", color="#7f7f7f", style=solid];
+  f_7c281ed22d -> "Nationality" [xlabel="3", color="#7f7f7f", style=solid];
+  f_c11e59245d [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_c11e59245d [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_c11e59245d -> "Ukrainian" [xlabel="2", color="#7f7f7f", style=solid];
+  f_c11e59245d -> "Nationality" [xlabel="3", color="#7f7f7f", style=solid];
+  f_dc6eb765fe [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_dc6eb765fe [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_dc6eb765fe -> "Norwegian" [xlabel="2", color="#7f7f7f", style=solid];
+  f_dc6eb765fe -> "Nationality" [xlabel="3", color="#7f7f7f", style=solid];
+  f_19b0216512 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_19b0216512 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_19b0216512 -> "Japanese" [xlabel="2", color="#7f7f7f", style=solid];
+  f_19b0216512 -> "Nationality" [xlabel="3", color="#7f7f7f", style=solid];
+  f_31de34bfb0 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_31de34bfb0 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_31de34bfb0 -> "Dog" [xlabel="2", color="#7f7f7f", style=solid];
+  f_31de34bfb0 -> "Pet" [xlabel="3", color="#7f7f7f", style=solid];
+  f_ff316be6fa [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_ff316be6fa [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_ff316be6fa -> "Snail" [xlabel="2", color="#7f7f7f", style=solid];
+  f_ff316be6fa -> "Pet" [xlabel="3", color="#7f7f7f", style=solid];
+  f_7cf3836862 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_7cf3836862 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_7cf3836862 -> "Fox" [xlabel="2", color="#7f7f7f", style=solid];
+  f_7cf3836862 -> "Pet" [xlabel="3", color="#7f7f7f", style=solid];
+  f_40c1a9f173 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_40c1a9f173 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_40c1a9f173 -> "Horse" [xlabel="2", color="#7f7f7f", style=solid];
+  f_40c1a9f173 -> "Pet" [xlabel="3", color="#7f7f7f", style=solid];
+  f_24872e9699 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_24872e9699 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_24872e9699 -> "Zebra" [xlabel="2", color="#7f7f7f", style=solid];
+  f_24872e9699 -> "Pet" [xlabel="3", color="#7f7f7f", style=solid];
+  f_1cf587f6d7 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_1cf587f6d7 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_1cf587f6d7 -> "Old_Gold" [xlabel="2", color="#7f7f7f", style=solid];
+  f_1cf587f6d7 -> "Cigarette" [xlabel="3", color="#7f7f7f", style=solid];
+  f_86deaeffd8 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_86deaeffd8 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_86deaeffd8 -> "Kools" [xlabel="2", color="#7f7f7f", style=solid];
+  f_86deaeffd8 -> "Cigarette" [xlabel="3", color="#7f7f7f", style=solid];
+  f_d78f181718 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_d78f181718 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_d78f181718 -> "Chesterfields" [xlabel="2", color="#7f7f7f", style=solid];
+  f_d78f181718 -> "Cigarette" [xlabel="3", color="#7f7f7f", style=solid];
+  f_9c28dd8096 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_9c28dd8096 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_9c28dd8096 -> "Lucky_Strike" [xlabel="2", color="#7f7f7f", style=solid];
+  f_9c28dd8096 -> "Cigarette" [xlabel="3", color="#7f7f7f", style=solid];
+  f_228661fd70 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_228661fd70 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_228661fd70 -> "Parliament" [xlabel="2", color="#7f7f7f", style=solid];
+  f_228661fd70 -> "Cigarette" [xlabel="3", color="#7f7f7f", style=solid];
+  f_4c81e15b5b [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_4c81e15b5b [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_4c81e15b5b -> "Coffee" [xlabel="2", color="#7f7f7f", style=solid];
+  f_4c81e15b5b -> "Drink" [xlabel="3", color="#7f7f7f", style=solid];
+  f_29db3aeb64 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_29db3aeb64 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_29db3aeb64 -> "Tea" [xlabel="2", color="#7f7f7f", style=solid];
+  f_29db3aeb64 -> "Drink" [xlabel="3", color="#7f7f7f", style=solid];
+  f_1cbc1c13e5 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_1cbc1c13e5 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_1cbc1c13e5 -> "Milk" [xlabel="2", color="#7f7f7f", style=solid];
+  f_1cbc1c13e5 -> "Drink" [xlabel="3", color="#7f7f7f", style=solid];
+  f_6d9d9731cb [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_6d9d9731cb [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_6d9d9731cb -> "Juice" [xlabel="2", color="#7f7f7f", style=solid];
+  f_6d9d9731cb -> "Drink" [xlabel="3", color="#7f7f7f", style=solid];
+  f_0c130e2fa5 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid];
+  "is-a" -> f_0c130e2fa5 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_0c130e2fa5 -> "Water" [xlabel="2", color="#7f7f7f", style=solid];
+  f_0c130e2fa5 -> "Drink" [xlabel="3", color="#7f7f7f", style=solid];
+  f_9df6070ba8 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=solid, xlabel="(1)"];
+  "right-of" -> f_9df6070ba8 [xlabel="1", dir=back, color="#d62728", style=solid];
+  f_9df6070ba8 -> "House-2" [xlabel="2", color="#d62728", style=solid];
+  f_9df6070ba8 -> "House-1" [xlabel="3", color="#d62728", style=solid];
+  f_3aae21f697 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=solid, xlabel="(1)"];
+  "right-of" -> f_3aae21f697 [xlabel="1", dir=back, color="#d62728", style=solid];
+  f_3aae21f697 -> "House-3" [xlabel="2", color="#d62728", style=solid];
+  f_3aae21f697 -> "House-2" [xlabel="3", color="#d62728", style=solid];
+  f_780045e881 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=solid, xlabel="(1)"];
+  "right-of" -> f_780045e881 [xlabel="1", dir=back, color="#d62728", style=solid];
+  f_780045e881 -> "House-4" [xlabel="2", color="#d62728", style=solid];
+  f_780045e881 -> "House-3" [xlabel="3", color="#d62728", style=solid];
+  f_4c7c183646 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=solid, xlabel="(1)"];
+  "right-of" -> f_4c7c183646 [xlabel="1", dir=back, color="#d62728", style=solid];
+  f_4c7c183646 -> "House-5" [xlabel="2", color="#d62728", style=solid];
+  f_4c7c183646 -> "House-4" [xlabel="3", color="#d62728", style=solid];
+  f_e391372d42 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid, xlabel="(2)"];
+  "co-located" -> f_e391372d42 [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_e391372d42 -> "nation-loc" [xlabel="2", color="#bcbd22", style=solid];
+  f_e391372d42 -> "Englishman" [xlabel="3", color="#bcbd22", style=solid];
+  f_e391372d42 -> "color-loc" [xlabel="4", color="#bcbd22", style=solid];
+  f_e391372d42 -> "Red" [xlabel="5", color="#bcbd22", style=solid];
+  f_cc5501864a [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid, xlabel="(3)"];
+  "co-located" -> f_cc5501864a [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_cc5501864a -> "nation-loc" [xlabel="2", color="#bcbd22", style=solid];
+  f_cc5501864a -> "Spaniard" [xlabel="3", color="#bcbd22", style=solid];
+  f_cc5501864a -> "pet-loc" [xlabel="4", color="#bcbd22", style=solid];
+  f_cc5501864a -> "Dog" [xlabel="5", color="#bcbd22", style=solid];
+  f_32a3b1fdb0 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid, xlabel="(4)"];
+  "co-located" -> f_32a3b1fdb0 [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_32a3b1fdb0 -> "drink-loc" [xlabel="2", color="#bcbd22", style=solid];
+  f_32a3b1fdb0 -> "Coffee" [xlabel="3", color="#bcbd22", style=solid];
+  f_32a3b1fdb0 -> "color-loc" [xlabel="4", color="#bcbd22", style=solid];
+  f_32a3b1fdb0 -> "Green" [xlabel="5", color="#bcbd22", style=solid];
+  f_38ca420f20 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid, xlabel="(5)"];
+  "co-located" -> f_38ca420f20 [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_38ca420f20 -> "nation-loc" [xlabel="2", color="#bcbd22", style=solid];
+  f_38ca420f20 -> "Ukrainian" [xlabel="3", color="#bcbd22", style=solid];
+  f_38ca420f20 -> "drink-loc" [xlabel="4", color="#bcbd22", style=solid];
+  f_38ca420f20 -> "Tea" [xlabel="5", color="#bcbd22", style=solid];
+  f_bb3fe2bfc7 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid, xlabel="(6)"];
+  "adjacent-via" -> f_bb3fe2bfc7 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_bb3fe2bfc7 -> "right-of" [xlabel="2", color="#7f7f7f", style=solid];
+  f_bb3fe2bfc7 -> "color-loc" [xlabel="3", color="#7f7f7f", style=solid];
+  f_bb3fe2bfc7 -> "Ivory" [xlabel="4", color="#7f7f7f", style=solid];
+  f_bb3fe2bfc7 -> "color-loc" [xlabel="5", color="#7f7f7f", style=solid];
+  f_bb3fe2bfc7 -> "Green" [xlabel="6", color="#7f7f7f", style=solid];
+  f_68832e8a5b [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid, xlabel="(7)"];
+  "co-located" -> f_68832e8a5b [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_68832e8a5b -> "smoke-loc" [xlabel="2", color="#bcbd22", style=solid];
+  f_68832e8a5b -> "Old_Gold" [xlabel="3", color="#bcbd22", style=solid];
+  f_68832e8a5b -> "pet-loc" [xlabel="4", color="#bcbd22", style=solid];
+  f_68832e8a5b -> "Snail" [xlabel="5", color="#bcbd22", style=solid];
+  f_3fd3078435 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid, xlabel="(8)"];
+  "co-located" -> f_3fd3078435 [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_3fd3078435 -> "smoke-loc" [xlabel="2", color="#bcbd22", style=solid];
+  f_3fd3078435 -> "Kools" [xlabel="3", color="#bcbd22", style=solid];
+  f_3fd3078435 -> "color-loc" [xlabel="4", color="#bcbd22", style=solid];
+  f_3fd3078435 -> "Yellow" [xlabel="5", color="#bcbd22", style=solid];
+  f_9814680485 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", fontcolor="#e377c2", style=solid, xlabel="(9)"];
+  "drink-loc" -> f_9814680485 [xlabel="1", dir=back, color="#e377c2", style=solid];
+  f_9814680485 -> "Milk" [xlabel="2", color="#e377c2", style=solid];
+  f_9814680485 -> "House-3" [xlabel="3", color="#e377c2", style=solid];
+  f_481b793602 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", fontcolor="#d62728", style=solid, xlabel="(10)"];
+  "nation-loc" -> f_481b793602 [xlabel="1", dir=back, color="#d62728", style=solid];
+  f_481b793602 -> "Norwegian" [xlabel="2", color="#d62728", style=solid];
+  f_481b793602 -> "House-1" [xlabel="3", color="#d62728", style=solid];
+  f_83b57c9f21 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid, xlabel="(11)"];
+  "adjacent-via" -> f_83b57c9f21 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_83b57c9f21 -> "next-to" [xlabel="2", color="#7f7f7f", style=solid];
+  f_83b57c9f21 -> "smoke-loc" [xlabel="3", color="#7f7f7f", style=solid];
+  f_83b57c9f21 -> "Chesterfields" [xlabel="4", color="#7f7f7f", style=solid];
+  f_83b57c9f21 -> "pet-loc" [xlabel="5", color="#7f7f7f", style=solid];
+  f_83b57c9f21 -> "Fox" [xlabel="6", color="#7f7f7f", style=solid];
+  f_fcd6c4a31d [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid, xlabel="(12)"];
+  "adjacent-via" -> f_fcd6c4a31d [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_fcd6c4a31d -> "next-to" [xlabel="2", color="#7f7f7f", style=solid];
+  f_fcd6c4a31d -> "smoke-loc" [xlabel="3", color="#7f7f7f", style=solid];
+  f_fcd6c4a31d -> "Kools" [xlabel="4", color="#7f7f7f", style=solid];
+  f_fcd6c4a31d -> "pet-loc" [xlabel="5", color="#7f7f7f", style=solid];
+  f_fcd6c4a31d -> "Horse" [xlabel="6", color="#7f7f7f", style=solid];
+  f_17ecde7c25 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid, xlabel="(13)"];
+  "co-located" -> f_17ecde7c25 [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_17ecde7c25 -> "smoke-loc" [xlabel="2", color="#bcbd22", style=solid];
+  f_17ecde7c25 -> "Lucky_Strike" [xlabel="3", color="#bcbd22", style=solid];
+  f_17ecde7c25 -> "drink-loc" [xlabel="4", color="#bcbd22", style=solid];
+  f_17ecde7c25 -> "Juice" [xlabel="5", color="#bcbd22", style=solid];
+  f_3481a1852c [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid, xlabel="(14)"];
+  "co-located" -> f_3481a1852c [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_3481a1852c -> "nation-loc" [xlabel="2", color="#bcbd22", style=solid];
+  f_3481a1852c -> "Japanese" [xlabel="3", color="#bcbd22", style=solid];
+  f_3481a1852c -> "smoke-loc" [xlabel="4", color="#bcbd22", style=solid];
+  f_3481a1852c -> "Parliament" [xlabel="5", color="#bcbd22", style=solid];
+  f_07b8ff5913 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", fontcolor="#7f7f7f", style=solid, xlabel="(15)"];
+  "adjacent-via" -> f_07b8ff5913 [xlabel="1", dir=back, color="#7f7f7f", style=solid];
+  f_07b8ff5913 -> "next-to" [xlabel="2", color="#7f7f7f", style=solid];
+  f_07b8ff5913 -> "nation-loc" [xlabel="3", color="#7f7f7f", style=solid];
+  f_07b8ff5913 -> "Norwegian" [xlabel="4", color="#7f7f7f", style=solid];
+  f_07b8ff5913 -> "color-loc" [xlabel="5", color="#7f7f7f", style=solid];
+  f_07b8ff5913 -> "Blue" [xlabel="6", color="#7f7f7f", style=solid];
+  f_4ba2e570df [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+  "guess" -> f_4ba2e570df [xlabel="1", dir=back, color="#8c564b", style=solid];
+  f_4ba2e570df -> "color-loc" [xlabel="2", color="#8c564b", style=solid];
+  f_4ba2e570df -> "Color" [xlabel="3", color="#8c564b", style=solid];
+  f_4ba2e570df -> "House" [xlabel="4", color="#8c564b", style=solid];
+  f_b86002f5c2 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+  "guess" -> f_b86002f5c2 [xlabel="1", dir=back, color="#8c564b", style=solid];
+  f_b86002f5c2 -> "nation-loc" [xlabel="2", color="#8c564b", style=solid];
+  f_b86002f5c2 -> "Nationality" [xlabel="3", color="#8c564b", style=solid];
+  f_b86002f5c2 -> "House" [xlabel="4", color="#8c564b", style=solid];
+  f_47ee0e5329 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+  "guess" -> f_47ee0e5329 [xlabel="1", dir=back, color="#8c564b", style=solid];
+  f_47ee0e5329 -> "drink-loc" [xlabel="2", color="#8c564b", style=solid];
+  f_47ee0e5329 -> "Drink" [xlabel="3", color="#8c564b", style=solid];
+  f_47ee0e5329 -> "House" [xlabel="4", color="#8c564b", style=solid];
+  f_460fc04902 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+  "guess" -> f_460fc04902 [xlabel="1", dir=back, color="#8c564b", style=solid];
+  f_460fc04902 -> "smoke-loc" [xlabel="2", color="#8c564b", style=solid];
+  f_460fc04902 -> "Cigarette" [xlabel="3", color="#8c564b", style=solid];
+  f_460fc04902 -> "House" [xlabel="4", color="#8c564b", style=solid];
+  f_58f92042ce [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", fontcolor="#8c564b", style=solid];
+  "guess" -> f_58f92042ce [xlabel="1", dir=back, color="#8c564b", style=solid];
+  f_58f92042ce -> "pet-loc" [xlabel="2", color="#8c564b", style=solid];
+  f_58f92042ce -> "Pet" [xlabel="3", color="#8c564b", style=solid];
+  f_58f92042ce -> "House" [xlabel="4", color="#8c564b", style=solid];
+
+  // layers
+  "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 3" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 4" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 0" -> "layer 1" [style=invis];
+  "layer 1" -> "layer 2" [style=invis];
+  "layer 2" -> "layer 3" [style=invis];
+  "layer 3" -> "layer 4" [style=invis];
+  { rank=same; "layer 0"; "relation"; "bijection-hierarchy"; "typecheck-hierarchy"; "includes"; "transitive"; "symmetric"; "bijective"; "co-located"; "adjacent-via"; "guess"; }
+  { rank=same; "layer 1"; f_1f1a2cc2f3; f_f0640dee2c; f_cdda784d89; f_4405c3d64e; f_6859c6b66f; f_e21de4c89e; f_6828837a6f; f_0792b5790f; f_d39eca4f99; f_5981be2501; f_3d897f084b; f_0e33886db0; f_e4c15df8ac; f_f72996c255; f_3f8678f6e9; f_632dca8824; f_def2f5095a; f_f180ec6958; f_a4a0d09343; f_d7ad2dad92; f_e391372d42; f_cc5501864a; f_32a3b1fdb0; f_38ca420f20; f_bb3fe2bfc7; f_68832e8a5b; f_3fd3078435; f_83b57c9f21; f_fcd6c4a31d; f_17ecde7c25; f_3481a1852c; f_07b8ff5913; f_4ba2e570df; f_b86002f5c2; f_47ee0e5329; f_460fc04902; f_58f92042ce; }
+  { rank=same; "layer 2"; "is-a"; "is-a*"; "color-loc"; "nation-loc"; "drink-loc"; "smoke-loc"; "pet-loc"; "right-of"; "next-to"; }
+  { rank=same; "layer 3"; f_2fd85b479f; f_8108d687ed; f_9950ff09f9; f_17c4551680; f_51815d6281; f_522e782e33; f_c402d774af; f_81380bf2fd; f_7606ea80bf; f_69c2227c0a; f_5524c7f358; f_c3df1ec0fd; f_5cc5b4a1d2; f_deab25ebcc; f_6ffb1fdc1d; f_06f9467607; f_d3bae237df; f_44a51b0731; f_7c281ed22d; f_c11e59245d; f_dc6eb765fe; f_19b0216512; f_31de34bfb0; f_ff316be6fa; f_7cf3836862; f_40c1a9f173; f_24872e9699; f_1cf587f6d7; f_86deaeffd8; f_d78f181718; f_9c28dd8096; f_228661fd70; f_4c81e15b5b; f_29db3aeb64; f_1cbc1c13e5; f_6d9d9731cb; f_0c130e2fa5; f_9df6070ba8; f_3aae21f697; f_780045e881; f_4c7c183646; f_9814680485; f_481b793602; }
+  { rank=same; "layer 4"; "T"; "Color"; "House"; "Nationality"; "Drink"; "Cigarette"; "Pet"; "Attribute"; "House-1"; "House-2"; "House-3"; "House-4"; "House-5"; "Red"; "Green"; "Ivory"; "Yellow"; "Blue"; "Englishman"; "Spaniard"; "Ukrainian"; "Norwegian"; "Japanese"; "Dog"; "Snail"; "Fox"; "Horse"; "Zebra"; "Old_Gold"; "Kools"; "Chesterfields"; "Lucky_Strike"; "Parliament"; "Coffee"; "Tea"; "Milk"; "Juice"; "Water"; }
+}
+
+digraph rule_co_located_lhs_rhs {
+  rankdir=TB;
+  label="co-located"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?R1_L" [label="?R1", shape=diamond];
+    "?V1_L" [label="?V1", shape=diamond];
+    "?h_L" [label="?h", shape=diamond];
+    "h1_R1_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "?R1_L" -> "h1_R1_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h1_R1_L" -> "?V1_L" [xlabel="2", color="#bcbd22"];
+    "h1_R1_L" -> "?h_L" [xlabel="3", color="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "?R2_R" [label="?R2", shape=diamond];
+    "?V2_R" [label="?V2", shape=diamond];
+    "?h_R" [label="?h", shape=diamond];
+    "h2_R2_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
+    "?R2_R" -> "h2_R2_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
+    "h2_R2_R" -> "?V2_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "h2_R2_R" -> "?h_R" [xlabel="3", color="#bcbd22", style=dashed];
+  }
+}
+
+digraph rule_co_located_fanout_lhs_rhs {
+  rankdir=TB;
+  label="co-located-fanout"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "co-located_L" [label="co-located", shape=box];
+    "?R1_L" [label="?R1", shape=diamond];
+    "?V1_L" [label="?V1", shape=diamond];
+    "?R2_L" [label="?R2", shape=diamond];
+    "?V2_L" [label="?V2", shape=diamond];
+    "h1_co-located_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "co-located_L" -> "h1_co-located_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h1_co-located_L" -> "?R1_L" [xlabel="2", color="#bcbd22"];
+    "h1_co-located_L" -> "?V1_L" [xlabel="3", color="#bcbd22"];
+    "h1_co-located_L" -> "?R2_L" [xlabel="4", color="#bcbd22"];
+    "h1_co-located_L" -> "?V2_L" [xlabel="5", color="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "co-located_R" [label="co-located", shape=box];
+    "?R2_R" [label="?R2", shape=diamond];
+    "?V2_R" [label="?V2", shape=diamond];
+    "?R1_R" [label="?R1", shape=diamond];
+    "?V1_R" [label="?V1", shape=diamond];
+    "co-located-negative_R" [label="co-located-negative", shape=box];
+    "h2_co-located_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
+    "co-located_R" -> "h2_co-located_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
+    "h2_co-located_R" -> "?R2_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "h2_co-located_R" -> "?V2_R" [xlabel="3", color="#bcbd22", style=dashed];
+    "h2_co-located_R" -> "?R1_R" [xlabel="4", color="#bcbd22", style=dashed];
+    "h2_co-located_R" -> "?V1_R" [xlabel="5", color="#bcbd22", style=dashed];
+    "h3_co-located-negative_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
+    "co-located-negative_R" -> "h3_co-located-negative_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
+    "h3_co-located-negative_R" -> "?R1_R" [xlabel="2", color="#e377c2", style=dashed];
+    "h3_co-located-negative_R" -> "?V1_R" [xlabel="3", color="#e377c2", style=dashed];
+    "h3_co-located-negative_R" -> "?R2_R" [xlabel="4", color="#e377c2", style=dashed];
+    "h3_co-located-negative_R" -> "?V2_R" [xlabel="5", color="#e377c2", style=dashed];
+  }
+}
+
+digraph rule_co_located_negative_lhs_rhs {
+  rankdir=TB;
+  label="co-located-negative"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "not_L" [label="not", shape=box];
+    "?R1_L" [label="?R1", shape=diamond];
+    "?V1_L" [label="?V1", shape=diamond];
+    "?h_L" [label="?h", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?R1 ?V1 ?h)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    }
+    "h1_not_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "not_L" -> "h1_not_L" [xlabel="1", dir=back, color="#d62728"];
+    "h1_not_L" -> "(?R1 ?V1 ?h)_L" [xlabel="2", color="#d62728"];
+    "?R1_L" -> "(?R1 ?V1 ?h)_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "(?R1 ?V1 ?h)_L" -> "?V1_L" [xlabel="2", color="#bcbd22"];
+    "(?R1 ?V1 ?h)_L" -> "?h_L" [xlabel="3", color="#bcbd22"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "not_R" [label="not", shape=box];
+    "?R2_R" [label="?R2", shape=diamond];
+    "?V2_R" [label="?V2", shape=diamond];
+    "?h_R" [label="?h", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?R2 ?V2 ?h)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    }
+    "h2_not_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    "not_R" -> "h2_not_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
+    "h2_not_R" -> "(?R2 ?V2 ?h)_R" [xlabel="2", color="#d62728", style=dashed];
+    "?R2_R" -> "(?R2 ?V2 ?h)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
+    "(?R2 ?V2 ?h)_R" -> "?V2_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "(?R2 ?V2 ?h)_R" -> "?h_R" [xlabel="3", color="#bcbd22", style=dashed];
+  }
+}
+
+digraph rule_adjacent_via_fwd_lhs_rhs {
+  rankdir=TB;
+  label="adjacent-via-fwd"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?R1_L" [label="?R1", shape=diamond];
+    "?V1_L" [label="?V1", shape=diamond];
+    "?h1_L" [label="?h1", shape=diamond];
+    "?S_L" [label="?S", shape=diamond];
+    "?h2_L" [label="?h2", shape=diamond];
+    "h1_R1_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "?R1_L" -> "h1_R1_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h1_R1_L" -> "?V1_L" [xlabel="2", color="#bcbd22"];
+    "h1_R1_L" -> "?h1_L" [xlabel="3", color="#bcbd22"];
+    "h2_S_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+    "?S_L" -> "h2_S_L" [xlabel="1", dir=back, color="#2ca02c"];
+    "h2_S_L" -> "?h2_L" [xlabel="2", color="#2ca02c"];
+    "h2_S_L" -> "?h1_L" [xlabel="3", color="#2ca02c"];
+    subgraph cluster_absent_L_0 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?h_o_L" [label="?h_o", shape=diamond];
+      "h3_S_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+      "?S_L" -> "h3_S_L" [xlabel="1", dir=back, color="#2ca02c"];
+      "h3_S_L" -> "?h_o_L" [xlabel="2", color="#2ca02c"];
+      "h3_S_L" -> "?h1_L" [xlabel="3", color="#2ca02c"];
+      "?h_o_L" -> "?h2_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "?R2_R" [label="?R2", shape=diamond];
+    "?V2_R" [label="?V2", shape=diamond];
+    "?h2_R" [label="?h2", shape=diamond];
+    "h4_R2_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
+    "?R2_R" -> "h4_R2_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
+    "h4_R2_R" -> "?V2_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "h4_R2_R" -> "?h2_R" [xlabel="3", color="#bcbd22", style=dashed];
+  }
+}
+
+digraph rule_adjacent_via_bwd_lhs_rhs {
+  rankdir=TB;
+  label="adjacent-via-bwd"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?R2_L" [label="?R2", shape=diamond];
+    "?V2_L" [label="?V2", shape=diamond];
+    "?h2_L" [label="?h2", shape=diamond];
+    "?S_L" [label="?S", shape=diamond];
+    "?h1_L" [label="?h1", shape=diamond];
+    "h1_R2_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "?R2_L" -> "h1_R2_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h1_R2_L" -> "?V2_L" [xlabel="2", color="#bcbd22"];
+    "h1_R2_L" -> "?h2_L" [xlabel="3", color="#bcbd22"];
+    "h2_S_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+    "?S_L" -> "h2_S_L" [xlabel="1", dir=back, color="#2ca02c"];
+    "h2_S_L" -> "?h2_L" [xlabel="2", color="#2ca02c"];
+    "h2_S_L" -> "?h1_L" [xlabel="3", color="#2ca02c"];
+    subgraph cluster_absent_L_0 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?h_o_L" [label="?h_o", shape=diamond];
+      "h3_S_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+      "?S_L" -> "h3_S_L" [xlabel="1", dir=back, color="#2ca02c"];
+      "h3_S_L" -> "?h2_L" [xlabel="2", color="#2ca02c"];
+      "h3_S_L" -> "?h_o_L" [xlabel="3", color="#2ca02c"];
+      "?h_o_L" -> "?h1_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "?R1_R" [label="?R1", shape=diamond];
+    "?V1_R" [label="?V1", shape=diamond];
+    "?h1_R" [label="?h1", shape=diamond];
+    "h4_R1_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", style=dashed];
+    "?R1_R" -> "h4_R1_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
+    "h4_R1_R" -> "?V1_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "h4_R1_R" -> "?h1_R" [xlabel="3", color="#bcbd22", style=dashed];
+  }
+}
+
+digraph rule_adjacent_via_fwd_negative_lhs_rhs {
+  rankdir=TB;
+  label="adjacent-via-fwd-negative"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "not_L" [label="not", shape=box];
+    "?R2_L" [label="?R2", shape=diamond];
+    "?V2_L" [label="?V2", shape=diamond];
+    "?h2_L" [label="?h2", shape=diamond];
+    "?S_L" [label="?S", shape=diamond];
+    "?h1_L" [label="?h1", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?R2 ?V2 ?h2)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    }
+    "h1_not_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "not_L" -> "h1_not_L" [xlabel="1", dir=back, color="#d62728"];
+    "h1_not_L" -> "(?R2 ?V2 ?h2)_L" [xlabel="2", color="#d62728"];
+    "h2_S_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+    "?S_L" -> "h2_S_L" [xlabel="1", dir=back, color="#2ca02c"];
+    "h2_S_L" -> "?h2_L" [xlabel="2", color="#2ca02c"];
+    "h2_S_L" -> "?h1_L" [xlabel="3", color="#2ca02c"];
+    "?R2_L" -> "(?R2 ?V2 ?h2)_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "(?R2 ?V2 ?h2)_L" -> "?V2_L" [xlabel="2", color="#bcbd22"];
+    "(?R2 ?V2 ?h2)_L" -> "?h2_L" [xlabel="3", color="#bcbd22"];
+    subgraph cluster_absent_L_0 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?h_o_L" [label="?h_o", shape=diamond];
+      "h3_S_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+      "?S_L" -> "h3_S_L" [xlabel="1", dir=back, color="#2ca02c"];
+      "h3_S_L" -> "?h_o_L" [xlabel="2", color="#2ca02c"];
+      "h3_S_L" -> "?h1_L" [xlabel="3", color="#2ca02c"];
+      "?h_o_L" -> "?h2_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "not_R" [label="not", shape=box];
+    "?R1_R" [label="?R1", shape=diamond];
+    "?V1_R" [label="?V1", shape=diamond];
+    "?h1_R" [label="?h1", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?R1 ?V1 ?h1)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    }
+    "h4_not_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    "not_R" -> "h4_not_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
+    "h4_not_R" -> "(?R1 ?V1 ?h1)_R" [xlabel="2", color="#d62728", style=dashed];
+    "?R1_R" -> "(?R1 ?V1 ?h1)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
+    "(?R1 ?V1 ?h1)_R" -> "?V1_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "(?R1 ?V1 ?h1)_R" -> "?h1_R" [xlabel="3", color="#bcbd22", style=dashed];
+  }
+}
+
+digraph rule_adjacent_via_bwd_negative_lhs_rhs {
+  rankdir=TB;
+  label="adjacent-via-bwd-negative"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "not_L" [label="not", shape=box];
+    "?R1_L" [label="?R1", shape=diamond];
+    "?V1_L" [label="?V1", shape=diamond];
+    "?h1_L" [label="?h1", shape=diamond];
+    "?S_L" [label="?S", shape=diamond];
+    "?h2_L" [label="?h2", shape=diamond];
+    subgraph cluster_ctx_L_0 {
+      label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?R1 ?V1 ?h1)_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    }
+    "h1_not_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "not_L" -> "h1_not_L" [xlabel="1", dir=back, color="#d62728"];
+    "h1_not_L" -> "(?R1 ?V1 ?h1)_L" [xlabel="2", color="#d62728"];
+    "h2_S_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+    "?S_L" -> "h2_S_L" [xlabel="1", dir=back, color="#2ca02c"];
+    "h2_S_L" -> "?h2_L" [xlabel="2", color="#2ca02c"];
+    "h2_S_L" -> "?h1_L" [xlabel="3", color="#2ca02c"];
+    "?R1_L" -> "(?R1 ?V1 ?h1)_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "(?R1 ?V1 ?h1)_L" -> "?V1_L" [xlabel="2", color="#bcbd22"];
+    "(?R1 ?V1 ?h1)_L" -> "?h1_L" [xlabel="3", color="#bcbd22"];
+    subgraph cluster_absent_L_0 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?h_o_L" [label="?h_o", shape=diamond];
+      "h3_S_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+      "?S_L" -> "h3_S_L" [xlabel="1", dir=back, color="#2ca02c"];
+      "h3_S_L" -> "?h2_L" [xlabel="2", color="#2ca02c"];
+      "h3_S_L" -> "?h_o_L" [xlabel="3", color="#2ca02c"];
+      "?h_o_L" -> "?h1_L" [xlabel="≠", dir=none, style=dotted, color="#555555", fontcolor="#555555", constraint=false];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "not_R" [label="not", shape=box];
+    "?R2_R" [label="?R2", shape=diamond];
+    "?V2_R" [label="?V2", shape=diamond];
+    "?h2_R" [label="?h2", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?R2 ?V2 ?h2)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    }
+    "h4_not_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    "not_R" -> "h4_not_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
+    "h4_not_R" -> "(?R2 ?V2 ?h2)_R" [xlabel="2", color="#d62728", style=dashed];
+    "?R2_R" -> "(?R2 ?V2 ?h2)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
+    "(?R2 ?V2 ?h2)_R" -> "?V2_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "(?R2 ?V2 ?h2)_R" -> "?h2_R" [xlabel="3", color="#bcbd22", style=dashed];
+  }
+}
+
+digraph rule_derive_adjacent_via_lhs_rhs {
+  rankdir=TB;
+  label="derive-adjacent-via"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "adjacent-via_L" [label="adjacent-via", shape=box];
+    "?S_L" [label="?S", shape=diamond];
+    "?R1_L" [label="?R1", shape=diamond];
+    "?V1_L" [label="?V1", shape=diamond];
+    "?R2_L" [label="?R2", shape=diamond];
+    "?V2_L" [label="?V2", shape=diamond];
+    "h1_adjacent-via_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "adjacent-via_L" -> "h1_adjacent-via_L" [xlabel="1", dir=back, color="#7f7f7f"];
+    "h1_adjacent-via_L" -> "?S_L" [xlabel="2", color="#7f7f7f"];
+    "h1_adjacent-via_L" -> "?R1_L" [xlabel="3", color="#7f7f7f"];
+    "h1_adjacent-via_L" -> "?V1_L" [xlabel="4", color="#7f7f7f"];
+    "h1_adjacent-via_L" -> "?R2_L" [xlabel="5", color="#7f7f7f"];
+    "h1_adjacent-via_L" -> "?V2_L" [xlabel="6", color="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "adjacent-via-fwd_R" [label="adjacent-via-fwd", shape=box];
+    "?S_R" [label="?S", shape=diamond];
+    "?R1_R" [label="?R1", shape=diamond];
+    "?V1_R" [label="?V1", shape=diamond];
+    "?R2_R" [label="?R2", shape=diamond];
+    "?V2_R" [label="?V2", shape=diamond];
+    "adjacent-via-bwd_R" [label="adjacent-via-bwd", shape=box];
+    "h2_adjacent-via-fwd_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "adjacent-via-fwd_R" -> "h2_adjacent-via-fwd_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+    "h2_adjacent-via-fwd_R" -> "?S_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "h2_adjacent-via-fwd_R" -> "?R1_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "h2_adjacent-via-fwd_R" -> "?V1_R" [xlabel="4", color="#2ca02c", style=dashed];
+    "h2_adjacent-via-fwd_R" -> "?R2_R" [xlabel="5", color="#2ca02c", style=dashed];
+    "h2_adjacent-via-fwd_R" -> "?V2_R" [xlabel="6", color="#2ca02c", style=dashed];
+    "h3_adjacent-via-bwd_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd", style=dashed];
+    "adjacent-via-bwd_R" -> "h3_adjacent-via-bwd_R" [xlabel="1", dir=back, color="#9467bd", style=dashed];
+    "h3_adjacent-via-bwd_R" -> "?S_R" [xlabel="2", color="#9467bd", style=dashed];
+    "h3_adjacent-via-bwd_R" -> "?R1_R" [xlabel="3", color="#9467bd", style=dashed];
+    "h3_adjacent-via-bwd_R" -> "?V1_R" [xlabel="4", color="#9467bd", style=dashed];
+    "h3_adjacent-via-bwd_R" -> "?R2_R" [xlabel="5", color="#9467bd", style=dashed];
+    "h3_adjacent-via-bwd_R" -> "?V2_R" [xlabel="6", color="#9467bd", style=dashed];
+  }
+}
+
+digraph rule_derive_adjacent_via_fwd_fanout_lhs_rhs {
+  rankdir=TB;
+  label="derive-adjacent-via-fwd-fanout"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "adjacent-via-fwd_L" [label="adjacent-via-fwd", shape=box];
+    "?S_L" [label="?S", shape=diamond];
+    "?R1_L" [label="?R1", shape=diamond];
+    "?V1_L" [label="?V1", shape=diamond];
+    "?R2_L" [label="?R2", shape=diamond];
+    "?V2_L" [label="?V2", shape=diamond];
+    "h1_adjacent-via-fwd_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+    "adjacent-via-fwd_L" -> "h1_adjacent-via-fwd_L" [xlabel="1", dir=back, color="#2ca02c"];
+    "h1_adjacent-via-fwd_L" -> "?S_L" [xlabel="2", color="#2ca02c"];
+    "h1_adjacent-via-fwd_L" -> "?R1_L" [xlabel="3", color="#2ca02c"];
+    "h1_adjacent-via-fwd_L" -> "?V1_L" [xlabel="4", color="#2ca02c"];
+    "h1_adjacent-via-fwd_L" -> "?R2_L" [xlabel="5", color="#2ca02c"];
+    "h1_adjacent-via-fwd_L" -> "?V2_L" [xlabel="6", color="#2ca02c"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "adjacent-via-fwd-negative_R" [label="adjacent-via-fwd-negative", shape=box];
+    "?S_R" [label="?S", shape=diamond];
+    "?R1_R" [label="?R1", shape=diamond];
+    "?V1_R" [label="?V1", shape=diamond];
+    "?R2_R" [label="?R2", shape=diamond];
+    "?V2_R" [label="?V2", shape=diamond];
+    "disjunctive-prune-fwd_R" [label="disjunctive-prune-fwd", shape=box];
+    "adjacent-via-endpoint-fwd_R" [label="adjacent-via-endpoint-fwd", shape=box];
+    "h2_adjacent-via-fwd-negative_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "adjacent-via-fwd-negative_R" -> "h2_adjacent-via-fwd-negative_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+    "h2_adjacent-via-fwd-negative_R" -> "?S_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "h2_adjacent-via-fwd-negative_R" -> "?R1_R" [xlabel="3", color="#2ca02c", style=dashed];
+    "h2_adjacent-via-fwd-negative_R" -> "?V1_R" [xlabel="4", color="#2ca02c", style=dashed];
+    "h2_adjacent-via-fwd-negative_R" -> "?R2_R" [xlabel="5", color="#2ca02c", style=dashed];
+    "h2_adjacent-via-fwd-negative_R" -> "?V2_R" [xlabel="6", color="#2ca02c", style=dashed];
+    "h3_disjunctive-prune-fwd_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", style=dashed];
+    "disjunctive-prune-fwd_R" -> "h3_disjunctive-prune-fwd_R" [xlabel="1", dir=back, color="#ff7f0e", style=dashed];
+    "h3_disjunctive-prune-fwd_R" -> "?S_R" [xlabel="2", color="#ff7f0e", style=dashed];
+    "h3_disjunctive-prune-fwd_R" -> "?R1_R" [xlabel="3", color="#ff7f0e", style=dashed];
+    "h3_disjunctive-prune-fwd_R" -> "?V1_R" [xlabel="4", color="#ff7f0e", style=dashed];
+    "h3_disjunctive-prune-fwd_R" -> "?R2_R" [xlabel="5", color="#ff7f0e", style=dashed];
+    "h3_disjunctive-prune-fwd_R" -> "?V2_R" [xlabel="6", color="#ff7f0e", style=dashed];
+    "h4_adjacent-via-endpoint-fwd_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#17becf", style=dashed];
+    "adjacent-via-endpoint-fwd_R" -> "h4_adjacent-via-endpoint-fwd_R" [xlabel="1", dir=back, color="#17becf", style=dashed];
+    "h4_adjacent-via-endpoint-fwd_R" -> "?S_R" [xlabel="2", color="#17becf", style=dashed];
+    "h4_adjacent-via-endpoint-fwd_R" -> "?R1_R" [xlabel="3", color="#17becf", style=dashed];
+    "h4_adjacent-via-endpoint-fwd_R" -> "?V1_R" [xlabel="4", color="#17becf", style=dashed];
+    "h4_adjacent-via-endpoint-fwd_R" -> "?R2_R" [xlabel="5", color="#17becf", style=dashed];
+    "h4_adjacent-via-endpoint-fwd_R" -> "?V2_R" [xlabel="6", color="#17becf", style=dashed];
+  }
+}
+
+digraph rule_derive_adjacent_via_bwd_fanout_lhs_rhs {
+  rankdir=TB;
+  label="derive-adjacent-via-bwd-fanout"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "adjacent-via-bwd_L" [label="adjacent-via-bwd", shape=box];
+    "?S_L" [label="?S", shape=diamond];
+    "?R1_L" [label="?R1", shape=diamond];
+    "?V1_L" [label="?V1", shape=diamond];
+    "?R2_L" [label="?R2", shape=diamond];
+    "?V2_L" [label="?V2", shape=diamond];
+    "h1_adjacent-via-bwd_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#9467bd"];
+    "adjacent-via-bwd_L" -> "h1_adjacent-via-bwd_L" [xlabel="1", dir=back, color="#9467bd"];
+    "h1_adjacent-via-bwd_L" -> "?S_L" [xlabel="2", color="#9467bd"];
+    "h1_adjacent-via-bwd_L" -> "?R1_L" [xlabel="3", color="#9467bd"];
+    "h1_adjacent-via-bwd_L" -> "?V1_L" [xlabel="4", color="#9467bd"];
+    "h1_adjacent-via-bwd_L" -> "?R2_L" [xlabel="5", color="#9467bd"];
+    "h1_adjacent-via-bwd_L" -> "?V2_L" [xlabel="6", color="#9467bd"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "adjacent-via-bwd-negative_R" [label="adjacent-via-bwd-negative", shape=box];
+    "?S_R" [label="?S", shape=diamond];
+    "?R1_R" [label="?R1", shape=diamond];
+    "?V1_R" [label="?V1", shape=diamond];
+    "?R2_R" [label="?R2", shape=diamond];
+    "?V2_R" [label="?V2", shape=diamond];
+    "disjunctive-prune-bwd_R" [label="disjunctive-prune-bwd", shape=box];
+    "adjacent-via-endpoint-bwd_R" [label="adjacent-via-endpoint-bwd", shape=box];
+    "h2_adjacent-via-bwd-negative_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2", style=dashed];
+    "adjacent-via-bwd-negative_R" -> "h2_adjacent-via-bwd-negative_R" [xlabel="1", dir=back, color="#e377c2", style=dashed];
+    "h2_adjacent-via-bwd-negative_R" -> "?S_R" [xlabel="2", color="#e377c2", style=dashed];
+    "h2_adjacent-via-bwd-negative_R" -> "?R1_R" [xlabel="3", color="#e377c2", style=dashed];
+    "h2_adjacent-via-bwd-negative_R" -> "?V1_R" [xlabel="4", color="#e377c2", style=dashed];
+    "h2_adjacent-via-bwd-negative_R" -> "?R2_R" [xlabel="5", color="#e377c2", style=dashed];
+    "h2_adjacent-via-bwd-negative_R" -> "?V2_R" [xlabel="6", color="#e377c2", style=dashed];
+    "h3_disjunctive-prune-bwd_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#8c564b", style=dashed];
+    "disjunctive-prune-bwd_R" -> "h3_disjunctive-prune-bwd_R" [xlabel="1", dir=back, color="#8c564b", style=dashed];
+    "h3_disjunctive-prune-bwd_R" -> "?S_R" [xlabel="2", color="#8c564b", style=dashed];
+    "h3_disjunctive-prune-bwd_R" -> "?R1_R" [xlabel="3", color="#8c564b", style=dashed];
+    "h3_disjunctive-prune-bwd_R" -> "?V1_R" [xlabel="4", color="#8c564b", style=dashed];
+    "h3_disjunctive-prune-bwd_R" -> "?R2_R" [xlabel="5", color="#8c564b", style=dashed];
+    "h3_disjunctive-prune-bwd_R" -> "?V2_R" [xlabel="6", color="#8c564b", style=dashed];
+    "h4_adjacent-via-endpoint-bwd_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f", style=dashed];
+    "adjacent-via-endpoint-bwd_R" -> "h4_adjacent-via-endpoint-bwd_R" [xlabel="1", dir=back, color="#7f7f7f", style=dashed];
+    "h4_adjacent-via-endpoint-bwd_R" -> "?S_R" [xlabel="2", color="#7f7f7f", style=dashed];
+    "h4_adjacent-via-endpoint-bwd_R" -> "?R1_R" [xlabel="3", color="#7f7f7f", style=dashed];
+    "h4_adjacent-via-endpoint-bwd_R" -> "?V1_R" [xlabel="4", color="#7f7f7f", style=dashed];
+    "h4_adjacent-via-endpoint-bwd_R" -> "?R2_R" [xlabel="5", color="#7f7f7f", style=dashed];
+    "h4_adjacent-via-endpoint-bwd_R" -> "?V2_R" [xlabel="6", color="#7f7f7f", style=dashed];
+  }
+}
+
+digraph rule_disjunctive_prune_fwd_lhs_rhs {
+  rankdir=TB;
+  label="disjunctive-prune-fwd"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?R1_L" [label="?R1", shape=diamond];
+    "?V1_L" [label="?V1", shape=diamond];
+    "?h1_L" [label="?h1", shape=diamond];
+    "relation_L" [label="relation", shape=box];
+    "?R2_L" [label="?R2", shape=diamond];
+    "?A_L" [label="?A", shape=diamond];
+    "?B_L" [label="?B", shape=diamond];
+    "is-a_L" [label="is-a", shape=box];
+    "?h_other_L" [label="?h_other", shape=diamond];
+    "h1_R1_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "?R1_L" -> "h1_R1_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h1_R1_L" -> "?V1_L" [xlabel="2", color="#bcbd22"];
+    "h1_R1_L" -> "?h1_L" [xlabel="3", color="#bcbd22"];
+    "h2_relation_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "relation_L" -> "h2_relation_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h2_relation_L" -> "?R2_L" [xlabel="2", color="#bcbd22"];
+    "h2_relation_L" -> "?A_L" [xlabel="3", color="#bcbd22"];
+    "h2_relation_L" -> "?B_L" [xlabel="4", color="#bcbd22"];
+    "h3_is-a_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "is-a_L" -> "h3_is-a_L" [xlabel="1", dir=back, color="#7f7f7f"];
+    "h3_is-a_L" -> "?h_other_L" [xlabel="2", color="#7f7f7f"];
+    "h3_is-a_L" -> "?B_L" [xlabel="3", color="#7f7f7f"];
+    subgraph cluster_absent_L_0 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?S_L" [label="?S", shape=diamond];
+      "h4_S_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+      "?S_L" -> "h4_S_L" [xlabel="1", dir=back, color="#2ca02c"];
+      "h4_S_L" -> "?h_other_L" [xlabel="2", color="#2ca02c"];
+      "h4_S_L" -> "?h1_L" [xlabel="3", color="#2ca02c"];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "not_R" [label="not", shape=box];
+    "?R2_R" [label="?R2", shape=diamond];
+    "?V2_R" [label="?V2", shape=diamond];
+    "?h_other_R" [label="?h_other", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?R2 ?V2 ?h_other)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    }
+    "h5_not_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    "not_R" -> "h5_not_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
+    "h5_not_R" -> "(?R2 ?V2 ?h_other)_R" [xlabel="2", color="#d62728", style=dashed];
+    "?R2_R" -> "(?R2 ?V2 ?h_other)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
+    "(?R2 ?V2 ?h_other)_R" -> "?V2_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "(?R2 ?V2 ?h_other)_R" -> "?h_other_R" [xlabel="3", color="#bcbd22", style=dashed];
+  }
+}
+
+digraph rule_disjunctive_prune_bwd_lhs_rhs {
+  rankdir=TB;
+  label="disjunctive-prune-bwd"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "?R2_L" [label="?R2", shape=diamond];
+    "?V2_L" [label="?V2", shape=diamond];
+    "?h1_L" [label="?h1", shape=diamond];
+    "relation_L" [label="relation", shape=box];
+    "?R1_L" [label="?R1", shape=diamond];
+    "?A_L" [label="?A", shape=diamond];
+    "?B_L" [label="?B", shape=diamond];
+    "is-a_L" [label="is-a", shape=box];
+    "?h_other_L" [label="?h_other", shape=diamond];
+    "h1_R2_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "?R2_L" -> "h1_R2_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h1_R2_L" -> "?V2_L" [xlabel="2", color="#bcbd22"];
+    "h1_R2_L" -> "?h1_L" [xlabel="3", color="#bcbd22"];
+    "h2_relation_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "relation_L" -> "h2_relation_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h2_relation_L" -> "?R1_L" [xlabel="2", color="#bcbd22"];
+    "h2_relation_L" -> "?A_L" [xlabel="3", color="#bcbd22"];
+    "h2_relation_L" -> "?B_L" [xlabel="4", color="#bcbd22"];
+    "h3_is-a_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "is-a_L" -> "h3_is-a_L" [xlabel="1", dir=back, color="#7f7f7f"];
+    "h3_is-a_L" -> "?h_other_L" [xlabel="2", color="#7f7f7f"];
+    "h3_is-a_L" -> "?B_L" [xlabel="3", color="#7f7f7f"];
+    subgraph cluster_absent_L_0 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?S_L" [label="?S", shape=diamond];
+      "h4_S_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+      "?S_L" -> "h4_S_L" [xlabel="1", dir=back, color="#2ca02c"];
+      "h4_S_L" -> "?h1_L" [xlabel="2", color="#2ca02c"];
+      "h4_S_L" -> "?h_other_L" [xlabel="3", color="#2ca02c"];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "not_R" [label="not", shape=box];
+    "?R1_R" [label="?R1", shape=diamond];
+    "?V1_R" [label="?V1", shape=diamond];
+    "?h_other_R" [label="?h_other", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?R1 ?V1 ?h_other)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    }
+    "h5_not_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    "not_R" -> "h5_not_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
+    "h5_not_R" -> "(?R1 ?V1 ?h_other)_R" [xlabel="2", color="#d62728", style=dashed];
+    "?R1_R" -> "(?R1 ?V1 ?h_other)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
+    "(?R1 ?V1 ?h_other)_R" -> "?V1_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "(?R1 ?V1 ?h_other)_R" -> "?h_other_R" [xlabel="3", color="#bcbd22", style=dashed];
+  }
+}
+
+digraph rule_adjacent_via_endpoint_fwd_lhs_rhs {
+  rankdir=TB;
+  label="adjacent-via-endpoint-fwd"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "relation_L" [label="relation", shape=box];
+    "?R1_L" [label="?R1", shape=diamond];
+    "?A_L" [label="?A", shape=diamond];
+    "?B_L" [label="?B", shape=diamond];
+    "is-a_L" [label="is-a", shape=box];
+    "?h1_L" [label="?h1", shape=diamond];
+    "h1_relation_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "relation_L" -> "h1_relation_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h1_relation_L" -> "?R1_L" [xlabel="2", color="#bcbd22"];
+    "h1_relation_L" -> "?A_L" [xlabel="3", color="#bcbd22"];
+    "h1_relation_L" -> "?B_L" [xlabel="4", color="#bcbd22"];
+    "h2_is-a_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "is-a_L" -> "h2_is-a_L" [xlabel="1", dir=back, color="#7f7f7f"];
+    "h2_is-a_L" -> "?h1_L" [xlabel="2", color="#7f7f7f"];
+    "h2_is-a_L" -> "?B_L" [xlabel="3", color="#7f7f7f"];
+    subgraph cluster_absent_L_0 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?h2_L" [label="?h2", shape=diamond];
+      "?S_L" [label="?S", shape=diamond];
+      "h3_is-a_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+      "is-a_L" -> "h3_is-a_L" [xlabel="1", dir=back, color="#7f7f7f"];
+      "h3_is-a_L" -> "?h2_L" [xlabel="2", color="#7f7f7f"];
+      "h3_is-a_L" -> "?B_L" [xlabel="3", color="#7f7f7f"];
+      "h4_S_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+      "?S_L" -> "h4_S_L" [xlabel="1", dir=back, color="#2ca02c"];
+      "h4_S_L" -> "?h2_L" [xlabel="2", color="#2ca02c"];
+      "h4_S_L" -> "?h1_L" [xlabel="3", color="#2ca02c"];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "not_R" [label="not", shape=box];
+    "?R1_R" [label="?R1", shape=diamond];
+    "?V1_R" [label="?V1", shape=diamond];
+    "?h1_R" [label="?h1", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?R1 ?V1 ?h1)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    }
+    "h5_not_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    "not_R" -> "h5_not_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
+    "h5_not_R" -> "(?R1 ?V1 ?h1)_R" [xlabel="2", color="#d62728", style=dashed];
+    "?R1_R" -> "(?R1 ?V1 ?h1)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
+    "(?R1 ?V1 ?h1)_R" -> "?V1_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "(?R1 ?V1 ?h1)_R" -> "?h1_R" [xlabel="3", color="#bcbd22", style=dashed];
+  }
+}
+
+digraph rule_adjacent_via_endpoint_bwd_lhs_rhs {
+  rankdir=TB;
+  label="adjacent-via-endpoint-bwd"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "relation_L" [label="relation", shape=box];
+    "?R2_L" [label="?R2", shape=diamond];
+    "?A_L" [label="?A", shape=diamond];
+    "?B_L" [label="?B", shape=diamond];
+    "is-a_L" [label="is-a", shape=box];
+    "?h2_L" [label="?h2", shape=diamond];
+    "h1_relation_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    "relation_L" -> "h1_relation_L" [xlabel="1", dir=back, color="#bcbd22"];
+    "h1_relation_L" -> "?R2_L" [xlabel="2", color="#bcbd22"];
+    "h1_relation_L" -> "?A_L" [xlabel="3", color="#bcbd22"];
+    "h1_relation_L" -> "?B_L" [xlabel="4", color="#bcbd22"];
+    "h2_is-a_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "is-a_L" -> "h2_is-a_L" [xlabel="1", dir=back, color="#7f7f7f"];
+    "h2_is-a_L" -> "?h2_L" [xlabel="2", color="#7f7f7f"];
+    "h2_is-a_L" -> "?B_L" [xlabel="3", color="#7f7f7f"];
+    subgraph cluster_absent_L_0 {
+      label="absent (∄)"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "?h1_L" [label="?h1", shape=diamond];
+      "?S_L" [label="?S", shape=diamond];
+      "h3_is-a_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+      "is-a_L" -> "h3_is-a_L" [xlabel="1", dir=back, color="#7f7f7f"];
+      "h3_is-a_L" -> "?h1_L" [xlabel="2", color="#7f7f7f"];
+      "h3_is-a_L" -> "?B_L" [xlabel="3", color="#7f7f7f"];
+      "h4_S_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c"];
+      "?S_L" -> "h4_S_L" [xlabel="1", dir=back, color="#2ca02c"];
+      "h4_S_L" -> "?h2_L" [xlabel="2", color="#2ca02c"];
+      "h4_S_L" -> "?h1_L" [xlabel="3", color="#2ca02c"];
+    }
+  }
+  subgraph cluster_rhs { label="assert";
+    "not_R" [label="not", shape=box];
+    "?R2_R" [label="?R2", shape=diamond];
+    "?V2_R" [label="?V2", shape=diamond];
+    "?h2_R" [label="?h2", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="not ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?R2 ?V2 ?h2)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22"];
+    }
+    "h5_not_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728", style=dashed];
+    "not_R" -> "h5_not_R" [xlabel="1", dir=back, color="#d62728", style=dashed];
+    "h5_not_R" -> "(?R2 ?V2 ?h2)_R" [xlabel="2", color="#d62728", style=dashed];
+    "?R2_R" -> "(?R2 ?V2 ?h2)_R" [xlabel="1", dir=back, color="#bcbd22", style=dashed];
+    "(?R2 ?V2 ?h2)_R" -> "?V2_R" [xlabel="2", color="#bcbd22", style=dashed];
+    "(?R2 ?V2 ?h2)_R" -> "?h2_R" [xlabel="3", color="#bcbd22", style=dashed];
+  }
+}
+
+digraph rule_guess_lhs_rhs {
+  rankdir=TB;
+  label="guess"; labelloc=t;
+  subgraph cluster_lhs { label="match";
+    "is-a_L" [label="is-a", shape=box];
+    "?a_L" [label="?a", shape=diamond];
+    "?T1_L" [label="?T1", shape=diamond];
+    "?b_L" [label="?b", shape=diamond];
+    "?T2_L" [label="?T2", shape=diamond];
+    "h1_is-a_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "is-a_L" -> "h1_is-a_L" [xlabel="1", dir=back, color="#7f7f7f"];
+    "h1_is-a_L" -> "?a_L" [xlabel="2", color="#7f7f7f"];
+    "h1_is-a_L" -> "?T1_L" [xlabel="3", color="#7f7f7f"];
+    "h2_is-a_L" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#7f7f7f"];
+    "is-a_L" -> "h2_is-a_L" [xlabel="1", dir=back, color="#7f7f7f"];
+    "h2_is-a_L" -> "?b_L" [xlabel="2", color="#7f7f7f"];
+    "h2_is-a_L" -> "?T2_L" [xlabel="3", color="#7f7f7f"];
+  }
+  subgraph cluster_rhs { label="assert";
+    "open_R" [label="open", shape=box];
+    "?R_R" [label="?R", shape=diamond];
+    "?a_R" [label="?a", shape=diamond];
+    "?b_R" [label="?b", shape=diamond];
+    subgraph cluster_ctx_R_0 {
+      label="open ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+      "(?R ?a ?b)_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#1f77b4"];
+    }
+    "h3_open_R" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#2ca02c", style=dashed];
+    "open_R" -> "h3_open_R" [xlabel="1", dir=back, color="#2ca02c", style=dashed];
+    "h3_open_R" -> "(?R ?a ?b)_R" [xlabel="2", color="#2ca02c", style=dashed];
+    "?R_R" -> "(?R ?a ?b)_R" [xlabel="1", dir=back, color="#1f77b4", style=dashed];
+    "(?R ?a ?b)_R" -> "?a_R" [xlabel="2", color="#1f77b4", style=dashed];
+    "(?R ?a ?b)_R" -> "?b_R" [xlabel="3", color="#1f77b4", style=dashed];
+  }
+}
+
+digraph query {
+  rankdir=TB;
+  subgraph cluster_goal_1 { label="query";
+    "drink-loc_Q1" [label="drink-loc", shape=box];
+    "Water_Q1" [label="Water", shape=box];
+    "?h_water_Q1" [label="?h_water", shape=diamond];
+    "nation-loc_Q1" [label="nation-loc", shape=box];
+    "?who_water_Q1" [label="?who_water", shape=diamond];
+    "pet-loc_Q1" [label="pet-loc", shape=box];
+    "Zebra_Q1" [label="Zebra", shape=box];
+    "?h_zebra_Q1" [label="?h_zebra", shape=diamond];
+    "?who_zebra_Q1" [label="?who_zebra", shape=diamond];
+    "h1_drink-loc_Q1" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#e377c2"];
+    "drink-loc_Q1" -> "h1_drink-loc_Q1" [xlabel="1", dir=back, color="#e377c2"];
+    "h1_drink-loc_Q1" -> "Water_Q1" [xlabel="2", color="#e377c2"];
+    "h1_drink-loc_Q1" -> "?h_water_Q1" [xlabel="3", color="#e377c2"];
+    "h2_nation-loc_Q1" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "nation-loc_Q1" -> "h2_nation-loc_Q1" [xlabel="1", dir=back, color="#d62728"];
+    "h2_nation-loc_Q1" -> "?who_water_Q1" [xlabel="2", color="#d62728"];
+    "h2_nation-loc_Q1" -> "?h_water_Q1" [xlabel="3", color="#d62728"];
+    "h3_pet-loc_Q1" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e"];
+    "pet-loc_Q1" -> "h3_pet-loc_Q1" [xlabel="1", dir=back, color="#ff7f0e"];
+    "h3_pet-loc_Q1" -> "Zebra_Q1" [xlabel="2", color="#ff7f0e"];
+    "h3_pet-loc_Q1" -> "?h_zebra_Q1" [xlabel="3", color="#ff7f0e"];
+    "h4_nation-loc_Q1" [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#d62728"];
+    "nation-loc_Q1" -> "h4_nation-loc_Q1" [xlabel="1", dir=back, color="#d62728"];
+    "h4_nation-loc_Q1" -> "?who_zebra_Q1" [xlabel="2", color="#d62728"];
+    "h4_nation-loc_Q1" -> "?h_zebra_Q1" [xlabel="3", color="#d62728"];
+    "query_1" [shape=note, label=":goal-text \"The {?who_water} drinks water in {?h_water}; the {?who_zebra} owns zebra in {?h_zebra}\""];
+  }
+}

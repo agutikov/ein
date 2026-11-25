@@ -1,0 +1,12 @@
+solve · examples/zebra2.ein --count
+──────────────────────────────────────────────────────────────
+  asked             how many states and commitments R holds (--count)
+  states (k_s)      1
+  commitments (k_c) 261 982
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 not in R — root owes 36 instances
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          56 candidates, 21 dead alone
+    outside         is-a*, next-to — no candidate: no obligation owes them. R holds of them only what the program states and saturation derives
+  route             the tree and the classes: R's states by the obligation tree, each state's class by dualise and advance — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
+  work              120 saturations · 5 411 facts beyond root

@@ -1,0 +1,29 @@
+{
+  "schema": "ein-summary/2",
+  "source": "ein.rs/crates/ein-cli/tests/bounded/grow.ein",
+  "asked": {
+    "which": "all",
+    "ask": "describe",
+    "n": null
+  },
+  "region": null,
+  "verdict": null,
+  "queries": null,
+  "claim": null,
+  "work": null,
+  "monotonicity": null,
+  "leftover": null,
+  "root": null,
+  "config": {
+    "lattice-sanity-check": false,
+    "record-alternative-justifications": true
+  },
+  "diagnostics": [
+    {
+      "kind": "deadline",
+      "severity": "error",
+      "message": "--max-time 1 s reached before the question was decided",
+      "place": null
+    }
+  ]
+}

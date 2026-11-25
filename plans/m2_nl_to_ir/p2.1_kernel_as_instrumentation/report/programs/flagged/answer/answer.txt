@@ -1,0 +1,47 @@
+solve · examples/lattice/04_obligation_trigger_hole.ein
+──────────────────────────────────────────────────────────────
+  WARNING           THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER.
+                    IT IS NOT CLAIMED TO BE RIGHT, SOUND OR COMPLETE (Q-M1f.564).
+                    THE `lattice` ROWS BELOW NAME THE SITES.
+  asked             all of R — describe
+  states (k_s)      3
+  commitments (k_c) 3
+  exhausted         yes — every commitment is classified: this is all of R
+  ∅                 in R — root is alive and owes nothing
+  minimal line      1 state — ∅
+  maximal line      1 state — ⊤, the trivial line: no restriction bites
+  components        1
+  sub-cubes         2, each of dimension 1
+  merged            none — every state is reached by one commitment, so k_c = k_s
+  N                 0 minimal dead sets
+  E                 1 minimal discharging set
+  lattice           not monotone: 4 sites (the static check) — 1 hole
+    assumes         every node is a fork of root (root's fixpoint, its commitment added, saturated); what a node is on this program is not decided: Q-M1e2.2
+    site            dine: hypothesis reads is-a at absent depth 0, concludes (open …) — at stake: the hypotheses: a state can hold one root does not
+    site            seat: hypothesis reads is-a at absent depth 0, concludes (open …) — at stake: the hypotheses: a state can hold one root does not
+    site            total-owed [activator meal is-a]: obligation-trigger reads is-a at absent depth 0, concludes (open …) — at stake: the status: owes
+    site            total-owed [activator meal is-a]: obligation-guard reads is-a at absent depth 1, concludes (open …) — at stake: the hypotheses: a state can hold one root does not
+    status          non-monotone here (exercised, by total-owed [activator meal is-a]) — the cube: 1 hole · 0 dead nodes with an alive superset · 1 discharged node with an owing superset
+    state           no stale fact in the cube's 4 nodes
+    paths           every parent path checked reaches the same state — 2 parents of 1 printed state
+    minimal hole    {(seats Ann C1)} — owes 1
+  universe          2 candidates, 0 dead alone
+    outside         is-a — no candidate: no obligation owes it. R holds of it only what the program states and saturation derives
+  route             2, the cube — no licence: the static check flags the program
+  work              4 saturations · 6 facts beyond root
+
+  (region
+    ;; state 1 of 3 — ∅, root itself · minimal
+    (model)
+    ;; state 2 of 3 — 1 candidate · from {(meal Ann Soup)}
+    (model (meal Ann Soup))
+    ;; state 3 of 3 — 2 candidates · maximal · from {(meal Ann Soup), (seats Ann C1)}
+    (model (meal Ann Soup) (seats Ann C1)))
+
+  query             (meal ?g ?f)
+  over              all of R — 3 states → 2 projection classes
+    class 1 of 2    1 state (1) — the goal has no row: undetermined here
+    class 2 of 2    2 states (2, 3)
+                      ?f = Soup · ?g = Ann
+  as :expect        (or (model)
+                        (model (meal Ann Soup)))

@@ -1,0 +1,24 @@
+solve · examples/ein-bugs/zebra2-bad.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      0
+  commitments (k_c) 0
+  exhausted         yes — every commitment is classified: this is all of R
+  empty             every node is dead — root's own fixpoint holds a contradiction
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate: R is {∅} or empty, decided by root alone
+    outside         is-a*, next-to — no candidate: no obligation owes them. R holds of them only what the program states and saturation derives
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              1 saturation · 0 facts beyond root · 1 layer
+
+  unsat core        (color-loc Green House-1)
+  unsat core        (is-a House-1 House)
+  unsat core        (relation color-loc Color House)
+  source            (color-loc Green House-1) :source "injected contradiction"
+  refuted by        (given), co-located-negative
+
+  (false)
+
+  query             (and (drink-loc Water ?h_water) (nation-loc ?who_water ?h_water) (pet-loc Zebra ?h_zebra) (nation-loc ?who_zebra ?h_zebra))
+  over              all of R — R is empty, root is dead: no state to answer from
+  as :expect        (false)

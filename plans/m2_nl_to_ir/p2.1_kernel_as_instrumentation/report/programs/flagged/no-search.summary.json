@@ -1,0 +1,186 @@
+{
+  "schema": "ein-summary/2",
+  "source": "examples/lattice/04_obligation_trigger_hole.ein",
+  "asked": {
+    "which": "all",
+    "ask": "no-search",
+    "n": null
+  },
+  "region": null,
+  "verdict": null,
+  "queries": [
+    {
+      "goal": "(meal ?g ?f)",
+      "over": "all",
+      "exact": false,
+      "classes": [
+        {
+          "facts": [],
+          "rows": [],
+          "states": [
+            1
+          ]
+        }
+      ],
+      "expect": null
+    }
+  ],
+  "claim": null,
+  "work": {
+    "saturations": 1,
+    "facts": 0,
+    "layers": null
+  },
+  "monotonicity": {
+    "monotone": false,
+    "warning": "THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER",
+    "hypothesised": [
+      "meal",
+      "seats"
+    ],
+    "dynamic": [
+      "false",
+      "is-a",
+      "meal",
+      "seats"
+    ],
+    "plans": {
+      "saturation": 23,
+      "obligation": 1
+    },
+    "reads": {
+      "static": 28,
+      "dynamic_monotone": 10,
+      "dynamic_non_monotone": 1
+    },
+    "absent_reads": {
+      "static": 0,
+      "dynamic_monotone": 2,
+      "dynamic_non_monotone": 0
+    },
+    "sites": [
+      {
+        "rule": "dine",
+        "activator": [],
+        "kind": "hypothesis",
+        "relation": "is-a",
+        "depth": 0,
+        "concludes": "(open \u2026)",
+        "at_stake": "hypotheses"
+      },
+      {
+        "rule": "seat",
+        "activator": [],
+        "kind": "hypothesis",
+        "relation": "is-a",
+        "depth": 0,
+        "concludes": "(open \u2026)",
+        "at_stake": "hypotheses"
+      },
+      {
+        "rule": "total-owed",
+        "activator": [
+          "meal",
+          "is-a"
+        ],
+        "kind": "obligation-trigger",
+        "relation": "is-a",
+        "depth": 0,
+        "concludes": "(open \u2026)",
+        "at_stake": "status: owes"
+      },
+      {
+        "rule": "total-owed",
+        "activator": [
+          "meal",
+          "is-a"
+        ],
+        "kind": "obligation-guard",
+        "relation": "is-a",
+        "depth": 1,
+        "concludes": "(open \u2026)",
+        "at_stake": "hypotheses"
+      }
+    ],
+    "in_flight": null,
+    "assumes": {
+      "node": "fork from root",
+      "open": "Q-M1e2.2"
+    },
+    "cycles": [],
+    "order": [],
+    "status": {
+      "read": null,
+      "bit": "not known",
+      "why": "the run did not read every node",
+      "n": 2
+    },
+    "state": {
+      "read": "every node the run computed",
+      "nodes": 1,
+      "stale_nodes": 0,
+      "stale": []
+    },
+    "paths": {
+      "bound": 3,
+      "states": 0,
+      "parents": 0,
+      "dead_parents": 0,
+      "saturations": 0,
+      "differ": [],
+      "unprinted": null
+    }
+  },
+  "leftover": {
+    "taken": false,
+    "states": [],
+    "states_by_relation": []
+  },
+  "root": {
+    "facts": 18,
+    "facts_by_relation": {
+      "is-a": 3,
+      "open": 2,
+      "relation": 6,
+      "std.contradiction.clash-0": 3,
+      "std.contradiction.clash-2": 3,
+      "total-owed": 1
+    },
+    "dead": false,
+    "owes": 0,
+    "owed": [],
+    "commit": [],
+    "plans": 23,
+    "saturator": {
+      "naf_rounds": 0,
+      "naf_admitted": 0,
+      "naf_retired": 0,
+      "naf_dropped": 0
+    },
+    "hypgen": {
+      "raw": 2,
+      "emitted": 2,
+      "filtered": {},
+      "pre_candidate": {},
+      "outside": [
+        {
+          "relation": "is-a",
+          "arity": 2,
+          "why": "not-owed"
+        }
+      ]
+    }
+  },
+  "config": {
+    "lattice-sanity-check": false,
+    "record-alternative-justifications": true
+  },
+  "diagnostics": [
+    {
+      "kind": "not-monotone",
+      "severity": "warning",
+      "message": "examples/lattice/04_obligation_trigger_hole.ein: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)",
+      "place": null
+    }
+  ]
+}

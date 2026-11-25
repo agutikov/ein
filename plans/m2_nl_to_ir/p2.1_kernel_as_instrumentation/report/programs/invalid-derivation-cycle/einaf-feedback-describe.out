@@ -1,0 +1,66 @@
+{
+  "schema": "einaf-feedback/1",
+  "program": {
+    "name": "examples/broken/load/derivation_cycle.ein",
+    "digest": "sha256:5a6df988cdfb3b4a74706a02175f875d0a6e4aff674056b82ee99b0bc50bb9aa",
+    "of": "canonical-dump"
+  },
+  "kernel": {
+    "version": "0.1.0",
+    "protocol": "ein-events/1",
+    "stdlib": "sha256:292894befd300e536cdd1181db772f44fe3f3f7ad6ff52b1467f1735ff83d681",
+    "commit": null
+  },
+  "asked": {
+    "question": "describe",
+    "which": "all",
+    "ask": "describe",
+    "budget": 1048576,
+    "limit": 16,
+    "max_steps": 1048576,
+    "clock_us": null
+  },
+  "outcome": [
+    {
+      "part": "all",
+      "outcome": "invalid",
+      "why": "refused at the load (derivation-cycle): derivation cycle: (r a b) -> (r c d) -> (r a b)"
+    },
+    {
+      "part": "minimal",
+      "outcome": "invalid",
+      "why": "refused at the load (derivation-cycle): derivation cycle: (r a b) -> (r c d) -> (r a b)"
+    },
+    {
+      "part": "maximal",
+      "outcome": "invalid",
+      "why": "refused at the load (derivation-cycle): derivation cycle: (r a b) -> (r c d) -> (r a b)"
+    }
+  ],
+  "readings": null,
+  "diagnostics": [
+    {
+      "kind": "derivation-cycle",
+      "severity": "error",
+      "message": "derivation cycle: (r a b) -> (r c d) -> (r a b)",
+      "place": null
+    }
+  ],
+  "flagged": null,
+  "queries": null,
+  "claim": null,
+  "states": null,
+  "owed": null,
+  "core": null,
+  "work": {
+    "saturations": null,
+    "facts": null,
+    "layers": null,
+    "run_us": null,
+    "load_us": 3619,
+    "ask_us": 6
+  },
+  "dependencies": null,
+  "provenance": null,
+  "fault": null
+}

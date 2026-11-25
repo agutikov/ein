@@ -1,0 +1,18 @@
+solve · examples/zebra2.ein --no-search
+──────────────────────────────────────────────────────────────
+  asked             root alone — --no-search: root's fixpoint, and R is not searched
+  ∅                 not in R — root owes 36 instances
+    owed            color-loc owes Red a House.
+    owed            color-loc owes Green a House.
+    owed            color-loc owes Ivory a House.
+    owed            nation-loc owes Englishman a House.
+                    … 32 more instances: --dump-answer DIR writes every one, to DIR/answer.txt
+  R                 not searched — --no-search builds no node past root: a bare `ein solve FILE` describes R
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          56 candidates, none visited: R was not searched
+    outside         is-a*, next-to — no candidate: no obligation owes them. R holds of them only what the program states and saturation derives
+  route             none — --no-search: root's node, and no node past it
+  work              1 saturation · 0 facts beyond root
+
+  query             (and (drink-loc Water ?h_water) (nation-loc ?who_water ?h_water) (pet-loc Zebra ?h_zebra) (nation-loc ?who_zebra ?h_zebra))
+  over              all of R — --no-search read root alone, and root owes 36 instances, so ∅ is not in R: no state to answer from, and R was not searched

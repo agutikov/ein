@@ -1,0 +1,2 @@
+einaf outcome · ein.rs/crates/ein-cli/tests/bounded/grow.ein --maximal --single
+  not decided   over the maximal line   stopped at --max-steps 10000: root's saturation had no fixpoint within it

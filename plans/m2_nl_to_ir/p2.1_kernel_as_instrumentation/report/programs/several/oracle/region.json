@@ -1,0 +1,317 @@
+{
+  "schema": "ein-region/1",
+  "source": "examples/lattice/03_state_hash_collision.ein",
+  "n": 3,
+  "limit": 16,
+  "candidates": [
+    "(h1 X)",
+    "(h2 X)",
+    "(h3 X)"
+  ],
+  "outside": [],
+  "monotonicity": {
+    "monotone": true,
+    "warning": null,
+    "hypothesised": [
+      "h1",
+      "h2",
+      "h3"
+    ],
+    "dynamic": [
+      "h1",
+      "h2",
+      "h3"
+    ],
+    "plans": {
+      "saturation": 3,
+      "obligation": 0
+    },
+    "reads": {
+      "static": 1,
+      "dynamic_monotone": 2,
+      "dynamic_non_monotone": 0
+    },
+    "absent_reads": {
+      "static": 0,
+      "dynamic_monotone": 0,
+      "dynamic_non_monotone": 0
+    },
+    "sites": [],
+    "in_flight": null,
+    "assumes": null,
+    "cycles": [],
+    "order": [],
+    "absents": []
+  },
+  "region": {
+    "root_dead": false,
+    "assumes_monotone": false,
+    "size": 8,
+    "minimal": [
+      []
+    ],
+    "maximal": [
+      [
+        "(h1 X)",
+        "(h2 X)",
+        "(h3 X)"
+      ]
+    ],
+    "holes": [],
+    "minimal_holes": [],
+    "repairs": [],
+    "components": [
+      {
+        "size": 8,
+        "minimal": [
+          []
+        ],
+        "maximal": [
+          [
+            "(h1 X)",
+            "(h2 X)",
+            "(h3 X)"
+          ]
+        ]
+      }
+    ],
+    "subcubes": [
+      {
+        "from": [],
+        "to": [
+          "(h1 X)",
+          "(h2 X)",
+          "(h3 X)"
+        ],
+        "dimension": 3
+      }
+    ],
+    "nogoods": [],
+    "discharging": [
+      []
+    ],
+    "duality": {
+      "minimal_holds": true,
+      "maximal_holds": true,
+      "minimal_from_e": [
+        []
+      ],
+      "maximal_from_n": [
+        [
+          "(h1 X)",
+          "(h2 X)",
+          "(h3 X)"
+        ]
+      ]
+    },
+    "local_max": [],
+    "local_min": [],
+    "violations": {
+      "dead_not_upward_closed": {
+        "count": 0,
+        "witness": null
+      },
+      "discharged_not_upward_closed": {
+        "count": 0,
+        "witness": null
+      }
+    },
+    "edges": [
+      {
+        "from": "R",
+        "to": "R",
+        "count": 12
+      }
+    ],
+    "nodes": [
+      {
+        "mask": 0,
+        "layer": 0,
+        "facts": [],
+        "status": "R",
+        "minimal": true,
+        "maximal": false,
+        "hole": false,
+        "component": 0,
+        "class": 0,
+        "closure": 0,
+        "excluded": 0,
+        "beyond": 0,
+        "beyond_hypothesised": 0,
+        "owes": 0,
+        "owed": [],
+        "core": null,
+        "core_status": null,
+        "refuted_by": null,
+        "absent_premises": []
+      },
+      {
+        "mask": 1,
+        "layer": 1,
+        "facts": [
+          "(h1 X)"
+        ],
+        "status": "R",
+        "minimal": false,
+        "maximal": false,
+        "hole": false,
+        "component": 0,
+        "class": 1,
+        "closure": 1,
+        "excluded": 0,
+        "beyond": 0,
+        "beyond_hypothesised": 0,
+        "owes": 0,
+        "owed": [],
+        "core": null,
+        "core_status": null,
+        "refuted_by": null,
+        "absent_premises": []
+      },
+      {
+        "mask": 2,
+        "layer": 1,
+        "facts": [
+          "(h2 X)"
+        ],
+        "status": "R",
+        "minimal": false,
+        "maximal": false,
+        "hole": false,
+        "component": 0,
+        "class": 2,
+        "closure": 7,
+        "excluded": 0,
+        "beyond": 0,
+        "beyond_hypothesised": 0,
+        "owes": 0,
+        "owed": [],
+        "core": null,
+        "core_status": null,
+        "refuted_by": null,
+        "absent_premises": []
+      },
+      {
+        "mask": 3,
+        "layer": 2,
+        "facts": [
+          "(h1 X)",
+          "(h2 X)"
+        ],
+        "status": "R",
+        "minimal": false,
+        "maximal": false,
+        "hole": false,
+        "component": 0,
+        "class": 2,
+        "closure": 7,
+        "excluded": 0,
+        "beyond": 0,
+        "beyond_hypothesised": 0,
+        "owes": 0,
+        "owed": [],
+        "core": null,
+        "core_status": null,
+        "refuted_by": null,
+        "absent_premises": []
+      },
+      {
+        "mask": 4,
+        "layer": 1,
+        "facts": [
+          "(h3 X)"
+        ],
+        "status": "R",
+        "minimal": false,
+        "maximal": false,
+        "hole": false,
+        "component": 0,
+        "class": 4,
+        "closure": 4,
+        "excluded": 0,
+        "beyond": 0,
+        "beyond_hypothesised": 0,
+        "owes": 0,
+        "owed": [],
+        "core": null,
+        "core_status": null,
+        "refuted_by": null,
+        "absent_premises": []
+      },
+      {
+        "mask": 5,
+        "layer": 2,
+        "facts": [
+          "(h1 X)",
+          "(h3 X)"
+        ],
+        "status": "R",
+        "minimal": false,
+        "maximal": false,
+        "hole": false,
+        "component": 0,
+        "class": 5,
+        "closure": 5,
+        "excluded": 0,
+        "beyond": 0,
+        "beyond_hypothesised": 0,
+        "owes": 0,
+        "owed": [],
+        "core": null,
+        "core_status": null,
+        "refuted_by": null,
+        "absent_premises": []
+      },
+      {
+        "mask": 6,
+        "layer": 2,
+        "facts": [
+          "(h2 X)",
+          "(h3 X)"
+        ],
+        "status": "R",
+        "minimal": false,
+        "maximal": false,
+        "hole": false,
+        "component": 0,
+        "class": 2,
+        "closure": 7,
+        "excluded": 0,
+        "beyond": 0,
+        "beyond_hypothesised": 0,
+        "owes": 0,
+        "owed": [],
+        "core": null,
+        "core_status": null,
+        "refuted_by": null,
+        "absent_premises": []
+      },
+      {
+        "mask": 7,
+        "layer": 3,
+        "facts": [
+          "(h1 X)",
+          "(h2 X)",
+          "(h3 X)"
+        ],
+        "status": "R",
+        "minimal": false,
+        "maximal": true,
+        "hole": false,
+        "component": 0,
+        "class": 2,
+        "closure": 7,
+        "excluded": 0,
+        "beyond": 0,
+        "beyond_hypothesised": 0,
+        "owes": 0,
+        "owed": [],
+        "core": null,
+        "core_status": null,
+        "refuted_by": null,
+        "absent_premises": []
+      }
+    ]
+  },
+  "refused": null
+}

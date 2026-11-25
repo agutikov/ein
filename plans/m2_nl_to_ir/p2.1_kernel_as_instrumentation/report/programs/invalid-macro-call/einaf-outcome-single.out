@@ -1,0 +1,2 @@
+einaf outcome · examples/broken/load/macro_arity_mismatch.ein --single
+  invalid       over all of R           refused at the load (macro-call): (rule x): macro m/2 invoked with 1 args at examples/broken/load/macro_arity_mismatch.ein:6:20

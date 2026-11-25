@@ -1,0 +1,107 @@
+{
+  "schema": "ein-summary/2",
+  "source": "examples/lattice/03_state_hash_collision.ein",
+  "asked": {
+    "which": "all",
+    "ask": "no-search",
+    "n": null
+  },
+  "region": null,
+  "verdict": null,
+  "queries": [
+    {
+      "goal": "(h1 ?x)",
+      "over": "all",
+      "exact": false,
+      "classes": [
+        {
+          "facts": [],
+          "rows": [],
+          "states": [
+            1
+          ]
+        }
+      ],
+      "expect": null
+    }
+  ],
+  "claim": null,
+  "work": {
+    "saturations": 1,
+    "facts": 0,
+    "layers": null
+  },
+  "monotonicity": {
+    "monotone": true,
+    "warning": null,
+    "hypothesised": [
+      "h1",
+      "h2",
+      "h3"
+    ],
+    "dynamic": [
+      "h1",
+      "h2",
+      "h3"
+    ],
+    "plans": {
+      "saturation": 3,
+      "obligation": 0
+    },
+    "reads": {
+      "static": 1,
+      "dynamic_monotone": 2,
+      "dynamic_non_monotone": 0
+    },
+    "absent_reads": {
+      "static": 0,
+      "dynamic_monotone": 0,
+      "dynamic_non_monotone": 0
+    },
+    "sites": [],
+    "in_flight": null,
+    "assumes": null,
+    "cycles": [],
+    "order": [],
+    "status": null,
+    "state": null,
+    "paths": null
+  },
+  "leftover": {
+    "taken": false,
+    "states": [],
+    "states_by_relation": []
+  },
+  "root": {
+    "facts": 16,
+    "facts_by_relation": {
+      "guess": 3,
+      "is-a": 2,
+      "open": 3,
+      "relation": 8
+    },
+    "dead": false,
+    "owes": 0,
+    "owed": [],
+    "commit": [],
+    "plans": 3,
+    "saturator": {
+      "naf_rounds": 0,
+      "naf_admitted": 0,
+      "naf_retired": 0,
+      "naf_dropped": 0
+    },
+    "hypgen": {
+      "raw": 3,
+      "emitted": 3,
+      "filtered": {},
+      "pre_candidate": {},
+      "outside": []
+    }
+  },
+  "config": {
+    "lattice-sanity-check": false,
+    "record-alternative-justifications": true
+  },
+  "diagnostics": []
+}

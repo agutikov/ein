@@ -1,0 +1,40 @@
+{
+  "schema": "ein-test-report/6",
+  "tally": {
+    "files": 1,
+    "silent": 0,
+    "held": 0,
+    "failed": 0,
+    "not_checked": 0,
+    "errors": 1
+  },
+  "rows": [
+    {
+      "path": "examples/broken/unclosed_paren.ein",
+      "query": 0,
+      "queries": 0,
+      "goal": null,
+      "goal_relations": [],
+      "outcome": "error",
+      "place": "query",
+      "expect": null,
+      "answer": null,
+      "outside": null,
+      "route": null,
+      "fell_back_from": null,
+      "diff": null,
+      "diagnostics": [
+        {
+          "kind": "parse",
+          "severity": "error",
+          "message": "examples/broken/unclosed_paren.ein:4:10: unexpected `a`: a name\n  repair: Insert `(`, Shift `a`, Delete `:assert`, Shift `b`, Insert `)`, Insert `)`",
+          "place": {
+            "file": "examples/broken/unclosed_paren.ein",
+            "line": 4,
+            "col": 10
+          }
+        }
+      ]
+    }
+  ]
+}

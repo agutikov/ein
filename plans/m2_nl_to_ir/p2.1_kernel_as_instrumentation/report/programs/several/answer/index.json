@@ -1,0 +1,211 @@
+{
+  "schema": "ein-answer/3",
+  "source": "examples/lattice/03_state_hash_collision.ein",
+  "asked": {
+    "which": "all",
+    "ask": "describe",
+    "n": null
+  },
+  "region": {
+    "k_s": 5,
+    "k_c": 8,
+    "exhausted": true,
+    "stopped": null,
+    "complete_up_to": null,
+    "root": "in-r",
+    "root_owes": 0,
+    "root_owed": [],
+    "empty": null,
+    "minimal": {
+      "states": 1,
+      "commitments": 1,
+      "least": 0,
+      "trivial": true
+    },
+    "maximal": {
+      "states": 1,
+      "trivial": true
+    },
+    "components": [
+      8
+    ],
+    "subcubes": [
+      3
+    ],
+    "merged": {
+      "states": 1,
+      "minimal": 1
+    },
+    "nogoods": 0,
+    "discharging": null,
+    "holes": null,
+    "universe": {
+      "candidates": 3,
+      "dead_alone": 0
+    },
+    "route": "states",
+    "licences": [
+      "L1 dead is upward-closed",
+      "L3 a commitment's state is its closure's",
+      "L4 the lines are local"
+    ],
+    "states": [
+      {
+        "facts": [],
+        "closure": [],
+        "from": [],
+        "minimal_generators": [
+          []
+        ],
+        "commitments": 1,
+        "lines": [
+          "minimal"
+        ],
+        "listed": true
+      },
+      {
+        "facts": [
+          "(h1 X)"
+        ],
+        "closure": [
+          "(h1 X)"
+        ],
+        "from": [
+          "(h1 X)"
+        ],
+        "minimal_generators": [
+          [
+            "(h1 X)"
+          ]
+        ],
+        "commitments": 1,
+        "lines": [],
+        "listed": true
+      },
+      {
+        "facts": [
+          "(h3 X)"
+        ],
+        "closure": [
+          "(h3 X)"
+        ],
+        "from": [
+          "(h3 X)"
+        ],
+        "minimal_generators": [
+          [
+            "(h3 X)"
+          ]
+        ],
+        "commitments": 1,
+        "lines": [],
+        "listed": true
+      },
+      {
+        "facts": [
+          "(h1 X)",
+          "(h3 X)"
+        ],
+        "closure": [
+          "(h1 X)",
+          "(h3 X)"
+        ],
+        "from": [
+          "(h1 X)",
+          "(h3 X)"
+        ],
+        "minimal_generators": [
+          [
+            "(h1 X)",
+            "(h3 X)"
+          ]
+        ],
+        "commitments": 1,
+        "lines": [],
+        "listed": true
+      },
+      {
+        "facts": [
+          "(h1 X)",
+          "(h2 X)",
+          "(h3 X)"
+        ],
+        "closure": [
+          "(h1 X)",
+          "(h2 X)",
+          "(h3 X)"
+        ],
+        "from": [
+          "(h2 X)"
+        ],
+        "minimal_generators": [
+          [
+            "(h2 X)"
+          ]
+        ],
+        "commitments": 4,
+        "lines": [
+          "maximal"
+        ],
+        "listed": true
+      }
+    ],
+    "frontier": null,
+    "core": null,
+    "core_sources": null,
+    "core_status": null,
+    "refuted_by": null
+  },
+  "models": [
+    {
+      "path": "models/01.ein",
+      "state": 1,
+      "lines": [
+        "minimal"
+      ],
+      "listed": true,
+      "commit": []
+    },
+    {
+      "path": "models/02.ein",
+      "state": 2,
+      "lines": [],
+      "listed": true,
+      "commit": [
+        "(h1 X)"
+      ]
+    },
+    {
+      "path": "models/03.ein",
+      "state": 3,
+      "lines": [],
+      "listed": true,
+      "commit": [
+        "(h3 X)"
+      ]
+    },
+    {
+      "path": "models/04.ein",
+      "state": 4,
+      "lines": [],
+      "listed": true,
+      "commit": [
+        "(h1 X)",
+        "(h3 X)"
+      ]
+    },
+    {
+      "path": "models/05.ein",
+      "state": 5,
+      "lines": [
+        "maximal"
+      ],
+      "listed": true,
+      "commit": [
+        "(h2 X)"
+      ]
+    }
+  ],
+  "owing": [],
+  "forms": []
+}

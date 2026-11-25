@@ -1,0 +1,67 @@
+digraph kb {
+  rankdir=TB;
+  ranksep=0.55;
+  node [fontname="Inter", shape=box];
+
+  // facts
+  f_1f1a2cc2f3 [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "relation" -> f_1f1a2cc2f3 [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_1f1a2cc2f3 -> "is-a" [xlabel="2", color="#bcbd22", style=solid];
+  f_1f1a2cc2f3 -> "T" [xlabel="3", color="#bcbd22", style=solid];
+  f_1f1a2cc2f3 -> "T" [xlabel="4", color="#bcbd22", style=solid];
+  "is-a" -> "is-a" [xlabel="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid, constraint=false];
+  f_77bca0891f [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "relation" -> f_77bca0891f [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_77bca0891f -> "seats" [xlabel="2", color="#bcbd22", style=solid];
+  f_77bca0891f -> "Guest" [xlabel="3", color="#bcbd22", style=solid];
+  f_77bca0891f -> "Chair" [xlabel="4", color="#bcbd22", style=solid];
+  "seats" -> "seats" [xlabel="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid, constraint=false];
+  f_66453d054e [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#bcbd22", fontcolor="#bcbd22", style=solid];
+  "relation" -> f_66453d054e [xlabel="1", dir=back, color="#bcbd22", style=solid];
+  f_66453d054e -> "meal" [xlabel="2", color="#bcbd22", style=solid];
+  f_66453d054e -> "Diner" [xlabel="3", color="#bcbd22", style=solid];
+  f_66453d054e -> "Food" [xlabel="4", color="#bcbd22", style=solid];
+  "meal" -> "meal" [xlabel="relation", color="#bcbd22", fontcolor="#bcbd22", style=solid, constraint=false];
+  "Ann" -> "Guest" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid, constraint=false];
+  "C1" -> "Chair" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid, constraint=false];
+  "Soup" -> "Food" [xlabel="is-a", color="#7f7f7f", fontcolor="#7f7f7f", style=solid, constraint=false];
+  "meal" -> "is-a" [xlabel="total-owed", color="#2ca02c", fontcolor="#2ca02c", style=solid, constraint=false];
+  "is-a" -> "is-a" [xlabel="std.contradiction.clash-0 by std.contradiction.clash-of-0", color="#bcbd22", fontcolor="#bcbd22", style=dashed, constraint=false];
+  "seats" -> "seats" [xlabel="std.contradiction.clash-0 by std.contradiction.clash-of-0", color="#bcbd22", fontcolor="#bcbd22", style=dashed, constraint=false];
+  "meal" -> "meal" [xlabel="std.contradiction.clash-0 by std.contradiction.clash-of-0", color="#bcbd22", fontcolor="#bcbd22", style=dashed, constraint=false];
+  "is-a" -> "is-a" [xlabel="std.contradiction.clash-2 by std.contradiction.clash-of-2", color="#9467bd", fontcolor="#9467bd", style=dashed, constraint=false];
+  "seats" -> "seats" [xlabel="std.contradiction.clash-2 by std.contradiction.clash-of-2", color="#9467bd", fontcolor="#9467bd", style=dashed, constraint=false];
+  "meal" -> "meal" [xlabel="std.contradiction.clash-2 by std.contradiction.clash-of-2", color="#9467bd", fontcolor="#9467bd", style=dashed, constraint=false];
+  f_97145ccf7d -> f_97145ccf7d [xlabel="open by seat", color="#2ca02c", fontcolor="#2ca02c", style=dashed, constraint=false];
+  f_1c3a87d62b -> f_1c3a87d62b [xlabel="open by dine", color="#2ca02c", fontcolor="#2ca02c", style=dashed, constraint=false];
+
+  // facts in a context
+  newrank=true;
+  subgraph cluster_ctx_0 {
+    label="open ctx"; style="dashed,rounded"; color="#888888"; fontcolor="#888888";
+    f_97145ccf7d [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
+    f_1c3a87d62b [shape=octagon, label="", width=0.3, height=0.3, fixedsize=true, color="#ff7f0e", fontcolor="#ff7f0e", style=solid];
+  }
+  "seats" -> f_97145ccf7d [xlabel="1", dir=back, color="#ff7f0e", style=solid];
+  f_97145ccf7d -> "Ann" [xlabel="2", color="#ff7f0e", style=solid];
+  f_97145ccf7d -> "C1" [xlabel="3", color="#ff7f0e", style=solid];
+  "meal" -> f_1c3a87d62b [xlabel="1", dir=back, color="#ff7f0e", style=solid];
+  f_1c3a87d62b -> "Ann" [xlabel="2", color="#ff7f0e", style=solid];
+  f_1c3a87d62b -> "Soup" [xlabel="3", color="#ff7f0e", style=solid];
+
+  // layers
+  "layer 0" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 1" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 2" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 3" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 4" [style=invis, label="", width=0, height=0, fixedsize=true];
+  "layer 0" -> "layer 1" [style=invis];
+  "layer 1" -> "layer 2" [style=invis];
+  "layer 2" -> "layer 3" [style=invis];
+  "layer 3" -> "layer 4" [style=invis];
+  { rank=same; "layer 0"; "relation"; }
+  { rank=same; "layer 1"; f_1f1a2cc2f3; f_77bca0891f; f_66453d054e; }
+  { rank=same; "layer 2"; "is-a"; "T"; "seats"; "meal"; "Diner"; }
+  { rank=same; "layer 3"; f_97145ccf7d; f_1c3a87d62b; }
+  { rank=same; "layer 4"; "Guest"; "Chair"; "Food"; "Ann"; "C1"; "Soup"; }
+}

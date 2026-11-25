@@ -1,0 +1,26 @@
+{
+  "schema": "ein-summary/2",
+  "source": "examples/broken/load/rule_duplicate_name.ein",
+  "asked": {
+    "which": "all",
+    "ask": "no-search",
+    "n": null
+  },
+  "region": null,
+  "verdict": null,
+  "queries": null,
+  "claim": null,
+  "work": null,
+  "monotonicity": null,
+  "leftover": null,
+  "root": null,
+  "config": null,
+  "diagnostics": [
+    {
+      "kind": "declaration",
+      "severity": "error",
+      "message": "duplicate rule name 'r' at None",
+      "place": null
+    }
+  ]
+}

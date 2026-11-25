@@ -1,0 +1,84 @@
+{
+  "schema": "einaf-feedback/1",
+  "program": {
+    "name": "tests/region/04_owing.ein",
+    "digest": "sha256:61e7846e64a33c147302b0a3d56d50dfdd960b1a63dec791851485fc4e7e6478",
+    "of": "canonical-dump"
+  },
+  "kernel": {
+    "version": "0.1.0",
+    "protocol": "ein-events/1",
+    "stdlib": "sha256:292894befd300e536cdd1181db772f44fe3f3f7ad6ff52b1467f1735ff83d681",
+    "commit": null
+  },
+  "asked": {
+    "question": "--single",
+    "which": "all",
+    "ask": "single",
+    "budget": 1048576,
+    "limit": 16,
+    "max_steps": 1048576,
+    "clock_us": null
+  },
+  "outcome": [
+    {
+      "part": "all",
+      "outcome": "incomplete",
+      "why": "Open: R is empty and every alive node owes"
+    }
+  ],
+  "readings": {
+    "word": {
+      "part": "all",
+      "word": "Open"
+    },
+    "k_s": null,
+    "k_c": null,
+    "minimal": null,
+    "maximal": null,
+    "exhausted": true,
+    "stopped": null
+  },
+  "diagnostics": [
+    {
+      "kind": "claim-not-checked",
+      "severity": "note",
+      "message": "tests/region/04_owing.ein: (solve :expect) NOT CHECKED — the claim is about all of R, and this run asked whether it is one state (--single)",
+      "place": null
+    }
+  ],
+  "flagged": null,
+  "queries": [
+    {
+      "goal": "(likes ?who ?what)",
+      "goal_text": null,
+      "over": "all",
+      "exact": true,
+      "agree": false,
+      "classes": [],
+      "expect": null
+    }
+  ],
+  "claim": {
+    "shape": "owing",
+    "states": 1,
+    "outcome": "not-checked",
+    "lines": [
+      "the claim is about all of R, and this run asked whether it is one state (--single)"
+    ]
+  },
+  "states": [],
+  "owed": null,
+  "core": null,
+  "work": {
+    "saturations": 1,
+    "facts": 0,
+    "layers": null,
+    "run_us": 458,
+    "load_us": 11978,
+    "ask_us": 606
+  },
+  "dependencies": null,
+  "provenance": null,
+  "fault": null
+}

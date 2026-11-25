@@ -1,0 +1,74 @@
+{
+  "schema": "ein-answer/3",
+  "source": "tests/region/04_owing.ein",
+  "asked": {
+    "which": "all",
+    "ask": "describe",
+    "n": null
+  },
+  "region": {
+    "k_s": 0,
+    "k_c": 0,
+    "exhausted": true,
+    "stopped": null,
+    "complete_up_to": null,
+    "root": "owing",
+    "root_owes": 1,
+    "root_owed": [
+      "likes owes Ann a Food."
+    ],
+    "empty": "owing",
+    "minimal": {
+      "states": 0,
+      "commitments": 0,
+      "least": null,
+      "trivial": false
+    },
+    "maximal": {
+      "states": 0,
+      "trivial": false
+    },
+    "components": [],
+    "subcubes": [],
+    "merged": {
+      "states": 0,
+      "minimal": 0
+    },
+    "nogoods": 0,
+    "discharging": null,
+    "holes": null,
+    "universe": {
+      "candidates": 0,
+      "dead_alone": 0
+    },
+    "route": "states",
+    "licences": [
+      "L1 dead is upward-closed",
+      "L3 a commitment's state is its closure's",
+      "L4 the lines are local"
+    ],
+    "states": [],
+    "frontier": [
+      {
+        "facts": [],
+        "set": [],
+        "owes": 1,
+        "owed": [
+          "likes owes Ann a Food."
+        ]
+      }
+    ],
+    "core": null,
+    "core_sources": null,
+    "core_status": null,
+    "refuted_by": null
+  },
+  "models": [],
+  "owing": [
+    {
+      "path": "owing/01.ein",
+      "commit": []
+    }
+  ],
+  "forms": []
+}

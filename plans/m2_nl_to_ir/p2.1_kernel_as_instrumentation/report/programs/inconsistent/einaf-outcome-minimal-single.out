@@ -1,0 +1,2 @@
+einaf outcome · examples/ein-bugs/zebra2-bad.ein --minimal --single
+  inconsistent  over the minimal line   Contradiction: R is empty and every node is dead

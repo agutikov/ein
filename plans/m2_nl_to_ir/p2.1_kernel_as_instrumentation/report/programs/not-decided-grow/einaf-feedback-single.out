@@ -1,0 +1,77 @@
+{
+  "schema": "einaf-feedback/1",
+  "program": {
+    "name": "ein.rs/crates/ein-cli/tests/bounded/grow.ein",
+    "digest": "sha256:8099131d3e53a064ba34b2afe18281dbc5ae297ab9e59d77d877c7700399be4b",
+    "of": "canonical-dump"
+  },
+  "kernel": {
+    "version": "0.1.0",
+    "protocol": "ein-events/1",
+    "stdlib": "sha256:292894befd300e536cdd1181db772f44fe3f3f7ad6ff52b1467f1735ff83d681",
+    "commit": null
+  },
+  "asked": {
+    "question": "--single",
+    "which": "all",
+    "ask": "single",
+    "budget": 1048576,
+    "limit": 16,
+    "max_steps": 10000,
+    "clock_us": null
+  },
+  "outcome": [
+    {
+      "part": "all",
+      "outcome": "not-decided",
+      "why": "stopped at --max-steps 10000: root's saturation had no fixpoint within it"
+    }
+  ],
+  "readings": {
+    "word": null,
+    "k_s": null,
+    "k_c": null,
+    "minimal": null,
+    "maximal": null,
+    "exhausted": false,
+    "stopped": {
+      "why": "steps",
+      "saturation": "root"
+    }
+  },
+  "diagnostics": [
+    {
+      "kind": "partial",
+      "severity": "note",
+      "message": "ein.rs/crates/ein-cli/tests/bounded/grow.ein: partial — root's saturation needed more than --max-steps 10000 firings, and was stopped before its fixpoint. Established: nothing of R, neither root's standing nor H. A larger --max-steps lets every saturation run further",
+      "place": null
+    }
+  ],
+  "flagged": null,
+  "queries": [
+    {
+      "goal": "(num ?x)",
+      "goal_text": "{?x}",
+      "over": "all",
+      "exact": false,
+      "agree": false,
+      "classes": [],
+      "expect": null
+    }
+  ],
+  "claim": null,
+  "states": null,
+  "owed": null,
+  "core": null,
+  "work": {
+    "saturations": 0,
+    "facts": 0,
+    "layers": null,
+    "run_us": 17114,
+    "load_us": 3645,
+    "ask_us": 17825
+  },
+  "dependencies": null,
+  "provenance": null,
+  "fault": null
+}
