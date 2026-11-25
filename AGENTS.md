@@ -435,7 +435,8 @@ paragraph, no register count, no measurement (the user's rule).
   application finds of the kernel, for the iteration of Ein that follows.
   **P2.1 ran to its end on the user's word and waits for the user's review**
   ([its report](plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation/report/README.md));
-  **no other phase of it starts until the user says so.** M1f, the structure of the hypothesis
+  its S2.1.4, four findings fixed, is planned and not started; **no stage or
+  other phase of it starts until the user says so.** M1f, the structure of the hypothesis
   set and the documentation, is closed on the user's word and its plans deleted
   (`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation`): its
   answers are decisions under `docs/decisions/`, its rulings about the process

@@ -347,6 +347,7 @@ E-78, E-88. Open, by section:
 ## 10. What is left, and where
 
 - **Q-M2.8**'s remaining part, EinAf's gate steps, the schema numbers, the kinds, the cap: § 7, the user's.
-- **E-79**, a crash of `ein saturate` on a deep term, and the open entries of § 8: the evaluation, for the
-  iteration of Ein that follows M2; none blocks P2.2.
+- **[S2.1.4](../s2.1.4_bugs_the_phase_found.md)**, planned on the user's word after this report, not started: E-79,
+  E-74, E-101 and E-90 fixed. The other open entries of § 8 stay the evaluation's, for the iteration of Ein that
+  follows M2 or the stage that needs one; none blocks P2.2.
 - **P2.2** is planned (S2.2.0a, S2.2.0f added and the user's comments committed, `e63a21b0`) and not started.
