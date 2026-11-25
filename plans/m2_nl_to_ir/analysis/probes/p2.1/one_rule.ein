@@ -1,0 +1,9 @@
+;;; the one-rule program: a rule that nests its conclusion one deeper than
+;;; its premise, so root's saturation has no fixpoint
+(relation num N :why "{?3} is a number")
+(rule grow ()
+  :match (num ?x)
+  :assert (num (s ?x))
+  :why "the successor of a number is a number")
+(num zero)
+(query :goal (num ?x) :goal-text "{?x}")
