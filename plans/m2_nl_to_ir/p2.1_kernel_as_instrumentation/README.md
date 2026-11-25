@@ -1,9 +1,17 @@
 # P2.1 — The kernel as instrumentation (Stage A)
 
-**Status:** **started 2026-11-25** on the user's word, *"start implementation of M2, everything in p2.1, then stop and let me review; each stage in subagents, subagents commit their work"*. **It ran its three stages to the end the
-same day and waits for the user's review**: [the phase report](report/README.md). It is not closed. **[S2.1.4](s2.1.4_bugs_the_phase_found.md)**, four of the
-findings fixed, planned on the user's word after the report and started on it, ran to its end the same day
-([its record](s2.1.4_bugs_the_phase_found.md#record)) and waits for the review with the phase. No phase after it starts
+**Status:** **closed 2026-11-26** on the user's word, *"after p2.1 complete - close it and start p2.2, there implement
+s2.2.0a, and re-plan s2.2.0f - it must be not a separate stage, it's my notes about whole formalizer phase"*, and then
+*"don't start p2.2, just close p2.1 and stop"*. It was started 2026-11-25 on the user's word, *"start implementation
+of M2, everything in p2.1, then stop and let me review; each stage in subagents, subagents commit their work"*, and
+ran its four stages to their end: S2.1.1 to S2.1.3 the same day, shown in [the phase report](report/README.md), and
+[S2.1.4](s2.1.4_bugs_the_phase_found.md), four of the findings fixed, planned and started on the user's word after
+the report. **The phase's last code is verified** on `a69feac5`: `utils/ci_container.sh` (Ubuntu 26.04 amd64v3,
+Graphviz 14.1.2, rustc 1.97.1; run because S2.1.4 changed three DOT writers' code, Q-M1f.77), exit 0, every static
+check, 1 423 of Ein's tests and 18 of EinAf's, none failed, the process's checks, the review bundle's smoke, the
+bench smoke; and `utils/ci_container.sh --nightly`, exit 0, every job (deep-corpus, deep-corpus-shards 1 to 4,
+mutants 1 to 12, the fuzzer on both seeds, the benches), none failed. Before them `./run_tests.sh` and
+`./run_tests.sh --nightly` ran on `ddb1006e`, both exit 0. P2.2 is planned and not started; no phase of M2 starts
 until the user says so.
 **Depends on:** the kernel as it stands after M1f's close
 ([Q-M2.1](../open_questions/kernel/Q-M2.1-when-is-the-kernel-frozen.md)), and nothing else.
@@ -59,10 +67,10 @@ the machine surface says in each of A1's situations, and § B what each of the p
 
 | ID | title | ends with |
 |---|---|---|
-| [S2.1.1](s2.1.1_tree_and_outcomes.md) | EinAf's tree, and the outcomes | `einaf/`, a Cargo package that links the engine's crates, built and tested by a step of the gate and of CI; the process told of it; `docs/einaf/` with its first pages; the seven outcomes as a function over the library's values, held over the corpus |
-| [S2.1.2](s2.1.2_diagnostics_surface.md) | The kernel's diagnostics as values, and its bounds inside a saturation | in Ein: every refusal a value with a kind and, where the source has one, a place; a refusal, an abort and a run's notes on the machine surfaces; a core's sources beside the core; the clock and a limit reaching inside a saturation, so that no program runs without end; its decision under `docs/decisions/`, its pages and tests in the same commit. **Ran to its end 2026-11-25** ([its record](s2.1.2_diagnostics_surface.md#record)); waits for the user's review with the phase |
-| [S2.1.3](s2.1.3_feedback_object.md) | The feedback object | EinAf's `einaf-feedback/1`: one value for one program under one question, built from the library's values by a call the kernel's own bounds end, serialised for the record; one for every corpus program, held to what the binary's summary says of the same run. **Ran to its end 2026-11-25** ([its record](s2.1.3_feedback_object.md#record)); waits for the user's review with the phase |
-| [S2.1.4](s2.1.4_bugs_the_phase_found.md) | Four things the phase found of Ein, fixed | E-79 (a crash on a deep term), E-74 (a missing file spelled three ways), E-101 (a module's path absolute in a message), E-90 (`ein test`'s abort on stdout), fixed in Ein under its rules, and EinAf's comparison after it. **Ran to its end 2026-11-25** ([its record](s2.1.4_bugs_the_phase_found.md#record)); waits for the user's review with the phase |
+| [S2.1.1](s2.1.1_tree_and_outcomes.md) | EinAf's tree, and the outcomes | `einaf/`, a Cargo package that links the engine's crates, built and tested by a step of the gate and of CI; the process told of it; `docs/einaf/` with its first pages; the seven outcomes as a function over the library's values, held over the corpus. **Ran to its end 2026-11-25** ([its record](s2.1.1_tree_and_outcomes.md#record)) |
+| [S2.1.2](s2.1.2_diagnostics_surface.md) | The kernel's diagnostics as values, and its bounds inside a saturation | in Ein: every refusal a value with a kind and, where the source has one, a place; a refusal, an abort and a run's notes on the machine surfaces; a core's sources beside the core; the clock and a limit reaching inside a saturation, so that no program runs without end; its decision under `docs/decisions/`, its pages and tests in the same commit. **Ran to its end 2026-11-25** ([its record](s2.1.2_diagnostics_surface.md#record)) |
+| [S2.1.3](s2.1.3_feedback_object.md) | The feedback object | EinAf's `einaf-feedback/1`: one value for one program under one question, built from the library's values by a call the kernel's own bounds end, serialised for the record; one for every corpus program, held to what the binary's summary says of the same run. **Ran to its end 2026-11-25** ([its record](s2.1.3_feedback_object.md#record)) |
+| [S2.1.4](s2.1.4_bugs_the_phase_found.md) | Four things the phase found of Ein, fixed | E-79 (a crash on a deep term), E-74 (a missing file spelled three ways), E-101 (a module's path absolute in a message), E-90 (`ein test`'s abort on stdout), fixed in Ein under its rules, and EinAf's comparison after it. **Ran to its end 2026-11-25** ([its record](s2.1.4_bugs_the_phase_found.md#record)) |
 
 ## Acceptance
 
