@@ -31,6 +31,15 @@ shot, under a written contract, and the kernel answers. It does not solve. Repai
 ([S2.2.5](s2.2.5_from_text.md)). The command is EinAf's and the kernel stays free of any model
 ([the frame, § Ein, ein.rs and EinAf](../README.md#ein-einrs-and-einaf)).
 
+**The formalization is a search for an ontology and a theory around facts that stay close to the text** (the
+user, 2026-11-25: *"formalization is search of ontology and theory for given facts, so facts should be as close to
+original text as possible and changed less then more variable rules"*). So the phase begins with two stages the
+user added: [S2.2.0a](s2.2.0a_zebra_formulations.md) compares the two Zebra encodings, measures how the generic
+vocabulary of `zebra.ein` fares against the literal projections of `zebra2.ein`, and writes `zebra3.ein` in the
+text's own words; [S2.2.0f](s2.2.0f_formalization_in_steps.md) makes the formalization three steps, **the facts
+and a partial ontology first**, then the complete ontology and a partial theory, then the complete theory, and
+re-plans the stages after it to them.
+
 The phase also takes the milestone's cheapest early measurement: **whether the model writes loadable Ein with no
 grammar at all** ([S2.2.2](s2.2.2_model_runtime.md)), which the user expects may be possible
 ([Q-M2.13](../open_questions.md#q-m213--who-calls-the-kernel)) and which bears on every stage after it.
@@ -98,7 +107,9 @@ obligations write H (`ein show hyps`: *H, from `obligations`: 112 candidates*), 
 s22, run again at this re-plan). [`examples/zebra2.ein`](../../../examples/zebra2.ein), which the plan of August
 named as the program to reproduce, is not of that shape: it carries fifteen rules of its own, and twelve of its
 condition facts are activators of them
-([the audit, B.0](../analysis/audit_p2.2.md#b0-the-four-passes-in-todays-language)). The word problems of
+([the audit, B.0](../analysis/audit_p2.2.md#b0-the-four-passes-in-todays-language)). Which encoding is the target shape is
+[S2.2.0a](s2.2.0a_zebra_formulations.md)'s to settle by measurement, with a third, `zebra3.ein`, whose facts are
+the sentences' own words. The word problems of
 [`examples/word_problems/`](../../../examples/word_problems/README.md) are the model of a sentence beside the fact
 that states it. Their theory is four modules of that directory, the family's own: the main arms show the model
 the library and not those ([S2.2.4](s2.2.4_passes.md)), so a word problem there is written over the calculator
@@ -121,6 +132,8 @@ what both use and the formalizer of one of them.
 
 | ID | title | ends with |
 |---|---|---|
+| [S2.2.0a](s2.2.0a_zebra_formulations.md) | Three Zebras: the generic vocabulary, the projections, and the text's own words | `zebra.ein` and `zebra2.ein` measured side by side for a formalizer (distance from the text, the theory and who writes it, the kernel's work and what it says back, what a mistake does); `examples/zebra3.ein`, its facts the sentences' own words, monotone and held to the published answer; the target shape decided by the table |
+| [S2.2.0f](s2.2.0f_formalization_in_steps.md) | Formalization in steps: the facts first, then the ontology, then the theory | the three steps stated; the Zebra puzzle and other texts through them by hand, each step's program judged; the model's first step probed by hand; S2.2.1, S2.2.3, S2.2.4 and S2.2.5 re-planned to the steps |
 | [S2.2.1](s2.2.1_contract.md) | The formalization contract: B1 to B4 | one page, `docs/einaf/contract.md`: the input, the five-part output with the hypothesis mechanism and the answer query, what a flagged program is, the categories with which of them is a faithfulness event, what the model receives, what is recorded |
 | [S2.2.2](s2.2.2_model_runtime.md) | The model's runtime, and whether the model writes Ein | the binding chosen and built for the GPU, the model's file pinned by its SHA, the envelope every call returns, the binding held to `llama-server` on the same file; **the probe**: parse rate, load rate and the kinds of error of Ein written with no grammar |
 | [S2.2.3](s2.2.3_gbnf.md) | The grammars | a GBNF grammar generated from `ein.l` and `ein.y`, held to the parser in both directions; the restricted grammars, parameterised on a program's own vocabulary; where a grammar begins and how an output ends; [Q-M2.6](../open_questions.md#q-m26--one-gbnf-or-many) decided |
@@ -128,6 +141,10 @@ what both use and the formalizer of one of them.
 | [S2.2.5](s2.2.5_from_text.md) | From a text to a short answer | `einaf from-text`, one shot, the kernel run through EinAf's bounded call; the answer formatters, written to be [M1p](../../m1p_ein_to_natural_language/README.md)'s starting point; the fixed texts EinAf answers with where no program prints an answer; the record per run; the Zebra puzzle and the word problems from their texts to their answers |
 
 ### Order
+
+**S2.2.0a, then S2.2.0f, come first** (the user, 2026-11-25: *"p2.2 new stage before first stage - s2.2.0f"* and
+*"another stage even before - s2.2.0a"*). S2.2.0f ends by re-planning S2.2.1, S2.2.3, S2.2.4 and S2.2.5 to the
+steps, so what those files say of the passes' order and of the target shape holds until then and no longer.
 
 S2.2.1 and S2.2.2 do not wait for each other. **S2.2.2's probe is the phase's first measurement**: it needs the
 package ([S2.1.1](../p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md)), the kernel's diagnostics as
@@ -228,6 +245,8 @@ Each is this re-plan's, recorded so that the user can correct it; none is a ruli
 
 1. **The model of the target shape is `examples/zebra.ein`** less its rule, its activators and its config, not
    `examples/zebra2.ein`; the Zebra acceptance accepts either formulation, since it is stated on the answer.
+   **Reopened by the user** (2026-11-25): [S2.2.0a](s2.2.0a_zebra_formulations.md) measures the two against a
+   third, literal encoding and settles the target shape by the table.
 2. **The hypothesis mechanism is a part of the contract of its own**, stated by the theory pass. A program that
    states none is recorded as the kernel reports it, `blind`, and is not refused.
 3. **A category is computed, not written**: by EinAf, from the program, the input text and the catalogue, and kept
