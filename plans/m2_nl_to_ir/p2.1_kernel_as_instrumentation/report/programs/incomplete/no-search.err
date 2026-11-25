@@ -1,1 +1,0 @@
-note: tests/region/04_owing.ein: (solve :expect) NOT CHECKED — the claim is about all of R, and --no-search reads root alone: root owes 1 instance, so ∅ is not in R, and R was not searched

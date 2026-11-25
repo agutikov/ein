@@ -12,7 +12,7 @@ shrink or keep a term's depth. It is the one gap here that a real program can me
 **Taken up in part by M2.** By the user's ruling of 2026-11-25 on
 [Q-M2.16](../../m2_nl_to_ir/open_questions/kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md) (the kernel may
 gain timeouts and limits where Ein's syntax and semantics do not change),
-[M2's S2.1.2](../../m2_nl_to_ir/p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) makes the clock and
+[M2's S2.1.2](../../../docs/decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md) makes the clock and
 a limit reach inside a saturation, so that a run under them ends and says what a stopped run says today. It
 takes no word of its own for *did not stop*, no bound that holds by default and no static check: those stay this
 stage's, with its question for the user. Neither has run.

@@ -39,7 +39,7 @@ and 11).
 
 Checked at the re-plan. [`analysis/audit_p2.7_p2.10_neighbours.md` § B.1](../analysis/audit_p2.7_p2.10_neighbours.md#b1-p27--failure-analysis-scaling-generalization)
 has each row with its evidence, and § B.0 the runs. **A stage begins by re-taking what it leans on**: the files
-were written against the kernel at M1f's close, and [S2.1.2](../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md)
+were written against the kernel at M1f's close, and S2.1.2
 changes it.
 
 | this phase needs | what there is |

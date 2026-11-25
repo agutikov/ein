@@ -19,14 +19,22 @@ host, which the work has to know and nothing else holds.
 
 ## Index
 
-None at the milestone's level: M2's README and [its analysis](../analysis/README.md) state no finding of this kind
-that something else does not hold (the host's, for one, is [`analysis/host.md`](../analysis/host.md)'s).
+None found at the milestone's level: M2's README and [its analysis](../analysis/README.md) state no finding of this
+kind that something else does not hold (the host's, for one, is [`analysis/host.md`](../analysis/host.md)'s). Those
+below are P2.1's, moved here open at its close, 2026-11-26.
+
+| id | finding | topic | status |
+|---|---|---|---|
+| [L-M2.1](toolchain/L-M2.1-the-host-builds-with-rustc-1-100-not-the-pinned-1-97-1.md) | The host builds with rustc 1.100, not the pinned 1.97.1 | `toolchain` | open; the three lints it raised in the engine's code are closed by `acd04b13` |
+| [L-M2.2](toolchain/L-M2.2-einaf-has-no-toolchain-pin-ci-builds-it-with-the-runners.md) | EinAf has no toolchain pin: CI builds it with the runner's stable | `toolchain` | open |
+| [L-M2.4](einaf/L-M2.4-eins-api-change-leaves-einaf-unbuilt-until-its-own-commit.md) | Ein's API change leaves EinAf unbuilt until its own commit | `einaf` | open |
 
 ## In a phase's folder
 
 One line a phase whose `findings/` holds entries, so that every id is found from here.
 
-- **L-M2.1 to L-M2.4 are P2.1's**, in [its findings](../p2.1_kernel_as_instrumentation/findings/README.md): the host's
-  toolchain against the pin, EinAf's missing pin, EinAf's load judged with no bound (closed), and Ein's API change
-  leaving EinAf unbuilt until its own commit.
+- **L-M2.1 to L-M2.4 were P2.1's**: the host's toolchain against the pin, EinAf's missing pin, EinAf's load judged
+  with no bound, and Ein's API change leaving EinAf unbuilt until its own commit. At the phase's close, 2026-11-26,
+  the three open moved [here](#index), and L-M2.3, closed in the phase by S2.1.3 (`0ab1aef0`), went with its folder
+  (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`).
 - P2.2 to P2.10: none yet.

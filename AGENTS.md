@@ -433,8 +433,8 @@ paragraph, no register count, no measurement (the user's rule).
   goal is the Zebra puzzle solved by the model with Ein), and it keeps
   [an evaluation of Ein](plans/m2_nl_to_ir/evaluation/README.md), what this
   application finds of the kernel, for the iteration of Ein that follows.
-  **P2.1 is closed on the user's word**
-  ([its README](plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation/README.md));
+  **P2.1 is closed on the user's word and its plans deleted**
+  (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`);
   **P2.2 is planned and not started; no phase of M2 starts until the user says
   so.** M1f, the structure of the hypothesis
   set and the documentation, is closed on the user's word and its plans deleted

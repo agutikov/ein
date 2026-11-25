@@ -1,4 +1,0 @@
-graph exclusion {
-  graph [label="examples/lattice/03_state_hash_collision.ein: the exclusion graph. 0 pairs the theory excludes alone (solid; dotted where a member is dead alone at root), 0 the puzzle's (dashed)", labelloc=t, fontsize=11, overlap=scale];
-  node [shape=box, fontsize=9, margin="0.06,0.03", height=0.25];
-}

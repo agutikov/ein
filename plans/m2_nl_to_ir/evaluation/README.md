@@ -41,11 +41,11 @@ written.
 
 **From the first stage on, an entry is a finding of the application at work**, and lives in the folder of the
 phase that filed it until the phase closes: E-62 to E-67 are
-[S2.1.1](../p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md)'s, on `0effa7b0`, the first time EinAf linked
-the crates and read the kernel's values; its record has the commands. E-68 to E-93 are [S2.1.2](../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md)'s, filed at its end on `e74139cf`: the twenty findings its two halves recorded, each command re-run on that commit, and what its last half
-found. E-94 to E-101 are [S2.1.3](../p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md)'s, filed at its end on
+S2.1.1's, on `0effa7b0`, the first time EinAf linked
+the crates and read the kernel's values; its record has the commands. E-68 to E-93 are S2.1.2's, filed at its end on `e74139cf`: the twenty findings its two halves recorded, each command re-run on that commit, and what its last half
+found. E-94 to E-101 are S2.1.3's, filed at its end on
 `0ab1aef0`: what building the feedback object from the library took, what the object and the binary said of the same
-runs, and what the probes of the bounded call did. E-102 and E-103 are [S2.1.4](../p2.1_kernel_as_instrumentation/s2.1.4_bugs_the_phase_found.md)'s,
+runs, and what the probes of the bounded call did. E-102 and E-103 are S2.1.4's,
 filed at its end on `df75643c`: what was left of a deep term's cost once its printers kept no call stack, and the one
 module path its fix left the binary's.
 
@@ -53,14 +53,14 @@ module path its fix left the binary's.
 
 | topic | what it holds | here | in a phase's folder |
 |---|---|---:|---:|
-| [`answer/`](answer/) | R and what is said of it: the outcomes, the questions, cores, claims, counts, flagged programs | 25 | 2 |
-| [`diagnostics/`](diagnostics/) | what the kernel says beside an answer or instead of one: refusals, kinds, messages, places, the summary's lines | 6 | 18 |
-| [`bounds/`](bounds/) | how far and how long a run goes: termination, the clock, the caps, memory, time | 9 | 13 |
-| [`library/`](library/) | Ein as a library: the API, building against it, embedding it, what its values hold | 2 | 8 |
+| [`answer/`](answer/) | R and what is said of it: the outcomes, the questions, cores, claims, counts, flagged programs | 26 | 0 |
+| [`diagnostics/`](diagnostics/) | what the kernel says beside an answer or instead of one: refusals, kinds, messages, places, the summary's lines | 17 | 0 |
+| [`bounds/`](bounds/) | how far and how long a run goes: termination, the clock, the caps, memory, time | 20 | 0 |
+| [`library/`](library/) | Ein as a library: the API, building against it, embedding it, what its values hold | 7 | 0 |
 | [`language/`](language/) | the language: relations, modules, imports, names | 4 | 0 |
 | [`stdlib/`](stdlib/) | the standard library's theories, and how a program selects one | 6 | 0 |
 | [`hypotheses/`](hypotheses/) | H and the hypothesis mechanisms, the blind enumerator among them | 4 | 0 |
-| [`natural-language/`](natural-language/) | text: `:why`, `:source`, `:goal-text`, a value's words, a sentence for an answer | 5 | 1 |
+| [`natural-language/`](natural-language/) | text: `:why`, `:source`, `:goal-text`, a value's words, a sentence for an answer | 6 | 0 |
 
 ## Strengths
 
@@ -82,6 +82,9 @@ module path its fix left the binary's.
 | [E-36](answer/E-36-the-answer-does-not-depend-on-names.md) | The answer does not depend on names | `answer` | standing (a strength) | — |
 | [E-49](answer/E-49-a-dead-root-is-described-for-the-price-of-roots-saturation.md) | A dead root is described for the price of root's saturation | `answer` | standing (a strength) | — |
 | [E-50](diagnostics/E-50-a-claim-over-a-relation-the-program-does-not-have-is-refused.md) | A claim over a relation the program does not have is refused at the load, with the relation named | `diagnostics` | standing (a strength) | — |
+| [E-66](answer/E-66-the-seven-outcomes-are-read-off-values-and-eight-questions.md) | The seven outcomes are read off values, and eight questions agree on every corpus program | `answer` | standing (a strength) | — |
+| [E-68](diagnostics/E-68-every-line-a-run-prints-is-a-value-of-its-summary.md) | Every line a run prints is a value of its summary | `diagnostics` | standing (a strength) | — |
+| [E-94](library/E-94-the-library-and-the-binary-say-the-same-of-every-run-einaf.md) | The library and the binary say the same of every run EinAf compared | `library` | standing (a strength) | — |
 
 ## Weaknesses
 
@@ -106,13 +109,23 @@ module path its fix left the binary's.
 | [E-53](answer/E-53-a-flagged-program-still-prints-a-verdict-word-under-single.md) | A flagged program still prints a verdict word under `--single` | `answer` | open | the design: [Q-M1f.564](../../../docs/decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md) |
 | [E-54](answer/E-54-a-fact-written-with-rule-or-using-leaves-every-core.md) | A fact written with `:rule` or `:using` leaves every core | `answer` | open | F24 |
 | [E-60](hypotheses/E-60-the-answer-turns-on-one-line-that-states-the-lattice.md) | The answer turns on one line that states the lattice | `hypotheses` | open | none |
+| [E-69](diagnostics/E-69-one-line-two-sections.md) | One line, two sections | `diagnostics` | open | none |
+| [E-70](diagnostics/E-70-one-walk-makes-the-lines-of-three-sections-split-by-the.md) | One walk makes the lines of three sections, split by the form's position | `diagnostics` | open | none |
+| [E-71](diagnostics/E-71-a-lines-place-is-not-always-in-front.md) | A line's place is not always in front | `diagnostics` | open | none |
+| [E-72](diagnostics/E-72-a-parse-error-inside-a-refusal-may-be-a-modules.md) | A parse error inside a refusal may be a module's | `diagnostics` | open | none |
+| [E-85](bounds/E-85-the-cap-counts-firings-an-engine-count.md) | The cap counts firings, an engine count | `bounds` | open | none |
+| [E-86](bounds/E-86-ein-test-asks-a-cut-file-twice.md) | `ein test` asks a cut file twice | `bounds` | open | none |
+| [E-87](bounds/E-87-region-stopped-why-has-two-values-no-summary-reaches.md) | `region.stopped.why` has two values no summary reaches | `bounds` | open | none |
+| [E-92](diagnostics/E-92-a-schemas-number-is-written-into-an-options-help.md) | A schema's number is written into an option's help | `diagnostics` | open | the user's to rule; the default is [S2.1.2](../defaults/p2.1.md)'s record; [Q-M2.19](../open_questions/kernel/Q-M2.19-do-ein-summary-2-and-ein-test-report-6-keep-their-numbers.md) |
+| [E-93](diagnostics/E-93-a-fixture-banks-one-finding-of-two.md) | A fixture banks one finding of two | `diagnostics` | open | none |
+| [E-103](diagnostics/E-103-a-standard-library-module-is-named-by-the-path-the-binary-found.md) | A standard library module is named by the path the binary found it under | `diagnostics` | open | none |
 
 ## Gaps
 
 | id | title | topic | status | owner |
 |---|---|---|---|---|
-| [E-20](diagnostics/E-20-no-machine-surface-carries-a-diagnostic.md) | No machine surface carries a diagnostic | `diagnostics` | closed by [S2.1.2](../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) (`e74139cf`) | [S2.1.2](../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) |
-| [E-21](diagnostics/E-21-four-load-side-errors-are-strings.md) | Four load-side errors are strings | `diagnostics` | closed by [S2.1.2](../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) (`62a8ee45`) | [S2.1.2](../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) |
+| [E-20](diagnostics/E-20-no-machine-surface-carries-a-diagnostic.md) | No machine surface carries a diagnostic | `diagnostics` | closed by S2.1.2 (`e74139cf`) | S2.1.2 |
+| [E-21](diagnostics/E-21-four-load-side-errors-are-strings.md) | Four load-side errors are strings | `diagnostics` | closed by S2.1.2 (`62a8ee45`) | S2.1.2 |
 | [E-22](natural-language/E-22-the-answers-line-is-in-no-key-of-ein-summary-2.md) | The answer's line is in no key of `ein-summary/2` | `natural-language` | open | none; [M1p](../../m1p_ein_to_natural_language/README.md)'s ground |
 | [E-23](natural-language/E-23-a-value-has-no-text-of-its-own.md) | A value has no text of its own | `natural-language` | open | EinAf's formatters ([S2.2.5](../p2.2_formalizer/s2.2.5_from_text.md)) meanwhile; M1p's P1p.1 |
 | [E-24](answer/E-24-nothing-computes-the-difference-of-two-states.md) | Nothing computes the difference of two states | `answer` | open | none |
@@ -127,6 +140,15 @@ module path its fix left the binary's.
 | [E-56](library/E-56-a-rows-value-reaches-a-caller-of-the-library-as-text.md) | A row's value reaches a caller of the library as text | `library` | open | none; [M1p](../../m1p_ein_to_natural_language/README.md)'s ground |
 | [E-57](bounds/E-57-the-clocks-abort-hands-back-nothing-of-what-was-established.md) | The clock's abort hands back nothing of what was established | `bounds` | open | none |
 | [E-58](diagnostics/E-58-the-rules-dependency-graph-covers-saturation-rules-only.md) | The rules' dependency graph covers saturation rules only | `diagnostics` | open | none |
+| [E-73](diagnostics/E-73-a-refusal-about-a-top-level-form-has-no-place.md) | A refusal about a top-level form has no place | `diagnostics` | open | [F23](../../followups/f23_diagnostics_in_eins_words.md)'s D-2 and D-22 |
+| [E-75](diagnostics/E-75-two-refusals-only-a-library-caller-meets-which-no-page.md) | Two refusals only a library caller meets, which no page states | `diagnostics` | open | none |
+| [E-82](bounds/E-82-a-run-the-cap-stops-hands-back-nothing-it-established.md) | A run the cap stops hands back nothing it established | `bounds` | open | none |
+| [E-89](diagnostics/E-89-a-line-with-no-kind-stays-off-every-summary.md) | A line with no kind stays off every summary | `diagnostics` | open | none |
+| [E-91](natural-language/E-91-a-cores-sentences-stand-beside-roots-core-alone.md) | A core's sentences stand beside root's core alone | `natural-language` | open | none |
+| [E-95](library/E-95-no-library-value-says-which-kernel-it-is.md) | No library value says which kernel it is | `library` | open | none |
+| [E-96](library/E-96-the-clocks-abort-is-the-binarys-line-not-a-library-value.md) | The clock's abort is the binary's line, not a library value | `library` | open | none |
+| [E-97](library/E-97-a-runs-diagnostics-are-a-value-only-of-the-rendered-read-out.md) | A run's diagnostics are a value only of the rendered read-out, and their order is the binary's | `library` | open | none |
+| [E-100](bounds/E-100-nothing-bounds-a-calls-memory-in-process.md) | Nothing bounds a call's memory in process | `bounds` | open | none |
 
 ## Bugs
 
@@ -134,7 +156,8 @@ None is seeded: the analysis ran the binary on corpus programs and met no answer
 rules. The wrong answers known before this milestone are [the register](../../wrong_answers/register.toml)'s. None
 below is a wrong answer.
 
-None here: the bugs filed so far, E-62, E-65, E-74, E-76, E-79, E-88, are P2.1's ([below](#in-a-phases-folder)).
+None here: the bugs filed so far, E-62, E-65, E-74, E-76, E-79, E-88, were P2.1's, each closed in the phase, and went
+with its folder at its close ([below](#in-a-phases-folder)).
 
 ## Limits
 
@@ -144,16 +167,29 @@ None here: the bugs filed so far, E-62, E-65, E-74, E-76, E-79, E-88, are P2.1's
 | [E-30](bounds/E-30-a-description-stops-at-the-default-budget-of-2-20-facts.md) | A description stops at the default budget of 2²⁰ facts | `bounds` | open | — |
 | [E-31](answer/E-31-of-a-flagged-program-nothing-is-claimed.md) | Of a flagged program nothing is claimed | `answer` | open | — |
 | [E-32](language/E-32-names-are-ascii-and-there-are-no-numbers.md) | Names are ASCII, and there are no numbers | `language` | open | — |
-| [E-45](bounds/E-45-nothing-in-a-solve-stops-a-saturation-that-has-no-fixpoint.md) | Nothing in a solve stops a saturation that has no fixpoint | `bounds` | closed by [S2.1.2](../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md), T2.1.2.5b (`83b82833`) | [S2.1.2](../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) |
+| [E-45](bounds/E-45-nothing-in-a-solve-stops-a-saturation-that-has-no-fixpoint.md) | Nothing in a solve stops a saturation that has no fixpoint | `bounds` | closed by S2.1.2, T2.1.2.5b (`83b82833`) | S2.1.2 |
 | [E-46](answer/E-46-whether-a-closed-world-rule-is-flagged-depends-on-what-is.md) | Whether a closed-world rule is flagged depends on what is hypothesised beside it | `answer` | open | — |
 | [E-47](language/E-47-a-module-is-found-from-the-programs-directory-and-is-refused.md) | A module is found from the program's directory, and `..` is refused | `language` | open | — |
 | [E-48](answer/E-48-an-ambiguous-answer-is-not-short.md) | An ambiguous answer is not short | `answer` | open | — |
 | [E-59](language/E-59-a-module-comes-whole.md) | A module comes whole | `language` | open | — |
 | [E-61](bounds/E-61-the-ein-binary-does-not-start-under-a-cap-on-its-address.md) | The `ein` binary does not start under a cap on its address space | `bounds` | open | — |
+| [E-63](library/E-63-a-program-outside-the-engines-workspace-builds-the-crates-a.md) | A program outside the engine's workspace builds the crates a second time | `library` | open | — |
+| [E-80](bounds/E-80-events-grows-quadratically-on-a-term-that-deepens-at-every.md) | `--events` grows quadratically on a term that deepens at every firing | `bounds` | open | — |
+| [E-81](bounds/E-81-the-default-cap-costs-about-a-gigabyte-on-a-runaway-program.md) | The default cap costs about a gigabyte on a runaway program | `bounds` | open | — |
+| [E-83](bounds/E-83-a-program-with-no-fixpoint-cannot-be-a-corpus-program.md) | A program with no fixpoint cannot be a corpus program | `bounds` | open | — |
+| [E-84](bounds/E-84-four-readers-of-root-take-no-bound.md) | Four readers of root take no bound | `bounds` | open | — |
+| [E-98](bounds/E-98-the-clock-is-not-read-where-nothing-fires-and-the-cap-counts.md) | The clock is not read where nothing fires, and the cap counts only firings | `bounds` | open | — |
+| [E-102](bounds/E-102-a-deep-fact-is-rendered-and-drawn-in-time-that-grows-with-the.md) | A deep fact is rendered and drawn in time that grows with the square of its depth, after the run and outside the clock | `bounds` | open | — |
 
 ## In a phase's folder
 
 One line a phase whose `evaluation/` holds entries, so that every id is found from here.
 
-- **E-62 to E-103 are P2.1's**, in [its evaluation](../p2.1_kernel_as_instrumentation/evaluation/README.md): E-62 to E-67 filed by S2.1.1, E-68 to E-93 by S2.1.2, E-94 to E-101 by S2.1.3, E-102 and E-103 by S2.1.4; thirteen of them closed in the phase, E-99 as far as it went.
+- **E-62 to E-103 were P2.1's**: E-62 to E-67 filed by S2.1.1, E-68 to E-93 by S2.1.2, E-94 to E-101 by S2.1.3, E-102
+  and E-103 by S2.1.4. At the phase's close, 2026-11-26, the twenty-nine open or standing moved here under their topics
+  (the strengths E-66, E-68 and E-94; the weaknesses E-69 to E-72, E-85 to E-87, E-92, E-93 and E-103; the gaps E-73,
+  E-75, E-82, E-89, E-91, E-95 to E-97 and E-100; the limits E-63, E-80, E-81, E-83, E-84, E-98 and E-102), and the
+  thirteen it closed went with its folder (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`):
+  E-62, E-64, E-65, E-67, E-74, E-76 to E-79, E-88, E-90, E-99 (as far as *faster than the square*, the rest E-102)
+  and E-101.
 - P2.2 to P2.10: none yet.

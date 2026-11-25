@@ -1,4 +1,0 @@
-graph cover {
-  graph [label="examples/lattice/03_state_hash_collision.ein: the cover. 0 groups (0 owed, double border), 0 grids, 3 candidates in no group not drawn", labelloc=t, fontsize=11, rankdir=LR];
-  node [fontsize=9];
-}

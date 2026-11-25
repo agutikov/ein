@@ -1,4 +1,0 @@
-einaf outcome · examples/broken/load/derivation_cycle.ein
-  invalid       over all of R           refused at the load (derivation-cycle): derivation cycle: (r a b) -> (r c d) -> (r a b)
-  invalid       over the minimal line   refused at the load (derivation-cycle): derivation cycle: (r a b) -> (r c d) -> (r a b)
-  invalid       over the maximal line   refused at the load (derivation-cycle): derivation cycle: (r a b) -> (r c d) -> (r a b)

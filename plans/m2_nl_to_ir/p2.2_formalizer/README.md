@@ -1,10 +1,10 @@
 # P2.2 — The formalizer (Stage B)
 
-**Depends on:** [P2.1](../p2.1_kernel_as_instrumentation/README.md):
-[S2.1.1](../p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md) creates `einaf/`, the Cargo package every
+**Depends on:** P2.1:
+[S2.1.1](../../../docs/einaf/README.md#the-package) creates `einaf/`, the Cargo package every
 stage here adds to, and writes the operational test of the seven outcomes;
-[S2.1.2](../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) gives a refusal of the kernel a kind and a
-place, as values; [S2.1.3](../p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md) is the feedback object
+[S2.1.2](../../../docs/decisions/diagnostics/Q-M2.9-a-refusal-is-a-value-with-a-kind-a-place-and-its.md) gives a refusal of the kernel a kind and a
+place, as values; [S2.1.3](../../../docs/einaf/03-feedback.md) is the feedback object
 `einaf from-text` reads the kernel through, and the bounded call every stage runs a generated program by. The
 language (Rust,
 [Q-M2.7](../open_questions/einaf/Q-M2.7-what-language-is-the-frontend-written-in.md)), the model (`qwen3.5:4b`,
@@ -246,14 +246,14 @@ dissolved, and each says in its own words what of them it carries.
 S2.2.1 and S2.2.2 do not wait for each other, but for one item: S2.2.2's step 1 with the model (T2.2.2.8) is set
 against the hand-written step 1 of S2.2.1's T2.2.1.8. **S2.2.2's probe is the phase's first measurement**, and its
 first item is the user's first experiment: it needs the package
-([S2.1.1](../p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md)), the kernel's diagnostics as values
-([S2.1.2](../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md)), the model and the target shape, and
+([S2.1.1](../../../docs/einaf/README.md#the-package)), the kernel's diagnostics as values
+([S2.1.2](../../../docs/decisions/diagnostics/Q-M2.9-a-refusal-is-a-value-with-a-kind-a-place-and-its.md)), the model and the target shape, and
 nothing of the contract but the shape its examples show. It runs before a grammar is built, because its result
 says what a grammar would have prevented. S2.2.3 follows the probe; S2.2.4 follows S2.2.1 and S2.2.3; S2.2.5
 closes the phase.
 
 **How every stage reaches the kernel.** One module of EinAf calls the engine's crates, `einaf::kernel`
-([S2.1.3](../p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md)'s acceptance), and a program is run only
+([S2.1.3](../../../docs/einaf/README.md#what-it-depends-on)'s acceptance), and a program is run only
 through its bounded call, which sets the kernel's own clock and limit on every run (that stage's
 T2.1.3.2b; [the frame's default 16](../README.md#the-defaults-the-re-plan-took)): nothing in a solve stops a saturation
 that has no fixpoint, and from S2.2.2's probe on the programs are a model's. Where a file of this phase names a

@@ -6,7 +6,7 @@
 depth of a page of [`docs/ein/reasoning/`](../../../docs/ein/reasoning/README.md), definitions and propositions
 with their arguments, and [M5](../../m5_presentation/README.md) cuts from it what its venue takes.
 **Depends on:** to start, nothing but the tree: its first stage reads Stage M's sketch against what the kernel's
-pages state. For the loop's half, [P2.1](../p2.1_kernel_as_instrumentation/README.md)'s feedback object and
+pages state. For the loop's half, [P2.1](../../../docs/einaf/03-feedback.md)'s feedback object and
 [P2.4](../p2.4_loop/README.md)'s two arrangements **as built**: the account is of a system that exists. To finish,
 the **Level C gate**: the central question has to name the feedback functions the ablations ran, and the readings
 of *certified* still in force.
@@ -59,7 +59,7 @@ in the kernel's notation.
 |---|---|---|
 | `x` | the text of a problem | a benchmark instance ([P2.3](../p2.3_benchmark/README.md)) |
 | `T`, `Tᵢ` | what the model wrote at step *i*: a program, which is the kernel's $P$ with the knowledge base $K_0$ its text is read into, or a text that is refused and is no program | [the knowledge base of a program](../../../docs/ein/reasoning/01-static-ir/01-knowledge-base.md#the-knowledge-base-of-a-program) |
-| `E(T) → (v, d)` | the kernel's judgement of one text under one question: EinAf's feedback object. `v` is its [outcome](../README.md#the-outcomes), one of seven; `d` is the rest | [S2.1.3](../p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md). On the kernel's side: a refusal, or what the question establishes of $\operatorname{Ans}(P)$ ($\operatorname{verdict}$ of the part asked, the states listed, what root owes); the sites of the static check; and beside them the explanations ($\operatorname{core}$, a derivation) |
+| `E(T) → (v, d)` | the kernel's judgement of one text under one question: EinAf's feedback object. `v` is its [outcome](../README.md#the-outcomes), one of seven; `d` is the rest | [S2.1.3](../../../docs/einaf/03-feedback.md). On the kernel's side: a refusal, or what the question establishes of $\operatorname{Ans}(P)$ ($\operatorname{verdict}$ of the part asked, the states listed, what root owes); the sites of the static check; and beside them the explanations ($\operatorname{core}$, a derivation) |
 | not in Stage M | **the rendering**: F0 to F8, nine functions from a feedback object to what the model is shown. It is the experimental variable, so it is an object of the account and not a detail of `E` | [S2.4.3](../p2.4_loop/s2.4.3_feedback_ladder.md) |
 | `A_θ` | the formalizer: the model's file, its sampler and seed, the prompts and, in the filter, the grammar. A random map from a context to an output | [P2.2](../p2.2_formalizer/README.md); the fields of the record ([S2.5.1](../p2.5_harness/s2.5.1_experiment_record.md)) |
 | `Tᵢ₊₁ = A_θ(x, Tᵢ, E(Tᵢ))` | the filter's step, with the rendering between the judgement and the model | [S2.4.1](../p2.4_loop/s2.4.1_state_machine.md), [S2.4.2](../p2.4_loop/s2.4.2_repair.md) |
@@ -149,7 +149,7 @@ than single letters, since few letters are free.
 ## Where it is written, and to what rules
 
 - **Under `docs/einaf/`**, as a page or pages named by the convention that tree's first pages set
-  ([S2.1.1](../p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md)). EinAf may name Ein: the account
+  ([S2.1.1](../../../docs/einaf/README.md)). EinAf may name Ein: the account
   links pages of `docs/ein/reasoning/` and of `08-reasoning-in-code/`. **Ein never names EinAf**: no page under
   `docs/ein/` links the account, and none changes for it.
 - **Independently of the Rust, for the loop too.** A definition is stated so that a second harness would be held

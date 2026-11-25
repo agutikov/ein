@@ -1,8 +1,0 @@
-digraph lattice {
-  rankdir=BT;
-  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10];
-  label="examples/ein-bugs/zebra2-bad.ein — 1 of 1 nodes visited by the state route, every alive state once: R and where it stops";
-  labelloc=t;
-  n0 [label="∅", color="#d62728", fillcolor="#fdeaea"];
-}
-

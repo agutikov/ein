@@ -14,7 +14,7 @@ stop it from outside. `git show cce0f0ff:plans/m2_nl_to_ir/open_questions.md` ha
 
 - **Allowed, with no further ruling:** a feature that makes the kernel say, measure or bound more (a log, a trace,
   a measurement, a timeout, a limit, a key of a machine surface, a value of the library), and **a bug fix**. Each
-  is made under Ein's rules, as [S2.1.2](../../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) is: its
+  is made under Ein's rules, as S2.1.2 is: its
   pages and tests in the same commit, the gate, a decision file where it decides something, and no word of EinAf
   in Ein.
 - **Not allowed by this:** a change to the language (a form, a keyword, a name the kernel reads) or to what a
@@ -27,12 +27,12 @@ stop it from outside. `git show cce0f0ff:plans/m2_nl_to_ir/open_questions.md` ha
 
 - **A saturation is bounded by the kernel.** The clock (`-T`) and the budget the kernel already has reach inside a
   saturation, and a run they stop says what a stopped run says today: no new word and no new outcome. It is a task
-  of [S2.1.2](../../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md). The word of its own for *did not
+  of S2.1.2. The word of its own for *did not
   stop*, a bound that is the saturation's own, and a static check are
   [M1g](../../../m1g_logic/README.md)'s, in its stage on a saturation that does not stop, with the user's question
   there.
 - **EinAf calls the kernel in its own process**, as ruled
   ([Q-M2.7](../einaf/Q-M2.7-what-language-is-the-frontend-written-in.md)). A worker process is built only if a probe shows a
-  case the kernel's own bounds do not stop ([S2.1.3](../../p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md)).
+  case the kernel's own bounds do not stop ([S2.1.3](../../../../docs/einaf/03-feedback.md#4-what-the-bounds-do-not-stop)).
 - **An entry of the evaluation that is a gap or a bug may be closed inside M2**, by the stage that needs it, and
   the entry then says so. An entry nothing in M2 needs stays for the iteration of Ein.

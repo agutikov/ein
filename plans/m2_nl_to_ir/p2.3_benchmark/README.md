@@ -1,7 +1,7 @@
 # P2.3 — The benchmark (Stage C)
 
 **Depends on:** the kernel as it stands ([Q-M2.1](../open_questions/kernel/Q-M2.1-when-is-the-kernel-frozen.md));
-[S2.1.1](../p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md), which creates the package `einaf/` and its
+[S2.1.1](../../../docs/einaf/README.md), which creates the package `einaf/` and its
 gate step, where the generators and the benchmark's check live; [S2.2.5](../p2.2_formalizer/s2.2.5_from_text.md)
 for the formatters, which one check of an instance needs (that its canonical program prints the gold short
 answer). Building the benchmark needs no model. Running it does: the Level B gate needs all of

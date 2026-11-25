@@ -9,7 +9,7 @@ milestone was *NL → IR*; they keep their numbers. **Q-M2.n** is the milestone-
 [`EinAf.md`](../EinAf.md), Q-M2.8–11 with the analysis M2 started from, 2026-11-25
 ([`analysis/`](../analysis/README.md)), Q-M2.12–13 with the user's answers of that day, Q-M2.14–15 with the
 answers that followed them, Q-M2.16 with the re-plan, Q-M2.17 with the user's answers to the re-plan, Q-M2.18–21 with
-P2.1's report, filed in the phase's folder ([below](#questions-of-a-phase)), and Q-M2.22 with P2.2's re-plan to the
+P2.1's report, filed in the phase's folder and moved here at its close ([below](#questions-of-a-phase)), and Q-M2.22 with P2.2's re-plan to the
 user's steps, filed in that phase's folder.
 
 **Q-M2.5, Q-M2.6 and Q-M2.7 were this ledger's Q23, Q24 and Q25 until 2026-11-25.** Those three ids were already the
@@ -45,6 +45,10 @@ about the harness is the second kind.
 | [Q-M2.6](formalizer/Q-M2.6-one-gbnf-or-many.md) | One GBNF grammar per task, or one grammar for everything? | [S2.2.3](../p2.2_formalizer/s2.2.3_gbnf.md) |
 | [Q-M2.10](answer/Q-M2.10-what-does-ein-certifies-a-unique-model-mean-on-r.md) | What does *Ein certifies a unique model* mean on R? | **the user, after experiments** (*"it depends on problem shape"*) |
 | [Q-M2.15](milestone/Q-M2.15-where-does-m2-stop-for-the-next-iteration-of-ein.md) | Where does M2 stop for the next iteration of Ein? | **the user**, at a level's gate; until then every gate is a stop |
+| [Q-M2.18](einaf/Q-M2.18-are-einafs-fmt-and-clippy-steps-of-the-gate.md) | Are EinAf's fmt and clippy steps of the gate? | **the user**; P2.1's default stands meanwhile ([its defaults](../defaults/p2.1.md)) |
+| [Q-M2.19](kernel/Q-M2.19-do-ein-summary-2-and-ein-test-report-6-keep-their-numbers.md) | Do `ein-summary/2` and `ein-test-report/6` keep their numbers? | **the user**; P2.1's default stands meanwhile |
+| [Q-M2.20](kernel/Q-M2.20-what-are-max-steps-name-unit-and-default.md) | What are `--max-steps`' name, unit and default? | **the user**; P2.1's default stands meanwhile |
+| [Q-M2.21](kernel/Q-M2.21-a-missing-files-line-the-pages-python-spelling-or-eins-own.md) | A missing file's line: the page's Python spelling, or Ein's own words? | **the user**; P2.1's default stands meanwhile |
 
 ### Ruled by the user
 
@@ -70,8 +74,8 @@ no stage still decides a question that is ruled here.
 
 | topic | what it holds | questions |
 |---|---|---|
-| [`kernel/`](kernel/) | what of Ein the milestone reads and may change: when the kernel is frozen, its machine surface, what a stage may change in it | [Q-M2.1](kernel/Q-M2.1-when-is-the-kernel-frozen.md), [Q-M2.9](kernel/Q-M2.9-does-the-kernel-grow-a-machine-surface-for-diagnostics.md), [Q-M2.16](kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md) |
-| [`einaf/`](einaf/) | EinAf itself: the language it is written in, where it lives, who calls the kernel | [Q-M2.7](einaf/Q-M2.7-what-language-is-the-frontend-written-in.md), [Q-M2.8](einaf/Q-M2.8-where-does-einaf-live.md), [Q-M2.13](einaf/Q-M2.13-who-calls-the-kernel.md) |
+| [`kernel/`](kernel/) | what of Ein the milestone reads and may change: when the kernel is frozen, its machine surface, what a stage may change in it | [Q-M2.1](kernel/Q-M2.1-when-is-the-kernel-frozen.md), [Q-M2.9](kernel/Q-M2.9-does-the-kernel-grow-a-machine-surface-for-diagnostics.md), [Q-M2.16](kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md), [Q-M2.19](kernel/Q-M2.19-do-ein-summary-2-and-ein-test-report-6-keep-their-numbers.md), [Q-M2.20](kernel/Q-M2.20-what-are-max-steps-name-unit-and-default.md), [Q-M2.21](kernel/Q-M2.21-a-missing-files-line-the-pages-python-spelling-or-eins-own.md) |
+| [`einaf/`](einaf/) | EinAf itself: the language it is written in, where it lives, who calls the kernel | [Q-M2.7](einaf/Q-M2.7-what-language-is-the-frontend-written-in.md), [Q-M2.8](einaf/Q-M2.8-where-does-einaf-live.md), [Q-M2.13](einaf/Q-M2.13-who-calls-the-kernel.md), [Q-M2.18](einaf/Q-M2.18-are-einafs-fmt-and-clippy-steps-of-the-gate.md) |
 | [`model/`](model/) | the model: local, which one, what runs it | [Q-M2.2](model/Q-M2.2-must-the-model-be-local.md), [Q-M2.5](model/Q-M2.5-local-model-choice.md), [Q-M2.14](model/Q-M2.14-what-runs-the-model.md) |
 | [`formalizer/`](formalizer/) | the formalizer and its inputs: ambiguous readings, ontologies, direct emission, link grammar, the grammar at decoding | [Q8](formalizer/Q8-ambiguous-parses.md), [Q9](formalizer/Q9-ontology-provenance.md), [Q10](formalizer/Q10-direct-llm-constraint.md), [Q11](formalizer/Q11-link-grammar-value.md), [Q-M2.6](formalizer/Q-M2.6-one-gbnf-or-many.md) |
 | [`answer/`](answer/) | the answer and what certifies it: the words it is printed in, faithfulness, the fixed point, *unique*, a flagged program | [Q7](answer/Q7-llm-as-surface-generator.md), [Q-M2.3](answer/Q-M2.3-what-is-the-unit-of-faithfulness-without-a-gold-theory.md), [Q-M2.4](answer/Q-M2.4-is-the-fixed-point-syntactic-or-semantic.md), [Q-M2.10](answer/Q-M2.10-what-does-ein-certifies-a-unique-model-mean-on-r.md), [Q-M2.11](answer/Q-M2.11-what-is-a-flagged-program-to-the-loop.md), [Q-M2.12](answer/Q-M2.12-what-prints-the-answer.md) |
@@ -86,7 +90,7 @@ same topic, and what is ruled goes with the phase's folder, where `git log` keep
 
 | phase | its questions |
 |---|---|
-| [P2.1](../p2.1_kernel_as_instrumentation/README.md) | Q-M2.18 to Q-M2.21, raised by [its report](../p2.1_kernel_as_instrumentation/report/README.md#7-the-defaults-taken-for-the-user-to-correct): [its open questions](../p2.1_kernel_as_instrumentation/open_questions/README.md) |
+| P2.1 | none: Q-M2.18 to Q-M2.21, raised by its report, moved here open at its close, 2026-11-26, its folder deleted (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`) |
 | [P2.2](../p2.2_formalizer/README.md) | Q-M2.22, raised by the re-plan to the user's steps: [its open questions](../p2.2_formalizer/open_questions/README.md) |
 | [P2.3](../p2.3_benchmark/README.md) to [P2.10](../p2.10_result_artifact_demo/README.md) | none yet |
 

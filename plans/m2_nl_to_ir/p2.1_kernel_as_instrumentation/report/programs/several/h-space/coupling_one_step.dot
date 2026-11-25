@@ -1,9 +1,0 @@
-graph coupling {
-  label="examples/lattice/03_state_hash_collision.ein: the questions' hypergraph, the edges read one application back. 3 questions, 2 edges (0 a debt's alone, dashed)";
-  node [shape=box, fontsize=10];
-  q0 [label="q0 (h1 X)\n1 open of 1"];
-  q1 [label="q1 (h2 X)\n1 open of 1"];
-  q2 [label="q2 (h3 X)\n1 open of 1"];
-  q0 -- q1 [label="2", fontsize=8];
-  q1 -- q2 [label="2", fontsize=8];
-}

@@ -1,4 +1,0 @@
-einaf outcome · examples/broken/unclosed_paren.ein
-  invalid       over all of R           refused at the parse (parse): examples/broken/unclosed_paren.ein:4:10: unexpected `a`: a name
-  invalid       over the minimal line   refused at the parse (parse): examples/broken/unclosed_paren.ein:4:10: unexpected `a`: a name
-  invalid       over the maximal line   refused at the parse (parse): examples/broken/unclosed_paren.ein:4:10: unexpected `a`: a name

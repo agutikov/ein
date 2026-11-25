@@ -8,7 +8,7 @@
 solve, `ein-render` to explain ([`04-api.md`](../../../../docs/ein/ein.rs/04-api.md)): the answer as values (`ReadOut`,
 `Verdict`, root's debts and core), a parse error with every error, its notes and its repairs, and
 `ein_ir::dump_canonical`, which no command prints and five tasks of P2.2 and P2.4 key on. This was Q25 here.
-The stage that was to decide it, *the boundary*, is gone from [P2.1](../../p2.1_kernel_as_instrumentation/README.md),
+The stage that was to decide it, *the boundary*, is gone from P2.1,
 and no stage file writes a Python path.
 
 **What it left to the re-plan, and what the re-plan took** (each a default, the user's to correct):
@@ -19,7 +19,7 @@ and no stage file writes a Python path.
 - **Where the package sits**: a Cargo package of its own under `einaf/`
   ([Q-M2.8](Q-M2.8-where-does-einaf-live.md)) that depends on the engine's crates by path, outside the engine's
   workspace, so that nothing under `ein.rs/` names it
-  ([S2.1.1](../../p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md)).
+  ([S2.1.1](../../../../docs/einaf/README.md#the-package)).
 - **The benchmark's generators are Rust too**, in the same package, so that EinAf has one toolchain; the ruling
   names the frontend, and this goes one step past it.
 

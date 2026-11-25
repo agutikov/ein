@@ -1,7 +1,7 @@
 # P2.5 — Baselines, metrics, records (Stages D, H, N)
 
-**Depends on:** [P2.1](../p2.1_kernel_as_instrumentation/README.md): the feedback object
-([S2.1.3](../p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md)) is the kernel's side of every record;
+**Depends on:** P2.1: the feedback object
+([S2.1.3](../../../docs/einaf/03-feedback.md)) is the kernel's side of every record;
 [P2.2](../p2.2_formalizer/README.md): the model's envelope
 ([S2.2.2](../p2.2_formalizer/s2.2.2_model_runtime.md)) is the model's side, and the one-shot is arm B2;
 [P2.3](../p2.3_benchmark/README.md): the splits, and each instance's gold class, short answer and `:expect` claim;
@@ -35,7 +35,7 @@ measurement of a chain of formal reasoning against a chain of thought.
 ### Order
 
 - [S2.5.1](s2.5.1_experiment_record.md), the record, runs once `einaf/` exists
-  ([S2.1.1](../p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md)) and is in use from P2.2's first run on
+  ([S2.1.1](../../../docs/einaf/README.md)) and is in use from P2.2's first run on
   the seed set, so that the one-shot numbers are already evidence.
 - [S2.5.3](s2.5.3_metrics.md), the metrics, runs in two parts. H1, the rates of H2, H4 and the readings of
   *certified* are written before P2.2's acceptance numbers are taken, so that the one-shot rates are already in

@@ -1,7 +1,7 @@
 # E-45 — Nothing in a solve stops a saturation that has no fixpoint
 
 **Kind:** limit
-**Status:** closed by [S2.1.2](../../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md), T2.1.2.5b (`83b82833`)
+**Status:** closed by S2.1.2, T2.1.2.5b (`83b82833`)
 **Filed:** by [the re-plan](../../README.md#the-plan-as-re-planned), 2026-11-25, on `458bf90b`, before any stage ran
 **Owner:** none
 
@@ -15,4 +15,4 @@
 
 ## What it bounds
 
-a model's program can take the caller with it. **Closed** by [S2.1.2](../../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md), T2.1.2.5b (`83b82833`), by [Q-M2.16](../../open_questions/kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md): the clock and a cap on firings, `--max-steps` (default 2^20), reach every saturation of a question about R, root's first; past the cap the run is not decided and establishes nothing of R, at the clock it aborts as before; the decision is [`Q-M2.16`](../../../../docs/decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md). The word of its own for *did not stop* and a bound on the saturation by default stay [M1g](../../../m1g_logic/README.md)'s; [F26](../../../followups/f26_consistency_and_completeness.md)
+a model's program can take the caller with it. **Closed** by S2.1.2, T2.1.2.5b (`83b82833`), by [Q-M2.16](../../open_questions/kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md): the clock and a cap on firings, `--max-steps` (default 2^20), reach every saturation of a question about R, root's first; past the cap the run is not decided and establishes nothing of R, at the clock it aborts as before; the decision is [`Q-M2.16`](../../../../docs/decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md). The word of its own for *did not stop* and a bound on the saturation by default stay [M1g](../../../m1g_logic/README.md)'s; [F26](../../../followups/f26_consistency_and_completeness.md)

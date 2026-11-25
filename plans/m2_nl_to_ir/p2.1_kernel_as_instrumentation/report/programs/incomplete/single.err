@@ -1,1 +1,0 @@
-note: tests/region/04_owing.ein: (solve :expect) NOT CHECKED — the claim is about all of R, and this run asked whether it is one state (--single)

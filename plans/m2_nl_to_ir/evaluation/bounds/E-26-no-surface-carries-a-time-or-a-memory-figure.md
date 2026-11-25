@@ -3,7 +3,7 @@
 **Kind:** gap
 **Status:** open
 **Filed:** by [the analysis](../../analysis/README.md), 2026-11-25, on `458bf90b`, before any stage ran
-**Owner:** none. [S2.1.3](../../p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md): the library hands over the run's wall clock, `explore::Answer::wall` (`--stats` prints it as `wall`), which the feedback object keeps as `work.run_us`; the load's and the judgement's are no value, and EinAf measures them (`work.load_us`, `ask_us`). No memory figure (E-100)
+**Owner:** none. [S2.1.3](../../../../docs/einaf/03-feedback.md): the library hands over the run's wall clock, `explore::Answer::wall` (`--stats` prints it as `wall`), which the feedback object keeps as `work.run_us`; the load's and the judgement's are no value, and EinAf measures them (`work.load_us`, `ask_us`). No memory figure (E-100)
 
 ## What is missing
 

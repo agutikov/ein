@@ -1,4 +1,0 @@
-graph cover {
-  graph [label="examples/lattice/04_obligation_trigger_hole.ein: the cover. 0 groups (0 owed, double border), 0 grids, 2 candidates in no group not drawn", labelloc=t, fontsize=11, rankdir=LR];
-  node [fontsize=9];
-}

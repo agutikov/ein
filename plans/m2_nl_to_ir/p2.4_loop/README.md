@@ -1,9 +1,9 @@
 # P2.4 — The loop (Stages E, F)
 
-**Depends on:** [P2.1](../p2.1_kernel_as_instrumentation/README.md): the outcome function
-([S2.1.1](../p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md)), the kernel's diagnostics as values
-([S2.1.2](../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md)) and the feedback object
-([S2.1.3](../p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md)), the one value every level of the ladder
+**Depends on:** P2.1: the outcome function
+([S2.1.1](../../../docs/einaf/01-outcomes.md)), the kernel's diagnostics as values
+([S2.1.2](../../../docs/decisions/diagnostics/Q-M2.9-a-refusal-is-a-value-with-a-kind-a-place-and-its.md)) and the feedback object
+([S2.1.3](../../../docs/einaf/03-feedback.md)), the one value every level of the ladder
 renders and the tool returns, with the bounded kernel call through which both arrangements reach the kernel.
 [P2.2](../p2.2_formalizer/README.md): the one-shot formalizer, in its three steps, is GENERATE
 ([S2.2.5](../p2.2_formalizer/s2.2.5_from_text.md)), which also words the answer's fixed texts; the contract's

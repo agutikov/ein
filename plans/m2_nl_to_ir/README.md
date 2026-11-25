@@ -11,8 +11,9 @@ rulings are written in below: *"Yet not start stages, write down decisions and s
 s2.2.0f - it must be not a separate stage, it's my notes about whole formalizer phase"*, then *"don't start p2.2, just
 close p2.1 and stop"*; it was started 2026-11-25 on the user's word, *"start implementation of M2, everything in p2.1,
 then stop and let me review; each stage in subagents, subagents commit their work"*, and ran its four stages to their
-end, [its report](p2.1_kernel_as_instrumentation/report/README.md). **P2.2 is planned and not started; no phase
-starts until the user says so.**
+end; its plans are deleted (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`), what it
+left open is the milestone's, and [the defaults it took](defaults/p2.1.md) stand. **P2.2 is planned and not started;
+no phase starts until the user says so.**
 **Depends on:** the kernel as it stands after M1f's close
 ([Q-M2.1](open_questions/kernel/Q-M2.1-when-is-the-kernel-frozen.md)). No other milestone runs for it:
 [M1p](../m1p_ein_to_natural_language/README.md), Ein to natural language, stays unstarted
@@ -124,7 +125,7 @@ inside the development process"*.
 | | what it is | where | depends on |
 |---|---|---|---|
 | **Ein** | the language, what a program means and what its answer is; and **ein.rs**, an implementation of it | `stdlib/`, `examples/`, `tests/`, `corpus/`, `docs/ein/`, `docs/decisions/`; `ein.rs/` | nothing in the repository |
-| **EinAf** | this milestone's subject: a model proposes a formalization and the kernel judges it, in a loop | `einaf/`, `docs/einaf/`, both made by [S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md) | ein.rs, as a library |
+| **EinAf** | this milestone's subject: a model proposes a formalization and the kernel judges it, in a loop | `einaf/`, `docs/einaf/`, both made by [S2.1.1](../../docs/einaf/README.md) | ein.rs, as a library |
 | the process | how both are developed | `plans/`, `utils/`, the gate and CI, `AGENTS.md` | reads both |
 
 **Nothing of Ein reads, links or names EinAf.** A change the kernel takes in this milestone is stated in Ein's
@@ -142,7 +143,7 @@ is the frame every phase and stage file is written to.
 
 | | the ruling | in the plan |
 |---|---|---|
-| the kernel | the one M1f left ([Q-M2.1](open_questions/kernel/Q-M2.1-when-is-the-kernel-frozen.md)); it grows a machine surface for diagnostics, in its own terms ([Q-M2.9](open_questions/kernel/Q-M2.9-does-the-kernel-grow-a-machine-surface-for-diagnostics.md)); and it may gain any feature and any bug fix that leaves Ein's syntax and semantics as they are ([Q-M2.16](open_questions/kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md)) | [S2.1.2](p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) is the first such change, the diagnostics and a bound that reaches inside a saturation; a stage that needs another names it; every record names the commit and the library's manifest |
+| the kernel | the one M1f left ([Q-M2.1](open_questions/kernel/Q-M2.1-when-is-the-kernel-frozen.md)); it grows a machine surface for diagnostics, in its own terms ([Q-M2.9](open_questions/kernel/Q-M2.9-does-the-kernel-grow-a-machine-surface-for-diagnostics.md)); and it may gain any feature and any bug fix that leaves Ein's syntax and semantics as they are ([Q-M2.16](open_questions/kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md)) | [S2.1.2](../../docs/decisions/diagnostics/Q-M2.9-a-refusal-is-a-value-with-a-kind-a-place-and-its.md) is the first such change, the diagnostics and a bound that reaches inside a saturation; a stage that needs another names it; every record names the commit and the library's manifest |
 | the language | Rust ([Q-M2.7](open_questions/einaf/Q-M2.7-what-language-is-the-frontend-written-in.md)) | EinAf is one Cargo package, `einaf/`, that links `ein-core`, `ein-ir`, `ein-infer` and `ein-render` by path and stands outside the engine's workspace; the kernel's answer reaches it as values, not as JSON read back |
 | the model | local, `qwen3.5:4b` ([Q-M2.2](open_questions/model/Q-M2.2-must-the-model-be-local.md), [Q-M2.5](open_questions/model/Q-M2.5-local-model-choice.md)), run in EinAf's process through a Rust binding to llama.cpp, not through ollama ([Q-M2.14](open_questions/model/Q-M2.14-what-runs-the-model.md)) | [S2.2.2](p2.2_formalizer/s2.2.2_model_runtime.md); the model's file, by its SHA, is a field of every record, and another suitable model is another value of it |
 | the two arrangements | the tool and the filter, both arms ([Q-M2.13](open_questions/einaf/Q-M2.13-who-calls-the-kernel.md)) | [P2.4](p2.4_loop/README.md): the filter is the state machine, the tool is [S2.4.6](p2.4_loop/s2.4.6_ein_as_a_tool.md); [S2.5.2](p2.5_harness/s2.5.2_baselines.md) compares them |
@@ -184,16 +185,16 @@ generated tokens for each.
 What the kernel can say of a program, as EinAf reads it off the library's values. The research plan's
 [A1](EinAf.md#a1-freeze-the-semantic-boundary-of-ein) has six; today's kernel says each for itself, and has a
 seventh. [`analysis/` § 2](analysis/README.md#2-what-the-kernel-says-today-where-the-plan-expects-the-walk) has
-each row run; [S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md) writes the operational test.
+each row run; [S2.1.1](../../docs/einaf/01-outcomes.md) writes the operational test.
 
 | outcome | the kernel's way of saying it |
 |---|---|
-| **invalid** | a refusal at the parse or the load: today text on stderr, after [S2.1.2](p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) a value with a kind and a place |
+| **invalid** | a refusal at the parse or the load: today text on stderr, after [S2.1.2](../../docs/decisions/diagnostics/Q-M2.9-a-refusal-is-a-value-with-a-kind-a-place-and-its.md) a value with a kind and a place |
 | **inconsistent** | R is empty and every node is dead: `Contradiction` under `--single`, a core and the rules that refuted under a description |
 | **incomplete** | a state owes: `Open`, with what is owed. It is the kernel's word and not the problem's class: an empty R whose every node owes is also what a problem with no solution looks like where no rule refutes it |
 | **several** | `Ambiguity`, with two states that differ |
 | **one** | `Solution`; over which part of R is [Q-M2.10](open_questions/answer/Q-M2.10-what-does-ein-certifies-a-unique-model-mean-on-r.md)'s |
-| **not decided** | a budget or the clock stopped the run before the question was decided; today neither reaches inside a saturation that has no fixpoint, and [S2.1.2](p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) makes them; never read as one of the five above |
+| **not decided** | a budget or the clock stopped the run before the question was decided; today neither reaches inside a saturation that has no fixpoint, and [S2.1.2](../../docs/decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md) makes them; never read as one of the five above |
 | **flagged** | the program is not monotone: an answer is printed and nothing is claimed of it ([Q-M1f.564](../../docs/decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)); never certified |
 
 Beside the outcome stands the query's own axis: a query's classes, their rows, and whether the rows agree. *An
@@ -201,7 +202,7 @@ ambiguous theory with one answer* is a state the outcome alone does not say.
 
 ### Where EinAf's things are
 
-One tree for EinAf and its documentation apart, as the user ruled ([Q-M2.8](open_questions/einaf/Q-M2.8-where-does-einaf-live.md)); the folders inside are the re-plan's. [S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md)
+One tree for EinAf and its documentation apart, as the user ruled ([Q-M2.8](open_questions/einaf/Q-M2.8-where-does-einaf-live.md)); the folders inside are the re-plan's. [S2.1.1](../../docs/einaf/README.md)
 made `einaf/` (the package, `src/` and `tests/`) and `docs/einaf/`; the other folders are made by the stages that need
 them.
 
@@ -270,9 +271,9 @@ Each is the coordinator's, recorded so that the user can correct it. Four have b
 16. **The kernel bounds its own run, and EinAf calls it in its own process.** Nothing in a solve stops a
     saturation that has no fixpoint today, and the programs are a model's; by the ruling of default 11 the clock
     and the budget are made to reach inside a saturation
-    ([S2.1.2](p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md)). A worker process that EinAf can
+    ([S2.1.2](../../docs/decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md)). A worker process that EinAf can
     stop, the re-plan's first answer, is built only if a probe shows a case those bounds do not stop
-    ([S2.1.3](p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md)).
+    ([S2.1.3](../../docs/einaf/03-feedback.md#4-what-the-bounds-do-not-stop)).
 17. **The benchmark's `test` split is opened twice**: at the Level B gate, for the one-shot run, read in
     aggregate only, and for the result ([P2.10](p2.10_result_artifact_demo/README.md)). Everything between is
     developed on the other splits ([S2.3.4](p2.3_benchmark/s2.3.4_splits.md)).
@@ -287,7 +288,7 @@ where [the evaluation of Ein](evaluation/README.md) is shown.
 
 | level | the plan's definition | reached by | gate |
 |---|---|---|---|
-| **A — symbolic engine** | representation, saturation, constraints, model search, provenance, diagnostics, testing | shipped; [P2.1](p2.1_kernel_as_instrumentation/README.md) closes the one gap Stage A names that is still open, a machine surface for diagnostics | the kernel treated as *instrumentation*: the seven outcomes told apart on values, a diagnostic with a kind and a place, and EinAf's feedback object over both |
+| **A — symbolic engine** | representation, saturation, constraints, model search, provenance, diagnostics, testing | shipped; P2.1 closed the one gap Stage A named that was still open, a machine surface for diagnostics | the kernel treated as *instrumentation*: the seven outcomes told apart on values, a diagnostic with a kind and a place, and EinAf's feedback object over both |
 | **B — autoformalization system** | previously unseen NL tasks automatically become executable Ein theories and answers | [P2.2](p2.2_formalizer/README.md) + [P2.3](p2.3_benchmark/README.md) | one-shot `einaf from-text` on the benchmark's *test* split, unseen by prompt development, three or more reasoning families, every run recorded, each answer a short text Ein printed |
 | **C — research system** | iterative feedback, several domains, credible baselines, quantitative benchmarks, ablations, failure analysis; *supports an empirical claim* | [P2.4](p2.4_loop/README.md) – [P2.7](p2.7_failure_scaling_generalization/README.md) | the main table (B0 to B6 under a matched budget), the feedback ablations, a classified failure sample, and one claim of the three admissible shapes in § Stage O |
 | **D — complete research artifact** | C plus formal treatment, a heterogeneous frozen benchmark, generalization and scaling, faithfulness analysis, reproducible infrastructure, released raw results, a paper, a minimal demo | [P2.8](p2.8_representations/README.md) – [P2.10](p2.10_result_artifact_demo/README.md) + [M5](../m5_presentation/README.md) | the seven layers of § Stage Q, each independently usable; the paper is M5's |
@@ -305,7 +306,7 @@ table is the map from the plan to the folder.
 
 | stage | what it asks for | where it lives |
 |---|---|---|
-| **A** kernel as experimental foundation | the semantic boundary frozen (A1), invariants as tests (A2), a versioned machine interface (A3), a diagnostic vocabulary apart from presentation (A4), validation suites (A5) | A1, A2 and A5 are the kernel's and exist: [`docs/ein/`](../../docs/ein/README.md), the gate, [`07-diagnostics.md`](../../docs/ein/user/04-reference/07-diagnostics.md); A1's sixth outcome is the kernel's own since [Q-M1d.6](../../docs/decisions/answer/Q-M1d.6-contradiction-is-said-only-where-no-node-is.md). What of A3 and A4 is missing, a diagnostic on a machine surface, is **[P2.1](p2.1_kernel_as_instrumentation/README.md)** |
+| **A** kernel as experimental foundation | the semantic boundary frozen (A1), invariants as tests (A2), a versioned machine interface (A3), a diagnostic vocabulary apart from presentation (A4), validation suites (A5) | A1, A2 and A5 are the kernel's and exist: [`docs/ein/`](../../docs/ein/README.md), the gate, [`07-diagnostics.md`](../../docs/ein/user/04-reference/07-diagnostics.md); A1's sixth outcome is the kernel's own since [Q-M1d.6](../../docs/decisions/answer/Q-M1d.6-contradiction-is-said-only-where-no-node-is.md). What of A3 and A4 was missing, a diagnostic on a machine surface, was **P2.1**'s, closed ([Q-M2.9](../../docs/decisions/diagnostics/Q-M2.9-a-refusal-is-a-value-with-a-kind-a-place-and-its.md)) |
 | **B** autoformalization as an explicit task | the contract (B1), source vs generated (B2), what the model may know (B3), prompt versioning (B4) | **[P2.2](p2.2_formalizer/README.md)** |
 | **C** a heterogeneous benchmark | eight families (C1), external + synthetic (C2), unique / ambiguous / unsat (C3), difficulty knobs (C4), frozen splits (C5) | **[P2.3](p2.3_benchmark/README.md)** |
 | **D** baselines | B0 direct answer … B5 full loop, under a matched inference budget | [S2.5.2](p2.5_harness/s2.5.2_baselines.md), with B6, Ein as a tool |
@@ -329,7 +330,7 @@ In work order, which is id order.
 
 | ID | title | stages | what it ends with |
 |---|---|---|---|
-| [P2.1](p2.1_kernel_as_instrumentation/README.md) | The kernel as instrumentation — Stage A | [S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md) EinAf's tree and the outcomes; [S2.1.2](p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) the kernel's diagnostics as values; [S2.1.3](p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md) the feedback object; [S2.1.4](p2.1_kernel_as_instrumentation/s2.1.4_bugs_the_phase_found.md) four findings fixed (planned after the report, ran to its end) | `einaf/` builds and is tested in the gate; the kernel says a refusal, an abort, a load's notes and a core's sources as values and on a machine surface; EinAf's feedback object over them, one for every corpus program. **Closed 2026-11-26** on the user's word |
+| P2.1 | The kernel as instrumentation — Stage A | S2.1.1 EinAf's tree and the outcomes; S2.1.2 the kernel's diagnostics as values; S2.1.3 the feedback object; S2.1.4 four findings fixed (planned after the report, ran to its end) | `einaf/` builds and is tested in the gate; the kernel says a refusal, an abort, a load's notes and a core's sources as values and on a machine surface; EinAf's feedback object over them, one for every corpus program. **Closed 2026-11-26** on the user's word, its folder deleted; [its defaults](defaults/p2.1.md) stand |
 | [P2.2](p2.2_formalizer/README.md) | The formalizer — Stage B | [S2.2.0a](p2.2_formalizer/s2.2.0a_zebra_formulations.md) three Zebras (added by the user); [S2.2.1](p2.2_formalizer/s2.2.1_contract.md) the contract, and the steps; [S2.2.2](p2.2_formalizer/s2.2.2_model_runtime.md) the model's runtime, and whether the model writes Ein; [S2.2.3](p2.2_formalizer/s2.2.3_gbnf.md) the grammars; [S2.2.4](p2.2_formalizer/s2.2.4_passes.md) the steps; [S2.2.5](p2.2_formalizer/s2.2.5_from_text.md) from a text to a short answer; all under [the user's notes on formalization in steps](p2.2_formalizer/README.md#formalization-in-steps-the-users-notes-on-the-whole-phase) | `einaf from-text`, one shot: a text becomes a program in three steps (the facts and a partial ontology, then the complete ontology and a partial theory, then the complete theory, with the answer query among the facts) and the short answer Ein prints, with the run's record and each step's program in it; the Zebra puzzle from its text to its canonical answer, and the word problems to theirs |
 | [P2.3](p2.3_benchmark/README.md) | The benchmark — Stage C | [S2.3.1](p2.3_benchmark/s2.3.1_families_and_seed_set.md), [S2.3.2](p2.3_benchmark/s2.3.2_generators.md), [S2.3.3](p2.3_benchmark/s2.3.3_external_benchmarks.md), [S2.3.4](p2.3_benchmark/s2.3.4_splits.md) | eight families and the word problems; generators with an exact gold answer and a canonical program whose `:expect` the kernel checks; instances with one answer, ambiguous and unsatisfiable; external adapters; frozen splits. **Level B gate** |
 | [P2.4](p2.4_loop/README.md) | The loop — Stages E, F | [S2.4.1](p2.4_loop/s2.4.1_state_machine.md) the filter's state machine; [S2.4.2](p2.4_loop/s2.4.2_repair.md) repair; [S2.4.3](p2.4_loop/s2.4.3_feedback_ladder.md) the feedback ladder; [S2.4.4](p2.4_loop/s2.4.4_faithfulness.md) faithfulness; [S2.4.5](p2.4_loop/s2.4.5_alternatives_as_hypotheses.md) alternatives as hypotheses; [S2.4.6](p2.4_loop/s2.4.6_ein_as_a_tool.md) Ein as a tool | both arrangements: the filter, with every transition logged, repair as well as regenerate, F0 to F8 as nine named sets of the blocks one object renders into, termination and cycle detection; the tool, an episode in which the model calls Ein when it likes; faithfulness judged against the source in both |
@@ -342,9 +343,9 @@ In work order, which is id order.
 
 ## How deep this plan is
 
-**P2.1 to P2.5 are at stage depth**, twenty-four stage files: twenty-two re-planned 2026-11-25 against the kernel
-at M1f's close with [the analysis](analysis/README.md) and its six audits as the worklist, and S2.1.4 and S2.2.0a
-added by the user after; S2.2.0f, added the same day, is since 2026-11-26 the user's notes on the whole of P2.2. **P2.6 has one stage
+**P2.2 to P2.5 are at stage depth**, twenty stage files: nineteen re-planned 2026-11-25 against the kernel
+at M1f's close with [the analysis](analysis/README.md) and its six audits as the worklist, and S2.2.0a
+added by the user after; P2.1's four, at the same depth, are deleted with its folder at its close; S2.2.0f, added the same day, is since 2026-11-26 the user's notes on the whole of P2.2. **P2.6 has one stage
 file**, [S2.6.4](p2.6_ablations/s2.6.4_representation_ablations.md), which carries the link-grammar experiment
 whole; its other stages are paragraphs in the phase README. **P2.7 to P2.10 are phase READMEs only.** That is on
 purpose: a stage file for G7 written before the first main table exists would be a guess about which depth
@@ -474,10 +475,12 @@ faithfulness where there is no gold theory;
 [Q-M2.4](open_questions/answer/Q-M2.4-is-the-fixed-point-syntactic-or-semantic.md), the fixed point; and Q-M2.6, one
 grammar or many. **Q10 is re-homed to Stage L**, and **Q7 stays outside the research question**.
 
-**Open, and P2.1's**, raised by [its report](p2.1_kernel_as_instrumentation/report/README.md#7-the-defaults-taken-for-the-user-to-correct)
-and filed in [its open questions](p2.1_kernel_as_instrumentation/open_questions/README.md): Q-M2.18, EinAf's fmt and
-clippy as gate steps; Q-M2.19, the schema numbers; Q-M2.20, `--max-steps`' name, unit and default; Q-M2.21, the
-missing file's line. Each holds a default the phase took.
+**Open, and raised by P2.1**, by its report, and the milestone's since the phase's close:
+[Q-M2.18](open_questions/einaf/Q-M2.18-are-einafs-fmt-and-clippy-steps-of-the-gate.md), EinAf's fmt and
+clippy as gate steps; [Q-M2.19](open_questions/kernel/Q-M2.19-do-ein-summary-2-and-ein-test-report-6-keep-their-numbers.md),
+the schema numbers; [Q-M2.20](open_questions/kernel/Q-M2.20-what-are-max-steps-name-unit-and-default.md),
+`--max-steps`' name, unit and default; [Q-M2.21](open_questions/kernel/Q-M2.21-a-missing-files-line-the-pages-python-spelling-or-eins-own.md),
+the missing file's line. Each holds a default the phase took ([its defaults](defaults/p2.1.md)).
 
 ## Connections
 
@@ -486,6 +489,7 @@ missing file's line. Each holds a default the phase took.
 - [The root `README.md`](../../README.md), the repository's page: Ein, ein.rs and EinAf, and what depends on
   what.
 - [`findings/`](findings/README.md): what the milestone finds that is neither Ein's nor a question for the user.
+- [`defaults/`](defaults/README.md): the defaults a closed phase took that still stand, one file a phase.
 - [The evaluation of Ein](evaluation/README.md): what this application found of the kernel, for the iteration of
   Ein that follows.
 - [`analysis/`](analysis/README.md): the plan against the project, the six audits and the host, which the

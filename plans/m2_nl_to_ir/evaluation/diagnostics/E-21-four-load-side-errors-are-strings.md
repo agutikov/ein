@@ -1,9 +1,9 @@
 # E-21 — Four load-side errors are strings
 
 **Kind:** gap
-**Status:** closed by [S2.1.2](../../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) (`62a8ee45`)
+**Status:** closed by S2.1.2 (`62a8ee45`)
 **Filed:** by [the analysis](../../analysis/README.md), 2026-11-25, on `458bf90b`, before any stage ran
-**Owner:** **Closed** by [S2.1.2](../../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md), `62a8ee45`: every refusal of the parse and the load is a list of `ein_core::Diagnostic`s, kind, severity, place and line; `CompileError` keeps none, no program reaching it
+**Owner:** **Closed** by S2.1.2, `62a8ee45`: every refusal of the parse and the load is a list of `ein_core::Diagnostic`s, kind, severity, place and line; `CompileError` keeps none, no program reaching it
 
 ## What is missing
 

@@ -1,2 +1,0 @@
-einaf outcome · examples/broken/load/rule_duplicate_name.ein --maximal --single
-  invalid       over the maximal line   refused at the load (declaration): duplicate rule name 'r' at None

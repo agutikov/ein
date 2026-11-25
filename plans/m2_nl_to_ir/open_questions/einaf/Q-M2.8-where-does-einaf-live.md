@@ -24,7 +24,7 @@ inside the development process, make clear projects hierachy in root readme and 
   they exist. It is not *external to both*; `c/`, `nl2smt/` and `docs/lib/` stay that.
 
 **Done with the ruling:** the root `README.md` and `AGENTS.md` state the hierarchy. No tree is created by it:
-[S2.1.1](../../p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md) creates them.
+[S2.1.1](../../../../docs/einaf/README.md) creates them.
 
 **Ruled further, 2026-11-25**, to the first of the defaults below: *"One tree - yes, preferred, docs/einaf/ -
 separately"*. So item 1 is the user's; the others stay defaults.
@@ -49,7 +49,7 @@ separately"*. So item 1 is the user's; the others stay defaults.
    thing it decides is built. `docs/decisions/` is about Ein
    ([Q-M1f.346](../../../../docs/decisions/docs/Q-M1f.346-the-decisions-are-about-ein-not-about-how.md)).
 
-**Proposed by [S2.1.1](../../p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md), with EinAf's first pages
+**Proposed by S2.1.1, with EinAf's first pages
 (2026-11-25): what EinAf's pages hold themselves to.** A proposal, the user's to correct; the pages written so far
 ([`docs/einaf/`](../../../../docs/einaf/README.md)) follow it.
 
