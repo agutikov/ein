@@ -353,8 +353,10 @@ is in [the phase's findings](../findings/README.md).
 - `./run_tests.sh` on `ddb1006e`: exit 0. Ten static checks, `cargo test --profile gate --workspace` and
   EinAf's tests (18, the corpus sweep among them): 1 434 tests passed, 0 failed, the process's checks, the review bundle's
   smoke, the bench smoke.
-- `./run_tests.sh --nightly` on `ddb1006e`: see the closing message of the phase (it was running when this page
-  was written).
+- `./run_tests.sh --nightly` on `ddb1006e`: exit 0. Every slow corpus entry under the deep-corpus sweeps (lever,
+  route, import, id-order, job-count and renaming invariance, the region's and the obligation rung's slow halves),
+  the four shards (answer round trips, cores, the agenda, the order), the mutants, the fuzzer on both seeds and the
+  bench smoke: no answer moved under the bound.
 - One golden moved in the phase: `ein-render/tests/golden/corpus_shapes.md5`, its 3 445 `cores[…]` lines, because
   the region block gained `core_sources`; no `.expected` fixture, no `help_shape.txt` line moved for the
   diagnostics. `help_shape.txt` moved once, for `--max-steps`.
