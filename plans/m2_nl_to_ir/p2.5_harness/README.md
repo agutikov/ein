@@ -103,7 +103,7 @@ either.
 
 | ID | title | est. | ends with |
 |---|---|---:|---|
-| [S2.5.1](s2.5.1_experiment_record.md) | The experiment record and the canonical workflow | 3 d | the directory layout and the config schema; `einaf run / evaluate / report` (or the name Q25 gives them); records immutable, tables generated from them; [Q-M2.1](../open_questions.md#q-m21--when-is-the-kernel-frozen) decided — frozen per experiment, by commit |
+| [S2.5.1](s2.5.1_experiment_record.md) | The experiment record and the canonical workflow | 3 d | the directory layout and the config schema; `einaf run / evaluate / report` (or the name Q-M2.7 gives them); records immutable, tables generated from them; [Q-M2.1](../open_questions.md#q-m21--when-is-the-kernel-frozen) decided — frozen per experiment, by commit |
 | [S2.5.2](s2.5.2_baselines.md) | The baseline family B0–B5 and the budget match | 3 d | six conditions as six configs; the budget definition and the matching rule; answer extraction for B0 / B1 per source, with its own error rate measured |
 | [S2.5.3](s2.5.3_metrics.md) | The four metric layers | 3 d | every metric defined once, computed from records by one module, with a fixture per metric whose value is known by hand; the two conditional probabilities |
 | [S2.5.4](s2.5.4_first_table.md) | The first main table | 3 d | B0–B5 on `val`, per family and aggregate, H1–H4, with the two probabilities — the Level C gate's first row, and the point where the research question has a first answer |

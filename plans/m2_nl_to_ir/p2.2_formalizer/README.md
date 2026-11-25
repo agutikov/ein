@@ -82,8 +82,8 @@ experiment id.
 | ID | title | est. | ends with |
 |---|---|---:|---|
 | [S2.2.1](s2.2.1_contract.md) | The formalization contract — B1–B4 | 2 d | one page, `docs/einaf/contract.md`: input, the four-part output, the five provenance categories and their marking, what the model receives, what is recorded; the reading list the old S2.1.1 asked for |
-| [S2.2.2](s2.2.2_llama_server_and_client.md) | `llama-server` and the client | 3 d | the Compose service with a pinned image and a pinned model file; the client in S2.1.3's language, `grammar` field honoured, typed failures, a deterministic seed; [Q23](../open_questions.md#q23--local-model-choice) and [Q-M2.2](../open_questions.md#q-m22--must-the-model-be-local) decided by a measurement on the seed set |
-| [S2.2.3](s2.2.3_gbnf.md) | GBNF for ein-lang | 3 d | `grammars/ein.gbnf` **generated from [`01-grammar.md`](../../../docs/ein/user/04-reference/01-grammar.md)**, one grammar per pass, the facts grammar parameterised on the ontology's relation names and instance atoms so an undeclared one is unparseable; the echo round-trip over the corpus; tokens/s measured; [Q24](../open_questions.md#q24--one-gbnf-or-many) |
+| [S2.2.2](s2.2.2_llama_server_and_client.md) | `llama-server` and the client | 3 d | the Compose service with a pinned image and a pinned model file; the client in S2.1.3's language, `grammar` field honoured, typed failures, a deterministic seed; [Q-M2.5](../open_questions.md#q-m25--local-model-choice) and [Q-M2.2](../open_questions.md#q-m22--must-the-model-be-local) decided by a measurement on the seed set |
+| [S2.2.3](s2.2.3_gbnf.md) | GBNF for ein-lang | 3 d | `grammars/ein.gbnf` **generated from [`01-grammar.md`](../../../docs/ein/user/04-reference/01-grammar.md)**, one grammar per pass, the facts grammar parameterised on the ontology's relation names and instance atoms so an undeclared one is unparseable; the echo round-trip over the corpus; tokens/s measured; [Q-M2.6](../open_questions.md#q-m26--one-gbnf-or-many) |
 | [S2.2.4](s2.2.4_passes.md) | The passes — ontology, theory, instance, query | 4 d | four passes with four prompts and four grammars; the theory pass selecting from the catalogue and synthesising only on a named condition; sentence-by-sentence facts with `:source`; [Q9](../open_questions.md#q9--ontology-provenance) |
 | [S2.2.5](s2.2.5_from_text.md) | `einaf from-text`, one-shot, recorded | 3 d | the command, in the harness, not the kernel; the program assembled and handed to `ein solve`; the record written per run; Zebra from text to its canonical answer |
 
@@ -119,7 +119,7 @@ experiment id.
   undeclared atom cannot be emitted — and it is kept.
 - **Decoding speed under a recursive grammar.** The old T2.3.1.4 target,
   ≥ 30 tok/s on the dev machine, stands; if the full grammar misses it, the
-  per-pass grammars are the answer and Q24 is decided by that number.
+  per-pass grammars are the answer and Q-M2.6 is decided by that number.
 - **Local vs hosted** ([Q-M2.2](../open_questions.md#q-m22--must-the-model-be-local)).
   The phase builds for local; a hosted replication arm needs only a second
   client and loses GBNF, and the contract says what that costs.

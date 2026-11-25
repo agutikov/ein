@@ -294,7 +294,8 @@ plans/
 │   └── p1h.30_triz/                            2 — a survey that stops, and the place of the plan after it
 ├── m2_nl_to_ir/                      EinAf — iterative autoformalization, Levels B → D
 │   ├── README.md                     (the folder keeps its NL → IR name; Level B is that)
-│   ├── open_questions.md             Q7–Q11, Q23–Q25 + Q-M2.1–4
+│   ├── open_questions.md             Q7–Q11 + Q-M2.1–11
+│   ├── analysis/                     the plan against the project, 2026-11-25: what M2 starts from (six audits)
 │   ├── EinAf.md                      the research plan, verbatim (the ideas/11 precedent)
 │   ├── p2.1_kernel_as_instrumentation/   Stage A   (3 stage files)
 │   ├── p2.2_formalizer/                  Stage B   (5)
@@ -367,7 +368,7 @@ Stage files have a stable shape:
 | [M1n](m1n_non_monotone_programs/README.md) | F21 moved in, with its probes; 4 phases drafted (README) | **created** 2026-11-19 on the user's instruction, not started: non-monotone programs, the decisions F21 deferred |
 | [M1p](m1p_ein_to_natural_language/README.md) | 3 phases drafted (README each): custom formatting, facts formatting, reasoning formatting | **created** 2026-11-20 on the user's instruction, not started: every fact, inference and conclusion in natural language, and a value's own format |
 | M1j | *(plans removed at M1f's S1f.20.9 — git history)* | **done** 2026-11-13, built on branch `m1j` and merged as `3d941d81`, planned 2026-11-12 on the user's note; small. Zebra sentences through link grammar and a Racket converter to SMT code, under a Python wrapper, in [`nl2smt/`](../nl2smt/README.md); a proof of concept | — |
-| [M2](m2_nl_to_ir/README.md)             | **full for P2.1–P2.5** — 10 phases, 22 stage files; P2.7–P2.10 phase READMEs | after M1e2 — **reshaped 2026-08-23** around [`EinAf.md`](m2_nl_to_ir/EinAf.md): the kernel as instrumentation, the one-shot formalizer, the benchmark (Level B), the loop, baselines, ablations, failure analysis (Level C), representations, the formal account, the result and the demo (Level D) | ~6 months — Level B at ~8 weeks |
+| [M2](m2_nl_to_ir/README.md)             | **full for P2.1–P2.5 as written 2026-08-23** — 10 phases, 22 stage files; P2.7–P2.10 phase READMEs; [`analysis/`](m2_nl_to_ir/analysis/README.md), the plan against the project | **started 2026-11-25** on the user's word, from an analysis of its plan: the research plan [`EinAf.md`](m2_nl_to_ir/EinAf.md) and the ten phases hold, no stage file can run as written (they describe the engine M1a shipped), and four questions wait for the user (Q-M2.8 to Q-M2.11). No stage has run. Reshaped 2026-08-23: the kernel as instrumentation, the one-shot formalizer, the benchmark (Level B), the loop, baselines, ablations, failure analysis (Level C), representations, the formal account, the result and the demo (Level D) | — (no estimates, the user's ruling of 2026-11-08) |
 | [M5](m5_presentation/README.md)         | placeholder README only | parked — paper + talk after M2 (was M2b) | TBD |
 | [M10](m10_external_benchmarks/README.md) | **full** — 5 stage files, no phase level | queued behind M1a — the same problems through Z3, CVC5, SWI-Prolog, Soufflé, Clingo and Lean (was M1c's P1c.2) | ~2.5 weeks |
 | [M12](m12_rules_as_data/README.md)      | README + the census's results page | **planned** 2026-11-12 on the user's instruction, not started as a milestone. Rules as data: the sources pulled together, nothing designed. Its first phase, the census of rules, ran 2026-11-12 ([`rule_census.md`](m12_rules_as_data/rule_census.md)); later phases are the user's to define | — |

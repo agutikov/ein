@@ -376,13 +376,20 @@ its commit message. Edit this file only when a rule, a location, a command or
 the pointer below changes, and then in place: no dated *"S… ran to its end"*
 paragraph, no register count, no measurement (the user's rule).
 
-- **No milestone is current.** M1f, the structure of the hypothesis set and
-  the documentation, is closed on the user's word and its plans deleted
+- **M2 is current**: [EinAf, iterative autoformalization](plans/m2_nl_to_ir/README.md),
+  started on the user's word from an analysis of its plan against the project,
+  [`plans/m2_nl_to_ir/analysis/`](plans/m2_nl_to_ir/analysis/README.md). Its
+  stage files describe the engine M1a shipped and **none runs as written**: the
+  analysis and the six audits beside it are the worklist of the re-plan, and
+  the questions that wait for the user first are Q-M2.8 to Q-M2.11 of
+  [its ledger](plans/m2_nl_to_ir/open_questions.md) (where EinAf lives under
+  the project/process rule is the first). M1f, the structure of the hypothesis
+  set and the documentation, is closed on the user's word and its plans deleted
   (`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation`): its
   answers are decisions under `docs/decisions/`, its rulings about the process
   that still bind are the root ledger's, and what it found and left is in
-  followups. **The work stops after M1f** (the user's ruling): nothing below
-  starts without the user's word.
+  followups. **Nothing else starts without the user's word** (the user's
+  ruling at M1f's close).
 - **A finished plan is deleted.** A milestone or phase whose README says
   *closed* or *done*, and a followup that says *done*, goes with its folder once
   what still reads it is re-aimed and what it still owns has moved to its owner;

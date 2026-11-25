@@ -69,7 +69,7 @@ the function changes and the field does not.
 |---|---|---:|---|
 | [S2.1.1](s2.1.1_census.md) | The census — Stage A against the shipped engine | 2 d | the table above re-taken with `file:line`; each *missing* a task here or a named owner elsewhere; the six outcomes and the A2 invariants written into `defined_behaviour.md` with the test that holds each |
 | [S2.1.2](s2.1.2_feedback_object.md) | The feedback object — `ein-feedback/1` | 4 d | the schema, versioned; the A4 vocabulary as an enum; the mapping from `ein-summary/1` + `ein-events/1` + the typed errors into it; `unknown` derived; the corpus's 128 entries each producing one, banked as goldens |
-| [S2.1.3](s2.1.3_boundary.md) | The boundary — Q25 decided | 2 d | the language of the loop, with the protocol as the boundary either way; the directory `einaf/` and what is in it; the decision recorded beside [Q25](../open_questions.md#q25--what-language-is-the-frontend-written-in) |
+| [S2.1.3](s2.1.3_boundary.md) | The boundary — Q-M2.7 decided | 2 d | the language of the loop, with the protocol as the boundary either way; the directory `einaf/` and what is in it; the decision recorded beside [Q-M2.7](../open_questions.md#q-m27--what-language-is-the-frontend-written-in) |
 
 ## Acceptance
 

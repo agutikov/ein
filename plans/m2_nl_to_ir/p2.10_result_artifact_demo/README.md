@@ -59,9 +59,9 @@ it:
 
 | layer | what someone can do | delivered by | state at Level C |
 |---|---|---|---|
-| 1 executable system | run Ein, and run the loop | M1a; [P2.2](../p2.2_formalizer/README.md), [P2.4](../p2.4_loop/README.md); [`docs/ein/user/01-install.md`](../../../docs/ein/user/01-install.md) | the kernel has a release matrix awaiting its first tag; the loop needs its own channel, in Q25's language |
+| 1 executable system | run Ein, and run the loop | M1a; [P2.2](../p2.2_formalizer/README.md), [P2.4](../p2.4_loop/README.md); [`docs/ein/user/01-install.md`](../../../docs/ein/user/01-install.md) | the kernel has a release matrix awaiting its first tag; the loop needs its own channel, in Q-M2.7's language |
 | 2 benchmark | inspect the tasks, the programs, the verdicts, the answers | [P2.3](../p2.3_benchmark/README.md) | a directory; versioned; the `test` split's digest published with the result |
-| 3 experimental harness | rerun the evaluation | [S2.5.1](../p2.5_harness/s2.5.1_experiment_record.md) | `einaf run / evaluate / report`, or Q25's names |
+| 3 experimental harness | rerun the evaluation | [S2.5.1](../p2.5_harness/s2.5.1_experiment_record.md) | `einaf run / evaluate / report`, or Q-M2.7's names |
 | 4 raw results | read the generations and the solver outputs, not only the charts | the records of [P2.5](../p2.5_harness/README.md) – [P2.8](../p2.8_representations/README.md) | released as directories; size is the question, and an index with digests is the answer if the raw set is too large to ship |
 | 5 technical documentation | the formal semantics and the architecture | [`docs/ein/`](../../../docs/ein/README.md); [P2.9](../p2.9_formal_account/README.md) | the kernel's exists; the loop's architecture page is this phase's to write |
 | 6 research paper | questions, method, experiments, conclusions | [M5](../../m5_presentation/README.md) | Stage P; not this milestone's |

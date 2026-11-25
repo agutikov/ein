@@ -3,10 +3,13 @@
 **Estimate:** ~6 months — 10 phases, 22 stage files, ~24 weeks of phase
 estimates; **Level B at ~8 weeks**, Level C at ~19, Level D at the end plus
 [M5](../m5_presentation/README.md). See § How deep this plan is.
-**Status:** **reshaped 2026-08-23** around the research plan
-[`EinAf.md`](EinAf.md), at the user's direction; nothing started. The folder
-keeps its name — *NL → IR* is Level B of this milestone, and the links into
-`m2_nl_to_ir/` are many.
+**Status:** **started 2026-11-25** on the user's word, *"start plans/m2_nl_to_ir from plans analysis"*, by an
+analysis of this plan against the project: [`analysis/`](analysis/README.md). **No stage has run.** Everything
+below is as written at the reshape of 2026-08-23, around the research plan [`EinAf.md`](EinAf.md), against the
+engine M1a shipped; the analysis says what of it holds today (the research plan and the phases do; no stage file
+can run as written) and [the ledger](open_questions.md) holds the questions it raised for the user, Q-M2.8 to
+Q-M2.11. The folder keeps its name — *NL → IR* is Level B of this milestone, and the links into `m2_nl_to_ir/`
+are many.
 **Depends on:** M1a — the kernel,
 shipped. M1d for one word:
 [Q-M1d.6](../../docs/decisions/answer/Q-M1d.6-contradiction-is-said-only-where-no-node-is.md)
@@ -124,7 +127,7 @@ In work order, which is id order.
 
 | ID | title | stages | est. | what it ends with |
 |---|---|---|---|---|
-| [P2.1](p2.1_kernel_as_instrumentation/README.md) | The kernel as instrumentation — Stage A | 3 | 1.5 wk | `ein-feedback/1`: the versioned feedback object and its diagnostic vocabulary; the boundary (Q25) decided; the census of what Stage A asks for against what ships |
+| [P2.1](p2.1_kernel_as_instrumentation/README.md) | The kernel as instrumentation — Stage A | 3 | 1.5 wk | `ein-feedback/1`: the versioned feedback object and its diagnostic vocabulary; the boundary (Q-M2.7) decided; the census of what Stage A asks for against what ships |
 | [P2.2](p2.2_formalizer/README.md) | The formalizer — Stage B | 5 | 3 wk | `einaf from-text`, one-shot: NL → ontology + theory + instance + query under the contract, with every run's record; Zebra from its text to its canonical answer |
 | [P2.3](p2.3_benchmark/README.md) | The benchmark — Stage C | 4 | 3 wk | eight families, generators with exact ground truth and a canonical theory, unique / ambiguous / unsat instances, external adapters, frozen splits. **Level B gate** |
 | [P2.4](p2.4_loop/README.md) | The loop — Stages E, F | 5 | 3 wk | the state machine with every transition logged; repair as well as regenerate; the feedback ladder F0–F8 as nine renderers of one object; faithfulness judged against the source; termination and cycle detection |
@@ -162,8 +165,8 @@ keeps what it got right in the stage that now needs it. The census:
 
 | old | what it was | where it went |
 |---|---|---|
-| P2.1 investigations + decisions (S2.1.1 survey; S2.1.2–6 the six verdicts under `docs/decisions/M2-*.md`) | a fortnight of deciding before building | **Each decision moves to the stage that needs it**: Q25 → [S2.1.3](p2.1_kernel_as_instrumentation/s2.1.3_boundary.md); Q8 → [S2.4.5](p2.4_loop/s2.4.5_alternatives_as_hypotheses.md); Q9 → [S2.2.4](p2.2_formalizer/s2.2.4_passes.md), where "library of ontologies + override" becomes theory *selection* from the stdlib catalogue; Q23 / Q24 → [S2.2.2](p2.2_formalizer/s2.2.2_llama_server_and_client.md) / [S2.2.3](p2.2_formalizer/s2.2.3_gbnf.md); Q10 → [P2.8](p2.8_representations/README.md), which is that question asked properly; Q7 stays a question and leaves the research question (§ Open questions). **`docs/decisions/` is dropped** — it never existed, and a verdict lands beside its question in [`open_questions.md`](open_questions.md), as M1a's did. The reading list is [S2.2.1](p2.2_formalizer/s2.2.1_contract.md)'s |
-| P2.2 LLM infra (S2.2.1 compose service + model pin; S2.2.2 Python client) | a `llama-server` container and a thin client | [S2.2.2](p2.2_formalizer/s2.2.2_llama_server_and_client.md), the same stage in the language Q25 picks; the reproducibility envelope becomes the first field of the experiment record ([S2.5.1](p2.5_harness/s2.5.1_experiment_record.md)) |
+| P2.1 investigations + decisions (S2.1.1 survey; S2.1.2–6 the six verdicts under `docs/decisions/M2-*.md`) | a fortnight of deciding before building | **Each decision moves to the stage that needs it**: Q-M2.7 → [S2.1.3](p2.1_kernel_as_instrumentation/s2.1.3_boundary.md); Q8 → [S2.4.5](p2.4_loop/s2.4.5_alternatives_as_hypotheses.md); Q9 → [S2.2.4](p2.2_formalizer/s2.2.4_passes.md), where "library of ontologies + override" becomes theory *selection* from the stdlib catalogue; Q-M2.5 / Q-M2.6 → [S2.2.2](p2.2_formalizer/s2.2.2_llama_server_and_client.md) / [S2.2.3](p2.2_formalizer/s2.2.3_gbnf.md); Q10 → [P2.8](p2.8_representations/README.md), which is that question asked properly; Q7 stays a question and leaves the research question (§ Open questions). **`docs/decisions/` is dropped** — it never existed, and a verdict lands beside its question in [`open_questions.md`](open_questions.md), as M1a's did. The reading list is [S2.2.1](p2.2_formalizer/s2.2.1_contract.md)'s |
+| P2.2 LLM infra (S2.2.1 compose service + model pin; S2.2.2 Python client) | a `llama-server` container and a thin client | [S2.2.2](p2.2_formalizer/s2.2.2_llama_server_and_client.md), the same stage in the language Q-M2.7 picks; the reproducibility envelope becomes the first field of the experiment record ([S2.5.1](p2.5_harness/s2.5.1_experiment_record.md)) |
 | P2.3 GBNF for IR (S2.3.1 generator; S2.3.2 task grammars) | the IR lifted into GBNF so the LLM can only emit valid IR | [S2.2.3](p2.2_formalizer/s2.2.3_gbnf.md) — generated from [`01-grammar.md`](../../docs/ein/user/04-reference/01-grammar.md) rather than from the parser's keyword inventory; one grammar per pass, the facts grammar parameterised on the ontology's instance lists, kept whole |
 | P2.4 pipeline (S2.4.1 two-stage extraction; S2.4.2 validator + re-prompt; S2.4.3 ambiguity as hypotheses; S2.4.4 `ein from-text`) | the pipeline, with one repair loop inside it | **Split along the plan's seam between Stage B and Stage E.** The passes → [S2.2.4](p2.2_formalizer/s2.2.4_passes.md), plus the *theory* pass the old plan lacked; the CLI → [S2.2.5](p2.2_formalizer/s2.2.5_from_text.md), one-shot only and renamed `einaf from-text`; the validator → [S2.4.2](p2.4_loop/s2.4.2_repair.md), where it is feedback level **F1** of nine and "≤ 3 attempts" becomes Stage E's termination policy; ambiguity as hypotheses → [S2.4.5](p2.4_loop/s2.4.5_alternatives_as_hypotheses.md) |
 | P2.5 link-grammar experiment (S2.5.1 runner; S2.5.2 A/B with a pre-registered rule) | the user's question Q11, measured | [S2.6.4](p2.6_ablations/s2.6.4_representation_ablations.md) — one arm of the representation ablation, same rule, same submodule note |
@@ -171,7 +174,7 @@ keeps what it got right in the stage that now needs it. The census:
 
 What the old plan assumed and this one does not: that the frontend calls the
 engine in-process
-([Q25](open_questions.md#q25--what-language-is-the-frontend-written-in)); that
+([Q-M2.7](open_questions.md#q-m27--what-language-is-the-frontend-written-in)); that
 "valid IR" was the hard part (it is the easy part — GBNF makes it free, and
 the plan's § Stage B says *syntax is the relatively easy part*); that one
 repair loop with three attempts was the loop (it is F1 of a ladder, and the
@@ -262,8 +265,9 @@ as a second domain beside the puzzles ([P2.7](p2.7_failure_scaling_generalizatio
 
 ## Open questions
 
-[`open_questions.md`](open_questions.md). The old set — Q7–Q11, Q23–Q25 —
-keeps its ids and each entry now names the stage that decides it; **Q10 is
+[`open_questions.md`](open_questions.md). The old set — Q7–Q11, and Q-M2.5–Q-M2.7,
+which were Q23–Q25 here until those ids were found to be the root ledger's — names in each entry the stage that
+decides it; **Q10 is
 re-homed to Stage L** and **Q7 leaves the research question** (the NL
 explanation side is M5's demo, not the loop's). Four new ones arrived with the
 reshape, as `Q-M2.<n>`: when the kernel is frozen for an experiment
@@ -306,7 +310,7 @@ and whether the fixed point is syntactic or semantic
 - [`docs/ein/ein.rs/04-api.md`](../../docs/ein/ein.rs/04-api.md) — what a Rust loop links;
   [`docs/ein/user/01-install.md`](../../docs/ein/user/01-install.md), `--json-summary`
   (`ein-summary/1`) and [`--events`](../../docs/ein/ein.rs/05-events.md)
-  (`ein-events/1`) — what a Python one drives; Q25 chooses.
+  (`ein-events/1`) — what a Python one drives; Q-M2.7 chooses.
 - M1f S1f.6.20 — word problems as hand-written Ein programs over the calculator theory: the first
   instances of § The reasoning as a program, and candidates for the benchmark once it has run.
 - [M20](../m20_gui/README.md) — displays whatever the loop records; not a
