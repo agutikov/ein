@@ -1,9 +1,9 @@
 # E-101 — A module's path in a message is absolute, the program's as given
 
 **Kind:** weakness
-**Status:** open
+**Status:** closed by [S2.1.4](../../s2.1.4_bugs_the_phase_found.md), `df75643c` (EinAf's part `3e801779`): a module is named by the program's directory as given joined with its name, in a message, a place and the summary, and EinAf's comparison no longer strips the repository's root (`ein-cli/tests/module_paths.rs`; [Q-M1f.93](../../../../../docs/decisions/diagnostics/Q-M1f.93-a-modules-read-line-names-the-path-its-import.md)); a `std.*` module's path is [E-103](E-103-a-standard-library-module-is-named-by-the-path-the-binary-found.md)
 **Filed:** by [S2.1.3](../../s2.1.3_feedback_object.md), 2026-11-25, on `0ab1aef0`
-**Owner:** [S2.1.4](../../s2.1.4_bugs_the_phase_found.md), planned
+**Owner:** [S2.1.4](../../s2.1.4_bugs_the_phase_found.md)
 
 ## What
 

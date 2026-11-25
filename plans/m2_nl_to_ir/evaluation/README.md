@@ -20,7 +20,7 @@ hand; this page is what it finds of the kernel, kept for the iteration of Ein th
 - **One file an entry**, `<topic>/E-<n>-<slug>.md`, under the topic it is about: its id and its bold sentence as
   the title; its kind, its status (open, or closed and by what; a strength stands), where it was filed and its
   owner; then the cells of its row, each a section, as they were written. This page is the index. **The ids are one
-  sequence for the milestone and its phases**, and the next free id is **E-102**.
+  sequence for the milestone and its phases**, and the next free id is **E-104**.
 - **An entry filed by a phase lives in the phase's `evaluation/`** (every phase's folder has one) until the phase
   closes. Then, if it is open or a strength, it moves here under the same topic; a closed one goes with the phase's
   folder, where `git log` keeps it.
@@ -45,15 +45,17 @@ phase that filed it until the phase closes: E-62 to E-67 are
 the crates and read the kernel's values; its record has the commands. E-68 to E-93 are [S2.1.2](../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md)'s, filed at its end on `e74139cf`: the twenty findings its two halves recorded, each command re-run on that commit, and what its last half
 found. E-94 to E-101 are [S2.1.3](../p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md)'s, filed at its end on
 `0ab1aef0`: what building the feedback object from the library took, what the object and the binary said of the same
-runs, and what the probes of the bounded call did.
+runs, and what the probes of the bounded call did. E-102 and E-103 are [S2.1.4](../p2.1_kernel_as_instrumentation/s2.1.4_bugs_the_phase_found.md)'s,
+filed at its end on `df75643c`: what was left of a deep term's cost once its printers kept no call stack, and the one
+module path its fix left the binary's.
 
 ## Topics
 
 | topic | what it holds | here | in a phase's folder |
 |---|---|---:|---:|
 | [`answer/`](answer/) | R and what is said of it: the outcomes, the questions, cores, claims, counts, flagged programs | 25 | 2 |
-| [`diagnostics/`](diagnostics/) | what the kernel says beside an answer or instead of one: refusals, kinds, messages, places, the summary's lines | 6 | 17 |
-| [`bounds/`](bounds/) | how far and how long a run goes: termination, the clock, the caps, memory, time | 9 | 12 |
+| [`diagnostics/`](diagnostics/) | what the kernel says beside an answer or instead of one: refusals, kinds, messages, places, the summary's lines | 6 | 18 |
+| [`bounds/`](bounds/) | how far and how long a run goes: termination, the clock, the caps, memory, time | 9 | 13 |
 | [`library/`](library/) | Ein as a library: the API, building against it, embedding it, what its values hold | 2 | 8 |
 | [`language/`](language/) | the language: relations, modules, imports, names | 4 | 0 |
 | [`stdlib/`](stdlib/) | the standard library's theories, and how a program selects one | 6 | 0 |
@@ -153,5 +155,5 @@ None here: the bugs filed so far, E-62, E-65, E-74, E-76, E-79, E-88, are P2.1's
 
 One line a phase whose `evaluation/` holds entries, so that every id is found from here.
 
-- **E-62 to E-101 are P2.1's**, in [its evaluation](../p2.1_kernel_as_instrumentation/evaluation/README.md): E-62 to E-67 filed by S2.1.1, E-68 to E-93 by S2.1.2, E-94 to E-101 by S2.1.3; eight of them closed in the phase.
+- **E-62 to E-103 are P2.1's**, in [its evaluation](../p2.1_kernel_as_instrumentation/evaluation/README.md): E-62 to E-67 filed by S2.1.1, E-68 to E-93 by S2.1.2, E-94 to E-101 by S2.1.3, E-102 and E-103 by S2.1.4; thirteen of them closed in the phase, E-99 as far as it went.
 - P2.2 to P2.10: none yet.

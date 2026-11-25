@@ -1,9 +1,9 @@
 # E-79 — `ein saturate --max-steps N` crashes on a term nested past some 30 000
 
 **Kind:** bug
-**Status:** open
+**Status:** closed by [S2.1.4](../../s2.1.4_bugs_the_phase_found.md), `df75643c`: no walk of a term recurses on its depth; `ein saturate --max-steps 40000 ein.rs/crates/ein-cli/tests/bounded/grow.ein` exits 0 with its line, and `ein-cli/tests/deep_terms.rs` holds a fact 39 600 deep through every surface that prints one
 **Filed:** by [S2.1.2](../../s2.1.2_diagnostics_surface.md), 2026-11-25, on `e74139cf`
-**Owner:** [S2.1.4](../../s2.1.4_bugs_the_phase_found.md), planned
+**Owner:** [S2.1.4](../../s2.1.4_bugs_the_phase_found.md)
 
 ## What
 

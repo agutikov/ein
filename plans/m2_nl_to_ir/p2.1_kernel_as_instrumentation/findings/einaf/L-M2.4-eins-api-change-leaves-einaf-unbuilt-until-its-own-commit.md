@@ -31,5 +31,7 @@ the phase's gate"*), so no gate run read the commits between.
 
 A commit of master between the two fails the gate's EinAf step, so a bisection over master, or a gate run on such a
 commit, reads a failure that is not the commit's subject. [S2.1.4](../../s2.1.4_bugs_the_phase_found.md) plans the same
-order again (*"T2.1.4.6 — EinAf … a commit of its own, after Ein's"*). The order follows from the projects being two;
+order again (*"T2.1.4.6 — EinAf … a commit of its own, after Ein's"*); it ran so, and its Ein commit, `df75643c`,
+changed no API EinAf names (`grep -rn 'repr_value\|repr_fact\|bindings_repr\|RefArg' einaf/` finds none), so EinAf
+built on it and its comparison, which stripped the repository's root from both sides, still agreed. The order follows from the projects being two;
 whether one commit may carry Ein's change and EinAf's mend together is the process's to say.

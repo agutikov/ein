@@ -10,7 +10,7 @@ phase's folder.
 
 ## Index
 
-E-62 to E-101, filed by the phase's three stages: E-62 to E-67 by [S2.1.1](../s2.1.1_tree_and_outcomes.md) on `0effa7b0`, E-68 to E-93 by [S2.1.2](../s2.1.2_diagnostics_surface.md) on `e74139cf`, E-94 to E-101 by [S2.1.3](../s2.1.3_feedback_object.md) on `0ab1aef0`; the topics are the milestone's. Eight are closed in the phase, and [S2.1.4](../s2.1.4_bugs_the_phase_found.md), planned, would close four more (E-74, E-79, E-90, E-101).
+E-62 to E-103, filed by the phase's four stages: E-62 to E-67 by [S2.1.1](../s2.1.1_tree_and_outcomes.md) on `0effa7b0`, E-68 to E-93 by [S2.1.2](../s2.1.2_diagnostics_surface.md) on `e74139cf`, E-94 to E-101 by [S2.1.3](../s2.1.3_feedback_object.md) on `0ab1aef0`, E-102 and E-103 by [S2.1.4](../s2.1.4_bugs_the_phase_found.md) on `df75643c`; the topics are the milestone's. Eight were closed by the first three stages; [S2.1.4](../s2.1.4_bugs_the_phase_found.md) closed four more (E-74, E-79, E-90, E-101), and E-99 as far as it went.
 
 ### Strengths
 
@@ -34,10 +34,11 @@ E-62 to E-101, filed by the phase's three stages: E-62 to E-67 by [S2.1.1](../s2
 | [E-85](bounds/E-85-the-cap-counts-firings-an-engine-count.md) | The cap counts firings, an engine count | `bounds` | open | none |
 | [E-86](bounds/E-86-ein-test-asks-a-cut-file-twice.md) | `ein test` asks a cut file twice | `bounds` | open | none |
 | [E-87](bounds/E-87-region-stopped-why-has-two-values-no-summary-reaches.md) | `region.stopped.why` has two values no summary reaches | `bounds` | open | none |
-| [E-90](diagnostics/E-90-ein-test-prints-the-clocks-abort-on-stdout.md) | `ein test` prints the clock's abort on stdout | `diagnostics` | open | [S2.1.4](../s2.1.4_bugs_the_phase_found.md), planned |
+| [E-90](diagnostics/E-90-ein-test-prints-the-clocks-abort-on-stdout.md) | `ein test` prints the clock's abort on stdout | `diagnostics` | closed by [S2.1.4](../s2.1.4_bugs_the_phase_found.md) (`df75643c`) | [S2.1.4](../s2.1.4_bugs_the_phase_found.md) |
 | [E-92](diagnostics/E-92-a-schemas-number-is-written-into-an-options-help.md) | A schema's number is written into an option's help | `diagnostics` | open | the user's to rule; the default is [S2.1.2](../s2.1.2_diagnostics_surface.md)'s record; [Q-M2.19](../open_questions/kernel/Q-M2.19-do-ein-summary-2-and-ein-test-report-6-keep-their-numbers.md) |
 | [E-93](diagnostics/E-93-a-fixture-banks-one-finding-of-two.md) | A fixture banks one finding of two | `diagnostics` | open | none |
-| [E-101](diagnostics/E-101-a-modules-path-in-a-message-is-absolute-the-programs-as.md) | A module's path in a message is absolute, the program's as given | `diagnostics` | open | [S2.1.4](../s2.1.4_bugs_the_phase_found.md), planned |
+| [E-101](diagnostics/E-101-a-modules-path-in-a-message-is-absolute-the-programs-as.md) | A module's path in a message is absolute, the program's as given | `diagnostics` | closed by [S2.1.4](../s2.1.4_bugs_the_phase_found.md) (`df75643c`; EinAf's part `3e801779`) | [S2.1.4](../s2.1.4_bugs_the_phase_found.md) |
+| [E-103](diagnostics/E-103-a-standard-library-module-is-named-by-the-path-the-binary-found.md) | A standard library module is named by the path the binary found it under | `diagnostics` | open | none |
 
 ### Gaps
 
@@ -60,9 +61,9 @@ E-62 to E-101, filed by the phase's three stages: E-62 to E-67 by [S2.1.1](../s2
 |---|---|---|---|---|
 | [E-62](library/E-62-the-pages-dependency-block-does-not-build.md) | The page's dependency block does not build | `library` | closed by [S2.1.2](../s2.1.2_diagnostics_surface.md) (`62a8ee45`) | [S2.1.2](../s2.1.2_diagnostics_surface.md) |
 | [E-65](library/E-65-the-page-says-a-loads-error-is-a-structured-value-and-the.md) | The page says a load's error is a structured value, and the load of a file hands even the parse's back as text | `library` | closed by [S2.1.2](../s2.1.2_diagnostics_surface.md) (`62a8ee45`; EinAf's part `d13dc4d9`) | [S2.1.2](../s2.1.2_diagnostics_surface.md) |
-| [E-74](diagnostics/E-74-the-library-spells-2s-first-row-a-second-way.md) | The library spells § 2's first row a second way | `diagnostics` | open | [F23](../../../followups/f23_diagnostics_in_eins_words.md)'s D-1; [S2.1.4](../s2.1.4_bugs_the_phase_found.md), planned |
+| [E-74](diagnostics/E-74-the-library-spells-2s-first-row-a-second-way.md) | The library spells § 2's first row a second way | `diagnostics` | closed by [S2.1.4](../s2.1.4_bugs_the_phase_found.md) (`df75643c`) | [S2.1.4](../s2.1.4_bugs_the_phase_found.md); the words, [F23](../../../followups/f23_diagnostics_in_eins_words.md)'s D-1 |
 | [E-76](diagnostics/E-76-twelve-refusals-had-no-section.md) | Twelve refusals had no section | `diagnostics` | closed by [S2.1.2](../s2.1.2_diagnostics_surface.md) (`62a8ee45`) | [S2.1.2](../s2.1.2_diagnostics_surface.md) |
-| [E-79](bounds/E-79-ein-saturate-max-steps-n-crashes-on-a-term-nested-past-some.md) | `ein saturate --max-steps N` crashes on a term nested past some 30 000 | `bounds` | open | [S2.1.4](../s2.1.4_bugs_the_phase_found.md), planned |
+| [E-79](bounds/E-79-ein-saturate-max-steps-n-crashes-on-a-term-nested-past-some.md) | `ein saturate --max-steps N` crashes on a term nested past some 30 000 | `bounds` | closed by [S2.1.4](../s2.1.4_bugs_the_phase_found.md) (`df75643c`) | [S2.1.4](../s2.1.4_bugs_the_phase_found.md) |
 | [E-88](diagnostics/E-88-ein-test-json-report-wrote-no-expect-on-a-claims-row-of-a.md) | `ein test --json-report` wrote `no-expect` on a claim's row of a file the clock ended | `diagnostics` | closed by [S2.1.2](../s2.1.2_diagnostics_surface.md) (`e74139cf`) | [S2.1.2](../s2.1.2_diagnostics_surface.md) |
 
 ### Limits
@@ -75,4 +76,5 @@ E-62 to E-101, filed by the phase's three stages: E-62 to E-67 by [S2.1.1](../s2
 | [E-83](bounds/E-83-a-program-with-no-fixpoint-cannot-be-a-corpus-program.md) | A program with no fixpoint cannot be a corpus program | `bounds` | open | — |
 | [E-84](bounds/E-84-four-readers-of-root-take-no-bound.md) | Four readers of root take no bound | `bounds` | open | — |
 | [E-98](bounds/E-98-the-clock-is-not-read-where-nothing-fires-and-the-cap-counts.md) | The clock is not read where nothing fires, and the cap counts only firings | `bounds` | open | — |
-| [E-99](bounds/E-99-a-deep-term-is-rendered-in-time-that-grows-faster-than-the.md) | A deep term is rendered in time that grows faster than the square of its depth, after the run and outside the clock | `bounds` | open | — |
+| [E-99](bounds/E-99-a-deep-term-is-rendered-in-time-that-grows-faster-than-the.md) | A deep term is rendered in time that grows faster than the square of its depth, after the run and outside the clock | `bounds` | closed by [S2.1.4](../s2.1.4_bugs_the_phase_found.md) (`df75643c`) as far as *faster than the square*; the rest is E-102 | — |
+| [E-102](bounds/E-102-a-deep-fact-is-rendered-and-drawn-in-time-that-grows-with-the.md) | A deep fact is rendered and drawn in time that grows with the square of its depth, after the run and outside the clock | `bounds` | open | — |

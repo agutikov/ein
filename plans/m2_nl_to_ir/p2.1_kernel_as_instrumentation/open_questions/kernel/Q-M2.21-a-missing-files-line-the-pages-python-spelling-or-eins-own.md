@@ -4,8 +4,9 @@
 
 **Raised 2026-11-25 by [S2.1.4](../../s2.1.4_bugs_the_phase_found.md#the-design-to-be-confirmed-by-the-stage-before-it-writes-code),
 its design point 2**, which carries [E-74](../../evaluation/diagnostics/E-74-the-library-spells-2s-first-row-a-second-way.md)
-and the missing file's half of [F23](../../../../followups/f23_diagnostics_in_eins_words.md)'s D-1. S2.1.4 is planned
-and not started; this is what its default leaves for the user.
+and the missing file's half of [F23](../../../../followups/f23_diagnostics_in_eins_words.md)'s D-1. S2.1.4 ran with the
+default ([its record](../../s2.1.4_bugs_the_phase_found.md#record), `df75643c`): one line, the page's, from the library
+and every command; this is what the default leaves for the user.
 
 **The question.** A missing file is spelled three ways today: every command but one prints the page's line through
 `ein_ir::read`, `FileNotFoundError: [Errno 2] No such file or directory: 'nope.ein'`; the library's
