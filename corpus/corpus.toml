@@ -1002,6 +1002,33 @@ slow   = true
 cost_ms = 2239
 note   = "the flagship. `solve --region-budget 1` is the corpus's budgeted run: a run that reaches the budget prints what it established and bounds, never another answer, and exits 0. The cells that print every core the run visits (`--trace`, `--dump-lattice`, `render lattice`) pay for each fact a `forall` read folded into a core (Q-M1e2.15), and a run that prints none takes none."
 
+[[entry]]
+path   = "examples/zebra3.1.ein"
+group  = "positive"
+runs   = ["solve", "solve --single", "saturate"]
+cost_ms = 533
+note   = "the puzzle's statements in the text's own words, one relation a verb (`(drinks Ukrainian Tea)`, `(is-drunk-in Coffee Green)`), a description written as the word it is built on, and the questions as one query in the statements' relations. A sentence keeps its voice, a passive of place (`is-drunk-in`) beside an active (`drinks`). The theory is the library's alone: each verb `includes` into one `same-house` that std.slots partitions; an active and its passive are one `converse` fact, which the library reads both ways; a passive of place is a `compose` through the man who lives in the house; and a value in a house is in it by its kind's verb, a `top` and a `meet`. The hypotheses are std.slots' obligations. Written in the order a formalization makes it: statements, ontology, theory. `solve` is the description of R, `solve --single` the question the puzzle is, one state, and `saturate` root."
+
+[[entry]]
+path   = "examples/zebra3.2.ein"
+group  = "positive"
+runs   = ["solve", "solve --single", "saturate"]
+cost_ms = 791
+note   = "the puzzle's statements in the text's own words as descriptions, facts of `the` with the verb phrase a fact inside (`(same (the Coffee (is drunk in) House) (the Green House))`), and the three sentences of the row as its relations between descriptions. Four rules read a description as the name it is built on, one reads two names that are the same as `same-house`, which std.slots partitions, and one answers the questions in the statements' own form. `the` is written at two counts and declared at one, since a program that imports a module is refused a second count. Its runs are the other literal encodings'."
+
+[[entry]]
+path   = "examples/zebra3.3.ein"
+group  = "positive"
+runs   = ["solve", "solve --single", "saturate"]
+cost_ms = 713
+note   = "the puzzle's statements in the text's own words, one relation a verb, and an adjective of a house a relation of one argument: `(is-drunk-in Coffee (green House))`, and a colour's house in the answer `(green House-5)`. The theory is the verbs' of `zebra3.1.ein`, converses and compositions included, with rules of the file's own for the adjectives (a house named by a colour, by its place, and the fact of a house's colour), a rule over a colour's relation activated by a rule that reads the colours' memberships. Its runs are the other literal encodings'."
+
+[[entry]]
+path   = "examples/zebra3.4.ein"
+group  = "positive"
+runs   = ["solve", "solve --single", "saturate"]
+note   = "the puzzle's statements in the text's own words with the verb as an argument: `(same-house Englishman lives-in Red color-of)`, a value named with the verb that puts it in its house, and `(is-drunk-in Milk Middle)` where a sentence names its house. The five verbs are std.bijection's projections, whose obligations write the hypotheses, and the file's own rules carry a sentence of one house or of two neighbouring houses onto them, the rules of `zebra2.ein` written over the verbs. Its runs are the other literal encodings'."
+
 
 # ── regression: examples/ein-bugs/ ──────────────────────────
 #

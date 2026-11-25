@@ -1,5 +1,5 @@
-//! The acceptance gate — the three zebra fixtures, solved and checked
-//! against the published answer.
+//! The acceptance gate — the zebra fixtures, solved and checked against the
+//! published answer.
 //!
 //! These prove the answer is the **right** one. That distinction matters at
 //! exactly one point: a self-golden can pin a wrong model, and the corpus
@@ -9,7 +9,7 @@
 //! Each is a few dozen saturations on the routes, so they run with the
 //! ordinary suite.
 //!
-//! **This is the whole acceptance gate.** It covers four
+//! **This is the whole acceptance gate.** It covers five
 //! questions:
 //!
 //! | what it asserts | here |
@@ -17,6 +17,7 @@
 //! | the k = 1 / k ≥ 2 / k = 0 matrix | `the_three_readings_agree_with_the_input`, extended below with **exhaustion**, **distinctness** and the injected fact's **provenance** |
 //! | the listing and the contradictions view are *readings of one result*, not second opinions | `the_listing_is_the_verdict_counted` / `the_contradictions_view_is_the_verdict_explained` |
 //! | two encodings, one model | `the_generic_link_encoding_is_the_unique_solution`, `both_ontologies_reach_the_same_model` |
+//! | the text's own words, four ways, one model | `one_relation_a_verb_is_the_unique_solution`, `descriptions_and_what_is_the_same_are_the_unique_solution`, `an_adjective_a_relation_of_one_argument_is_the_unique_solution`, `the_verb_as_an_argument_is_the_unique_solution` |
 //! | the CLI prints the answer, `k`, `exhausted` | the CLI's surface, not the engine's — `ein-cli/tests/` |
 //!
 //! The second row is the guard against a verdict that tracks **the function
@@ -459,6 +460,146 @@ fn a_satisfiable_puzzle_is_never_unsat_and_an_unsat_one_is_never_solved() {
         unsat,
         Verdict::Contradiction,
         "an injected clash is unsat and must not read as a solution"
+    );
+}
+
+// ── The text's own words ──────────────────────────────────────────
+
+/// The houses as `zebra3.1`, `zebra3.2` and `zebra3.4` name them: by their
+/// places in the row, the first and the middle as the puzzle's text does.
+fn by_place(house: &str) -> &'static str {
+    match house {
+        "House-1" => "First",
+        "House-2" => "Second",
+        "House-3" => "Middle",
+        "House-4" => "Fourth",
+        "House-5" => "Fifth",
+        other => panic!("the grid has no house {other}"),
+    }
+}
+
+/// The grid's cells a literal encoding's one state does not hold, each read
+/// by `cell(kb, terms, kind, value, house)`, `kind` the value's column in
+/// [`GRID`]; and `--single` decided that R is that one state.
+fn unplaced(rel: &str, cell: impl Fn(&Kb, &Terms, usize, &str, &str) -> bool) -> Vec<String> {
+    ask(rel, Which::All, Ask::Single, |a, state| {
+        assert_eq!(
+            a.verdict,
+            Some(Verdict::Solution),
+            "{rel}: R must be one state"
+        );
+        assert!(a.exhausted, "{rel}: uniqueness is a decided --single");
+        let (kb, terms) = state.expect("the one state");
+        GRID.iter()
+            .flat_map(|(house, values)| {
+                values
+                    .iter()
+                    .enumerate()
+                    .map(move |(kind, v)| (kind, *house, *v))
+            })
+            .filter(|&(kind, house, value)| !cell(kb, terms, kind, value, house))
+            .map(|(_, house, value)| format!("{value} in {house}"))
+            .collect()
+    })
+}
+
+/// `(rel a b)` or `(rel b a)`: a symmetric relation, in either order.
+fn linked(kb: &Kb, terms: &Terms, rel: &str, a: &str, b: &str) -> bool {
+    holds(kb, terms, rel, a, b) || holds(kb, terms, rel, b, a)
+}
+
+/// Is `(rel a)` believed?
+fn holds1(kb: &Kb, terms: &Terms, rel: &str, a: &str) -> bool {
+    let (Some(rel), Some(a)) = (terms.syms.get(rel), terms.syms.get(a)) else {
+        return false;
+    };
+    terms
+        .probe_fact(rel, &[Value::sym(a)])
+        .is_some_and(|f| kb.contains(f))
+}
+
+/// `zebra3.1.ein` — a sentence one fact of its verb, the verbs parts of one
+/// `same-house` — places all 25 cells, as the one state of R, and answers the
+/// questions in the verbs they are asked in.
+#[test]
+fn one_relation_a_verb_is_the_unique_solution() {
+    let rel = "examples/zebra3.1.ein";
+    let missing = unplaced(rel, |kb, terms, _, value, house| {
+        linked(kb, terms, "same-house", value, by_place(house))
+    });
+    assert!(
+        missing.is_empty(),
+        "{rel}: grid cells unplaced: {missing:?}"
+    );
+    let answered = ask(rel, Which::All, Ask::Single, |_, state| {
+        let (kb, terms) = state.expect("the one state");
+        holds(kb, terms, "drinks", "Norwegian", "Water")
+            && holds(kb, terms, "owns", "Japanese", "Zebra")
+    });
+    assert!(
+        answered,
+        "{rel}: the Norwegian drinks water, the Japanese owns the zebra"
+    );
+}
+
+/// `zebra3.2.ein` — a sentence two descriptions that are the same — places
+/// all 25 cells through `same-house`, as the one state of R.
+#[test]
+fn descriptions_and_what_is_the_same_are_the_unique_solution() {
+    let rel = "examples/zebra3.2.ein";
+    let missing = unplaced(rel, |kb, terms, _, value, house| {
+        linked(kb, terms, "same-house", value, by_place(house))
+    });
+    assert!(
+        missing.is_empty(),
+        "{rel}: grid cells unplaced: {missing:?}"
+    );
+}
+
+/// `zebra3.3.ein` — an adjective of a house a relation of one argument —
+/// holds a house's colour as a fact of the colour, `(red House-3)`, every
+/// other cell through `same-house`, as the one state of R.
+#[test]
+fn an_adjective_a_relation_of_one_argument_is_the_unique_solution() {
+    let rel = "examples/zebra3.3.ein";
+    let missing = unplaced(rel, |kb, terms, kind, value, house| match kind {
+        0 => holds1(kb, terms, &value.to_lowercase(), house),
+        _ => linked(kb, terms, "same-house", value, house),
+    });
+    assert!(
+        missing.is_empty(),
+        "{rel}: grid cells unplaced: {missing:?}"
+    );
+    let answered = ask(rel, Which::All, Ask::Single, |_, state| {
+        let (kb, terms) = state.expect("the one state");
+        holds(kb, terms, "drinks", "Norwegian", "Water")
+            && holds(kb, terms, "owns", "Japanese", "Zebra")
+    });
+    assert!(
+        answered,
+        "{rel}: the Norwegian drinks water, the Japanese owns the zebra"
+    );
+}
+
+/// `zebra3.4.ein` — the verb as an argument, five verbs that put a value in a
+/// house — places all 25 cells, each through the verb of its kind, as the one
+/// state of R.
+#[test]
+fn the_verb_as_an_argument_is_the_unique_solution() {
+    let rel = "examples/zebra3.4.ein";
+    const VERBS: [&str; 5] = [
+        "color-of",
+        "lives-in",
+        "are-smoked-in",
+        "is-drunk-in",
+        "is-kept-in",
+    ];
+    let missing = unplaced(rel, |kb, terms, kind, value, house| {
+        holds(kb, terms, VERBS[kind], value, by_place(house))
+    });
+    assert!(
+        missing.is_empty(),
+        "{rel}: grid cells unplaced: {missing:?}"
     );
 }
 

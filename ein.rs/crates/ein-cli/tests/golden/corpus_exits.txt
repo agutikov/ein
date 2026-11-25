@@ -1785,6 +1785,18 @@
 0    examples/zebra2.ein :: solve -n 3
 0    examples/zebra2.ein :: solve -p -s
 0    examples/zebra2.ein :: solve -y
+0    examples/zebra3.1.ein :: saturate
+0    examples/zebra3.1.ein :: solve
+0    examples/zebra3.1.ein :: solve --single
+0    examples/zebra3.2.ein :: saturate
+0    examples/zebra3.2.ein :: solve
+0    examples/zebra3.2.ein :: solve --single
+0    examples/zebra3.3.ein :: saturate
+0    examples/zebra3.3.ein :: solve
+0    examples/zebra3.3.ein :: solve --single
+0    examples/zebra3.4.ein :: saturate
+0    examples/zebra3.4.ein :: solve
+0    examples/zebra3.4.ein :: solve --single
 0    stdlib/algebra.ein :: render constraints
 0    stdlib/algebra.ein :: render rules
 0    stdlib/algebra.ein :: saturate

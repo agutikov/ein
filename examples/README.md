@@ -10,22 +10,29 @@ with its rule firing, is [`06-zebra-walkthrough.md`](../docs/ein/user/02-guide/0
 > nobody would learn ein-lang from them. What *is* here is `features/10` to `13`, which show the form they are
 > written in.
 
-## Zebra puzzle — two ontologies, one puzzle
+## Zebra puzzle — one puzzle, six encodings
 
 `zebra.ein` and `zebra2.ein` encode the *same* Zebra puzzle over deliberately different vocabularies, both solve to
 the same model, and the pair is kept because the comparison is the only way to see which of the engine's reasoning
-power is general and which is an artefact of one encoding.
+power is general and which is an artefact of one encoding. The four `zebra3.n.ein` write the puzzle's statements in
+the text's own words, each sentence a fact with the sentence as its `:source` and the two questions one query, and
+differ in how a sentence's words become a fact; the theory around the facts is what varies. Each of the four is
+written in the order a formalization makes it: the statements, then the ontology, then the theory.
 
 **What pins that they agree cell by cell**
-([Q-M1e.25](../docs/decisions/corpus/Q-M1e.25-both-zebra-encodings-are-held-to-the-published.md)):
+([Q-M1e.25](../docs/decisions/corpus/Q-M1e.25-every-zebra-encoding-is-held-to-the-published.md)):
 
 | test | what it holds |
 |---|---|
 | `ein-infer/tests/acceptance.rs::the_generic_link_encoding_is_the_unique_solution` | `zebra.ein`'s model places all 25 `GRID` cells through `co-located`, as the one state of R |
 | `…::both_ontologies_reach_the_same_model` | `zebra2.ein`'s model is **exactly** those 25 cells, read through the five `*-loc` projections |
+| `…::one_relation_a_verb_is_the_unique_solution` | `zebra3.1.ein`'s one state places the 25 cells through `same-house`, and holds the answer in the questions' verbs, `(drinks Norwegian Water)` and `(owns Japanese Zebra)` |
+| `…::descriptions_and_what_is_the_same_are_the_unique_solution` | `zebra3.2.ein`'s one state places the 25 cells through `same-house` |
+| `…::an_adjective_a_relation_of_one_argument_is_the_unique_solution` | `zebra3.3.ein`'s one state holds a house's colour as a fact of the colour, `(red House-3)`, the other cells through `same-house`, and the answer in the questions' verbs |
+| `…::the_verb_as_an_argument_is_the_unique_solution` | `zebra3.4.ein`'s one state places the 25 cells, each through the verb of its kind |
 
-`GRID` is the *published* answer, vocabulary-independent, and both encodings are compared against **it** rather
-than against each other, which is the stronger claim of the two, because two encodings can agree on a wrong model.
+`GRID` is the *published* answer, vocabulary-independent, and every encoding is compared against **it** rather
+than against another, which is the stronger claim, because two encodings can agree on a wrong model.
 
 | | [`zebra.ein`](zebra.ein) | [`zebra2.ein`](zebra2.ein) |
 |---|---|---|
@@ -34,7 +41,23 @@ than against each other, which is the stronger claim of the two, because two enc
 | a cross-attribute clue | an ordinary fact: `(co-located Englishman Red)` | a 4-ary activator: `(co-located nation-loc Englishman color-loc Red)` |
 | a spatial clue | an ordinary fact: `(right-of Green Ivory)` | a 5-ary activator: `(adjacent-via right-of color-loc Ivory color-loc Green)` |
 | the property that drives it | scoped by membership: `(slot-partition co-located instance type Attribute House)` + one `(slot-spatial …)` per spatial relation — `std.slots` | per-relation: `(bijective color-loc)` ×5 — `std.bijection` |
-| rules defined in the file | 0 (all imported) | `grep -c '^(rule ' <file>` |
+| what writes the hypotheses | the rule `guess`, five activators | the rule `guess`, five activators |
+| rules of the file's own, `grep -c '^(rule ' FILE` | 1, `guess` | 15 |
+
+The four in the text's own words, sentence (2), *The Englishman lives in the red house*, and sentence (6), *The
+green house is immediately to the right of the ivory house*:
+
+| | [`zebra3.1.ein`](zebra3.1.ein) | [`zebra3.2.ein`](zebra3.2.ein) | [`zebra3.3.ein`](zebra3.3.ein) | [`zebra3.4.ein`](zebra3.4.ein) |
+|---|---|---|---|---|
+| the vocabulary | one relation a verb | descriptions, facts of `the`, and what is `same` | one relation a verb, an adjective of a house a relation of one argument | the verb as an argument |
+| sentence (2) | `(lives-in Englishman Red)` | `(same (the Englishman (lives in) House) (the Red House))` | `(lives-in Englishman (red House))` | `(same-house Englishman lives-in Red color-of)` |
+| sentence (6) | `(is-immediately-to-the-right-of Green Ivory)` | `(immediately-to-the-right-of (the Green House) (the Ivory House))` | `(is-immediately-to-the-right-of (green House) (ivory House))` | `(house-immediately-right-of Green color-of Ivory color-of)` |
+| *Who drinks water?* | `(drinks ?who Water)` | `(same ?who (the Water (is drunk by) Man))` | `(drinks ?who Water)` | `(is-drunk-in Water ?h)`, `(lives-in ?who ?h)` |
+| the houses | `First`, `Second`, `Middle`, `Fourth`, `Fifth` | as `zebra3.1` | `House-1` … `House-5`, with `(first House-1)` and `(middle House-3)` | as `zebra3.1` |
+| what the theory reads the facts into | one `same-house`, each verb a part of it by `includes`; an active and its passive one `converse`, a passive of place a `compose` through the man who lives there | one `same-house`, a description read as the name it is built on | as `zebra3.1`, a colour's house read as the colour | five projections, the verbs that put a value in a house |
+| the property that drives it | `std.slots` | `std.slots` | `std.slots` | `std.bijection` |
+| what writes the hypotheses | `std.slots`' obligations | `std.slots`' obligations | `std.slots`' obligations | `std.bijection`'s obligations |
+| rules of the file's own, `grep -c '^(rule ' FILE` | 0 | 6 | 5 | 14 |
 
 `zebra2.ein` is the reference encoding, and the one its variants are generated from; `zebra.ein` is the independent
 second reading.
@@ -45,6 +68,10 @@ second reading.
 | [`zebra2-minus-15.ein`](zebra2-minus-15.ein) | `zebra2` with condition (15) removed: a reduced, under-determined variant |
 | [`zebra2-obligations.ein`](zebra2-obligations.ein) | `zebra2` with its hypothesis rule `guess` and the rule's five activators **removed**: the theory alone drives the search, through the facts that would pay what its obligations owe |
 | [`zebra2-minus-15-obligations.ein`](zebra2-minus-15-obligations.ein) | both at once: under-determined *and* with no hypothesis rule |
+| [`zebra3.1.ein`](zebra3.1.ein) | the statements in the text's own words, one relation a verb, each sentence in its voice, `(drinks Ukrainian Tea)` and `(is-drunk-in Coffee Green)`; a description written as the word it is built on; an active and its passive converses; the theory the library's alone, no rule of the file's own |
+| [`zebra3.2.ein`](zebra3.2.ein) | the statements as descriptions that are the same, `(same (the Coffee (is drunk in) House) (the Green House))`, a verb phrase a fact inside its description; `the` written at two counts and declared at one, since a program that imports a module is refused a second count |
+| [`zebra3.3.ein`](zebra3.3.ein) | one relation a verb, and an adjective of a house a relation of one argument, `(is-drunk-in Coffee (green House))`; the answer holds `(green House-5)` |
+| [`zebra3.4.ein`](zebra3.4.ein) | the verb as an argument, `(same-house Englishman lives-in Red color-of)`, over five projections named by the verbs that put a value in a house |
 
 ### What an edit to these two files fans out into
 
@@ -76,6 +103,7 @@ ein-cli/tests/h_space_view.rs
 ein-cli/tests/lever_invariance.rs
 ein-cli/tests/region_dump.rs
 ein-cli/tests/render_doors.rs
+ein-cli/tests/route_invariance.rs
 ein-cli/tests/show_hyps.rs
 ein-corpus/benches/engine.rs
 ein-einb/tests/corruption.rs

@@ -197,7 +197,7 @@ them. A *kind* here is an atom that membership facts point at, `Color` in
 comparison: [`examples/zebra2.ein`](../examples/zebra2.ein) uses
 `std.bijection`, [`examples/zebra.ein`](../examples/zebra.ein) uses
 `std.slots`, and both are held to the published answer
-([Q-M1e.25](../docs/decisions/corpus/Q-M1e.25-both-zebra-encodings-are-held-to-the-published.md);
+([Q-M1e.25](../docs/decisions/corpus/Q-M1e.25-every-zebra-encoding-is-held-to-the-published.md);
 the [examples' catalogue](../examples/README.md) has them side by side).
 
 **Why `std.slots` anchors its conclusions at the `Index` kind** instead of

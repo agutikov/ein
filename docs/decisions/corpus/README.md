@@ -4,7 +4,7 @@ The manifest, fixtures and examples, the test harnesses of the engine and the st
 format and how a decision is cited: [`docs/decisions/README.md`](../README.md).
 
 - [Q-M1a.9](Q-M1a.9-a-golden-lives-beside-the-crate-it-pins.md) — A golden lives beside the crate it pins
-- [Q-M1e.25](Q-M1e.25-both-zebra-encodings-are-held-to-the-published.md) — Both Zebra encodings are held to the published grid
+- [Q-M1e.25](Q-M1e.25-every-zebra-encoding-is-held-to-the-published.md) — Every Zebra encoding is held to the published grid
 - [Q-M1e2.29](Q-M1e2.29-a-witness-of-a-fixed-behaviour-is-a-corpus.md) — A witness of a fixed behaviour is a corpus program where its check looks
 - [Q-M1f.57](Q-M1f.57-every-fixture-the-loader-reads-carries-a-why.md) — Every fixture the loader reads carries a `:why`
 - [Q-M1f.63](Q-M1f.63-a-program-a-test-writes-carries-a-why-on-every.md) — A program a test writes carries a `:why` on every form

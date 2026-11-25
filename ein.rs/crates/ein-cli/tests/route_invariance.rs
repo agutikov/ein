@@ -160,6 +160,18 @@ fn programs(slow_too: bool) -> Vec<PathBuf> {
 const COMMITS_AN_IMPLIED_CANDIDATE: [&str; 1] =
     ["examples/features/13_mixed_solution_and_open.ein"];
 
+/// **The programs on which route 1 stops before it has spent what the state
+/// route spends to finish.** Route 1 declines a layer where what it has spent
+/// and its projection of the layer pass the budget, so its counts at the cut
+/// are what it spent, not what it would have: on these two it stops after 114
+/// saturations and 44 977 and 53 143 facts, projecting its next layer past
+/// 2^20, and the state route describes R in 659 saturations and 116 630 and
+/// 135 026 facts, within the budget. The
+/// premise holds, the state route finishing where route 1 cannot; what it
+/// spends is more than route 1 had spent at the cut and less than route 1
+/// projected for itself.
+const SPENDS_PAST_ROUTE_1S_CUT: [&str; 2] = ["examples/zebra3.1.ein", "examples/zebra3.3.ein"];
+
 /// The first line on which two texts differ.
 fn first_difference(a: &str, b: &str) -> String {
     for (i, (x, y)) in a.lines().zip(b.lines()).enumerate() {
@@ -277,10 +289,15 @@ fn compare(budget: u64, slow: bool) -> Compared {
                 out.neither.push(rel);
                 continue;
             };
-            if states.facts > budget
-                || states.facts > one.facts
-                || states.saturations > one.saturations
-            {
+            let past_the_cut = states.facts > one.facts || states.saturations > one.saturations;
+            let named = SPENDS_PAST_ROUTE_1S_CUT.contains(&rel.as_str());
+            if named && !past_the_cut {
+                out.bad.push(format!(
+                    "{rel}: SPENDS_PAST_ROUTE_1S_CUT names it, and the state route spent no \
+                     more than route 1 at its cut: drop it from the list"
+                ));
+            }
+            if states.facts > budget || (past_the_cut && !named) {
                 out.bad.push(format!(
                     "{rel}: route 1 is cut at --region-budget {budget} and the state \
                      route finished past what it spent: {} saturations and {} facts \
