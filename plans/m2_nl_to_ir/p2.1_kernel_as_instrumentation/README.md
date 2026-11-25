@@ -1,142 +1,134 @@
 # P2.1 — The kernel as instrumentation (Stage A)
 
-**Estimate:** 1.5 weeks — 3 stages, 8 days.
-**Depends on:** M1a, shipped. Not
-on M1d: the one word M2 needs from it
-(`unknown`) is computed here from fields the engine already emits, and
-replaced by the engine's own the day M1d gives it one
-([Q-M2.1](../open_questions.md#q-m21--when-is-the-kernel-frozen)).
-**Blocks:** [P2.2](../p2.2_formalizer/README.md) — the formalization contract
-names the protocol its diagnostics arrive in; [P2.4](../p2.4_loop/README.md) —
-the feedback ladder is nine renderers of the object this phase defines.
+**Depends on:** the kernel as it stands after M1f's close
+([Q-M2.1](../open_questions.md#q-m21--when-is-the-kernel-frozen)), and nothing else.
+**Blocks:** [P2.2](../p2.2_formalizer/README.md): its code goes into the package this phase creates, and the
+formalization contract names the outcomes and the diagnostics a program gets back;
+[P2.4](../p2.4_loop/README.md): the feedback ladder renders the object this phase defines, and nothing else.
 **Research plan:** [`EinAf.md` § Stage A](../EinAf.md#stage-a--establish-the-symbolic-kernel-as-the-experimental-foundation),
-A1–A5.
+A1 to A5.
+**The one phase that changes Ein**: [S2.1.2](s2.1.2_diagnostics_surface.md), by the user's ruling on
+[Q-M2.9](../open_questions.md#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics), under Ein's own
+rules.
 
 ---
 
 ## Why this phase exists
 
-Stage A asks for five things, and the engine ships four of them. The plan's
-premise is right — *the existing engine becomes the trusted symbolic component
-of the experiment* — and the milestone's job here is not to build a kernel but
-to stop treating the one it has as a prototype. The phase is therefore short,
-mostly a census, and ends with **one new artefact**: a versioned, structured
-object that says what the kernel found, in a vocabulary the loop consumes and
-no human-readable table is allowed to stand in for
-([A3](../EinAf.md#a3-establish-a-stable-machine-interface): *human-readable
-CLI output should not be used by the experimental system*).
+Stage A asks that *the existing engine become the trusted symbolic component of the experiment*: a semantic
+boundary, invariants held by tests, a machine interface, a diagnostic vocabulary apart from presentation, and
+validation suites. The plan of August expected to build most of an interface. Five kernel milestones later the
+engine says for itself nearly all of it, and the phase is three things:
+
+1. **EinAf has to exist.** A package under `einaf/` that links the engine's crates, a step of the gate that builds
+   and tests it, the process told where it is, and its first page under `docs/einaf/`
+   ([Q-M2.7](../open_questions.md#q-m27--what-language-is-the-frontend-written-in),
+   [Q-M2.8](../open_questions.md#q-m28--where-does-einaf-live)). With it, the first thing EinAf knows about the
+   kernel: which of [the seven outcomes](../README.md#the-outcomes) a run is.
+2. **The kernel has to say a diagnostic to a program, not to a terminal.** It is the one thing of Stage A still
+   missing: a refusal, an abort and a run's notes are text on stderr, and four of the library's load errors are
+   strings. That is a change to Ein, ruled, and made in Ein's terms.
+3. **EinAf's feedback object**: one value that holds everything the kernel found of one program under one
+   question, which every level of the feedback ladder renders and beside which nothing else reads the kernel
+   ([A3](../EinAf.md#a3-establish-a-stable-machine-interface): *human-readable CLI output should not be used by
+   the experimental system*).
 
 ### What Stage A asks for, against what ships
 
-Taken 2026-08-23 against `ein.rs` at the M1a close; [S2.1.1](s2.1.1_census.md)
-re-takes it with `file:line` and turns every *missing* into a task or a
-named owner.
+[`analysis/audit_p2.1.md`](../analysis/audit_p2.1.md) has each cell with its evidence: § 0 is the fact base, what
+the machine surface says in each of A1's situations, and § B what each of the plan's deliverables became.
 
-| Stage A item | what it asks | what exists | what is missing |
-|---|---|---|---|
-| **A1** the semantic boundary | what an Ein program *means*: objects, types, relations, facts, rules, hypothesis rules, constraints, queries, saturation, model completion, contradiction, ambiguity, uniqueness, provenance, no-goods, search | [`docs/ein/`](../../../docs/ein/README.md) — the graph semantics, the data model, ein-lang, [`01-firing.md`](../../../docs/ein/reasoning/02-kb-evolution/01-firing.md#the-core-operations) O1–O9, [`absent_semantics.md`](../../../docs/ein/reasoning/02-kb-evolution/03-absent-and-naf.md), the [glossary](../../../docs/ein/user/04-reference/13-glossary.md); since M1a P1a.10 *the only statement of intent that is not also the implementation*, checked by the gate | the **six outcomes** stated as one list with their operational test each — five of the six exist (*invalid* = exit 1 with a diagnostic; *inconsistent* = `Contradiction` with a core or exhausted; *multiple models* = `k ≥ 2` — two distinct sorted fact lists prove it whatever `exhausted` says; *unique* = `k = 1 ∧ exhausted`; *satisfiable incomplete* is the **query** axis — `k ≥ 1` and no model binds the goal — until M1d gives the engine an obligation-level *incomplete*), and the sixth, **`unknown`**, does not: see the next table. [S2.1.1](s2.1.1_census.md) T2.1.1.3 writes the mapping out |
-| **A2** kernel invariants as tests | every fact justified; every contradiction derived; every solution satisfies the constraints; *unique* = one model **and** exhausted; *ambiguous* = two distinct models; *unsat* = exhaustion with zero | the gate — 619 tests, the thirteen counter identities `summary_properties.rs` holds the summary to, the id-order and `--jobs` invariance sweeps, the six-property fuzzer; provenance on every derived fact (O6); `-e` as the certification of uniqueness | the invariants are *held* but not *listed*: a page that states each of the plan's six in one line and names the test that holds it — S2.1.1 T2.1.1.3 writes it into `defined_behaviour.md`, where the thirteen behaviours already live |
-| **A3** a stable machine interface, versioned | structured input / output; structured errors; a protocol version | `--json-summary` is **`ein-summary/1`**: `verdict {type, k, exhausted, unsat_core, solutions[{facts, goal_bindings}]}` — the models sorted, the core as s-expressions — plus `stats`, `root`, `config`; `--events` is **`ein-events/1`**, the fifteen kinds [`05-events.md`](../../../docs/ein/ein.rs/05-events.md) tables plus `admit` and `warn` at the call sites, `fire` carrying `rule / bindings / premises / derived`; `ein --version` names the engine, the protocol, the features and the stdlib manifest SHA | a **feedback** object: the summary is a *run* record, additive and order-free; it has no diagnostics block at all (a parse or load failure never reaches it — the process exits 1 with a line of text), no `unknown`, and the exit code for a budget abort is **2, the usage-error code, by design** — so a loop reading exit codes cannot tell a typo from a timeout. [S2.1.2](s2.1.2_feedback_object.md) |
-| **A4** a diagnostic vocabulary apart from presentation | `syntax_error … arity_mismatch / contradiction, unsat_core / ambiguous … alternative_models / unused_fact, unreachable_query, dead_relation / resource_limit, search_limit` | `ParseError` is a struct — `file, line, col, context` — and the only typed one; [`07-diagnostics.md` § 1](../../../docs/ein/user/04-reference/07-diagnostics.md#1-parse-and-load-diagnostics) pins the parse and load *messages* as normative strings; the unsat core is a value (`verdict.unsat_core`); `warn` events carry a `category` | `KbLoadError`, `LoadError`, `MacroError`, `CompileError` are **`String` newtypes** — the accumulated problems `; `-joined, no kind, no location, no id; no `dead_relation` / `unreachable_query` / `unused_fact` analysis anywhere (S2.1.1 T2.1.1.2 checks whether the *matcher* already knows which rules never fired — `fire` events say which did). The vocabulary is S2.1.2's, as an enum with every field optional |
-| **A5** validation suites | parser, types, saturation, constraints, search, provenance, unsat core, model count, determinism, performance regression; *deliberately pathological cases* | the corpus: 128 entries in six groups (`positive`, `stdlib`, `parse-negative`, `load-negative`, `compile-negative`, `regression`), the negative fixtures under `examples/broken/` with their `.expected` messages (37 today, in three groups), `ein-bugs/`, the fuzz findings; [`corpus-cost.md`](../../../utils/censuses/corpus-cost.md) as the performance ledger; [design/02](../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md) for determinism | **unsat-core correctness and model-count correctness have no external check** — every test compares the engine to its own past. That is M1c's thesis and [M10](../../m10_external_benchmarks/README.md)'s job, named here and **not scheduled here** |
-
-### The sixth outcome, today
-
-The plan's A1 list ends with *resource-limit / unknown* and the rule that it
-*must never silently become `false`, `ambiguous`, or `contradiction`*. The
-engine has two caps and they say different things:
-
-| cap | what the engine reports | exit | what the loop would read |
-|---|---|---:|---|
-| `--max-time`, `--max-enterings` | `** aborted: <reason> **`; with the summary, `verdict.type = "Aborted"`, `reason`, empty core and models | **2** | *unknown* — correctly, if it reads the summary; *usage error*, if it reads the exit code |
-| `--max-set-size` (default 5) with a non-empty frontier | **`Contradiction`**, `k = 0`, `exhausted = false`, **empty unsat core** | 0 | *inconsistent* — wrongly. This is [Q-M1d.6](../../../docs/decisions/answer/Q-M1d.6-contradiction-is-said-only-where-no-node-is.md): ten corpus entries end this way, and `Contradiction` with an empty core is the tell |
-
-The rendering makes the asymmetry visible: a truncated `Solution` prints
-*(not certified — pass `--exhaustive`)* and a truncated `Contradiction`
-prints nothing. **M2 does not fix this in the engine** — it is M1d's, and
-the choice between *say `Aborted`*, *qualify the rendering* and *a fourth
-word* is theirs to take with the obligations work. What M2 does is refuse to
-read `verdict.type` alone: the feedback object's verdict is a function of
-`(type, k, exhausted, unsat_core)`, and `Contradiction ∧ ¬exhausted ∧ core = ∅`
-maps to **`unknown`** with `search_complete = false` — and so does
-`k = 1 ∧ ¬exhausted`, the uncertified solution, because the plan's rule is
-*unique means one model **and** an exhausted search*. When M1d lands a word,
-the function changes and the field does not.
+| Stage A item | what exists | what is left, and whose |
+|---|---|---|
+| **A1** the semantic boundary | the answer as a region R and what each question of it means ([`06-solution-semantics.md`](../../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md)); the commands' contract and exit codes ([`05-cli.md`](../../../docs/ein/user/04-reference/05-cli.md)); every row and every key of the read-out ([`08-read-out.md`](../../../docs/ein/user/04-reference/08-read-out.md)). The kernel says five of A1's six outcomes by name or by a named field, and *resource limit* as *not decided*, which no stopped run confuses with a contradiction ([Q-M1d.6](../../../docs/decisions/answer/Q-M1d.6-contradiction-is-said-only-where-no-node-is.md)) | **one list keyed by the outcomes**, with the test of each, and the seventh, a flagged program: [S2.1.1](s2.1.1_tree_and_outcomes.md), in EinAf's documentation |
+| **A2** invariants as tests | each of A2's six is held or decided otherwise: the oracle every mode is held to, the contract that every state printed is a member of R, every dumped state reloaded, provenance on every derived fact. **Three of the plan's sketches are false by decision**: a contradiction's core may be `[]`, a core is an explanation and not the smallest ([Q-M1f.6](../../../docs/decisions/answer/Q-M1f.6-a-core-is-an-explanation.md)), and no kernel check holds a fact apart from its negation ([Q-M1f.557](../../../docs/decisions/stdlib/Q-M1f.557-the-contradiction-is-a-theory-a-program-imports.md)) | the list, each invariant beside the test of Ein's that holds it: S2.1.1, in EinAf's documentation. Nothing is added to Ein's |
+| **A3** a machine interface, versioned | for a caller of the library, the whole answer as values ([`04-api.md`](../../../docs/ein/ein.rs/04-api.md)); for a caller of the binary, `ein-summary/2`, `ein-answer/3`, `ein-test-report/6`, `ein-events/1` | **structured errors**: a refusal and an abort write no summary, and the report of `ein test` says `error` with no message. [S2.1.2](s2.1.2_diagnostics_surface.md) |
+| **A4** a diagnostic vocabulary apart from presentation | the parse error is typed and placed, with its notes and ranked repairs; the refusals are normative text, a section each of [`07-diagnostics.md`](../../../docs/ein/user/04-reference/07-diagnostics.md) § 2 | **kinds**: `KbLoadError`, `LoadError`, `MacroError` and `CompileError` are strings. S2.1.2. The plan's list of kinds was a guess, and two of its names (`type_error`, `arity_mismatch`) are of notions Ein does not have; the vocabulary is the refusals Ein has |
+| **A5** validation suites | the corpus with its runs, the negative fixtures with their `.expected` texts, the programs that state their answer as `:expect`, the oracle, the regressions | nothing compares the engine with a system that is not Ein: [M10](../../m10_external_benchmarks/README.md)'s, named and not scheduled here |
 
 ## Stages
 
-| ID | title | est. | ends with |
-|---|---|---:|---|
-| [S2.1.1](s2.1.1_census.md) | The census — Stage A against the shipped engine | 2 d | the table above re-taken with `file:line`; each *missing* a task here or a named owner elsewhere; the six outcomes and the A2 invariants written into `defined_behaviour.md` with the test that holds each |
-| [S2.1.2](s2.1.2_feedback_object.md) | The feedback object — `ein-feedback/1` | 4 d | the schema, versioned; the A4 vocabulary as an enum; the mapping from `ein-summary/1` + `ein-events/1` + the typed errors into it; `unknown` derived; the corpus's 128 entries each producing one, banked as goldens |
-| [S2.1.3](s2.1.3_boundary.md) | The boundary — Q-M2.7 decided | 2 d | the language of the loop, with the protocol as the boundary either way; the directory `einaf/` and what is in it; the decision recorded beside [Q-M2.7](../open_questions.md#q-m27--what-language-is-the-frontend-written-in) |
+| ID | title | ends with |
+|---|---|---|
+| [S2.1.1](s2.1.1_tree_and_outcomes.md) | EinAf's tree, and the outcomes | `einaf/`, a Cargo package that links the engine's crates, built and tested by a step of the gate and of CI; the process told of it; `docs/einaf/` with its first pages; the seven outcomes as a function over the library's values, held over the corpus |
+| [S2.1.2](s2.1.2_diagnostics_surface.md) | The kernel's diagnostics as values | in Ein: every refusal a value with a kind and, where the source has one, a place; a refusal, an abort and a run's notes on the machine surfaces; a core's sources beside the core; its decision under `docs/decisions/`, its pages and tests in the same commit |
+| [S2.1.3](s2.1.3_feedback_object.md) | The feedback object | EinAf's `einaf-feedback/1`: one value for one program under one question, built from the library's values in a worker process that EinAf can stop, serialised across that boundary and for the record; one for every corpus program, held to what the binary's summary says of the same run |
 
 ## Acceptance
 
-- `defined_behaviour.md` states the six outcomes and the six A2 invariants,
-  each with its operational test and the gate test that holds it; the one
-  outcome the engine cannot say is marked as M1d's with the derivation M2
-  uses meanwhile.
-- `ein-feedback/1` exists as a schema and a producer; for every corpus entry
-  a feedback object is produced and banked, and `cargo test --workspace`
-  diffs them the way it diffs the summary goldens.
-- Every `.ein` under `examples/broken/` — the negative fixtures with their
-  `.expected` messages — yields a
-  feedback object with a diagnostic of a **kind** from the vocabulary and a
-  location where the source has one, not only the pinned message.
-- The loop's language is decided and written down, with the measurement or
-  argument it rests on, and the three trip-wires of
-  [Q-M1a.23](../../../docs/decisions/engine/Q-M1a.23-ein-has-no-binding-for-another-language.md)
-  re-checked against the decision.
-- **Nothing in `ein-infer`'s semantics changes.** The phase adds a
-  consumer-side object — or, as [S2.1.3](s2.1.3_boundary.md) recommends, an
-  additive `ein-cli` flag, `--feedback FILE.json`, beside `--json-summary` —
-  and, at most, *kinds* on errors that already exist.
+- `einaf/` builds and its tests pass as a step of `./run_tests.sh` and of the CI workflow, and
+  `utils/check_gate_steps.py` holds the two lists to each other. Nothing under `ein.rs/`, `docs/ein/`, `stdlib/`,
+  `examples/`, `tests/` or `corpus/` names EinAf.
+- Every corpus program has exactly one of the seven outcomes by EinAf's function, and the outcome agrees with what
+  the corpus says of the program (its group, its exit, its `:expect`).
+- In Ein: each `.ein` under `examples/broken/` that is refused yields a diagnostic with a **kind** and, where the
+  source has one, a place; its message is the normative text, unchanged; the same diagnostic is on the machine
+  surface the stage defines. A `-T` abort and a load's notes are there too. The gate is green on the change.
+- A feedback object is produced for every corpus program, and what it says agrees with `ein-summary/2` of the same
+  program under the same question.
+- [The evaluation of Ein](../ein_evaluation.md) has what the phase found, and is shown at the close.
 
-## The page this phase writes into
+## What the phase does not do
 
-**To settle at this phase's re-plan** (handed over at the close of M1f's documentation phase, P1f.20, 2026-11-17:
-its finding L-48). This README and [S2.1.1](s2.1.1_census.md) and [S2.1.2](s2.1.2_feedback_object.md) mean to write the six
-outcomes and the six invariants into `defined_behaviour.md`, and cite its § 1 and § 4 for the message strings. That
-page is gone: M1f rebuilt the documentation as `docs/ein/`, and its parts are
-[`07-diagnostics.md`](../../../docs/ein/user/04-reference/07-diagnostics.md) (the refusals and their exit codes),
-[`05-cli.md`](../../../docs/ein/user/04-reference/05-cli.md) (the commands) and, for the order of objects and of
-facts, [the knowledge base](../../../docs/ein/reasoning/01-static-ir/01-knowledge-base.md). Which page the outcomes
-and the invariants join, under the rules the tree now has (a page of `reasoning/` names no test; what holds a claim
-is `ein.rs/`'s: [Q-M1f.370](../../../docs/decisions/docs/Q-M1f.370-each-perspective-of-the-documentation-is-written.md)), is decided when this phase is re-planned; until then every `defined_behaviour.md` here reads as
-*the page of `docs/ein/` that states it*. `grep -rn 'defined_behaviour' plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`
-lists the places.
+- **It adds no option to `ein`, changes no exit code and no answer.** S2.1.2 makes what the kernel already knows
+  reachable; R is as it was.
+- **It gives no place to a message that has none today.** A loader message about a top-level form ends `at None`
+  ([Q-M1a.6](../../../docs/decisions/diagnostics/Q-M1a.6-a-loader-message-about-a-top-level-form-names-no.md)),
+  and that stays [F23](../../followups/f23_diagnostics_in_eins_words.md)'s.
+- **It does not make `--single` write a core.** A question that prints no core takes none
+  ([Q-M1f.29](../../../docs/decisions/read-out/Q-M1f.29-a-question-that-prints-no-core-writes-a-dead.md)); EinAf
+  asks for a description where it wants one.
+- **It decides nothing about the loop's question or the ladder's levels**: the object has room for what they need,
+  and [P2.4](../p2.4_loop/README.md) fills it.
+
+## Defaults taken at the re-plan
+
+Each is the coordinator's and the user's to correct.
+
+1. **The outcomes and the invariants are written in EinAf's documentation**, `docs/einaf/`, which may name Ein's
+   pages and tests; nothing is written into `docs/ein/` for them. This settles what the phase left *to settle at
+   its re-plan* when `defined_behaviour.md` went.
+2. **The kernel's vocabulary of kinds is the refusals it has**, one kind a section of `07-diagnostics.md` § 1 and
+   § 2, not the research plan's A4 list.
+3. **The machine surface is the summary and the test report**, written in more cases and with one more key, and no
+   new option: a design the stage confirms against Ein's rules before it writes code
+   ([S2.1.2](s2.1.2_diagnostics_surface.md) § The design).
+4. **EinAf banks properties of the object over the corpus, not goldens of its values**, as the engine's
+   `summary_properties.rs` does of the summary and for its reason; and no value of a flagged program's answer is
+   banked at all.
+5. **The object is EinAf's and versioned by EinAf** (`einaf-feedback/1`); the plan's `ein-feedback/1`, written by
+   `ein-cli`, is not made.
+6. **EinAf bounds the kernel from outside, in a worker process**, and the kernel is not changed for it: nothing in
+   a solve stops a saturation that has no fixpoint, a model will write such programs, and the engine's own word
+   for *did not stop* is [M1g](../../m1g_logic/README.md)'s to give. EinAf links the crates, as ruled; it links
+   them in a process it can stop.
 
 ## Risks
 
-- **Over-specifying the vocabulary before the ladder says what matters.**
-  A4's list is the plan's guess; [P2.6](../p2.6_ablations/README.md) is the
-  experiment. So the object's fields are all optional, the enum is open
-  (`other(String)` with the pinned message), and a renderer that wants a kind
-  the engine does not supply writes `unknown_kind` rather than parsing prose.
-- **Freezing what two milestones want to change.**
-  [Q-M2.1](../open_questions.md#q-m21--when-is-the-kernel-frozen) — the kernel
-  is frozen per experiment by commit, not for the milestone; this phase makes
-  the record carry the commit and the manifest SHA so the freeze is a field.
-- **Typing the load and compile errors looks like a kernel change.** It is
-  not a semantic one: the message strings stay pinned by
-  `defined_behaviour.md` § 1 and § 4, and a `kind` *beside* a message breaks
-  no golden. If a kind cannot be assigned without changing a message, the
-  message wins and the kind is `other`.
+- **The diagnostics change looks small and touches normative text.** The messages are pinned by `.expected`
+  fixtures and by `07-diagnostics.md`; the stage adds a kind *beside* a message and changes no message. If a kind
+  cannot be given without changing one, the message wins and the case is recorded in the evaluation.
+- **A summary written where none was written is a behaviour of the CLI that six scripts under `utils/` and the
+  corpus sweeps read.** The key is additive and the cases are new ones; the stage runs the gate, and the sweeps
+  that read `--json-summary` are its check.
+- **EinAf's tests reading the corpus couple it to Ein's dev crates.** `ein-corpus` is a crate the engine's tests
+  use; if depending on it from outside the workspace costs more than reading `corpus/corpus.toml`, EinAf reads the
+  file.
+- **Freezing what a later milestone will change.** The kernel is fixed a record at a time, by its commit
+  ([Q-M2.1](../open_questions.md#q-m21--when-is-the-kernel-frozen)); the object carries the commit and the
+  library's manifest so that the freeze is a field.
 
 ## Connections
 
 - [`EinAf.md` § Stage A](../EinAf.md#stage-a--establish-the-symbolic-kernel-as-the-experimental-foundation).
-- `docs/kernel/defined_behaviour.md` —
-  the thirteen behaviours; the six outcomes and six invariants join them.
-- [`docs/ein/ein.rs/05-events.md`](../../../docs/ein/ein.rs/05-events.md) —
-  `ein-events/1`; [`ein-cli/src/summary.rs`](../../../ein.rs/crates/ein-cli/src/summary.rs) —
-  `ein-summary/1`; [`docs/ein/ein.rs/04-api.md`](../../../docs/ein/ein.rs/04-api.md) — the crate
-  surface a Rust loop would link.
-- [M1d Q-M1d.6](../../../docs/decisions/answer/Q-M1d.6-contradiction-is-said-only-where-no-node-is.md),
-  [Q-M1d.1](../../../docs/decisions/answer/Q-M1d.1-a-search-stops-early-only-on-a-decided-question.md) —
-  the verdict vocabulary's owner; M1c /
-  [M10](../../m10_external_benchmarks/README.md) — A5's external check.
-- [F16](../../followups/f16_autoformalization/ideas.md) — the list of
-  diagnostics *a reasoning engine can return that a compiler cannot*, which is
-  where A4's vocabulary and the ladder's F3–F7 come from.
+- [`analysis/audit_p2.1.md`](../analysis/audit_p2.1.md): the fact base (§ 0), what each deliverable became (§ B),
+  the standing rules the old plan met (§ C).
+- [`04-api.md`](../../../docs/ein/ein.rs/04-api.md), the crates EinAf links, whose worked example is the test
+  [`embedding.rs`](../../../ein.rs/crates/ein-cli/tests/embedding.rs);
+  [`05-events.md`](../../../docs/ein/ein.rs/05-events.md), `ein-events/1`.
+- [F23](../../followups/f23_diagnostics_in_eins_words.md), whose D-18 and L-125 are S2.1.2;
+  [F22](../../followups/f22_exact_core_past_the_cap.md), the exact core;
+  [F26](../../followups/f26_consistency_and_completeness.md), Ein's words beside logic's, kept for what a verdict
+  certifies.
+- [F16](../../followups/f16_autoformalization/ideas.md): the list of diagnostics *a reasoning engine can return
+  that a compiler cannot*, where the ladder's levels come from.

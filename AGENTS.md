@@ -8,6 +8,22 @@ Ein is a graph-based reasoner for Zebra-style logic puzzles. The
 2021 prototype is being modernised in light of neuro-symbolic /
 constrained-reasoning research.
 
+**The repository holds two projects, one over the other, and one process
+over both** (the user's ruling,
+[Q-M2.8](plans/m2_nl_to_ir/open_questions.md#q-m28--where-does-einaf-live)):
+
+| | what it is | where | depends on |
+|---|---|---|---|
+| **Ein** | the language, what a program means and what its answer is; and **ein.rs**, an implementation of it | `stdlib/`, `examples/`, `tests/`, `corpus/`, `docs/ein/`, `docs/decisions/`; `ein.rs/` | nothing here |
+| **EinAf** | iterative autoformalization, an application of Ein: a model writes an Ein program for a problem in natural language and the kernel judges it, in a loop | `einaf/`, `docs/einaf/`; **neither exists yet**, and M2's first stage creates them | ein.rs, as a library |
+| the process | how both are developed | `plans/`, `utils/`, the gate and CI, this file | reads both |
+
+**EinAf reads Ein and links ein.rs; nothing of Ein reads, links or names
+EinAf**: no crate, no page of `docs/ein/`, no decision, no comment, no test,
+no module of the library, no corpus entry. The root `README.md` is the
+repository's page and names both. Everything below that says *the project*
+says Ein; `c/`, `nl2smt/` and `docs/lib/` are outside both projects.
+
 ## Where things live
 
 - **`docs/ein/`** — **the documentation of Ein as it ships**, in three
@@ -379,13 +395,18 @@ paragraph, no register count, no measurement (the user's rule).
 - **M2 is current**: [EinAf, iterative autoformalization](plans/m2_nl_to_ir/README.md),
   started on the user's word from an analysis of its plan against the project,
   [`plans/m2_nl_to_ir/analysis/`](plans/m2_nl_to_ir/analysis/README.md). Its
-  stage files describe the engine M1a shipped and **none runs as written**: the
-  analysis and the six audits beside it are the worklist of the re-plan, and
-  [its ledger](plans/m2_nl_to_ir/open_questions.md) holds the user's rulings
-  (the harness is Rust; the model is local, `qwen3.5:4b`; EinAf lives in
-  `einaf/`, `docs/einaf/` and the plan's other trees, none of which exists
-  yet; the kernel grows a machine surface for diagnostics) and what is open.
-  **No phase of it starts until the user says so.** M1f, the structure of the hypothesis
+  stage files described the engine M1a shipped and none ran as written: the
+  analysis and the six audits beside it were the worklist of the re-plan.
+  **The plan is re-planned** to the user's rulings, which
+  [its ledger](plans/m2_nl_to_ir/open_questions.md) holds in the user's words
+  (EinAf is Rust, one package under `einaf/`, a project of its own; the model
+  is local, `qwen3.5:4b`, run through a Rust binding to llama.cpp; Ein is
+  both a tool the model may call and a filter it cannot avoid; the answer is
+  what the Ein program prints; the kernel grows a machine surface for
+  diagnostics, the one kernel change of the milestone), and it keeps
+  [an evaluation of Ein](plans/m2_nl_to_ir/ein_evaluation.md), what this
+  application finds of the kernel, for the iteration of Ein that follows.
+  **No stage has run, and no phase of it starts until the user says so.** M1f, the structure of the hypothesis
   set and the documentation, is closed on the user's word and its plans deleted
   (`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation`): its
   answers are decisions under `docs/decisions/`, its rulings about the process
@@ -729,12 +750,20 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   or a date. A decision id passes; a line that must keep one says
   `release-voice-ok: <reason>`.
 - **The project and the process are two things, and the dependency runs one
-  way.** The project is `README.md`, `ein.rs/` with its tests, `stdlib/`,
-  `examples/`, `tests/`, `corpus/` and `docs/` but `docs/lib/`; the process is
+  way.** The project, Ein, is `README.md`, `ein.rs/` with its tests, `stdlib/`,
+  `examples/`, `tests/`, `corpus/` and `docs/` but `docs/lib/` and
+  `docs/einaf/`; the process is
   `plans/`, `utils/`, the gate and CI (`run_tests.sh`, `.github/workflows/`)
   and this file; `c/`, `nl2smt/` and `docs/lib/` are external to both. The
   process reads the project, which it sees in many states; nothing in the
-  project reads, links or names the process. A decision about the process
+  project reads, links or names the process. **EinAf is a second project,
+  over the first** (§ What this project is): `einaf/` and `docs/einaf/`, once
+  they exist. It reads Ein, and nothing of Ein but the root `README.md` names
+  it; the process reads it as it reads Ein. The checks of Ein's prose (the
+  release voice, the rules of `docs/ein/`) are Ein's and do not read EinAf's
+  trees, and what EinAf's own pages hold themselves to is decided with its
+  first page
+  ([Q-M2.8](plans/m2_nl_to_ir/open_questions.md#q-m28--where-does-einaf-live)). A decision about the process
   stays in `plans/`; a generated project file says it is generated and names
   no tool; a measurement lives beside the script that takes it.
 - **A wrong answer** is filed and fixed by

@@ -1,0 +1,4 @@
+(relation older Person Person :why "a {?3} is older than a {?4}")
+(older Ann Bob :source "Ann is older than Bob.")
+(open (older Bob Cy) :source "Bob may be older than Cy.")
+(query :goal (older ?a ?b))

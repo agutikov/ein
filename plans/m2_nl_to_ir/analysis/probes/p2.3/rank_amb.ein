@@ -1,0 +1,18 @@
+;; Probe: "who is youngest?" the positional way: a bijection of people onto named ranks, no absent.
+(import std.algebra :symbols (functional injective total-owed transitive))
+(relation is-a T T :why "{?3} is a {?4}")
+(relation older Person Person :why "{?3} is older than {?4}")
+(relation rank Person Rank :why "{?3} has rank {?4}")
+(relation lower Rank Rank :why "{?3} is a lower rank than {?4}")
+(is-a Ann Person) (is-a Bob Person) (is-a Carol Person)
+(is-a Y1 Rank) (is-a Y2 Rank) (is-a Y3 Rank)
+(lower Y1 Y2) (lower Y2 Y3)
+(transitive lower)
+(functional rank) (injective rank) (total-owed rank is-a)
+(older Ann Bob :source "Ann is older than Bob.")
+(rule older-is-higher ()
+  :match (and (older ?a ?b) (rank ?a ?ra) (rank ?b ?rb) (lower ?ra ?rb))
+  :assert (false)
+  :why "{?a} is older than {?b}, so {?a} cannot have the lower rank {?ra}")
+(query :goal (rank ?who Y1) :goal-text "{?who} is the youngest"
+       :expect (or (model (rank Bob Y1)) (model (rank Carol Y1))))

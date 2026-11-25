@@ -1,0 +1,12 @@
+;; Bob has 5 apples. He gave 2 to Alice. How many apples does Bob have?
+;; Over the library alone: the calculator, and no module of the word problems' own.
+(import std.math.decimal-arith :symbols (sub diff-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation has Person Kind Number :why "a {?3} has a {?5} of a {?4}")
+(has Bob apples (n z 5) :source "Bob has 5 apples.")
+(sub (n z 5) (n z 2)    :source "He gave 2 to Alice.")
+
+(solve :no-search)
+(query :goal (diff-of (n z 5) (n z 2) ?n ?r) :goal-text "{?n}")

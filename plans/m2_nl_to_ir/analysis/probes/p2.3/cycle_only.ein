@@ -1,0 +1,7 @@
+;; Probe: a cyclic "older" under transitive and irreflexive alone.
+(import std.algebra :symbols (transitive irreflexive))
+(relation older Person Person :why "{?3} is older than {?4}")
+(transitive older) (irreflexive older)
+(older Ann Bob) (older Bob Carol) (older Carol Ann)
+(solve :no-search)
+(query :goal (older ?x ?y))

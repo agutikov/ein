@@ -1,170 +1,265 @@
 # P2.4 — The loop (Stages E, F)
 
-**Estimate:** 3 weeks — 5 stages, 15 days.
-**Depends on:** [P2.1](../p2.1_kernel_as_instrumentation/README.md) —
-`ein-feedback/1` is what every level of the ladder renders;
-[P2.2](../p2.2_formalizer/README.md) — GENERATE is the one-shot formalizer,
-unchanged.
-**Blocks:** [P2.5](../p2.5_harness/README.md) — baselines B3, B4 and B5 are
-this loop at feedback levels F0, F2 and F8; [P2.6](../p2.6_ablations/README.md) —
-every ablation is a choice of level, depth or strategy made here.
-**Research plan:** [`EinAf.md` § Stage E](../EinAf.md#stage-e--build-the-iterative-formalization-loop)
-and [§ Stage F](../EinAf.md#stage-f--make-symbolic-feedback-progressively-richer).
+**Depends on:** [P2.1](../p2.1_kernel_as_instrumentation/README.md): the outcome function
+([S2.1.1](../p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md)), the kernel's diagnostics as values
+([S2.1.2](../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md)) and the feedback object
+([S2.1.3](../p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md)), the one value every level of the ladder
+renders and the tool returns, with the bounded kernel call through which both arrangements reach the kernel.
+[P2.2](../p2.2_formalizer/README.md): the one-shot formalizer is GENERATE
+([S2.2.5](../p2.2_formalizer/s2.2.5_from_text.md)), which also words the answer's fixed texts; the contract's
+check is EinAf's ([S2.2.4](../p2.2_formalizer/s2.2.4_passes.md)); the model's runtime gives thinking on or off a
+call and the context kept between the turns of one episode
+([S2.2.2](../p2.2_formalizer/s2.2.2_model_runtime.md)); the grammar holds the filter's output to Ein
+([S2.2.3](../p2.2_formalizer/s2.2.3_gbnf.md)). [P2.3](../p2.3_benchmark/README.md): the seed set and its
+canonical programs, which the fixtures and the canonical judge read.
+**Blocks:** [P2.5](../p2.5_harness/README.md): B2 to B5 are the filter at one shot, F0, F2 and F8, and B6 is the
+tool; [P2.6](../p2.6_ablations/README.md): every ablation is a parameter named here.
+**Research plan:** [`EinAf.md` § Stage E](../EinAf.md#stage-e--build-the-iterative-formalization-loop) and
+[§ Stage F](../EinAf.md#stage-f--make-symbolic-feedback-progressively-richer); the tool is what
+[§ Stage D](../EinAf.md#stage-d--establish-baselines) invites (*where possible add another … structured reasoning
+approach*).
+**Rulings it carries out:** [Q-M2.13](../open_questions.md#q-m213--who-calls-the-kernel) (the tool and the
+filter), [Q-M2.11](../open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop) (a flagged program),
+[Q8](../open_questions.md#q8--ambiguous-parses) (an alternative is a hypothesis),
+[Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer) (the answer is Ein's),
+[Q-M2.14](../open_questions.md#q-m214--what-runs-the-model) (the model runs in EinAf's process).
 
 ---
 
 ## What closes here
 
-The one-shot formalizer becomes `Tᵢ₊₁ = A_θ(x, Tᵢ, E(Tᵢ))`. The phase builds
-the loop **as an instrument**: a state machine whose every transition is a
-logged record, a formalizer that can *repair* a theory as well as regenerate
-one, nine feedback renderers over one object, a faithfulness judge that runs
-on every repair, and a termination policy with a cycle detector. None of it
-is tuned here — what the loop is *worth* is [P2.5](../p2.5_harness/README.md)'s
-table and [P2.6](../p2.6_ablations/README.md)'s ablations. What this phase
-owes them is that every knob they turn is a named, logged parameter.
+The one-shot formalizer becomes `Tᵢ₊₁ = A_θ(x, Tᵢ, E(Tᵢ))`, in **two arrangements of one model and one kernel**
+([the frame](../README.md#the-arms), [Q-M2.13](../open_questions.md#q-m213--who-calls-the-kernel)):
 
-### The state machine, on this kernel
+| | **the filter** | **the tool** |
+|---|---|---|
+| who decides that Ein runs | the harness, on every generation: a state machine | the model, when it likes: the prompt recommends it and the model may answer without it |
+| what the model writes | an Ein program and nothing else, thinking off | text, and an Ein program where it chooses to call |
+| what holds the syntax | the harness, which accepts a program only, and a grammar over the tokens | nothing: a parse error is what the tool returns |
+| what the kernel's reply is | the feedback object, rendered at the run's level into the next prompt | the same object, rendered at the run's level, as the function's result |
+| the answer | what the Ein program prints; where the kernel does not pass the program, a fixed text of EinAf's that names the outcome, or none | the model's last message; whether it is what its last run of Ein printed is recorded |
+| arms | B2 to B5 | B6 |
+| built by | [S2.4.1](s2.4.1_state_machine.md), [S2.4.2](s2.4.2_repair.md) | [S2.4.6](s2.4.6_ein_as_a_tool.md) |
 
-The plan's E1 has five states and three repair edges. On Ein, ANALYZE and
-SOLVE are one process — `ein solve -e` saturates, searches and certifies in
-one run, 29 ms on Zebra — so the machine is:
+Both are built **as instruments**: every step is a logged record, every knob a named parameter, and nothing is
+tuned here. What either is worth is [P2.5](../p2.5_harness/README.md)'s table and
+[P2.6](../p2.6_ablations/README.md)'s ablations. Shared by both: the feedback ladder
+([S2.4.3](s2.4.3_feedback_ladder.md)), the faithfulness judge ([S2.4.4](s2.4.4_faithfulness.md)), and a sentence
+with two readings written as hypotheses ([S2.4.5](s2.4.5_alternatives_as_hypotheses.md)).
+
+### The filter's state machine, on this kernel
+
+The research plan's [E1](../EinAf.md#e1-define-the-state-machine) has GENERATE, PARSE, ANALYZE, SOLVE and ANSWER,
+with three repair edges. EinAf links the engine ([Q-M2.7](../open_questions.md#q-m27--what-language-is-the-frontend-written-in)),
+so the machine reads no exit code and no line of text: an edge is taken on a field of the feedback object, and
+the object's first field is one of [the seven outcomes](../README.md#the-outcomes).
 
 ```text
-GENERATE ──► CHECK ──────────► SOLVE ──────────► ANSWER
-  (P2.2)      parse / load /     ein solve -e      k = 1 ∧ exhausted
-              compile            ein-feedback/1
-                │                   │
-       invalid ─┘          contradiction, ambiguous (k > 1),
-                           unknown (¬exhausted), answer absent
-                                    │
-                                    ▼
-                                  REPAIR ──► CHECK …
+GENERATE ──► CHECK ──► ASK ──► one ─────────────────────────────► ANSWER
+ (S2.2.5)      │        │
+               │        ├── several, inconsistent, incomplete ──► REPAIR ──► CHECK …
+               │        ├── flagged: its sites are fed back ────► REPAIR
+               │        └── not decided ────────────────────────► ANSWER, as not decided
+               └── invalid ─────────────────────────────────────► REPAIR
 ```
 
-Every edge writes one transition record — state, the feedback object, the
-level it was rendered at, the prompt hash, the raw generation, the program's
-syntactic hash and its semantic digest, tokens, wall, the Ein commit — and
-the run's transcript is the sequence ([S2.4.1](s2.4.1_state_machine.md)).
-`unknown` is an edge the plan insists on and the engine cannot name yet
-([P2.1 § The sixth outcome](../p2.1_kernel_as_instrumentation/README.md#the-sixth-outcome-today));
-the loop treats it as *the solver needs more budget or the theory is too
-loose*, and which of the two it was is a finding the failure taxonomy
-collects.
+- **Seven outcomes, each with an edge.** *Flagged* is an outcome of its own and is read before any word the run
+  printed: the kernel answers a flagged program and claims nothing of the answer, so the machine never takes it
+  for *one* ([Q-M2.11](../open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop)). *Not decided* is a
+  budget or the clock stopping the run, and is never read as one of the others; after S2.1.2 an abort is a value.
+- **Which question the machine asks is a choice with a cost.** A bare solve describes R, `--single` asks whether
+  it is one state, `--maximal` lists the maximal line; on the under-determined Zebra variant `--single` is decided
+  after two states and a description runs to the facts budget
+  ([`audit_p2.4.md`](../analysis/audit_p2.4.md) § B.0). The default is root alone, then `--single` over all of R,
+  with the wider questions asked once, of the final program, so that the record carries every reading of *one
+  answer* ([Q-M2.10](../open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r) is the
+  user's, after experiments). [S2.4.1](s2.4.1_state_machine.md) confirms it by measurement.
+- **A run is its transcript**: one record a transition, with the program, the feedback object of every question
+  asked, the level, the prompt's hash, the raw generation and the tokens, replayable without the model.
+- **A kernel call may not return.** Nothing in `ein solve` stops a saturation that has no fixpoint
+  (*termination is assumed, not given*:
+  [`02-saturation.md`](../../../docs/ein/reasoning/02-kb-evolution/02-saturation.md)), and one rule that builds a
+  fact out of the fact it matched is such a program. Both arrangements reach the kernel only through the bounded
+  call of `einaf::kernel`, P2.1's, and a call a bound stopped is *not decided*; S2.4.1 says what the loop needs
+  of it and has the probe.
 
-### The ladder, and where each rung comes from
+### The ladder, level by level
 
-The feedback level is **the experimental variable**. Nine levels, one
-object, nine renderers — and most rungs are a *projection* of what the
-engine already emits, which is why the ladder is a phase and not a
-milestone:
+The feedback level is **the experimental variable**: nine levels, one object. Against what the kernel supplies
+today ([the analysis](../analysis/README.md#p24--the-loop-audit); [`audit_p2.4.md`](../analysis/audit_p2.4.md)
+§ B.1 has each cell's evidence):
 
-| level | the plan's content | source in the engine | new work |
+| level | the research plan's content | the kernel supplies | EinAf computes |
 |---|---|---|---|
-| **F0** | *try again* | — | the renderer that says nothing |
-| **F1** | syntactic: undefined relation, type mismatch, arity mismatch | the `kind` and location [S2.1.2](../p2.1_kernel_as_instrumentation/s2.1.2_feedback_object.md) put on parse, load and compile diagnostics | the old S2.4.2 validator's three checks — *unknown atom*, *type mismatch*, *structural contradiction* — are the loader's and the grammar's already; the stage keeps only what neither catches |
-| **F2** | the verdict: SAT / UNSAT / AMBIGUOUS | `verdict.type` × `exhausted` × `unsat_core`, as P2.1 maps them | one word |
-| **F3** | cardinality: *4 models remain, the query has 3 bindings* | `verdict.k`, `solutions[].goal_bindings` | counting |
-| **F4** | model difference: two models and *the relevant difference* | `verdict.solutions[]` — sorted fact lists, so a difference is a set difference | **new**: choose two representatives, take the symmetric difference, restrict it to the query's relations, render with the puzzle's `:why` templates |
-| **F5** | unsat core: *these source-derived constraints jointly imply contradiction* | `verdict.unsat_core` — given facts, which carry `:source` | render the core as the English it quotes; the core is a minimum-cardinality frontier, not a MUS ([glossary](../../../docs/ein/user/04-reference/13-glossary.md)), and the renderer says so |
-| **F6** | dependency: *`?owner` depends on nationality, on house, has no path to pet* | **nothing** — no crate computes a relation dependency graph (the census) | **new**, and outside the kernel: a static relation graph from the program — rule bodies → heads, activators → the rules they instantiate — and reachability from the query's relations; *no path* is the diagnostic |
-| **F7** | provenance: *fact X ← rule R ← facts A, B* | `ein-events/1` `fire` lines (`rule`, `premises`, `derived`), the trace's per-step derivations | reassemble the chain for the facts F4 / F5 named; the trace renderer already does this for humans |
-| **F8** | the combined object | all of the above | the union, and the plan's caution: *the system should not assume F8 is best* |
+| **F0** | *try again* | nothing | a fixed sentence |
+| **F1** | syntactic: undefined relation, type mismatch, arity mismatch | a parse error with line, column, notes and ranked repairs; a load refusal, a value with a kind and a place after S2.1.2; a load's notes. **None of the plan's three is a refusal**: an undeclared relation and a form at another count load in silence, and Ein has no types | nothing new: the findings of the contract's check ([S2.2.4](../p2.2_formalizer/s2.2.4_passes.md)), shown under a parameter and never as the kernel's words |
+| **F2** | the verdict | the outcome, of a named part of R; root's standing (in R, owing, dead); the query's own axis | one sentence |
+| **F3** | cardinality | the states listed and whether they are all; H's size; how many instances root owes; a query's classes. `k_s` and `k_c` under a description or `--count` only | nothing, but saying *or more* where a count is a lower bound |
+| **F4** | model difference | two states under `Ambiguity`, each as its facts over the candidates' relations; a query's classes by state. **Nothing computes a difference of two states** | the difference, and its wording |
+| **F5** | unsat core | a dead root's core with its status, its sources and the rules that refuted, **under a description only**, not canonical; what an owing root owes | the wording, and the caveats |
+| **F6** | dependency | partial counterparts: what is owed, the relations H leaves out, the saturation rules' relation graph (library only) | reachability from the goal, over a graph EinAf completes |
+| **F7** | provenance | each fact's recorded justifications, the firings, the trace's steps; an obligation and a hypothesis rule never fire, and a firing's premises omit its absences and its activator | the chain for the facts a lower block named |
+| **F8** | the combined diagnostic | all of the above | the union, under a size cap |
 
-**Every level renders the same object**, so a level is a parameter of one
-run and an ablation is two runs. That is the property [P2.6](../p2.6_ablations/README.md)
-rests on.
+**Every level renders the same object**, so a level is a parameter of one run and an ablation is two runs. Three
+things the kernel says have no rung in the research plan's ladder (what is owed, where a program is flagged, who
+wrote H) and [S2.4.3](s2.4.3_feedback_ladder.md) gives each one. A fact reads as English through what Ein has
+today (a stated fact's `:source`, a derived fact's rule's `:why`, a query's `:goal-text`) and EinAf's formatters
+for values ([S2.2.5](../p2.2_formalizer/s2.2.5_from_text.md)); M1p does not run
+([Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer)).
 
-### Repair, faithfulness, termination
+### Repair, faithfulness, termination, alternatives
 
-**Repair vs regenerate** (E2). Two prompts, one parameter: *regenerate* gives
-the model the text and the feedback; *repair* gives it the text, the current
-theory and the feedback, and asks for an edited theory. The old S2.4.2
-validator loop was *repair under F1, ≤ 3 attempts*; it is one cell of the
-grid now. The case for repair is that the kernel localises: an unsat core
-names facts, a missing dependency names a relation, and a model difference
-names a sentence. [S2.4.2](s2.4.2_repair.md).
+**Repair or regenerate** ([E2](../EinAf.md#e2-repair-instead-of-regenerate)). Two values of one parameter:
+*regenerate* gives the model the text and the feedback; *repair* gives it its own last program too. In the kept
+context a repair is one more turn, so it pays for the feedback's tokens only. The reply *unchanged* is the same
+program again, which the machine reads as a fixed point. [S2.4.2](s2.4.2_repair.md).
 
-**Faithfulness** (E3). The dangerous path is *ambiguous → the model invents a
-constraint → unique*. Every repair is judged against the source before it
-counts: a fact whose `:source` span is not in the text, a rule or assumption
-in B2's *generated* categories that the text does not license, a deleted
-source fact — each is a faithfulness event in the transition record, and the
-metric is built from them. [S2.4.4](s2.4.4_faithfulness.md) decides the
-judge ([Q-M2.3](../open_questions.md#q-m23--what-is-the-unit-of-faithfulness-without-a-gold-theory)).
+**Faithfulness** ([E3](../EinAf.md#e3-protect-against-feedback-induced-hallucination)). The dangerous path is
+*several → the model invents a constraint → one*. Every program and every repair is judged against the source,
+in both arrangements, and no finding of the judge is fed back: the loop's only reviewer is the kernel.
+[S2.4.4](s2.4.4_faithfulness.md) builds the judge and decides
+[Q-M2.3](../open_questions.md#q-m23--what-is-the-unit-of-faithfulness-without-a-gold-theory).
 
-**Termination** (E4): verified success, unrecoverable invalidity, the
-iteration budget, the token budget, the solver budget (`--max-time` /
-`--max-enterings`, read from the feedback object, never from exit code 2),
-a repeated theory, a repair cycle. Cycles by hash — the program's canonical
-dump, and the saturated state's digest, which the engine defines as the
-sorted fact list ([`06-solution-semantics.md` § 1.5, the state class](../../../docs/ein/reasoning/02-kb-evolution/06-solution-semantics.md#15-commitment-node-state));
-[Q-M2.4](../open_questions.md#q-m24--is-the-fixed-point-syntactic-or-semantic)
-recommends stopping on the second and logging both.
+**Termination** ([E4](../EinAf.md#e4-termination-policy)): the seven conditions as predicates over the
+transcript. A cycle is found by two identities, the program's canonical dump and what the program answers;
+which of them stops the run is [Q-M2.4](../open_questions.md#q-m24--is-the-fixed-point-syntactic-or-semantic),
+decided in S2.4.1.
 
-**Alternatives kept alive** ([S2.4.5](s2.4.5_alternatives_as_hypotheses.md),
-[Q8](../open_questions.md#q8--ambiguous-parses)). The old plan's one idea
-the research plan does not have: a sentence the formalizer cannot resolve
-may be emitted as alternatives and left to the kernel to prune, instead of
-committed and caught a loop iteration later. It is a third strategy beside
-regenerate and repair, and it is kept as one — an arm for
-[P2.6](../p2.6_ablations/README.md), not the default.
+**Alternatives** ([Q8](../open_questions.md#q8--ambiguous-parses)). A reading the formalizer cannot resolve is a
+hypothesis, `(open F)`, with a reading owed; the corpus has the pattern. What is left is the experiment between
+emitting both readings and committing to one. [S2.4.5](s2.4.5_alternatives_as_hypotheses.md).
+
+### What the phase records of Ein
+
+The ladder is where the kernel's diagnostics are judged as feedback, and the tool is where a model meets Ein with
+nothing between them. Each stage has a task that writes what it found (a strength, a weakness, a gap, a bug, a
+limit) into [the evaluation of Ein](../ein_evaluation.md), and the phase shows the page at its close.
 
 ## Stages
 
-| ID | title | est. | ends with |
-|---|---|---:|---|
-| [S2.4.1](s2.4.1_state_machine.md) | The state machine and the transition log | 3 d | the five states and the edges on this kernel; the transition record; the termination policy with its seven conditions; cycle detection by both hashes; a run is a transcript |
-| [S2.4.2](s2.4.2_repair.md) | Repair as well as regenerate | 3 d | the two prompts; the old validator's residue; a diff of the theory per repair in the record |
-| [S2.4.3](s2.4.3_feedback_ladder.md) | The feedback ladder F0–F8 | 5 d | nine renderers of `ein-feedback/1`; F4 model difference and F6 relation dependency built; each level's output banked as a golden over the benchmark's anchors |
-| [S2.4.4](s2.4.4_faithfulness.md) | Faithfulness | 3 d | the judge — mechanical over B2's categories always, human on the sample, model-assisted only with agreement reported; the faithfulness events; Q-M2.3 decided |
-| [S2.4.5](s2.4.5_alternatives_as_hypotheses.md) | Alternatives as hypotheses | 1 d | whether `hrule` is the form or a new one is needed; the emission path; Q8 decided as a strategy, not a default |
+| ID | title | ends with |
+|---|---|---|
+| [S2.4.1](s2.4.1_state_machine.md) | The filter's state machine and the transition log | the states and an edge for each of the seven outcomes; the questions asked of the kernel, chosen by measurement; the transition record; the machine on the bounded kernel call; termination as seven predicates; Q-M2.4 decided; a run replayed without the model |
+| [S2.4.2](s2.4.2_repair.md) | Repair as well as regenerate | the two prompts; the *unchanged* reply; a diff of the program a repair, in the record; how each strategy uses the kept context |
+| [S2.4.3](s2.4.3_feedback_ladder.md) | The feedback ladder F0 to F8 | nine levels as sets of blocks over the feedback object; the difference of two states, the dependency analysis and the chains built in EinAf; each level re-aimed at what the kernel supplies; the kernel's diagnostics judged as feedback |
+| [S2.4.4](s2.4.4_faithfulness.md) | Faithfulness | the mechanical judge always, the canonical judge where a canonical program exists, a human-judged sample, a model-assisted arm only with its agreement reported; the faithfulness events, in both arrangements; Q-M2.3 decided |
+| [S2.4.5](s2.4.5_alternatives_as_hypotheses.md) | Alternatives as hypotheses | the corpus's pattern as a template the formalizer writes; the emission path; `readings` as a parameter of a run, for P2.6 to compare |
+| [S2.4.6](s2.4.6_ein_as_a_tool.md) | Ein as a tool | an episode in which the model reasons in text and calls Ein when it likes: the function, what it returns, the episode's record with its calls counted, and whether the answer is what the last run printed |
 
 ## Acceptance
 
-- The loop runs the Zebra smoke test and the seed set at every level F0–F8,
-  regenerate and repair, and every run is a transcript of transition
-  records a reader can replay without the model.
-- Each of the seven termination conditions is hit by at least one fixture
-  run, and the transcript names which.
-- On a synthetic `ambiguous` instance, a loop at F2 that reaches `k = 1` is
-  flagged by the faithfulness judge — the E3 failure mode is **detected by
-  construction**, on the benchmark's own ground truth, before any table.
-- F4's difference and F6's dependency analysis are tested over the
-  benchmark's anchors: on `zebra2-minus-15` the difference between two of
-  the 32 models names the deleted clue's relation; on a program whose query
-  mentions a relation no rule reaches, F6 says so.
+- **In EinAf's step of the gate, with a replayer in the model's place**: every acceptance line below but the
+  next. **By hand, with the model and a record** (an experiment, in no tier): the filter runs the seed set at
+  every level F0 to F8, regenerate and repair, and the tool runs it once.
+- Every run is a transcript a reader replays without the model, with the same transitions and the same
+  identities.
+- Each of the seven outcomes is met by a fixture and takes its edge; each of the seven termination conditions is
+  reached by a fixture run, and the transcript names which. A flagged fixture is never an ANSWER as *one*; a run
+  the budget stopped, and a kernel call a bound stopped, end as *not decided*.
+- The final record of every episode carries each reading of *one answer* that was asked, and none that was not.
+- On a synthetic instance whose gold class is ambiguous, a loop at F2 that ends in *one* carries an
+  `invented_constraint` event: the E3 failure is detected on the benchmark's own ground truth, before any table.
+- The tool runs an episode end to end on a seed instance: a call with a malformed program gets a parse error
+  back, a call with a valid one gets the level's rendering, an episode with no call is recorded as one, and the
+  record says whether the final answer is what the last run printed.
+- A level's rendering shows nothing the feedback object does not hold, and the filter and the tool render one
+  object to the same text at the same level.
+- [The evaluation of Ein](../ein_evaluation.md) holds what the six stages found, and is shown.
 
 ## Risks
 
-- **The ladder's content leaks the answer.** F4 shows two models; a
-  formalizer that copies a model's facts into the theory has "repaired" by
-  looking at the answer. The faithfulness judge catches the unsourced fact;
-  the ablation G5 reports the rate; and the renderer shows the *difference*,
-  not the models.
-- **F6 is the one genuinely new analysis and it is easy to overbuild.** The
-  stage builds reachability over a relation graph and nothing else — no
-  stratification, no well-foundedness, no NAF analysis (the engine's
-  `naf_deps` is advisory and stays so). If an ablation in
-  [P2.6](../p2.6_ablations/README.md) wants more, it asks.
-- **The kernel cannot say `unknown`** until M1d; the loop's derivation from
-  `(type, k, exhausted, core)` is the bridge and is marked as such in every
-  record that used it ([Q-M2.1](../open_questions.md#q-m21--when-is-the-kernel-frozen)).
+- **The ladder's content leaks the answer.** F4 shows how two states differ, and a formalizer that copies a
+  state's facts into the program has repaired by looking. The renderer shows the difference and not the states,
+  the judge reports the fact the text does not state, and G5 reports the rate.
+- **The loop's stop rule selects its final programs.** A loop that stops on one reading of *one answer* hands the
+  metrics programs chosen by that reading. The reading is a parameter of the run, and the experiment Q-M2.10
+  waits for runs under each.
+- **The two arrangements differ in more than who calls.** Thinking, the grammar, the prompt's knowledge of Ein
+  and the level all could differ between B5 and B6. The defaults below hold all but the arrangement equal where
+  they can, and each is a field of the record.
+- **F6 is the one analysis that is new, and it is easy to overbuild.** It is reachability over a relation graph
+  and nothing else; the engine's own graph is of the saturation rules alone and is no part of its contract
+  ([`04-api.md` § 6](../../../docs/ein/ein.rs/04-api.md#6-what-is-not-the-contract)).
+- **A model-written program is run by EinAf.** A saturation that never ends, a description of a cube the blind
+  enumerator wrote: every call goes through the bounded call, and what the kernel itself could not bound is an
+  entry of the evaluation.
+
+## Defaults taken at the re-plan
+
+Each is the re-plan's, recorded so that the user or the stage can correct it; none is a ruling.
+
+1. **The loop's question is root alone, then `--single` over all of R**; the maximal line's word and a
+   description are asked once, of the final program, for the record's three readings. S2.4.1 confirms or changes
+   it by measurement.
+2. **The reading the filter stops on is a parameter of the run** (all of R by default; the maximal line; and, if
+   the seed set can pay for a description an iteration, the answer query's classes agreeing over a complete
+   set), so that no table fixes *certified* before the user decides Q-M2.10.
+3. **The kernel passes a program whose outcome is *one* and whose answer query has a row**, and the filter's
+   answer is then what the program prints. Where an episode ends on a program the kernel does not pass, its
+   answer is a fixed short text that names the outcome, EinAf's and not the model's, or none:
+   [S2.2.5](../p2.2_formalizer/s2.2.5_from_text.md) words the texts, and the rule that scores an answer is
+   [S2.5.3](../p2.5_harness/s2.5.3_metrics.md)'s.
+4. **A flagged program is repaired, not answered**: its sites are static diagnostics and stand at F1 and above,
+   the word *flagged* at F2 and above. If the run ends flagged, what the kernel printed is recorded and is not
+   the arm's answer.
+5. **Every kernel call is bounded, and a call a bound stopped is *not decided*.** The bounded call is
+   `einaf::kernel`'s, P2.1's to build; this re-plan proposes a worker process of EinAf's own, killed at a wall
+   clock or a memory bound, with a cap on root's firings as a first guard. A clock inside a saturation would be
+   a change to Ein that no ruling asks for.
+6. **A level is a set of blocks**: F0 to F3 each include the one below; F4, F5 and F6 each add one block to F3;
+   F7 is F4 and F5 with the chains of the facts they name; F8 is every block. Any set of blocks is a value of
+   the parameter, so that P2.6's pairs differ in one block.
+7. **What is owed stands with the core at F5, and who wrote H with the counts at F3**: the research plan's ladder
+   has no rung for either.
+8. **F1 shows the findings of the contract's check**, which P2.2 builds and leaves to the ladder to show or not:
+   marked as EinAf's, under a parameter, since in Ein an undeclared relation and a form at another count are no
+   errors ([Q-M1f.372](../../../docs/decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md),
+   [Q-M1f.447](../../../docs/decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)). The
+   check's finding of a `:source` that is no sentence of the text is the faithfulness judge's and is not shown.
+9. **The episode is one conversation**: a repair is appended to the kept context with the whole history; *the
+   last program and its feedback only* is the parameter's other value.
+10. **The reply *unchanged* is the same program again**, so that the filter's output is Ein and nothing else.
+11. **No finding of the faithfulness judge is fed back to the model.** The old `:source` pre-check is dropped.
+12. **`readings` is a parameter of its own** (`commit`, `alternatives`), beside `strategy` and not a third value
+    of it: it says what GENERATE writes, not what REPAIR is given.
+13. **B6 is B1 with the function offered, and is told of Ein what B5 is told**: B1's thinking setting and answer
+    line ([S2.5.2](../p2.5_harness/s2.5.2_baselines.md)); in the function's description, what the filter's prompt
+    holds of Ein (the excerpt of the reference, the catalogue, the examples); F8 as the level; `:why` required as
+    the kernel requires it.
+14. **The tool's levels start at F1**: the ruling says a parse error is what the tool returns, and F0 would
+    withhold it. A program the kernel passes is answered with what it prints at every level; of any other,
+    a flagged one among them, the result says in one fixed line that no answer was printed, and the level says
+    the rest.
+15. **The tool's call is the model's native function call**, the program one string argument; a fenced block
+    read as a call is the fallback if the stage measures that the model cannot quote a program.
+16. **EinAf's tests of a renderer are over feedback objects written by hand and properties over the corpus**; a
+    banked rendering is of a monotone program, and none banks a flagged program's answer.
+17. **Where a stage's answer lands**: Q-M2.3 and Q-M2.4 are answers about EinAf, so each is written beside its
+    question in [the ledger](../open_questions.md) and becomes a page of `docs/einaf/` with the code.
 
 ## Connections
 
 - [`EinAf.md` § Stage E](../EinAf.md#stage-e--build-the-iterative-formalization-loop),
-  [§ Stage F](../EinAf.md#stage-f--make-symbolic-feedback-progressively-richer).
-- [F13](../../followups/f13_puzzles_beyond_zebra/ideas.md) — the loop
-  `(Pᵢ, Tᵢ) → Ein → Dᵢ`, `(text, Pᵢ, Tᵢ, Dᵢ) → LLM → (Pᵢ₊₁, Tᵢ₊₁)`, the
-  semantic fixed point, the three neural actions; [F16](../../followups/f16_autoformalization/ideas.md) —
-  the diagnostics list (*theory inconsistent, goal under-constrained,
-  multiple models remain, rule r cannot fire, required property absent,
-  candidate model is a counterexample*) the ladder's F2–F7 realise;
-  [F17](../../followups/f17_formal_verification/ideas.md) —
-  `Spec₀ → verify → counterexample → Spec₁`.
-- [`docs/ein/ein.rs/05-events.md`](../../../docs/ein/ein.rs/05-events.md) —
-  F7's source; the trace renderer (`--trace`, `--relevant`) — the human
-  version of F7 that already exists.
-- [Idea 03](../../ideas/03-three-task-classes.md) — solve / gaps /
-  contradictions as one verdict, which is what makes F2 one field.
+  [§ Stage F](../EinAf.md#stage-f--make-symbolic-feedback-progressively-richer),
+  [§ Stage D](../EinAf.md#stage-d--establish-baselines).
+- [The frame](../README.md#the-plan-as-re-planned): the arms, the outcomes, where EinAf's things are.
+- [`analysis/audit_p2.4.md`](../analysis/audit_p2.4.md): this phase's audit, claim by claim (§ A, what was
+  stale; § B.0, the runs; § B.1, the ladder against the engine; § C, the standing rules; § D, what today's
+  kernel asks that the old files did not); [`analysis/host.md`](../analysis/host.md): the model emitted a
+  function call, and a grammar over a thinking model's whole output took the thinking.
+- [F13](../../followups/f13_puzzles_beyond_zebra/ideas.md): the loop `(Pᵢ, Tᵢ) → Ein → Dᵢ` and its semantic
+  fixed point; [F16](../../followups/f16_autoformalization/ideas.md): the diagnostics a reasoner can return that
+  a compiler cannot; [F17](../../followups/f17_formal_verification/ideas.md): `Spec₀ → verify → counterexample →
+  Spec₁`.
+- The followups a consumer like this one triggers: [F22](../../followups/f22_exact_core_past_the_cap.md), the
+  exact core; [F24](../../followups/f24_written_provenance.md), written provenance in a core;
+  [F23](../../followups/f23_diagnostics_in_eins_words.md), what a load says and leaves silent;
+  [F26](../../followups/f26_consistency_and_completeness.md), the classes of an answer.
+- The neighbours that do not start by this phase: [M15](../../m15_mcp_server/README.md), an MCP server, another
+  way a model would call Ein; [M1p](../../m1p_ein_to_natural_language/README.md), a fact as a sentence;
+  [M1n](../../m1n_non_monotone_programs/README.md), what a flagged program's answer is.
+- [`04-api.md`](../../../docs/ein/ein.rs/04-api.md): the values an answer is;
+  [`08-read-out.md`](../../../docs/ein/user/04-reference/08-read-out.md): each row and key;
+  [`07-diagnostics.md`](../../../docs/ein/user/04-reference/07-diagnostics.md): the refusals;
+  [`05-events.md`](../../../docs/ein/ein.rs/05-events.md): the event stream.

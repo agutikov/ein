@@ -1,0 +1,6 @@
+;; A formalization with no hypothesis mechanism: relations, facts, a query.
+(relation older Person Person :why "a {?3} is older than a {?4}")
+(relation youngest Person :why "a {?3} is the youngest")
+(older Ann Bob :source "Ann is older than Bob.")
+(older Bob Cy  :source "Bob is older than Cy.")
+(query :goal (youngest ?who) :goal-text "{?who}")

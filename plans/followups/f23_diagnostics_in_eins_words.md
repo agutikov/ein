@@ -7,8 +7,10 @@
 **Taken up.** D-18 and L-125, a load's and a run's lines that reach stderr and no machine surface, are
 [M2](../m2_nl_to_ir/README.md)'s by the user's ruling of 2026-11-25 on
 [Q-M2.9](../m2_nl_to_ir/open_questions.md#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics), *"(b)"*:
-the kernel grows a machine surface for its diagnostics, in its own terms. Its first phase carries them when it is
-re-planned; until that change lands the two rows stay here as they are.
+the kernel grows a machine surface for its diagnostics, in its own terms. Its stage
+[S2.1.2](../m2_nl_to_ir/p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md) is that change; until it
+lands the two rows stay here as they are. D-2 and D-22, a place for a message that names none, are not taken up
+by it and stay this followup's.
 
 **Trigger.** Any of these:
 - a release, which shows these lines to a user;

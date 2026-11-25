@@ -1,0 +1,16 @@
+;; Probe: "who is youngest?" as a closed-world minimum, stated facts only.
+(import std.algebra :symbols (transitive))
+(relation is-a T T :why "{?3} is a {?4}")
+(relation older Person Person :why "{?3} is older than {?4}")
+(relation youngest Person :why "{?3} is the youngest")
+(transitive older)
+(is-a Ann Person) (is-a Bob Person) (is-a Carol Person)
+(older Ann Bob :source "Ann is older than Bob.")
+(older Bob Carol :source "Bob is older than Carol.")
+(rule youngest-is-older-than-nobody ()
+  :match (and (is-a ?x Person) (absent (older ?x ?y)))
+  :assert (youngest ?x)
+  :why "{?x} is older than nobody, so {?x} is the youngest")
+(solve :no-search)
+(query :goal (youngest ?who) :goal-text "{?who} is the youngest"
+       :expect (model (youngest Carol)))

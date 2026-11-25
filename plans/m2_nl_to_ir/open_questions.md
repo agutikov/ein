@@ -7,7 +7,8 @@ Two id forms share this file. **Q7–Q11** are sticky ids from the cross-milesto
 milestone was *NL → IR*; they keep their numbers. **Q-M2.n** is the milestone-scoped form, which
 [M10](../m10_external_benchmarks/open_questions.md) uses too: Q-M2.1–4 arrived with the 2026-08-23 reshape around
 [`EinAf.md`](EinAf.md), Q-M2.8–11 with the analysis M2 started from, 2026-11-25
-([`analysis/`](analysis/README.md)), and Q-M2.12–13 with the user's answers of that day.
+([`analysis/`](analysis/README.md)), Q-M2.12–13 with the user's answers of that day, Q-M2.14–15 with the
+answers that followed them, and Q-M2.16 with the re-plan.
 
 **Q-M2.5, Q-M2.6 and Q-M2.7 were this file's Q23, Q24 and Q25 until 2026-11-25.** Those three ids were already the
 root ledger's, given to questions of M1's, and two of them are decision files under `docs/decisions/` (a premise
@@ -16,12 +17,13 @@ ids of the milestone, and every file of this folder that cited them cites the ne
 
 **How it is kept.** The open questions come first and the user's rulings after them. A ruling is the user's words
 as given, then what the coordinator reads them to mean, **which the user may correct**; the options a ruled
-question weighed are not kept here (`git show 5d678042:plans/m2_nl_to_ir/open_questions.md` has them all).
+question weighed are not kept here (`git show 5d678042:plans/m2_nl_to_ir/open_questions.md` has those of the
+analysis, `git show 6a3c9a75:plans/m2_nl_to_ir/open_questions.md` those of Q-M2.12 and Q-M2.13).
 
 **Where an answer lands.** An answer about Ein is a file under `docs/decisions/`, under the id of its question,
 written with the change that makes it true; an answer about EinAf or about how the work is done stays here, beside
-its question. EinAf's trees are not the project's ([Q-M2.8](#q-m28--where-does-einaf-live)), so an answer about
-the harness is the second kind.
+its question. EinAf is a project of its own, outside Ein ([Q-M2.8](#q-m28--where-does-einaf-live)), so an answer
+about the harness is the second kind.
 
 ## Index
 
@@ -29,7 +31,7 @@ the harness is the second kind.
 
 | Q | title | decided |
 |---|---|---|
-| [Q7](#q7--llm-as-surface-generator) | Is the surface generator (NL output) allowed to be an LLM? | **outside the research question**, parked with its working answer; the answer's own words are [Q-M2.12](#q-m212--what-prints-the-answer) |
+| [Q7](#q7--llm-as-surface-generator) | Is the surface generator (NL output) allowed to be an LLM? | **outside the research question**, parked with its working answer; the answer's own words are ruled, [Q-M2.12](#q-m212--what-prints-the-answer) |
 | [Q8](#q8--ambiguous-parses) | Where do ambiguous NL parses go — branched on the IR, or rejected? | [S2.4.5](p2.4_loop/s2.4.5_alternatives_as_hypotheses.md), by experiment; the form is settled, a hypothesis `(open F)` (the user, 2026-11-25) |
 | [Q9](#q9--ontology-provenance) | Per-puzzle declared ontology vs ontology inferred from text | [S2.2.4](p2.2_formalizer/s2.2.4_passes.md) — reframed as theory *selection* |
 | [Q10](#q10--direct-llm--constraint) | When is direct LLM → constraint emission acceptable (skip the IR)? | [P2.8](p2.8_representations/README.md) — Stage L is this question asked properly |
@@ -38,8 +40,8 @@ the harness is the second kind.
 | [Q-M2.4](#q-m24--is-the-fixed-point-syntactic-or-semantic) | Is the fixed point syntactic or semantic? | [S2.4.1](p2.4_loop/s2.4.1_state_machine.md) |
 | [Q-M2.6](#q-m26--one-gbnf-or-many) | One GBNF grammar per task, or one grammar for everything? | [S2.2.3](p2.2_formalizer/s2.2.3_gbnf.md) |
 | [Q-M2.10](#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r) | What does *Ein certifies a unique model* mean on R? | **the user, after experiments** (*"it depends on problem shape"*) |
-| [Q-M2.12](#q-m212--what-prints-the-answer) | What prints the answer? | **the user**; raised by the answers; it orders M2 and [M1p](../m1p_ein_to_natural_language/README.md) |
-| [Q-M2.13](#q-m213--who-calls-the-kernel) | Who calls the kernel: the harness, the model, or both? | the re-plan of [P2.4](p2.4_loop/README.md) and [S2.5.2](p2.5_harness/s2.5.2_baselines.md); the reading is the coordinator's |
+| [Q-M2.15](#q-m215--where-does-m2-stop-for-the-next-iteration-of-ein) | Where does M2 stop for the next iteration of Ein? | **the user**, at a level's gate; until then every gate is a stop |
+| [Q-M2.16](#q-m216--is-a-saturation-bounded-inside-the-kernel) | Is a saturation bounded inside the kernel? | **the user**; until then EinAf bounds the kernel from outside, in a worker process |
 
 ### Ruled by the user
 
@@ -49,14 +51,15 @@ the harness is the second kind.
 | [Q-M2.2](#q-m22--must-the-model-be-local) | Must the model be local? | *"yes"* |
 | [Q-M2.5](#q-m25--local-model-choice) | Which local model? | *"Qweb3.5:4b"*, read as `qwen3.5:4b` |
 | [Q-M2.7](#q-m27--what-language-is-the-frontend-written-in) | What language is the frontend written in? | *"Rust"* |
-| [Q-M2.8](#q-m28--where-does-einaf-live) | Where does EinAf live? | *"./einaf/, ./docs/einaf/, etc..."* |
+| [Q-M2.8](#q-m28--where-does-einaf-live) | Where does EinAf live? | *"./einaf/, ./docs/einaf/, etc..."*, then *"own tree, in this repository, outside of ein … but inside the development process"* |
 | [Q-M2.9](#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics) | Does the kernel grow a machine surface for diagnostics? | *"(b)"*: it does, in its own terms |
 | [Q-M2.11](#q-m211--what-is-a-flagged-program-to-the-loop) | What is a flagged program to the loop? | *"(a)"*: an outcome of its own, never certified |
+| [Q-M2.12](#q-m212--what-prints-the-answer) | What prints the answer? | *"don't run M1p now, use as much of existing ein NL features … use additional external formatters"* |
+| [Q-M2.13](#q-m213--who-calls-the-kernel) | Who calls the kernel: the harness, the model, or both? | both: the tool, *"recommened but optional"*, and the filter, *"forced to write ein code"* |
+| [Q-M2.14](#q-m214--what-runs-the-model) | What runs the model? | *"llama-cpp with rust wrapper, not ollama"* |
 
-The stage each ruled question was to be decided in ([S2.1.3](p2.1_kernel_as_instrumentation/s2.1.3_boundary.md)
-for Q-M2.7, [S2.2.2](p2.2_formalizer/s2.2.2_llama_server_and_client.md) for Q-M2.2 and Q-M2.5,
-[S2.5.1](p2.5_harness/s2.5.1_experiment_record.md) for Q-M2.1) has that task no longer; the stage files say so
-when their phases are re-planned.
+The stage files are re-planned to these rulings (the README's [§ The plan as re-planned](README.md#the-plan-as-re-planned)):
+no stage still decides a question that is ruled here.
 
 ---
 
@@ -87,11 +90,11 @@ already render every fact and the headline (rendering A, shipped); what is
 open is only B.
 
 **Since (the user's answers, 2026-11-25).** The user's statement of the core idea
-([README](README.md#the-core-idea-the-user-2026-11-25)) asks that *"the final test problem answer must be short and
+([README](README.md#the-two-main-ideas-the-user-2026-11-25)) asks that *"the final test problem answer must be short and
 must be produced by ein program NL output"*. That is rendering A, the engine's own templates, and it puts the
 answer's words inside the research question; what stays parked here is B, an LLM's polish. Ein to natural language
-is [M1p](../m1p_ein_to_natural_language/README.md)'s, and what M2 needs of it is
-[Q-M2.12](#q-m212--what-prints-the-answer).
+is [M1p](../m1p_ein_to_natural_language/README.md)'s, which does not run now: the answer is what Ein prints today
+with EinAf's formatters over its values, the user's ruling on [Q-M2.12](#q-m212--what-prints-the-answer).
 
 ## Q8 — Ambiguous parses
 
@@ -190,8 +193,9 @@ shape of question about the *output* side — direct Ein vs a decomposed
 intermediate — and this is the *input* side), with the pre-registered
 decision rule the old S2.5.2 wrote. The metric is no longer "IR-F1 on five
 puzzles": it is constraint precision / recall on the benchmark's synthetic
-families, where the gold theory is exact. The submodule note stands: it is
-deinitialised, and registering it is the stage's first act.
+families, where the gold theory is exact. The submodule note does not stand: no
+submodule is registered and none is needed, since [`nl2smt/`](../../nl2smt/README.md) drives the installed
+`link-parser` by its command line, and the stage does the same.
 
 ## Q-M2.3 — What is the unit of faithfulness without a gold theory?
 
@@ -237,6 +241,12 @@ logged per transition, because the *difference* between them — a theory that
 changed its text and not its closure — is itself a measurement of how much
 repair is cosmetic.
 
+**Since (the re-plan, 2026-11-25).** Three things this entry leans on are not as it says ([`analysis/audit_p2.4.md`](analysis/audit_p2.4.md)): the reasoning page says a digest never decides a state's
+identity, the summary has no `solutions` key, and `.einb` is a private cache, never something to compare by. EinAf
+links the library and has a program's canonical dump and a state's facts as values, so the two identities are
+compared as texts and lists. [S2.4.1](p2.4_loop/s2.4.1_state_machine.md) keeps the question and gives *semantic*
+three candidates: root's fixpoint, the answer, and the answer as printed; its default is the second.
+
 ## Q-M2.6 — One GBNF or many?
 
 **Since (the analysis, 2026-11-25).** This was Q24 here. The grammar's source is not the page the plan names:
@@ -250,9 +260,13 @@ decode faster and let the prompt focus the LLM. Decided in
 thing that could reverse it — decoding speed under the full ein-lang
 grammar.
 
-**Since (the host check, 2026-11-25).** A GBNF grammar needs `llama-server`: ollama 0.35.1, whose store holds the
-model the user chose ([Q-M2.5](#q-m25--local-model-choice)), takes a JSON schema and does not honour a grammar
-([`analysis/host.md`](analysis/host.md)).
+**Since (the host checks and the user's answers, 2026-11-25).** A grammar is llama.cpp's: `llama-server` honoured
+one on the model's file, and ollama takes none ([`analysis/host.md`](analysis/host.md)), so the model runs
+through a binding to llama.cpp ([Q-M2.14](#q-m214--what-runs-the-model)). **The grammar is the filter's**: the
+tool writes Ein with none ([Q-M2.13](#q-m213--who-calls-the-kernel)), and the user expects that a model may
+write Ein without one, which [S2.2.2](p2.2_formalizer/s2.2.2_model_runtime.md) measures before a grammar is
+built. A grammar over the whole output of a thinking model took the thinking too: where the grammar begins is
+part of [S2.2.3](p2.2_formalizer/s2.2.3_gbnf.md)'s design.
 
 ## Q-M2.10 — What does *Ein certifies a unique model* mean on R?
 
@@ -283,71 +297,57 @@ is taken, `k_s`, `k_c` and `exhausted`. The two conditional probabilities are co
 family, and that table is what the user decides on. A flagged program is certified under none
 ([Q-M2.11](#q-m211--what-is-a-flagged-program-to-the-loop)).
 
-## Q-M2.12 — What prints the answer?
+**Since (the re-plan, 2026-11-25).** Two things the re-plan found belong to this decision, and are kept open with
+it. **A fourth candidate reading**: the answer query's classes agree over R, which is what a program with several
+states and one answer has ([`boxes12.ein`](../../examples/word_problems/boxes12.ein)); the plan records it beside
+the other three. **The answer rule**, which says what short text an outcome is scored as
+([S2.5.3](p2.5_harness/s2.5.3_metrics.md)), takes three defaults that set the accuracy of the arms that run Ein on
+ambiguous and unsatisfiable instances: several states with one answer are scored as one answer; one state whose
+answer query has no row is scored as ambiguous; and `Open` is no answer, not *unsatisfiable*. The rule is a
+parameter of the evaluation, so the same records are scored again under another.
 
-**Raised 2026-11-25 by the user's answers.** The user, of the core idea
-([README](README.md#the-core-idea-the-user-2026-11-25)): *"ideally the final test problem answer must be short and
-must be produced by ein program NL output"*. **The user's**, because it orders two milestones.
+## Q-M2.15 — Where does M2 stop for the next iteration of Ein?
 
-**What an Ein program prints as an answer today.** A query's `:goal-text`, filled with each row's bindings, is the
-one text an answer has. [`bob1.ein`](../../examples/word_problems/bob1.ein) (*Bob has 5 apples. He gave 2 to
-Alice. How many apples does Bob have?*, with `:goal-text "{?q}: {?n}"`) answers
+**Raised 2026-11-25 by the user's second main idea**
+([README](README.md#the-two-main-ideas-the-user-2026-11-25)): *"evaluate ein.rs in this auto-frmalization
+application, find/highlight it's weaknesses, strength, gaps, bugs and limits, and then go to next iteration of
+ein/ein.rs development with this feedback"*. **The user's, when there is something to decide on.**
 
-```text
-“(amount Bob apples t1): (n z 3)”
-```
+The plan reaches Level D in ten phases. The idea says the milestone is also a measurement of Ein, after which Ein
+is developed again; it does not say after which phase. What the plan does by default:
 
-Two things stand between that line and a short answer a benchmark can score:
+- [the evaluation of Ein](ein_evaluation.md) is kept from the first stage on, every stage adding what it found,
+  and is shown at each phase's close;
+- **each level's gate is a stop**: at Level B ([P2.3](p2.3_benchmark/README.md)), Level C
+  ([P2.7](p2.7_failure_scaling_generalization/README.md)) and Level D
+  ([P2.10](p2.10_result_artifact_demo/README.md)) the evaluation is written up, and the user says whether EinAf
+  goes on or an iteration of Ein comes first;
+- between gates the kernel is changed inside M2 only where a ruling says so
+  ([Q-M2.9](#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics)); a bug that is a wrong answer is
+  filed in the wrong-answer register as it is found, whoever fixes it.
 
-- **A value is written as its term**: the number 3 is `(n z 3)`, and what was asked about is `(amount Bob apples
-  t1)`. How a value is written as text is [M1p](../m1p_ein_to_natural_language/README.md)'s
-  [P1p.1](../m1p_ein_to_natural_language/p1p.1_custom_formatting/README.md) (a decimal number first), and an answer
-  that reads in natural language is its [P1p.3](../m1p_ein_to_natural_language/p1p.3_reasoning_formatting/README.md).
-  M1p is not started, and each of its phases runs only on the user's word.
-- **The line is on the read-out and in no key of `ein-summary/2`**: `queries[].classes[].rows` holds the bindings
-  (`{"n": "(n z 3)", "q": "(amount Bob apples t1)"}`) and not the text. A Rust harness
-  ([Q-M2.7](#q-m27--what-language-is-the-frontend-written-in)) can fill the template from the library's values; a
-  reader of the summary cannot.
+Nothing waits for this question: the first gate is the first time it has an answer to give.
+
+## Q-M2.16 — Is a saturation bounded inside the kernel?
+
+**Raised 2026-11-25 by the re-plan.** **The user's; it holds no phase.**
+
+Nothing in a solve stops a saturation that has no fixpoint. A rule that nests its conclusion one deeper than its
+premise ([`grow.ein`](analysis/probes/p2.7/grow.ein)) ran until a timeout killed it after 20 s, under `-T 1`,
+under `-T 2` and under `--region-budget 1000` alike; `ein saturate --max-steps` stops it, and the library's
+saturator takes a cap on its steps that no route passes on. Ein's page says so: *termination is assumed, not given*
+([`02-saturation.md`](../../docs/ein/reasoning/02-kb-evolution/02-saturation.md)). A
+hand-written program is written to end. **A model's program is not**, and EinAf links the kernel into its own
+process ([Q-M2.7](#q-m27--what-language-is-the-frontend-written-in)).
 
 | | what it means | what it costs |
 |---|---|---|
-| **(a) M2 takes the answer as Ein prints it today** | a gold answer is a set of bindings, stated as an `:expect` claim; the `:goal-text` line is shown and not scored | the answer is neither short nor words (`(n z 3)`): the statement's *ideally* is not met until M1p runs |
-| **(b) the part of M1p an answer needs runs first** | P1p.1, a value's own format, and what of P1p.3 makes a query's answer a sentence, before the benchmark's gold answers are written ([P2.3](p2.3_benchmark/README.md)) | phases of a kernel milestone before or inside M2, on the user's word; the kernel M2 reads is then not the one M1f left ([Q-M2.1](#q-m21--when-is-the-kernel-frozen)) |
-| **(c) the harness formats values** | EinAf turns `(n z 3)` into `3` | the answer is then not *produced by ein program NL output*, and there is a second formatter beside M1p's |
+| **(a) EinAf bounds the kernel from outside** | every call of the kernel runs in a worker process of EinAf's, stopped at a wall clock and at a memory size; a stopped call is *not decided* ([S2.1.3](p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md)) | a process a call, and bounds that depend on the machine; the kernel is as it is |
+| **(b) the kernel bounds a saturation** | the clock is read inside a saturation, or the step cap reaches the routes, and a run that hits it says so in Ein's words | a second kernel change inside M2, beyond [Q-M2.9](#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics); the engine's word for *did not stop* is on [M1g](../m1g_logic/README.md)'s plan, in its stage on a saturation that does not stop |
 
-**Recommendation: (b), narrowly**: P1p.1 and the answer's sentence, with the sentence on the summary beside its
-row, which is a kernel change of the kind [Q-M2.9](#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics)
-ruled. Whatever is ruled, a gold answer can be written as an `:expect` claim, which holds under all three.
-
-## Q-M2.13 — Who calls the kernel?
-
-**Raised 2026-11-25 by the user's answers.** The user, of the core idea
-([README](README.md#the-core-idea-the-user-2026-11-25)): *"the LLM that synthesize problem formalization
-(facts+ontology+theory) checks if it's formalization works"*, and *"On one hand ein works like a tool for LLM, on
-other hand it works like filter of thoughts"*.
-
-The plan has one arrangement, the second: **a filter**. A harness runs a state machine
-([S2.4.1](p2.4_loop/s2.4.1_state_machine.md)); after each generation it runs the kernel and renders what the kernel
-said into the next prompt, at a feedback level, and a program the kernel does not pass is never an answer. The
-model never asks.
-
-**A tool** is the other: the model decides, inside one episode, when to run the kernel on what it has written, and
-reads the reply as a tool's result. What bears on it:
-
-- `qwen3.5:4b` ([Q-M2.5](#q-m25--local-model-choice)) declares the `tools` capability, and in the host check it
-  emitted a well-formed call of a declared function ([`analysis/host.md`](analysis/host.md));
-- [M15](../m15_mcp_server/README.md), an MCP server for Ein, is the unstarted neighbour that would be one transport
-  of it;
-- [Stage D](EinAf.md#stage-d--establish-baselines)'s comparison is *same model, similar budget*: a harness loop is
-  priced per iteration, and a model that calls a tool when it likes needs a budget defined for it;
-- the feedback ladder F0 to F8 is what a harness chooses to say; a tool's reply is one level of it, or the level
-  the model asks for.
-
-**The coordinator's reading, which the user may correct:** both are arms of one experiment. The filter is the
-plan's loop (B3 to B5); the tool is an arm the plan does not have; and *"replacing chain of thought with chain of
-formal reasonings"* is the comparison of both with B1, the model reasoning in text. **Decided in** the re-plan of
-[P2.4](p2.4_loop/README.md) (the state machine) and of [S2.5.2](p2.5_harness/s2.5.2_baselines.md) (the baselines).
-Nothing of M15 starts by this.
+**Taken by default: (a)**, since the kernel is changed inside M2 only where a ruling says so, and (a) is needed
+either way while a program can exhaust memory before a clock is read. The finding is E-45 of
+[the evaluation](ein_evaluation.md).
 
 ---
 
@@ -389,19 +389,14 @@ here; its working answer (Qwen3-30B-Instruct, Phi-4 14B as the fallback) and its
 **What stays of the entry:** the model is an **experimental constant**, not a product choice. It is pinned by its
 file's SHA for the whole of Level C; a second model would be a replication, not a fallback, and none is named.
 
-**What [S2.2.2](p2.2_formalizer/s2.2.2_llama_server_and_client.md)'s re-plan meets on the host**
-([`analysis/host.md`](analysis/host.md), checked 2026-11-25 after the user's installs):
+**The user since, 2026-11-25:** *"qwen model (or other suitable models)"*. The model of the plan stays
+`qwen3.5:4b`; another suitable model is a second value of the record's model field, taken when an experiment asks
+for one, and the comparison of two models is then a replication.
 
-- **The tag names a model in ollama's store, and ollama does not take a grammar.** Ollama 0.35.1 honours a JSON
-  schema as `format`; a GBNF `grammar` field, at the top level and in `options`, came back as free prose. The file
-  is a GGUF, which `llama-server` reads as it is, so the plan's server and its GBNF
-  ([Q-M2.6](#q-m26--one-gbnf-or-many)) stand over the same file.
-- **`llama-server` is installed and does not start** (the `llama-cpp` package, 2026-11-25): it needs
-  `libssl.so.4`, and the host has OpenSSL 3.6.3, with 1 239 packages waiting for an upgrade.
-- **Both runtimes are CPU-only as installed** (`ollama` without `ollama-cuda`, `ggml` without `ggml-cuda`): the
-  model ran at about 20 tokens a second on the CPU, the GPU idle.
-
-The first is S2.2.2's to design. The other two need the host changed, which is the user's hand.
+**On the host** ([`analysis/host.md`](analysis/host.md), checked twice 2026-11-25): the tag names a GGUF file in
+ollama's system store, which llama.cpp reads as it is. With the GPU backend the user installed, `llama-server`
+loaded the whole model on the device (2 771 MiB at a context of 4 096 tokens, without the projector) and
+generated about 66 tokens a second. What runs it is [Q-M2.14](#q-m214--what-runs-the-model).
 
 ## Q-M2.7 — What language is the frontend written in?
 
@@ -411,53 +406,71 @@ The first is S2.2.2's to design. The other two need the host changed, which is t
 solve, `ein-render` to explain ([`04-api.md`](../../docs/ein/ein.rs/04-api.md)): the answer as values (`ReadOut`,
 `Verdict`, root's debts and core), a parse error with every error, its notes and its repairs, and
 `ein_ir::dump_canonical`, which no command prints and five tasks of P2.2 and P2.4 key on. This was Q25 here.
-[S2.1.3](p2.1_kernel_as_instrumentation/s2.1.3_boundary.md) has no boundary left to decide, and the stage files of
-P2.2 and P2.5 that write Python paths are re-aimed when their phases are re-planned.
+The stage that was to decide it, *the boundary*, is gone from [P2.1](p2.1_kernel_as_instrumentation/README.md),
+and no stage file writes a Python path.
 
-**What it leaves to the re-plan:**
+**What it left to the re-plan, and what the re-plan took** (each a default, the user's to correct):
 
 - **Four load-side errors are `String` newtypes** (`KbLoadError`, `LoadError`, `MacroError`, `CompileError`), so a
   Rust loop reads strings there until they carry a kind and a place: the same ground as
-  [Q-M2.9](#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics).
-- **Where the package sits**: by default a Cargo package of its own under `einaf/`
+  [Q-M2.9](#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics), and S2.1.2's first task.
+- **Where the package sits**: a Cargo package of its own under `einaf/`
   ([Q-M2.8](#q-m28--where-does-einaf-live)) that depends on the engine's crates by path, outside the engine's
-  workspace, so that nothing under `ein.rs/` names it.
-- Whether the benchmark's generators are Rust too: the plan's are Python, and the ruling names the frontend.
+  workspace, so that nothing under `ein.rs/` names it
+  ([S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md)).
+- **The benchmark's generators are Rust too**, in the same package, so that EinAf has one toolchain; the ruling
+  names the frontend, and this goes one step past it.
 
 **Kept from the entry, because it is cheap to write down and expensive to rediscover:** PyO3 is not a boundary
 ([Q-M1a.23](../../docs/decisions/engine/Q-M1a.23-ein-has-no-binding-for-another-language.md)); there is no socket
-and no server, the engine ships as a library and a CLI; and `ollama` is not an alternative to `llama-server` where
-GBNF is the mechanism, which the host check confirmed on 0.35.1 ([Q-M2.5](#q-m25--local-model-choice)).
+and no server, the engine ships as a library and a CLI; and `ollama` is no runtime where a grammar is the
+mechanism, which the host checks confirmed on two versions ([Q-M2.14](#q-m214--what-runs-the-model)).
 
 ## Q-M2.8 — Where does EinAf live?
 
-**Ruled by the user, 2026-11-25:** *"./einaf/, ./docs/einaf/, etc..."*.
+**Ruled by the user, 2026-11-25, in two answers.** The first: *"./einaf/, ./docs/einaf/, etc..."*. The second, to
+the coordinator's default that those trees were external to both the project and the process: *"yes, own tree, in
+this repository, outside of ein, because ein.rs is an implementation of ein and is a dependency of einaf, but
+inside the development process, make clear projects hierachy in root readme and AGENTS.md"*.
 
-**Read as:** in this repository, in the trees the plan already names: the harness in `einaf/`, its pages in
-`docs/einaf/`, and the rest where the plan puts them (`grammars/`, `benchmark/`, `experiments/`, `packaging/`).
-Not the single tree this entry recommended, and not a repository of its own.
+**Read as:** the repository holds two projects, one over the other, and one development process over both.
 
-**What the ruling does not say, taken by default and the user's to correct: these trees are external to both the
-project and the process**, as `c/`, `nl2smt/` and `docs/lib/` are, the last being the precedent for a tree under
-`docs/` that is not the project's
-([Q-M1f.345](../../docs/decisions/docs/Q-M1f.345-nothing-in-the-project-reads-links-or-names.md)). Neither other
-side can hold them. As the project, a page carries no date, no measurement and no id that reads as a followup's,
-which the research plan's own F0 to F8 do, so the records and the feedback ladder could not be written there. As
-the process, they would be deleted with this folder at the milestone's close.
+| | what it is | its trees | depends on |
+|---|---|---|---|
+| **Ein** | the language, what a program means and what its answer is, and **ein.rs**, an implementation of it | `stdlib/`, `examples/`, `tests/`, `corpus/`, `docs/ein/`, `docs/decisions/`; the implementation in `ein.rs/` | nothing in the repository |
+| **EinAf** | iterative autoformalization, an application of Ein | `einaf/`, `docs/einaf/` | ein.rs, as a library |
+| the process | how both are developed | `plans/`, `utils/`, the gate and CI, `AGENTS.md` | reads both |
 
-**What the first stage that creates one of them does** (nothing is created by this ruling):
+- **The dependency runs one way.** EinAf reads Ein and links ein.rs. Nothing of Ein reads, links or names EinAf:
+  no crate, no page of `docs/ein/`, no decision, no comment, no test, no module of the library, no corpus entry.
+  A change the kernel takes for EinAf's sake ([Q-M2.9](#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics))
+  is stated in Ein's terms. The root `README.md` is the repository's page and names both.
+- **Inside the development process**, which corrects the default: EinAf is planned under `plans/`, its questions
+  are this ledger's, `AGENTS.md`'s standing rules hold for it, and its build and tests are steps of the gate once
+  they exist. It is not *external to both*; `c/`, `nl2smt/` and `docs/lib/` stay that.
 
-- names each tree in `AGENTS.md`'s external list and in `utils/check_release_voice.py`'s `NOT_PROJECT`;
-- rewrites the root `README.md`'s sentence that the loop *is not in this repository*, and names EinAf where the
-  README names the other external trees, as a reference outside the project; no other page, comment or test of the
-  project names it;
-- gives EinAf a test command of its own: the gate runs none of it, and the plan's *re-certified by the gate*
-  becomes *checked by EinAf's command*, which runs `ein test` over the benchmark's programs;
-- keeps the benchmark's programs out of the corpus roots (`examples/`, `stdlib/`, `tests/`), where each would need
-  a `corpus.toml` entry and would join every sweep.
+**Done with the ruling:** the root `README.md` and `AGENTS.md` state the hierarchy. No tree is created by it:
+[S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md) creates them.
 
-An answer about EinAf therefore stays in this ledger: `docs/decisions/` is about Ein
-([Q-M1f.346](../../docs/decisions/docs/Q-M1f.346-the-decisions-are-about-ein-not-about-how.md)).
+**What the ruling does not say, each taken by default and the user's to correct:**
+
+1. **One tree a project at the root.** The plan's other root directories (`grammars/`, `benchmark/`,
+   `experiments/`, `packaging/`) are folders of `einaf/`, so that the root shows the hierarchy; *etc.* is read as
+   *and the rest of what EinAf needs*, not as four more root directories.
+2. **The checks of Ein's prose are Ein's.** The release-voice check and the rules of `docs/ein/` (the current
+   state only, no date, no measurement) are scoped to Ein: `einaf/` and `docs/einaf/` are named in
+   `utils/check_release_voice.py`'s `NOT_PROJECT` when they are created. EinAf's own pages use the research
+   plan's vocabulary (F0 to F8, B0 to B6, G1 to G9), which that check reads as followup ids, and its records are
+   dated measurements by nature. What EinAf's pages hold themselves to is decided with its first page.
+3. **A gate step of its own.** EinAf is a Cargo package outside the engine's workspace, built and tested by its
+   own step of `run_tests.sh` and of CI. What needs the model file and the GPU is an experiment, run by hand with
+   its record, in no tier: the runner has neither.
+4. **The benchmark's programs stay out of the corpus roots** (`examples/`, `stdlib/`, `tests/`), where each would
+   need a `corpus.toml` entry and would join every sweep of Ein's gate; EinAf's own command checks their claims,
+   by the library's functions or by the binary's `ein test`.
+5. **Where an answer about EinAf lands**: in this ledger while EinAf is planned, and in `docs/einaf/` once the
+   thing it decides is built. `docs/decisions/` is about Ein
+   ([Q-M1f.346](../../docs/decisions/docs/Q-M1f.346-the-decisions-are-about-ein-not-about-how.md)).
 
 ## Q-M2.9 — Does the kernel grow a machine surface for diagnostics?
 
@@ -503,3 +516,110 @@ other.
 (*the youngest is the one nobody is younger than*) is an `absent` over a relation a commitment can fill, and how
 often it does is itself a finding. What a flagged program's answer is stays
 [M1n](../m1n_non_monotone_programs/README.md)'s.
+
+## Q-M2.12 — What prints the answer?
+
+**Ruled by the user, 2026-11-25:** *"don't run M1p now, use as much of existing ein NL features, e.g. query
+:goal-text, for numbers and other compound facts use additional external formatters, they will be later starting
+point for M1p"*.
+
+The question was raised by the user's statement of the core idea
+([README](README.md#the-two-main-ideas-the-user-2026-11-25)): *"ideally the final test problem answer must be
+short and must be produced by ein program NL output"*. Of the three ways it weighed (the answer as Ein prints it
+today; the part of M1p an answer needs run first, which was recommended; the harness formats values) the ruling is
+the third, with as much of the first as there is. `git show 6a3c9a75:plans/m2_nl_to_ir/open_questions.md` has the
+table.
+
+**Read as:**
+
+- **[M1p](../m1p_ein_to_natural_language/README.md) does not run**, and the kernel is not changed for the
+  answer's words.
+- **The answer of a test problem is what its Ein program says, through what Ein has today**: the query's
+  `:goal-text`, filled with a row's bindings; and, where an explanation is shown, a rule's and a relation's `:why`
+  and a fact's `:source`
+  ([`14-natural-language.md`](../../docs/ein/user/03-syntax-and-semantics/14-natural-language.md)). So the program
+  the formalizer writes carries its own answer sentence: the query's `:goal-text` is part of the contract
+  ([S2.2.1](p2.2_formalizer/s2.2.1_contract.md)).
+- **Where a value does not read as text, EinAf formats it, outside the kernel.** Today
+  [`bob1.ein`](../../examples/word_problems/bob1.ein) answers `“(amount Bob apples t1): (n z 3)”`: a number is its
+  term, `(n z 3)`, and so is a fact that stands as a value. The formatters are EinAf's, in `einaf/`, over the
+  library's values: a numeral of the calculator's first, then the other compound values a benchmark family
+  prints.
+- **They are written to be M1p's starting point**: a formatter a kind of value, its cases as data, its tests
+  beside it, and no knowledge of the loop in it, so that the phase of M1p that gives a value its own format
+  ([P1p.1](../m1p_ein_to_natural_language/p1p.1_custom_formatting/README.md)) can take them as they are.
+
+**What it changes in the plan:** the formatters are a stage of the formalizer
+([S2.2.5](p2.2_formalizer/s2.2.5_from_text.md)); a benchmark instance's gold answer is a short text beside its
+`:expect` claim ([P2.3](p2.3_benchmark/README.md)); and what scores an answer compares that text across every arm
+([S2.5.3](p2.5_harness/s2.5.3_metrics.md)). What Ein lacks here (the answer's line is on the read-out and in no
+key of `ein-summary/2`; a value has no text of its own) is recorded in
+[the evaluation of Ein](ein_evaluation.md), for the iteration of Ein that follows.
+
+## Q-M2.13 — Who calls the kernel?
+
+**Ruled by the user, 2026-11-25**, to the coordinator's reading that both are arms of one experiment, compared
+with a chain of thought: *"yes, it is correct, "tool for the LLM" - means LLM can decide to use it on it's own, it
+is recommened but optional, also qwen model (or other suitable models) most probably not aware about this
+language, was not trained for synthesis of ein programs, newertheless ein semantic is very simalar to Datalog,
+syntax is Lisp/SMT style, so writing ein program may be not impossible without GBNF; "filter of thoughts" - means
+it is forced to write ein code and can not avoid it"*.
+
+The question was raised by the user's statement of the core idea
+([README](README.md#the-two-main-ideas-the-user-2026-11-25)): *"On one hand ein works like a tool for LLM, on
+other hand it works like filter of thoughts"*.
+
+**Read as:** two arrangements of one model and one kernel, both arms of the experiment, each compared with the
+model reasoning in text ([Stage D](EinAf.md#stage-d--establish-baselines)'s B1).
+
+| | **the tool** | **the filter** |
+|---|---|---|
+| who decides that Ein runs | the model, when it likes; the prompt recommends it, and the model may answer without it | the harness, on every generation |
+| what the model writes | text, and an Ein program where it chooses to call | an Ein program and nothing else: it cannot avoid it |
+| what holds the syntax | nothing: the model writes Ein as it can, and a parse error is what the tool returns | the harness accepts a program only; a grammar over the output makes that hold token by token ([Q-M2.6](#q-m26--one-gbnf-or-many)) |
+| the answer | the model's last message; whether it is what its last run of Ein printed is recorded | what the Ein program prints ([Q-M2.12](#q-m212--what-prints-the-answer)); with no program the kernel passes there is no answer |
+| in the plan | new: [S2.4.6](p2.4_loop/s2.4.6_ein_as_a_tool.md), and B6 of [S2.5.2](p2.5_harness/s2.5.2_baselines.md) | the plan's loop: [S2.4.1](p2.4_loop/s2.4.1_state_machine.md), B2 to B5 |
+
+**The user's remark on the model is a hypothesis the plan measures, not a premise it takes**: a model not trained
+on Ein may still write it, the semantics being near Datalog's and the syntax Lisp's and SMT-LIB's. So *the model
+writes Ein with no grammar* is measured where it is cheapest, as the first thing the formalizer's phase does
+([S2.2.2](p2.2_formalizer/s2.2.2_model_runtime.md)), and the filter with its grammar off is an ablation
+([P2.6](p2.6_ablations/README.md)).
+
+**What the ruling leaves to the plan, each a default:** what the tool replies is a level of the feedback ladder,
+the same object the filter renders ([S2.4.3](p2.4_loop/s2.4.3_feedback_ladder.md)); a tool episode is priced in
+generated tokens with its calls counted, so that it compares with the others under
+[Stage D](EinAf.md#stage-d--establish-baselines)'s *same model, similar budget*; the tool is a function the
+harness declares to the model in its own process, and nothing of [M15](../m15_mcp_server/README.md), an MCP
+server, starts by it.
+
+## Q-M2.14 — What runs the model?
+
+**Ruled by the user, 2026-11-25:** *"I expect to use llama-cpp with rust wrapper, not ollama, because ollama does
+not allow full LLM control and GBNF, does it?"*.
+
+**The question in it, answered by the host check** ([`analysis/host.md`](analysis/host.md)): it does not. Ollama
+0.40.16, as 0.35.1 before it, takes a JSON schema as `format` and no grammar: a GBNF `grammar` at the top level
+and inside `options` came back as free prose, and a GBNF string as `format` was refused. On the same file
+`llama-server`, of llama.cpp 0.9.0, honoured the grammar against the prompt, with the whole model on the GPU.
+
+**Read as:** the model runs **inside EinAf's process, through a Rust binding to llama.cpp**: no server, no
+container and no HTTP between the harness and the model. Ollama is no runtime of the plan; its store is where the
+file was pulled to. What *full control* buys, and the plan uses:
+
+- the sampler chain, with the grammar in it, the seed and every parameter a field of the record;
+- thinking on or off a call, and a grammar that begins where the thinking ends (in the host check a grammar over
+  the whole output of a thinking model took the thinking too);
+- each token's log-probabilities;
+- the context kept between the turns of one loop, so that a repair pays for the new tokens only;
+- the chat template as a file of the record, not a server's default.
+
+**Left to [S2.2.2](p2.2_formalizer/s2.2.2_model_runtime.md), each a default:**
+
+- **Which binding.** On crates.io at the check: `llama-cpp-2`, `llama-cpp-4`, `llama_cpp`, `llama-cpp-bindings`;
+  none is tried. Whether it builds a llama.cpp of its own or links the host's `libllama.so.0` is part of the
+  choice, and the first thing it is held to is that the llama.cpp it gets knows the model's architecture,
+  `qwen35`.
+- **`llama-server`, of the same package, is the reference** a binding is compared with (one file, one grammar,
+  one seed) and what the plan falls back to if no binding loads the model. The Compose service of the old plan,
+  and `packaging/` with it, are dropped.

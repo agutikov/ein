@@ -1,0 +1,8 @@
+;; A saturation with no fixpoint: every number has a successor.
+(relation num T :why "{?3} is a number")
+(num zero)
+(rule successor ()
+  :match  (num ?x)
+  :assert (num (s ?x))
+  :why    "{?x} is a number, so its successor is one")
+(query :goal (num ?x))

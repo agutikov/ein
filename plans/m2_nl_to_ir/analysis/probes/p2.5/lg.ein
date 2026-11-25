@@ -1,0 +1,2 @@
+(link-grammar :sentence "The Norwegian lives in the first house."
+  :linkages ((linkage 0 :links ((subj Norwegian lives) (det "the" Norwegian)))))

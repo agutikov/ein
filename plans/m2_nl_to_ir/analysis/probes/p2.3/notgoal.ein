@@ -1,0 +1,12 @@
+;; Probe: a query whose goal is a stored negation.
+(relation flies Thing :why "{?3} flies")
+(relation bird Thing :why "{?3} is a bird")
+(relation penguin Thing :why "{?3} is a penguin")
+(penguin Pingu)
+(rule penguins-do-not-fly ()
+  :match (penguin ?x)
+  :assert (not (flies ?x))
+  :why "{?x} is a penguin, so {?x} does not fly")
+(solve :no-search)
+(query :goal (flies Pingu) :goal-text "True" :expect (model))
+(query :goal (not (flies Pingu)) :goal-text "False" :expect (model (not (flies Pingu))))

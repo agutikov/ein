@@ -10,10 +10,16 @@ about the project in the tree or by running the binary, and each reporting in th
 what each stage needs and its state today; conflicts with standing rules; open questions; dependencies; estimates
 and counts). The reports are kept whole beside this page; the claims this page leans on hardest were run again by
 the coordinator (§ 2's table) and agreed.
-**After it:** the user answered the questions the same day and § 7 is rewritten to what was ruled and what is
-open; the host was checked again on the user's word, [`host.md`](host.md), and the two sentences of § 3 about the
-host are corrected from it. §§ 1 to 6 otherwise read as taken, so *open* there means open when the analysis was
-written: [the ledger](../open_questions.md) says what is open now.
+**After it:** the user answered the questions (§ 7), the host was checked again, twice ([`host.md`](host.md)),
+and **the plan was re-planned from this page and the audits** ([the milestone's README](../README.md#the-plan-as-re-planned)). §§ 1 to 6 read as taken: *open* there means
+open when the analysis was written, and **the audits cite the plan's files as they stood at `5d678042`**, by the
+names and line numbers of that commit. Four stage files have other names since (`s2.1.1_census.md` is `s2.1.1_tree_and_outcomes.md`; `s2.1.2_feedback_object.md` is `s2.1.3_feedback_object.md`;
+`s2.1.3_boundary.md`, whose question the user ruled, is gone, and S2.1.2 is `s2.1.2_diagnostics_surface.md`;
+`s2.2.2_llama_server_and_client.md` is `s2.2.2_model_runtime.md`), and every file was rewritten:
+`git show 5d678042:plans/m2_nl_to_ir/<path>` has what an audit read. [The ledger](../open_questions.md) says what
+is open now. **[`probes/`](probes/)** holds the small programs the re-plan's writers ran to check what the plan
+says of the kernel, a folder a phase: each is the evidence of an entry of
+[the evaluation of Ein](../ein_evaluation.md), which names the command it was run under.
 
 | audit | covers | stale | found true |
 |---|---|---:|---:|
@@ -302,62 +308,37 @@ These are the conflicts that are not a matter of re-aiming a sentence. Each is a
 
 Nothing else of the plan is edited: the stage files read as they did.
 
-## 7. What the user ruled, what is open, and what the re-plan takes by default
+## 7. What the user ruled, and where the re-plan is
 
-**The user, 2026-11-25**, on the questions this analysis raised and on four older ones. Each ruling is in
-[the ledger](../open_questions.md) in the user's words, with what it is read to mean:
+**The user, 2026-11-25**, in two rounds of answers, on the questions this analysis raised, on four older ones and
+on three the answers themselves raised. Each ruling is in [the ledger](../open_questions.md) in the user's words,
+with what it is read to mean:
 
 | Q | the question | the user | what it changes |
 |---|---|---|---|
-| [Q-M2.8](../open_questions.md#q-m28--where-does-einaf-live) | where EinAf lives | *"./einaf/, ./docs/einaf/, etc..."* | the plan's own trees stand, in this repository; by default each is external to both the project and the process, as `nl2smt/` and `docs/lib/` are |
-| [Q-M2.9](../open_questions.md#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics) | a machine surface for diagnostics | *"(b)"* | the kernel grows it in its own terms; F23's D-18 and L-125 are P2.1's; the feedback object is the harness's |
-| [Q-M2.11](../open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop) | a flagged program | *"(a)"* | an outcome of its own, never certified, fed back with its sites; canonical programs are never flagged |
-| [Q-M2.7](../open_questions.md#q-m27--what-language-is-the-frontend-written-in) | the loop's language | *"Rust"* | the harness links the crates and has the canonical dump; S2.1.3 has nothing left to decide; the Python paths of P2.2 and P2.5 go |
-| [Q-M2.2](../open_questions.md#q-m22--must-the-model-be-local) | must the model be local | *"yes"* | local; the hosted replication arm is not in the plan |
-| [Q-M2.5](../open_questions.md#q-m25--local-model-choice) | which model | *"Qweb3.5:4b"* | `qwen3.5:4b`, 4.2B parameters, a 2.47 GiB GGUF in ollama's store ([`host.md`](host.md)) |
-| [Q-M2.1](../open_questions.md#q-m21--when-is-the-kernel-frozen) | when the kernel is frozen | *"use current state - after M1f closed"* | the instrument is the kernel M1f left; each record still names its commit |
-| [Q8](../open_questions.md#q8--ambiguous-parses) | ambiguous parses | *"there is no `hrule` anymore, rules emitting open facts replaced them"* | the form is a hypothesis, `(open F)`; the experiment between the two strategies stays S2.4.5's |
+| [Q-M2.8](../open_questions.md#q-m28--where-does-einaf-live) | where EinAf lives | *"./einaf/, ./docs/einaf/, etc..."*, then *"own tree, in this repository, outside of ein … but inside the development process"* | EinAf is a second project, over ein.rs, under the same process; the root README and `AGENTS.md` state the hierarchy |
+| [Q-M2.9](../open_questions.md#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics) | a machine surface for diagnostics | *"(b)"* | the kernel grows it in its own terms: S2.1.2, the milestone's one kernel change; the feedback object is EinAf's |
+| [Q-M2.11](../open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop) | a flagged program | *"(a)"* | an outcome of its own, never certified, fed back with its sites |
+| [Q-M2.7](../open_questions.md#q-m27--what-language-is-the-frontend-written-in) | the loop's language | *"Rust"* | EinAf links the crates |
+| [Q-M2.2](../open_questions.md#q-m22--must-the-model-be-local), [Q-M2.5](../open_questions.md#q-m25--local-model-choice) | the model | *"yes"*, *"Qweb3.5:4b"* | local, `qwen3.5:4b` |
+| [Q-M2.14](../open_questions.md#q-m214--what-runs-the-model) | what runs it | *"llama-cpp with rust wrapper, not ollama"* | in EinAf's process, through a binding to llama.cpp |
+| [Q-M2.1](../open_questions.md#q-m21--when-is-the-kernel-frozen) | when the kernel is frozen | *"use current state - after M1f closed"* | the instrument is the kernel M1f left |
+| [Q8](../open_questions.md#q8--ambiguous-parses) | ambiguous parses | *"there is no `hrule` anymore, rules emitting open facts replaced them"* | the form is a hypothesis, `(open F)` |
+| [Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer) | what prints the answer | *"don't run M1p now, use as much of existing ein NL features … use additional external formatters"* | `:goal-text`, with EinAf's formatters over values; M1p does not run |
+| [Q-M2.13](../open_questions.md#q-m213--who-calls-the-kernel) | who calls the kernel | both: the tool, *"recommened but optional"*, and the filter, *"forced to write ein code"* | two arrangements, both arms, compared with a chain of thought |
 
-**Open:**
+**Open, and holding no phase:** [Q-M2.10](../open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r),
+what *certified unique* means on R (the user, after experiments: every record carries each reading), and
+[Q-M2.15](../open_questions.md#q-m215--where-does-m2-stop-for-the-next-iteration-of-ein), where the milestone stops
+for the next iteration of Ein (the user, at a level's gate).
 
-| Q | the question | who |
-|---|---|---|
-| [Q-M2.10](../open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r) | what *Ein certifies a unique model* means on R | the user, after experiments: *"it depends on problem shape, lets make experiments and then decide"*. Until then every record carries each reading |
-| [Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer) | what prints the answer | the user. The answer is to be Ein's own natural-language output, and today a number reads `(n z 3)`: whether the part of M1p an answer needs runs first |
-| [Q-M2.13](../open_questions.md#q-m213--who-calls-the-kernel) | who calls the kernel, the harness (a filter) or the model (a tool) | the re-plan of P2.4 and S2.5.2; the coordinator reads both as arms |
+**The frame of the re-plan is the user's two main ideas**, kept verbatim in
+[the README](../README.md#the-two-main-ideas-the-user-2026-11-25): a chain of formal reasoning in place of a chain
+of thought, with Ein as a tool and as a filter and the answer Ein's own; and the milestone as an evaluation of
+ein.rs, for the iteration of Ein that follows ([`ein_evaluation.md`](../ein_evaluation.md), seeded from this
+analysis).
 
-**The frame of the re-plan is the user's statement of the core idea**, given with the answers and kept verbatim in
-[the README](../README.md#the-core-idea-the-user-2026-11-25): the model checks its formalization with the solver;
-the final answer is short and is the Ein program's own natural-language output; the experiment replaces a chain of
-thought with a chain of formal reasoning; Ein is a tool for the model and a filter of its thoughts. It names as
-the core what the note of 2026-11-11, [the reasoning as a
-program](../README.md#the-reasoning-as-a-program-the-users-idea-2026-11-11), proposed, which is therefore placed.
-
-**No phase starts until the user says so** (the user, 2026-11-25: *"do not start phases now"*).
-
-**Defaults the re-plan takes, each recorded and revisable:**
-
-1. Every stage file is re-aimed at today's kernel, the audits' tables being the worklist; estimates and dates
-   used as status go.
-2. **The stage files are rewritten a phase at a time, as each starts.** P2.1 shrinks to two things: A1's outcomes
-   on `ein-summary/2`'s keys, with the flagged program as the seventh (Q-M2.11); and the kernel's machine surface
-   for diagnostics with the harness's feedback object over it (Q-M2.9). Its third, the boundary, is ruled
-   (Q-M2.7).
-3. The benchmark keeps the research plan's three classes as each instance's gold class, splits *ambiguous* by
-   F26's table (a quantity, a reading) as metadata, and states the gold as `:expect` claims that `ein test`
-   checks. The word problems are its second domain from the start.
-4. [M1p](../../m1p_ein_to_natural_language/README.md) owns Ein to natural language, and M2 reads what it makes:
-   the answer's words are Ein's (Q-M2.12). The three texts that give the direction to M2 are aligned.
-5. A kernel finding goes to the wrong-answer register or the phase's findings page; the kernel is changed inside
-   M2 only where a ruling says so, which today is Q-M2.9.
-6. P2.8 states its dependency on M10's S10.2 and S10.3 as work not done; the order is decided at the Level C
-   gate. P2.9 does not wait for M5's venue: its kernel half cites `docs/ein/reasoning/` and does not restate it.
-7. The plan cites the followups and plans that are on its ground (§ 4).
-8. An answer about Ein lands in `docs/decisions/` under its id, with the change that makes it true; an answer
-   about EinAf or about the work stays in the ledger.
-9. The harness is a Cargo package of its own under `einaf/`, depending on the engine's crates by path and outside
-   the engine's workspace, so that nothing under `ein.rs/` names it.
-10. The model is served by `llama-server` over the GGUF file that `qwen3.5:4b` names, which keeps GBNF: ollama
-    does not take a grammar ([`host.md`](host.md)). The first stage that creates a tree of EinAf names it as
-    external in `AGENTS.md` and in the release-voice check, and rewrites the root README's sentence that the loop
-    is not in this repository.
+**The re-plan is done** (2026-11-25, on the user's word, *"Do re-plan if ready and no open questions"*): the
+milestone's README states the plan as re-planned, with the defaults it took; every phase README and stage file is
+rewritten to it, this page and the audits having been the worklist. **No stage has run, and no phase starts until
+the user says so** (*"Do not start any phase"*).

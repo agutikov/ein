@@ -1,0 +1,22 @@
+(relation reading Sentence Reading :why "{?4} is a reading of {?3}")
+(relation reads Sentence Reading   :why "{?3} is read as {?4}")
+(relation at Thing Place           :why "{?3} is at {?4}")
+
+(reading s7 left   :source "sentence 7, read as: to the left of")
+(reading s7 right  :source "sentence 7, read as: to the right of")
+(at fox h2         :source "The fox is in the second house.")
+
+(rule read-s7 ()                                   ; each reading is a hypothesis
+  :match  (reading s7 ?m)
+  :assert (open (reads s7 ?m))
+  :why    "suppose sentence 7 is read as {?m}")
+(rule one-reading ()                               ; at most one
+  :match  (and (reads ?s ?a) (reads ?s ?b) (neq ?a ?b))
+  :assert (false)
+  :why    "{?s} is read one way: not both {?a} and {?b}")
+(rule left-impossible ()                           ; what one reading leads to
+  :match  (and (reads s7 left) (at fox h2))
+  :assert (false)
+  :why    "read as left, sentence 7 puts the fox elsewhere than h2")
+
+(query :goal (reads s7 ?m) :goal-text "sentence 7 is read as {?m}")

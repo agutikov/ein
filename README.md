@@ -8,8 +8,9 @@ and a contradiction names the facts it rests on.
 
 Ein is built to be the symbolic half of a loop in which a language model proposes a formalization of an informal
 problem (its atoms, relations, facts, rules and goal) and the reasoner judges it: a solution, the ambiguity that is
-left, a contradiction with its core, a requirement nobody met. That loop is not in this repository; the reasoner is,
-with its language, its standard library and its documentation.
+left, a contradiction with its core, a requirement nobody met. That loop is **EinAf**, a project of its own in this
+repository: it uses Ein's implementation as a library, and nothing of Ein depends on it
+([what depends on what](#layout)).
 
 ## What it does
 
@@ -212,6 +213,20 @@ claim on these pages settled.
 
 ## Layout
 
+The repository holds a language, an implementation of it and an application of that, each over the one before.
+Ein with ein.rs is one project and EinAf a second:
+
+| | what it is | where | depends on |
+|---|---|---|---|
+| **Ein** | the language: what a program means and what its answer is, with its standard library, its programs and its documentation | the paths of the table below, but `ein.rs/` | nothing here |
+| **ein.rs** | an implementation of Ein: the engine, its library crates and its command line | `ein.rs/`, with [its pages](docs/ein/ein.rs/README.md) | Ein |
+| **EinAf** | iterative autoformalization: a language model writes an Ein program for a problem stated in natural language, and the reasoner judges it, in a loop | `einaf/` and `docs/einaf/`, neither of which holds a file yet | ein.rs, as a library |
+
+**The dependency runs one way.** EinAf reads Ein and links ein.rs; nothing of Ein or of ein.rs reads, links or names
+EinAf, so every other page of this repository's documentation of Ein is about Ein alone.
+
+Ein and ein.rs:
+
 | path | what's in it |
 |---|---|
 | [`ein.rs/`](ein.rs/) | the implementation: a Cargo workspace of eight crates, six that ship (`ein-core`, `ein-ir`, `ein-infer`, `ein-einb`, `ein-render`, `ein-cli`) and two its tests use ([architecture](docs/ein/ein.rs/01-architecture.md)) |
@@ -221,7 +236,7 @@ claim on these pages settled.
 | [`corpus/`](corpus/README.md) | `corpus.toml`, one entry per `.ein` with the runs it is exercised under; the fuzzer's findings |
 | [`docs/`](docs/ein/README.md) | the documentation and the decisions; [`docs/demo/`](docs/demo/README.md) and [`docs/ein/overview/`](docs/ein/overview/README.md) for the article and the comparison with other systems |
 
-Outside the project, as references: [`c/`](c/README.md), three plain-C Zebra baselines that differ only in how much
+Outside both projects, as references: [`c/`](c/README.md), three plain-C Zebra baselines that differ only in how much
 the search is told about the constraints; [`nl2smt/`](nl2smt/README.md), the puzzle's English sentences through a
 parser, NLTK or link grammar, to an SMT solver; and [`docs/lib/`](docs/lib/README.md), a catalogue of the external reasoning systems,
 solvers and research Ein relates to.

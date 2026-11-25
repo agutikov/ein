@@ -1,0 +1,8 @@
+;;; a rule that never reaches a fixpoint: every number has a successor
+(relation num Thing :why "{?3} is a number")
+(num z)
+(rule succ ()
+  :match  (num ?x)
+  :assert (num (s ?x))
+  :why    "{?x} is a number, so its successor is")
+(query :goal (num ?x) :goal-text "{?x} is a number")
