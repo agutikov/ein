@@ -2,17 +2,19 @@
 #
 # build.sh — everything this repo builds, in one command.
 #
-#     ./build.sh                   # the engine (release) + the C baseline
+#     ./build.sh                   # the engine (release), then EinAf, then the C baselines
 #     ./build.sh --debug           # cargo's dev profile instead of release
 #     ./build.sh --no-snmalloc     # link the engine against the system allocator
 #     ./build.sh --all-targets     # + tests, benches and the measurement examples
-#     ./build.sh --engine|--c      # one target only
+#     ./build.sh --engine|--einaf|--c   # one target only
 #
-# Two targets, and the script says which one it is on before it starts it,
+# Three targets, and the script says which one it is on before it starts it,
 # because a script that builds unrelated things owes the reader "which one
 # failed" before anything else:
 #
 #   ein.rs/    the Rust workspace — eight crates; `ein` is the binary
+#   einaf/     EinAf, a package outside that workspace that links its crates;
+#              `einaf` is the binary, built into `einaf/target/`
 #   c/         three plain-C Zebra baselines -> build/zebra-{levels,oracles,blackbox}
 #
 # **Prerequisites.** A Rust toolchain (`ein.rs/rust-toolchain.toml` pins it),
@@ -32,9 +34,10 @@ PROFILE=release
 SNMALLOC=1
 ALL_TARGETS=0
 DO_ENGINE=1
+DO_EINAF=1
 DO_C=1
 
-usage() { sed -n '2,26p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-0}"; }
+usage() { sed -n '2,28p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-0}"; }
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -42,8 +45,9 @@ while [ $# -gt 0 ]; do
         --release)      PROFILE=release ;;
         --no-snmalloc)  SNMALLOC=0 ;;
         --all-targets)  ALL_TARGETS=1 ;;
-        --engine)       DO_C=0 ;;
-        --c)            DO_ENGINE=0 ;;
+        --engine)       DO_EINAF=0; DO_C=0 ;;
+        --einaf)        DO_ENGINE=0; DO_C=0 ;;
+        --c)            DO_ENGINE=0; DO_EINAF=0 ;;
         -h|--help)      usage 0 ;;
         *) echo "build.sh: unknown argument '$1'" >&2; usage 2 ;;
     esac
@@ -79,6 +83,21 @@ if [ "$DO_ENGINE" = 1 ]; then
     cargo "${CARGO_ARGS[@]}"
 fi
 
+# ── EinAf ──────────────────────────────────────────────────────────
+
+# Its own workspace and its own `target/`: it builds the engine's crates
+# again, as path dependencies, and links no allocator of its own.
+if [ "$DO_EINAF" = 1 ]; then
+    step "einaf/ — EinAf ($PROFILE)"
+    need cargo "install a Rust toolchain (rustup)"
+
+    EINAF_ARGS=(build --manifest-path einaf/Cargo.toml)
+    [ "$PROFILE" = release ] && EINAF_ARGS+=(--release)
+    [ "$ALL_TARGETS" = 1 ] && EINAF_ARGS+=(--all-targets)
+
+    cargo "${EINAF_ARGS[@]}"
+fi
+
 # ── the C baseline ─────────────────────────────────────────────────
 
 if [ "$DO_C" = 1 ]; then
@@ -108,8 +127,10 @@ fi
 
 step "built"
 TARGET_DIR="ein.rs/target/$([ "$PROFILE" = release ] && echo release || echo debug)"
+EINAF_DIR="einaf/target/$([ "$PROFILE" = release ] && echo release || echo debug)"
 ARTEFACTS=()
 [ "$DO_ENGINE" = 1 ] && ARTEFACTS+=("$TARGET_DIR/ein")
+[ "$DO_EINAF" = 1 ] && ARTEFACTS+=("$EINAF_DIR/einaf")
 [ "$DO_C" = 1 ] && ARTEFACTS+=(build/zebra-levels build/zebra-oracles build/zebra-blackbox)
 for artefact in "${ARTEFACTS[@]}"; do
     printf '   %-28s %s\n' "$artefact" "$(du -h "$artefact" | cut -f1)"
@@ -118,6 +139,8 @@ echo
 [ "$DO_ENGINE" = 1 ] &&
     echo "   the engine:    $TARGET_DIR/ein solve examples/zebra.ein" &&
     echo "   what it is:    $TARGET_DIR/ein --version   (features, and the stdlib it resolves)"
+[ "$DO_EINAF" = 1 ] &&
+    echo "   EinAf:         $EINAF_DIR/einaf outcome examples/zebra2.ein --single"
 [ "$DO_C" = 1 ] &&
     echo "   the baselines: build/zebra-levels   (milliseconds)" &&
     echo "                  build/zebra-oracles  (minutes — c/README.md says why)" &&

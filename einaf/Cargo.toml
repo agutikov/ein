@@ -1,0 +1,58 @@
+# EinAf — iterative autoformalization, an application of Ein.
+#
+# One package, a library and the `einaf` command, standing outside the
+# engine's workspace: its own `[workspace]` table below makes it the root of
+# a workspace of one, so `cargo test --workspace` in `ein.rs/` never sees it
+# and nothing of the engine names it. It links the engine's crates by path,
+# as `docs/ein/ein.rs/04-api.md` § 1 says a program outside the checkout does.
+#
+# Its documentation is `docs/einaf/`.
+
+[package]
+name        = "einaf"
+description = "Iterative autoformalization over Ein: a program's outcome, read off the kernel's values"
+version     = "0.1.0"
+edition     = "2024"
+license     = "MIT"
+publish     = false
+
+[workspace]
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "einaf"
+path = "src/main.rs"
+
+[dependencies]
+ein-core   = { path = "../ein.rs/crates/ein-core" }
+ein-ir     = { path = "../ein.rs/crates/ein-ir" }
+ein-infer  = { path = "../ein.rs/crates/ein-infer" }
+ein-render = { path = "../ein.rs/crates/ein-render" }
+
+[dev-dependencies]
+# The corpus manifest, its worker pool and the repository's root, as the
+# engine's own sweeps read them. A test helper of the engine's
+# (`publish = false`), whose two dependencies, `serde` and `toml`, are what
+# reading `corpus/corpus.toml` would take anyway.
+ein-corpus = { path = "../ein.rs/crates/ein-corpus", default-features = false }
+
+# The parser runtime the engine builds against: `ein-ir`'s generated parser
+# calls into `lrpar`, and the engine's workspace patches it with the copy
+# under `ein.rs/vendor/lrpar/` (deterministic error recovery, bounded by a
+# count of steps). A `[patch]` applies only in the root manifest of the
+# workspace being built, so this one names the same copy; without it the
+# published `lrpar` would be linked and a parse error's repairs could differ
+# from the engine's.
+[patch.crates-io]
+lrpar = { path = "../ein.rs/vendor/lrpar" }
+
+# The engine's test profile, copied: release codegen with `debug_assert!`
+# and overflow checks on, so the engine's own assertions run under EinAf's
+# tests as they do under the engine's. Profiles are read from the root
+# manifest only, so the engine's `[profile.gate]` does not reach here.
+[profile.gate]
+inherits         = "release"
+debug-assertions = true
+overflow-checks  = true

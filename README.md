@@ -220,7 +220,7 @@ Ein with ein.rs is one project and EinAf a second:
 |---|---|---|---|
 | **Ein** | the language: what a program means and what its answer is, with its standard library, its programs and its documentation | the paths of the table below, but `ein.rs/` | nothing here |
 | **ein.rs** | an implementation of Ein: the engine, its library crates and its command line | `ein.rs/`, with [its pages](docs/ein/ein.rs/README.md) | Ein |
-| **EinAf** | iterative autoformalization: a language model writes an Ein program for a problem stated in natural language, and the reasoner judges it, in a loop | `einaf/` and `docs/einaf/`, neither of which holds a file yet | ein.rs, as a library |
+| **EinAf** | iterative autoformalization: a language model writes an Ein program for a problem stated in natural language, and the reasoner judges it, in a loop | [`einaf/`](einaf/Cargo.toml), one Cargo package, and [`docs/einaf/`](docs/einaf/README.md), its pages | ein.rs, as a library |
 
 **The dependency runs one way.** EinAf reads Ein and links ein.rs; nothing of Ein or of ein.rs reads, links or names
 EinAf, so every other page of this repository's documentation of Ein is about Ein alone.

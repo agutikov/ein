@@ -75,8 +75,10 @@ jobs:
       - uses: actions/checkout@v5
       - uses: dtolnay/rust-toolchain@stable
         with: { components: "rustfmt, clippy" }
+      # Two workspaces: the engine's, and EinAf's, which builds the engine's
+      # crates again into its own `einaf/target/`.
       - uses: Swatinem/rust-cache@v2
-        with: { workspaces: ein.rs }
+        with: { workspaces: "ein.rs\neinaf" }
       # `python3` is for the scripts this job runs after the tests: the
       # scratch check, the generators' checks, the region routes and the
       # review bundle's smoke, all stdlib-only.
@@ -118,6 +120,11 @@ jobs:
       # through the CLI and the embedded-stdlib digest.
       # gate-step
       - run: TMPDIR="${GATE_TMP}" cargo test --profile gate --workspace
+      # EinAf's tests, after the engine's: a package outside the engine's
+      # workspace that links its crates by path, under the same `TMPDIR`.
+      # gate-step
+      - run: TMPDIR="${GATE_TMP}" cargo test --manifest-path einaf/Cargo.toml --profile gate
+        working-directory: ${{ github.workspace }}
       # M1e2 S1e2.3.5 — the tests left nothing in their `TMPDIR`: every entry
       # named with the file that writes it, and a failure if there is one.
       # gate-step

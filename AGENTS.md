@@ -15,7 +15,7 @@ over both** (the user's ruling,
 | | what it is | where | depends on |
 |---|---|---|---|
 | **Ein** | the language, what a program means and what its answer is; and **ein.rs**, an implementation of it | `stdlib/`, `examples/`, `tests/`, `corpus/`, `docs/ein/`, `docs/decisions/`; `ein.rs/` | nothing here |
-| **EinAf** | iterative autoformalization, an application of Ein: a model writes an Ein program for a problem in natural language and the kernel judges it, in a loop | `einaf/`, `docs/einaf/`; **neither exists yet**, and M2's first stage creates them | ein.rs, as a library |
+| **EinAf** | iterative autoformalization, an application of Ein: a model writes an Ein program for a problem in natural language and the kernel judges it, in a loop | `einaf/`, one Cargo package, and `docs/einaf/`, its pages | ein.rs, as a library |
 | the process | how both are developed | `plans/`, `utils/`, the gate and CI, this file | reads both |
 
 **EinAf reads Ein and links ein.rs; nothing of Ein reads, links or names
@@ -350,6 +350,25 @@ says Ein; `c/`, `nl2smt/` and `docs/lib/` are outside both projects.
   extension; `ein solve x.einb` is byte-identical to `ein solve x.ein` apart
   from the path it echoes. Anything crossing a tool boundary is still `.ein`
   text or the event protocol's JSON.
+- **`einaf/` and `docs/einaf/`** — **EinAf, the second project**
+  ([`docs/einaf/README.md`](docs/einaf/README.md)). One Cargo package,
+  `einaf`, a library and the `einaf` command, the root of a workspace of its
+  own outside the engine's, so `cargo test --workspace` in `ein.rs/` never
+  sees it: it links `ein-core`, `ein-ir`, `ein-infer` and `ein-render` by path
+  (`ein-corpus` for its tests), builds them again into its own gitignored
+  `einaf/target/`, and its manifest copies the engine's `[patch.crates-io]`
+  for `lrpar` and the `gate` profile, which a manifest outside the workspace
+  does not inherit; its `Cargo.lock` was started from the engine's.
+  **`einaf::kernel` is the one module that calls Ein's library**: it loads a
+  program as `ein solve` does, the hypothesis mechanisms' judgement included,
+  asks one of `ein solve`'s questions on a copy of the load, and reads which
+  of **the seven outcomes** the run is (invalid, flagged, not decided,
+  inconsistent, incomplete, several, one), with the reading it was taken
+  under, the part of R *one* and *several* are counted over
+  ([`01-outcomes.md`](docs/einaf/01-outcomes.md)). Its tests are a step of the
+  gate after Ein's: one test an outcome, the command, and every corpus
+  program that is not `slow` under every question, held to its group, its
+  exit, its claims and the engine's static check.
 - **`utils/`** — the scripts; [`utils/README.md`](utils/README.md) is the
   catalogue — one line per script in its group (*renderers*, *checks*, **the
   measurement set**), and the **censuses**, each kept beside the tool that
@@ -360,12 +379,12 @@ says Ein; `c/`, `nl2smt/` and `docs/lib/` are outside both projects.
   measurement through **`bench_env.sh`**, which prints the machine state the
   numbers were taken under.
 - **`build.sh`** — **everything this repo builds, in one command**: the Rust
-  workspace (`--release` by default, into `ein.rs/target/`) and then the three
-  C baselines in `c/` (into the gitignored `build/`). `--debug`,
-  `--no-snmalloc` (the system allocator, for a machine without `cmake` and a
-  C++ compiler), `--all-targets` (tests, benches and the measurement
-  examples), `--engine` / `--c` for one of the two. It builds and does not
-  run: `./run_tests.sh` is the gate.
+  workspace (`--release` by default, into `ein.rs/target/`), then EinAf (into
+  `einaf/target/`), and then the three C baselines in `c/` (into the
+  gitignored `build/`). `--debug`, `--no-snmalloc` (the system allocator, for
+  a machine without `cmake` and a C++ compiler), `--all-targets` (tests,
+  benches and the measurement examples), `--engine`, `--einaf` or `--c` for
+  one of the three. It builds and does not run: `./run_tests.sh` is the gate.
 - **`c/`** — **three plain-C Zebra baselines**, the puzzle `examples/zebra.ein`
   encodes with exactly one thing varying, how much the search is told about
   the constraints. Wired into nothing: the gate does not run them and no crate
@@ -760,13 +779,15 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   and this file; `c/`, `nl2smt/` and `docs/lib/` are external to both. The
   process reads the project, which it sees in many states; nothing in the
   project reads, links or names the process. **EinAf is a second project,
-  over the first** (§ What this project is): `einaf/` and `docs/einaf/`, once
-  they exist. It reads Ein, and nothing of Ein but the root `README.md` names
-  it; the process reads it as it reads Ein. The checks of Ein's prose (the
-  release voice, the rules of `docs/ein/`) are Ein's and do not read EinAf's
-  trees, and what EinAf's own pages hold themselves to is decided with its
-  first page
-  ([Q-M2.8](plans/m2_nl_to_ir/open_questions.md#q-m28--where-does-einaf-live)). A decision about the process
+  over the first** (§ What this project is): `einaf/` and `docs/einaf/`. It
+  reads Ein, and nothing of Ein but the root `README.md` names it; the process
+  reads it as it reads Ein. The checks of Ein's prose (the release voice, the
+  rules of `docs/ein/`) are Ein's and do not read EinAf's trees
+  (`check_release_voice.py`'s `NOT_PROJECT` names both); the link check reads
+  EinAf's pages as it reads every tracked page, and a decision they cite is
+  Ein's. What EinAf's own pages hold themselves to is proposed in
+  [Q-M2.8](plans/m2_nl_to_ir/open_questions.md#q-m28--where-does-einaf-live)'s
+  entry, for the user to rule on. A decision about the process
   stays in `plans/`; a generated project file says it is generated and names
   no tool; a measurement lives beside the script that takes it.
 - **A wrong answer** is filed and fixed by
@@ -821,6 +842,8 @@ EIN_FUZZ_ITERS=20000 EIN_FUZZ_SEED=1 cargo test … -p ein-ir --profile gate --t
 cargo bench … --bench engine -- --test                       # the nightly's bench job, and the gate's last step
 cargo test … -p ein-infer --features counters --test arith_batch   # the calculator's batch, by the matcher's count; by hand, in no tier
 cargo test --manifest-path ein.rs/Cargo.toml --profile gate --workspace   # the tests alone, as the gate builds them
+cargo test --manifest-path einaf/Cargo.toml --profile gate   # EinAf's tests, the gate's step after Ein's (--nocapture: the corpus's count of each outcome)
+einaf/target/release/einaf outcome FILE [--single|--maximal|--minimal|--count|--no-search]   # a program's outcome under one question, per reading; ./build.sh --einaf builds it
 EIN_TEST_JOBS=1   cargo test … --profile gate --workspace    # the corpus sweeps one unit at a time; the verdicts are the default's
 EIN_TEST_UNITS=u.tsv EIN_TEST_JOBS=1 cargo test … --test id_order_invariance   # every unit's cost and peak memory, one line each
 EIN_CORPUS_SLOW=1 EIN_TEST_SHARD=2/4 cargo test … --test corpus_cores   # one shard of a nightly step
@@ -898,7 +921,9 @@ only a plan or a commit still names them.
 
 **`./run_tests.sh` runs every step of the per-commit CI tier**, in its order:
 ten static checks (`--tests-only` skips them and the bench smoke), then
-`cargo test --profile gate --workspace`, then the process's checks that need
+`cargo test --profile gate --workspace`, then EinAf's tests (`cargo test
+--manifest-path einaf/Cargo.toml --profile gate`, its own build of the
+engine's crates), then the process's checks that need
 the binary it built, then the bench smoke test. The tests run with
 `TMPDIR` set to a fresh directory under `build/`, and
 `utils/check_test_scratch.py` fails the gate on anything they leave there,

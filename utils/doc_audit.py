@@ -51,8 +51,10 @@ tree such as the review bundle is read as pages and nothing else.
 `docs/decisions/**/<id>-<slug>.md`, and no id has two. The project is what the
 process is not: `plans/`, `utils/`, the gate and CI (`run_tests.sh`,
 `.github/`) and `AGENTS.md` are the process, `c/`, `nl2smt/` and `docs/lib/`
-are external, and `docs/history/` and `ein.rs/vendor/` are not read. What is
-read of the rest:
+are external, and `docs/history/` and `ein.rs/vendor/` are not read. EinAf's
+pages, `docs/einaf/`, are read as the project's are, on purpose: a decision
+they cite is one of Ein's, and resolves to its file; EinAf's own questions are
+answered in its pages, not cited by id. What is read of the rest:
 
 - every project `.md`, whole;
 - every `.rs` under `ein.rs/crates/`: its comments (`//`, `///`, `//!`,

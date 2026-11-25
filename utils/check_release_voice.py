@@ -2,7 +2,11 @@
 """The project speaks as a released system, and names nothing of the process.
 
 The project is `README.md`, `ein.rs/` with its tests, `stdlib/`, `examples/`,
-`tests/`, `corpus/` and `docs/` but `docs/lib/`. The process is the plans, the
+`tests/`, `corpus/` and `docs/` but `docs/lib/` and `docs/einaf/`. EinAf,
+`einaf/` and `docs/einaf/`, is a second project over it, whose prose holds
+itself to its own rules and is not read here: it uses the research plan's
+labels (`F0` to `F8`, `B0` to `B6`, `G1` to `G9`), which this check would read
+as followup ids, and its experiments' records are dated by nature. The process is the plans, the
 scripts, the gate and CI and the agents' guide; it reads the project, which it
 sees in many states, and nothing in the project reads, links or names it. A
 released system's documentation states what is true of it now. A line that
@@ -59,9 +63,11 @@ sys.path.insert(0, str(REPO / "utils"))
 from doc_audit import RS_CHAR, RS_RAW, ein_comment_text  # noqa: E402
 
 #: What is not the project: the process (the plans, the scripts, the gate and
-#: CI, the agents' guide), what is external to both, and third-party source.
+#: CI, the agents' guide), EinAf (a second project over Ein, whose prose keeps
+#: rules of its own), what is external to both, and third-party source.
 NOT_PROJECT = (
     "plans/", "utils/", ".github/", "run_tests.sh", "AGENTS.md", "CLAUDE.md",
+    "einaf/", "docs/einaf/",
     "c/", "nl2smt/", "docs/lib/", "ein.rs/vendor/",
 )
 #: The project's data read whole, beside its `.md` files.

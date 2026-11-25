@@ -33,6 +33,11 @@ corpus/out/
 ein.rs/bench-out/
 ein.rs/target-*
 
+# ── EinAf ─────────────────────────────────────────────────────────
+# Its own build tree: `einaf/` is a workspace of its own, outside the
+# engine's, and builds the engine's crates into it.
+einaf/target/
+
 # A review bundle built for the user under a milestone's plans: its pages and the
 # programs they run are kept; what the runs produce (outputs, dumps, drawings, logs,
 # scripts' results) is ignored and re-taken by each item's re-run.

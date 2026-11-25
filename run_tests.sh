@@ -2,11 +2,11 @@
 #
 # run_tests.sh — the gate.
 #
-#     ./run_tests.sh                 # ten static checks, the tests, their scratch check, the generated files' and the region routes' checks, the review-bundle smoke, the bench smoke
+#     ./run_tests.sh                 # ten static checks, the tests, EinAf's tests, their scratch check, the generated files' and the region routes' checks, the review-bundle smoke, the bench smoke
 #     ./run_tests.sh --slow          # the same, every test at its slow depth (EIN_CORPUS_SLOW=1: every corpus program) and 8 id seeds
 #     ./run_tests.sh --nightly       # instead of the gate: every step of .github/workflows/nightly.yml, in order
 #     ./run_tests.sh --dev-host      # instead of the gate: the nightly's steps at full budget, and the steps CI no longer runs
-#     ./run_tests.sh --tests-only    # cargo test, its scratch check, the generated files', the region routes' and the review-bundle smoke — no static checks, no bench smoke
+#     ./run_tests.sh --tests-only    # cargo test, EinAf's tests, their scratch check, the generated files', the region routes' and the review-bundle smoke — no static checks, no bench smoke
 #     ./run_tests.sh -p ein-ir       # anything else is forwarded to cargo test
 #
 # **The gate needs Graphviz on `PATH`**: `ein-render/tests/dot_wellformed.rs`
@@ -851,6 +851,14 @@ trap 'rm -rf "${GATE_TMP}"' EXIT
 
 step "cargo test --profile gate --workspace"
 TMPDIR="${GATE_TMP}" cargo test --manifest-path "${MANIFEST}" --profile gate --workspace ${ARGS[@]+"${ARGS[@]}"}
+
+# EinAf's tests, after the engine's: a package of its own outside the
+# engine's workspace, which links the engine's crates by path and builds them
+# again into `einaf/target/`. Under the same `TMPDIR`, so the scratch check
+# below reads what both left. The arguments forwarded to the engine's
+# `cargo test` are not forwarded here: they name the engine's packages.
+step "einaf: cargo test --profile gate"
+TMPDIR="${GATE_TMP}" cargo test --manifest-path "${SCRIPT_DIR}/einaf/Cargo.toml" --profile gate
 
 # The calculator's batch under the work counters, `cargo test -p ein-infer
 # --features counters --test arith_batch`, was a step here from M1f S1f.6.3 to
