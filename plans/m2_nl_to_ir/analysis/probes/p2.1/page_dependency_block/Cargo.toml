@@ -1,0 +1,20 @@
+# The dependency block of docs/ein/ein.rs/04-api.md § 1, alone: a package
+# outside the engine's workspace that depends on `ein-ir` by path and writes
+# no `[patch.crates-io]`. It does not build (E-62 of the evaluation):
+#
+#     cargo build --manifest-path plans/m2_nl_to_ir/analysis/probes/p2.1/page_dependency_block/Cargo.toml \
+#         --target-dir /tmp/page_dependency_block
+#
+# resolves the published `lrpar` 0.15.0, and `ein-ir` fails to compile against
+# it (E0432, `lrpar::parser::RECOVERY_STEP_BUDGET`; E0599 twice).
+
+[package]
+name    = "page_dependency_block"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[workspace]
+
+[dependencies]
+ein-ir = { path = "../../../../../../ein.rs/crates/ein-ir" }

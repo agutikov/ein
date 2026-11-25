@@ -456,6 +456,32 @@ separately"*. So item 1 is the user's; the others stay defaults.
    thing it decides is built. `docs/decisions/` is about Ein
    ([Q-M1f.346](../../docs/decisions/docs/Q-M1f.346-the-decisions-are-about-ein-not-about-how.md)).
 
+**Proposed by [S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md), with EinAf's first pages
+(2026-11-25): what EinAf's pages hold themselves to.** A proposal, the user's to correct; the pages written so far
+([`docs/einaf/`](../../docs/einaf/README.md)) follow it.
+
+1. **The current state, as Ein's pages do.** A page that stops being true is rewritten or deleted; no page names a
+   plan, a phase, a stage, a task or a date, and none links into `plans/`: EinAf is a project, and the process
+   reads it as it reads Ein. An answer about EinAf is written into the page of the thing it decides, once that is
+   built; until then it is this ledger's, and a page does not cite it by id.
+2. **A dated measurement is a record, not a page**: one run, immutable, under `einaf/experiments/`. A number a page
+   states carries the command or the test that re-takes it, as Ein's do
+   ([Q-M1e.4](../../docs/decisions/docs/Q-M1e.4-an-exact-number-in-a-page-carries-the-command.md)); the corpus counts
+   of S2.1.1's sweep are in its record, and the page names the test that prints them.
+3. **The research plan's labels are EinAf's vocabulary**: F0 to F8 (what the kernel is allowed to say), B0 to B6
+   (the arms), G1 to G9, written in its pages and its code as they are in [`EinAf.md`](EinAf.md). This is why the
+   release-voice check does not read EinAf's trees: it would read `F2` as a followup id.
+4. **Named as Ein's pages are**: `NN-kebab-name` in reading order with a `README.md` index; a diagram is a file
+   with its picture beside the page, under `diagrams/`. `utils/check_doc_blocks.py` reads `docs/ein/` only, and
+   reads a `diagrams/` folder under `docs/einaf/` without the page that shows it, so EinAf's first diagram needs the
+   check to read EinAf's pages for its rule 1.
+5. **What they may link**: Ein's pages, tests and decisions, and EinAf's own code and tests. A decision of Ein's
+   they cite resolves to its file: `utils/doc_audit.py --links --check --tracked` reads EinAf's pages for links,
+   anchors and decision ids as it reads Ein's.
+6. **What enforces it today**: the link check alone. Items 1 to 4 have no check yet; one is proposed for when the
+   pages grow, either a check of EinAf's own (no plan id, no date, no path into the process; the labels allowed) or
+   the release-voice check with EinAf's labels allowed.
+
 ## Q-M2.9 — Does the kernel grow a machine surface for diagnostics?
 
 **Ruled by the user, 2026-11-25:** *"(b)"*: the kernel grows the surface, in its own terms.

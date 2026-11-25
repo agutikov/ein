@@ -120,7 +120,7 @@ inside the development process"*.
 | | what it is | where | depends on |
 |---|---|---|---|
 | **Ein** | the language, what a program means and what its answer is; and **ein.rs**, an implementation of it | `stdlib/`, `examples/`, `tests/`, `corpus/`, `docs/ein/`, `docs/decisions/`; `ein.rs/` | nothing in the repository |
-| **EinAf** | this milestone's subject: a model proposes a formalization and the kernel judges it, in a loop | `einaf/`, `docs/einaf/`; neither exists yet | ein.rs, as a library |
+| **EinAf** | this milestone's subject: a model proposes a formalization and the kernel judges it, in a loop | `einaf/`, `docs/einaf/`, both made by [S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md) | ein.rs, as a library |
 | the process | how both are developed | `plans/`, `utils/`, the gate and CI, `AGENTS.md` | reads both |
 
 **Nothing of Ein reads, links or names EinAf.** A change the kernel takes in this milestone is stated in Ein's
@@ -197,8 +197,9 @@ ambiguous theory with one answer* is a state the outcome alone does not say.
 
 ### Where EinAf's things are
 
-One tree for EinAf and its documentation apart, as the user ruled ([Q-M2.8](open_questions.md#q-m28--where-does-einaf-live)); the folders inside are the re-plan's. None exists yet, and [S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md)
-creates the first.
+One tree for EinAf and its documentation apart, as the user ruled ([Q-M2.8](open_questions.md#q-m28--where-does-einaf-live)); the folders inside are the re-plan's. [S2.1.1](p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md)
+made `einaf/` (the package, `src/` and `tests/`) and `docs/einaf/`; the other folders are made by the stages that need
+them.
 
 | path | what |
 |---|---|
