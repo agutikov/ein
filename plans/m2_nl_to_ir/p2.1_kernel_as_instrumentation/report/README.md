@@ -275,7 +275,9 @@ come first.
 3. **The schema numbers** (S2.1.2, E-92): `ein-summary/2` and `ein-test-report/6` were kept although each gained
    a key, by § 11's reading that the number names the shape's rule (every key on every run); bumping either moves
    `help_shape.txt`, whose option help names the number.
-4. **The 38 kinds' names** (S2.1.2 default 1): each is a new word of Ein's, one a section of the reference.
+4. ~~**The 38 kinds' names**~~ (S2.1.2 default 1). **Ruled 2026-11-25, accepted**: the user, *"Ok, I agree, it's
+   ein.rs surface names, not ein language"*. A kind is a name of ein.rs's machine surface, one a section of the
+   reference, and no word of the language; renaming one is a change to ein.rs (Q-M2.16), not to Ein.
 5. **`--max-steps`, its name and its default 2²⁰** (S2.1.2 bound defaults 1, 2): the unit is a firing, an engine
    count (E-85); the corpus's largest saturation is 17 587 firings.
 6. **Which reading certifies *unique*** ([Q-M2.10](../../open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r)),
