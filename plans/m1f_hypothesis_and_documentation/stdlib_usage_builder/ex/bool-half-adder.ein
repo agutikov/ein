@@ -1,9 +1,0 @@
-(import std.bool.circuit :symbols (gate val))
-(import std.bool.gates :symbols (Xor And))
-
-(gate g1 Xor a b sum)
-(gate g2 And a b carry)
-(val a 1) (val b 1)
-
-(query :goal (val sum ?s))
-(query :goal (val carry ?c))

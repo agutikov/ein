@@ -1,9 +1,0 @@
-(import std.typing)
-
-(relation is-a* T T :why "{?1} is a kind of {?2}")
-
-(reflexive is-a*)
-(is-a* Cat Animal)
-
-(solve :no-search)
-(query :goal (is-a* ?x ?y))

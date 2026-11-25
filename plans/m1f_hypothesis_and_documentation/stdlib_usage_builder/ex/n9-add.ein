@@ -1,8 +1,0 @@
-(import std.math.num9 :symbols (arith9 num9 add9 sum9-of mul9 product9-of overflow))
-
-(add9 (num9 0 0 0 1 2 3 0 7 8) (num9 0 0 0 0 0 4 5 6 7))    ; 123078 + 4567
-(mul9 (num9 0 0 0 1 0 0 0 0 0) (num9 0 0 0 1 0 0 0 0 0))    ; 100000 × 100000
-
-(query :goal (sum9-of ?x ?y ?s))
-(query :goal (product9-of ?x ?y ?p))
-(query :goal (overflow ?r))

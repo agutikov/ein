@@ -7,7 +7,7 @@ user's instruction of that day (*"materialize M1h phases"*). Not started. It car
 ruling of 2026-11-08). It is an investigation on programs: five stages each compare the forms of one thing on
 the same problems, the sixth **stops for the user**, and the seventh, whose tasks are written at the stop,
 builds what the user rules.
-**Depends on:** [M1f](../../m1f_hypothesis_and_documentation/README.md)'s calculator phase:
+**Depends on:** M1f's calculator phase:
 S1f.6.26, the read-out
 row for what root owes (done 2026-11-13), and
 S1f.6.28,
@@ -156,7 +156,7 @@ As the tree stands on 2026-11-13. Each is re-taken by the stage that uses it.
   It is F21's open question met on a program a user would write.
 - **Two findings of the calculator's phase** that bear on a gap as a debt: E-18, a query's `:expect (false)`
   holds on a program that only owes
-  ([Q-M1f.219](../../m1f_hypothesis_and_documentation/open_questions.md#q-m1f219--a-querys-false-on-a-program-that-only-owes),
+  ([Q-M1f.219](../../../docs/decisions/answer/Q-M1f.219-a-querys-false-holds-over-either-kind-of-empty-r.md),
   defaulted to no change and P1g.7's), and E-44, on an R empty by owing root's own debts are on no stdout row
   where root is not on the frontier
   (`findings.md`).

@@ -6,7 +6,7 @@
 has a directory with a README and a file a stage ([§ The phases](#the-phases)); each phase's section below is
 its source and is kept as it was written on 2026-11-12, with a pointer at its head. The questions are in
 [`open_questions.md`](open_questions.md), Q-M1h.1 to .20, none ruled.
-**Depends on:** [M1f](../m1f_hypothesis_and_documentation/README.md)'s calculator phase,
+**Depends on:** M1f's calculator phase,
 P1f.6: the word problems banked under
 [`examples/word_problems/`](../../examples/word_problems/README.md)
 (S1f.6.20,

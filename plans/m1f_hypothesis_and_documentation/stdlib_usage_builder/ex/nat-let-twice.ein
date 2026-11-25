@@ -1,6 +1,0 @@
-(import std.math.decimal-arith :symbols (let))
-(import std.math.decimal :symbols (n))
-(import std.math.arith :symbols (z))
-
-(let price (n z 3))
-(let price (n z 4))

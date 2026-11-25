@@ -24,6 +24,11 @@ it took it, its `grep`s re-taken at that phase's close. Nothing was re-run at th
 runs from the repository's root, `ein` the gate build (`ein.rs/target/gate/ein`) or, where the row says so, the
 release build.
 
+**A question a row names.** Its id is a decision under [`docs/decisions/`](../../docs/decisions/README.md) or a
+section of the root ledger, [`plans/open_questions.md`](../open_questions.md); one with neither is carried by another
+decision's file or was spent, as its row of the milestone's ledger says, in the parent of the commit that deleted it
+(`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation`).
+
 ## The items
 
 ### The release voice where the check does not read, the gate and the instruments

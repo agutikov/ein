@@ -1,3 +1,0 @@
-(import std.math.bits :symbols (bin-fa))
-
-(query :goal (bin-fa 1 1 1 ?bit ?carry))

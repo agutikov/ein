@@ -1,4 +1,0 @@
-(import std.math.digits :symbols (fa md))
-
-(query :goal (fa 7 5 0 ?digit ?carry))
-(query :goal (md 7 8 0 ?digit ?carry))

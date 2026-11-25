@@ -1,5 +1,0 @@
-(import std.math.decimal-arith :symbols (add))
-(import std.math.decimal :symbols (n))
-(import std.math.arith :symbols (z))
-
-(add (n z 2) (n z 3))

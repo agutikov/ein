@@ -1,5 +1,0 @@
-(import std.math.int :symbols (int int-add))
-(import std.math.decimal :symbols (n))
-(import std.math.arith :symbols (z))
-
-(int-add debt (int (n z 4) z))

@@ -1,2 +1,0 @@
-(import std.elim :symbols (domain-elimination))
-(import std.bijection :symbols (domain-elimination))

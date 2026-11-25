@@ -1,6 +1,0 @@
-(import std.math.rat :symbols (rat rat-neg))
-(import std.math.int :symbols (int))
-(import std.math.decimal :symbols (n))
-(import std.math.arith :symbols (z))
-
-(rat-neg (rat 7 (n z 2)))

@@ -1,6 +1,0 @@
-(import std.bool.circuit :symbols (gate val))
-(import std.bool.gates :symbols (Fst))
-
-(gate g1 Fst a b out)
-(val a 1) (val b 0)
-(val out 0)

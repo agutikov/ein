@@ -1,9 +1,0 @@
-(import std.math.convert :symbols (to-bin bin-of))
-(import std.math.decimal-arith :symbols (let))
-(import std.math.decimal :symbols (n))
-(import std.math.arith :symbols (z))
-
-(let thirteen (n (n z 1) 3))
-(to-bin thirteen)
-
-(query :goal (bin-of ?x ?b))

@@ -7,7 +7,7 @@ one stage of P1g.6, S1g.6.6, and, on the user's reply in round 2, a third phase,
 **Extended 2026-11-13** on the user's instruction of that day: M1f's P1f.8, school algebra and geometry, split
 into two phases and moved here as P1g.10 and P1g.11, and one more stage of P1g.6, S1g.6.7
 ([§ Additions of 2026-11-13](#additions-of-2026-11-13)).
-**Depends on:** [M1f](../m1f_hypothesis_and_documentation/README.md), complete (the user, 2026-11-11: *"first
+**Depends on:** M1f, complete (the user, 2026-11-11: *"first
 we will complete M1f"*). Specifically:
 S1f.6.16, binary
 arithmetic, and S1f.6.17,

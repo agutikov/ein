@@ -1,3 +1,0 @@
-(import std.math.num9 :symbols (num9 add9))
-
-(add9 (num9 0 0 0 0 0 0 0 7) (num9 0 0 0 0 0 0 0 0 1))

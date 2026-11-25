@@ -1,7 +1,0 @@
-(import std.math.decimal-arith :symbols (sum-of))
-(import std.math.decimal :symbols (n))
-(import std.math.arith :symbols (z))
-
-(sum-of (n z 2) (n z 2) (n z 5))
-
-(query :goal (sum-of ?x ?y ?s))

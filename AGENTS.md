@@ -376,13 +376,13 @@ its commit message. Edit this file only when a rule, a location, a command or
 the pointer below changes, and then in place: no dated *"S… ran to its end"*
 paragraph, no register count, no measurement (the user's rule).
 
-- **Current milestone: M1f**,
-  [`plans/m1f_hypothesis_and_documentation/`](plans/m1f_hypothesis_and_documentation/README.md).
-  **No phase of it is left**: the last, P1f.21, the kernel's verdicts as
-  rules, is closed on the user's word and its folder deleted. The close of
-  M1f was started and is paused, and **resumes only on the user's word**;
-  the milestone's plans are deleted when it is done, and **the work stops
-  after M1f** (the user's rulings).
+- **No milestone is current.** M1f, the structure of the hypothesis set and
+  the documentation, is closed on the user's word and its plans deleted
+  (`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation`): its
+  answers are decisions under `docs/decisions/`, its rulings about the process
+  that still bind are the root ledger's, and what it found and left is in
+  followups. **The work stops after M1f** (the user's ruling): nothing below
+  starts without the user's word.
 - **A finished plan is deleted.** A milestone or phase whose README says
   *closed* or *done*, and a followup that says *done*, goes with its folder once
   what still reads it is re-aimed and what it still owns has moved to its owner;
@@ -390,16 +390,17 @@ paragraph, no register count, no measurement (the user's rule).
   its label text. What stays under `plans/` is unfinished work: open
   milestones, phases and followups, the open questions, the open wrong answers,
   and `plans/ideas/`.
-- **What waits for the user**: milestone-wide questions, with every default
-  taken, are
-  [`open_questions.md`](plans/m1f_hypothesis_and_documentation/open_questions.md)
-  (Q-M1f.n); a default stands until the user revises it. What the closed
-  phases found and left, the user's calls among it marked, and the defaults
-  they took, are the milestone's
-  [`findings.md`](plans/m1f_hypothesis_and_documentation/findings.md) (L-n).
-  A phase keeps what it finds outside its scope in a findings page of its own,
-  beside its README, and shows it; at the phase's close what is open moves to
-  the milestone's page or to its owner.
+- **What waits for the user**: questions that span milestones, and the
+  rulings about the process a closed milestone left binding, are the root
+  ledger, [`plans/open_questions.md`](plans/open_questions.md), ids sticky; what
+  the closed milestones found and left, the user's calls among it marked, and
+  the defaults they took, are the followups,
+  [`plans/followups/`](plans/followups/README.md), each finding under its own id
+  (M1f's L-n are F22, F23 and F28 to F32's, its defaults F33's); a default
+  stands until the user revises it. A phase keeps what it finds outside its
+  scope in a findings page of its own, beside its README, and shows it; at the
+  phase's close what is open moves to its milestone's page or to its owner, and
+  at the milestone's close to the followups.
 - **The wrong-answer register** is
   [`plans/wrong_answers/register.toml`](plans/wrong_answers/register.toml), the
   open wrong answers, with its rules in [its README](plans/wrong_answers/README.md);
@@ -410,7 +411,8 @@ paragraph, no register count, no measurement (the user's rule).
   [F24](plans/followups/f24_written_provenance.md)). **No row is of a program the
   static check flags**: nothing is claimed of such a program's answer, so none is
   held to one (Q-M1f.564).
-- **After M1f**: [M1g](plans/m1g_logic/README.md), logic in Ein (school
+- **After M1f**, each started only on the user's word:
+  [M1g](plans/m1g_logic/README.md), logic in Ein (school
   algebra and geometry are its P1g.10 and P1g.11);
   [M1h](plans/m1h_beyond_word_problems/README.md);
   [M12](plans/m12_rules_as_data/README.md), rules as data (its

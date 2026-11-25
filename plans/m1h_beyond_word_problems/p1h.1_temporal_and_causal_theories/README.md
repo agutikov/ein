@@ -7,7 +7,7 @@ user's instruction of that day (*"materialize M1h phases"*). Not started. It car
 ruling of 2026-11-08). Its fifth stage **stops for the user** with real programs computed on prototypes,
 before either module is written; the three stages after the stop are named here and their tasks are written
 at the stop.
-**Depends on:** [M1f](../../m1f_hypothesis_and_documentation/README.md)'s calculator phase,
+**Depends on:** M1f's calculator phase,
 P1f.6: the word theory banked under
 [`examples/word_problems/`](../../../examples/word_problems/README.md), whose named moments are where the
 phase starts, and

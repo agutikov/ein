@@ -1,7 +1,0 @@
-(import std.math.decimal-arith :symbols (div quot-of))
-(import std.math.decimal :symbols (n))
-(import std.math.arith :symbols (z))
-
-(div (n z 7) z)
-
-(query :goal (quot-of ?x ?y ?q ?r))

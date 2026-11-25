@@ -737,7 +737,7 @@ row.**
 
 **What it bears on.**
 
-- **Q-M1f.307.** Answer (A) read over nodes (the record's reading 2) gives the twin's model here. Read
+- **Q-M1f.307** (carried by [Q-M1e.11](../../docs/decisions/hypotheses/Q-M1e.11-h-holds-what-a-debt-only-a-commitment-brings.md) since M1f's close). Answer (A) read over nodes (the record's reading 2) gives the twin's model here. Read
   statically from activators (reading 1) it does not reach this program, and (B), (C) and (D) as worded do
   not either: no activator is derived, and the program is monotone.
 - **README § The domain's second paragraph**, *H does not grow*, is enforced for
@@ -795,7 +795,7 @@ lane; reproduced on the gate binary), proposed a register row and left the row t
 that phase's close, under the standing rule that a wrong answer is a row: **`W8/fifo-gap-root`**, open, this
 page's. With it this page owns five rows of W8. The phase's folder is deleted
 (`git log --diff-filter=D -- 'plans/m1f_hypothesis_and_documentation/p1f.20_*'`); what it found and
-left is [the milestone's findings page](../m1f_hypothesis_and_documentation/findings.md).
+left was the milestone's findings page, whose open rows went to followups at M1f's close (F22, F23, F28 to F33; [the index](../followups/README.md)).
 
 **What is false.** Rule order decides root's fixpoint on a program the static check calls monotone, and nothing
 says so. Two rules that each wait on an `absent`, the reader written before the producer, with both their positive

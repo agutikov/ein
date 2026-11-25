@@ -1,8 +1,0 @@
-(import std.bool.inputs :symbols (is-a in))
-(import std.bool.circuit :symbols (gate val))
-(import std.bool.gates :symbols (Nand))
-
-(gate g1 Nand a b out)
-(is-a a Input) (is-a b Input)
-
-(query :goal (and (in a ?a) (in b ?b) (val out ?out)))

@@ -11,8 +11,14 @@ plans/m1f_hypothesis_and_documentation`).
 (the review's rulings, built). **A default stands until the user revises it**: none is a finding, none is a question
 waiting, and nothing is to be built for any. What the user ruled is a decision under
 [`docs/decisions/`](../../docs/decisions/README.md) or a rule of [`AGENTS.md`](../../AGENTS.md), and is not listed;
-the readings those phases put as questions, each with its default, are decisions too, or went with the ledger where
-they were about the work and not about Ein (the ledger's close, the same day).
+the readings those phases put as questions, each with its default, are decisions too (a file of their own, or
+another's that carries them), the root ledger's where they rule the process, or were spent with the milestone's
+ledger, which said which in each row (the ledger's close, the same day).
+
+**A question a row names.** Its id is a decision under [`docs/decisions/`](../../docs/decisions/README.md) or a
+section of the root ledger, [`plans/open_questions.md`](../open_questions.md); one with neither is carried by another
+decision's file or was spent, as its row of the milestone's ledger says, in the parent of the commit that deleted it
+(`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation`).
 
 **Trigger.** The user revising one; a stage that changes what a default describes, which then names it.
 

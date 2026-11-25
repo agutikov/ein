@@ -1,5 +1,0 @@
-(import std.math.int :symbols (int int-neg))
-(import std.math.decimal :symbols (n))
-(import std.math.arith :symbols (z))
-
-(int-neg (int 7 z))

@@ -1,7 +1,0 @@
-(import std.math.decimal-arith :symbols (div))
-(import std.math.decimal :symbols (n))
-(import std.math.arith :symbols (z division-by-zero))
-
-(div (n z 7) z)
-
-(solve :expect (false))

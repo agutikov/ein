@@ -1,5 +1,0 @@
-(import std.math.num9 :symbols (num9 add9 sum9-of))
-
-(add9 (num9 0 0 0 0 0 0 0 0 x) (num9 0 0 0 0 0 0 0 0 1))
-
-(query :goal (sum9-of ?x ?y ?s))

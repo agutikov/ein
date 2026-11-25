@@ -1,4 +1,0 @@
-(import std.bool.props :symbols (commutative associative idempotent))
-
-(query :goal (commutative ?f))
-(query :goal (idempotent ?f))

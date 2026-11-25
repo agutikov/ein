@@ -1,9 +1,0 @@
-(import std.math.binary-arith :symbols (binary-arith bin-add bin-sum-of bin-mul bin-product-of))
-(import std.math.binary :symbols (b2))
-(import std.math.arith :symbols (z))
-
-(bin-add (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1))   ; 101 + 111
-(bin-mul (b2 (b2 (b2 z 1) 0) 1) (b2 (b2 (b2 z 1) 1) 1))   ; 101 × 111
-
-(query :goal (bin-sum-of ?x ?y ?s))
-(query :goal (bin-product-of ?x ?y ?p))

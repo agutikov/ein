@@ -7,7 +7,7 @@ user's instruction of that day (*"materialize M1h phases"*). Not started. It car
 ruling of 2026-11-08). **An engine phase where a view of the trace is one.** Its fifth stage **stops for the
 user** with the formula derived on prototypes and every proposed view shown on real traces, before anything
 ships; the two stages after the stop are named here and their tasks are written at the stop.
-**Depends on:** [M1f](../../m1f_hypothesis_and_documentation/README.md)'s calculator phase: the word problems
+**Depends on:** M1f's calculator phase: the word problems
 banked under [`examples/word_problems/`](../../../examples/word_problems/README.md), and the three checks of
 a formula's form that phase built
 (S1f.6.23,

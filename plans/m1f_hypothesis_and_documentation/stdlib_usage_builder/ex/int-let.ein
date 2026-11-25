@@ -1,9 +1,0 @@
-(import std.math.int :symbols (int int-add int-sum-of))
-(import std.math.decimal-arith :symbols (let))
-(import std.math.decimal :symbols (n))
-(import std.math.arith :symbols (z))
-
-(let debt (int z (n (n z 2) 5)))        ; −25
-(int-add debt (int (n (n z 4) 0) z))    ; + 40
-
-(query :goal (int-sum-of debt ?y ?s))

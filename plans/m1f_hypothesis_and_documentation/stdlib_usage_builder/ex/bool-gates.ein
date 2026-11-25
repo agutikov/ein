@@ -1,7 +1,0 @@
-(import std.bool.gates :symbols (Xor gate2 column-name inv le))
-
-(query :goal (Xor ?a ?b ?out))
-(query :goal (gate2 ?f 1 1 0))
-(query :goal (column-name Xor ?column))
-(query :goal (inv ?a ?b))
-(query :goal (le ?a ?b))
