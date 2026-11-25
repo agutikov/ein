@@ -483,7 +483,7 @@ This is the M2 territory ([EinAf](../m2_nl_to_ir/README.md)) — at
 F4 here only as the *cross-cutting research question*. The concrete
 implementation lands in [M2 P2.2 (the formalizer)](../m2_nl_to_ir/p2.2_formalizer/README.md),
 whose [S2.2.4](../m2_nl_to_ir/p2.2_formalizer/s2.2.4_passes.md) is the
-ontology / theory / instance / query passes;
+formalizer's three steps (the facts first, then the ontology, then the theory);
 the *schema of question lists per word-class / per-role* is the
 parked design problem.
 

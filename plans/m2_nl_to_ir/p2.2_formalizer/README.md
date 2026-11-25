@@ -33,16 +33,109 @@ shot, under a written contract, and the kernel answers. It does not solve. Repai
 
 **The formalization is a search for an ontology and a theory around facts that stay close to the text** (the
 user, 2026-11-25: *"formalization is search of ontology and theory for given facts, so facts should be as close to
-original text as possible and changed less then more variable rules"*). So the phase begins with two stages the
-user added: [S2.2.0a](s2.2.0a_zebra_formulations.md) compares the two Zebra encodings, measures how the generic
-vocabulary of `zebra.ein` fares against the literal projections of `zebra2.ein`, and writes `zebra3.ein` in the
-text's own words; [S2.2.0f](s2.2.0f_formalization_in_steps.md) makes the formalization three steps, **the facts
-and a partial ontology first**, then the complete ontology and a partial theory, then the complete theory, and
-re-plans the stages after it to them.
+original text as possible and changed less then more variable rules"*), **made in three steps: the facts and a
+partial ontology first**, then the complete ontology and a partial theory, then the complete theory. Those are the
+user's notes on the whole phase, [below](#formalization-in-steps-the-users-notes-on-the-whole-phase), and every
+stage carries its part of them. The phase begins with the one stage the user added before the others,
+[S2.2.0a](s2.2.0a_zebra_formulations.md): it compares the two Zebra encodings, measures how the generic vocabulary
+of `zebra.ein` fares against the literal projections of `zebra2.ein`, writes `zebra3.ein` in the text's own words,
+and checks that a program written in the order the steps make it is read as Ein reads it in its usual order.
 
 The phase also takes the milestone's cheapest early measurement: **whether the model writes loadable Ein with no
 grammar at all** ([S2.2.2](s2.2.2_model_runtime.md)), which the user expects may be possible
 ([Q-M2.13](../open_questions/einaf/Q-M2.13-who-calls-the-kernel.md)) and which bears on every stage after it.
+
+## Formalization in steps: the user's notes on the whole phase
+
+The notes were first a stage of their own, S2.2.0f, planned on the user's word of 2026-11-25. The user, 2026-11-26:
+*"re-plan s2.2.0f - it must be not a separate stage, it's my notes about whole formalizer phase"*. So they stand
+here, above every stage, and each part of them is carried out by the stage it belongs to
+([the table at the end of this section](#where-each-part-of-the-notes-is-carried-out)).
+
+### The user's words (2026-11-25)
+
+> p2.2 new stage before first stage - s2.2.0f. Formalization goes in several steps: 1 - facts as literal
+> translation of original problem statements + partial ontology with identified relations declarations and part of
+> additional required facts if needed (like instances, types, is-a, whatever else), partial here means it is
+> expected to change in next step; 2 - complete ontology + partial theory, some imported rules, some hand-written;
+> 3 - complete theory; First step is simple - need only to understand what words mean same objects, what are
+> objects and what are relations, one fact per sentence or many facts per sentence, find out if we have objects of
+> different types or same. Next steps obviously depend on previous. After formalization is done we can run solver
+> and consume feedback.
+
+and, with [S2.2.0a](s2.2.0a_zebra_formulations.md):
+
+> The idea is that formalization is search of ontology and theory for given facts, so facts should be as close to
+> original text as possible and changed less then more variable rules.
+
+and, later the same day:
+
+> Promt/context will contain ein syntax and semantic explanation anyway, otherwise LLM doesn't know what is it.
+> So there would be examples
+> Then first experiment would be with original zebra problem and with working zerba program as example - test for dummies.
+
+Kept as stated.
+
+### The three steps
+
+The plan's first re-plan had four passes, **ontology → theory → instance → query**: the ontology first, so that the
+facts name nothing that does not exist. The user's steps put **the facts first**: they are the part of a
+formalization closest to the text, the part a model can write by reading, and the part that should change least;
+the ontology and the theory are what is searched for, around them. A step's output is partial on purpose: it is
+expected to change in the next step.
+
+| step | what it writes | what it decides | what stays partial |
+|---|---|---|---|
+| **1** facts and a partial ontology | each statement as a fact (or several) in the text's own words, with `:source` its sentence; the declarations of the relations those facts use, each with `:why`; the memberships the facts need as far as they are seen (`instance`, `type`, `is-a`, *whatever else*) | **which words name the same object**; what is an object and what is a relation; one fact a sentence or several; whether the objects are of one kind or of several | the declarations' labels, the memberships, the kinds |
+| **2** the complete ontology and a partial theory | every relation and membership the theory will read; imports, and the facts that select what they bring; some rules of the program's own | which library theory, which properties | the rules |
+| **3** the complete theory | the rest of the rules; the hypothesis mechanism | — | nothing: the program is run |
+
+**Next steps depend on the previous ones**, and once the program is complete the kernel is run on it and its
+feedback consumed: that loop is [P2.4](../p2.4_loop/README.md)'s, and what it changes first follows the user's
+principle, **the theory before the facts**.
+
+### Five design questions, each with its default
+
+Five things the steps leave to be decided. Each default is the plan's, for the user to correct, and
+[S2.2.1](s2.2.1_contract.md)'s T2.2.1.7 writes the choice taken into the contract.
+
+- **Where the questions go.** A question is a sentence of the text (*Who drinks water?*). Default: step 1
+  translates it as literally as a statement, into the answer query over the facts' own relations with its
+  `:goal-text` sentence, and the theory has to make that query answerable.
+- **What the kernel is asked between steps.** A step's program can be run: step 1's under `--no-search` (root
+  alone: does it load, is root alive; with no hypothesis mechanism a solve would be answered by the blind
+  enumerator, [E-13](../evaluation/hypotheses/E-13-a-program-that-names-no-hypothesis-mechanism-is-answered-by.md)), step 2's for what it already derives. Default: each step's
+  program is loaded and judged at root, its feedback kept in the record, and only the complete program's is the
+  loop's; whether the model is shown a step's feedback before the next step is an arm of
+  [P2.6](../p2.6_ablations/README.md).
+- **The program's text is the steps' outputs one after another**, so that it reads in the order it was made: the
+  facts, the ontology, then the theory (the user: *"the final program text follow it's synthesis order"*).
+  [S2.2.0a](s2.2.0a_zebra_formulations.md)'s T2.2.0a.3 checks that Ein reads a program written so and answers it
+  as it answers the same forms in their usual order; until then it is the default, and the assembly of
+  [S2.2.4](s2.2.4_passes.md)'s T2.2.4.6 keeps it.
+- **What a later step may change of an earlier one.** Partial means *expected to change*: step 2 completes the
+  ontology step 1 began, and may rename a membership or a kind. Default: a later step adds to the facts and does
+  not rewrite them; a rewritten fact is recorded as such, and counted.
+- **What EinAf checks where the kernel cannot.** A fact of an undeclared relation and a form at another count load
+  in silence ([E-12](../evaluation/language/E-12-an-undeclared-relation-and-a-form-of-a-declared-relation-at.md)); a selection under an unlisted name is inert
+  ([E-11](../evaluation/stdlib/E-11-a-theory-selected-under-a-name-the-file-does-not-list-is.md)). The contract's check ([S2.2.4](s2.2.4_passes.md)'s T2.2.4.6) runs on
+  each step's program, with the findings that apply to it.
+
+### Where each part of the notes is carried out
+
+| the notes | where |
+|---|---|
+| the three steps stated: each step's input, its output, what *partial* means for it, what it decides and may change, how it is checked, and the five questions above with the choice taken | [S2.2.1](s2.2.1_contract.md), T2.2.1.7, a section of the contract (it was S2.2.0f's T2.2.0f.1) |
+| the Zebra puzzle through the three steps by hand, ending at `zebra3.ein`; two or three other texts the same way; each step's program judged | [S2.2.1](s2.2.1_contract.md), T2.2.1.8, the contract's worked examples of the steps (T2.2.0f.2 and T2.2.0f.3) |
+| *"Promt/context will contain ein syntax and semantic explanation anyway … So there would be examples"* | [S2.2.1](s2.2.1_contract.md), T2.2.1.3: B3's excerpt and examples, in every prompt of every arm |
+| *"first experiment would be with original zebra problem and with working zerba program as example - test for dummies"* | [S2.2.2](s2.2.2_model_runtime.md), T2.2.2.6: the probe's first item, the phase's first measurement |
+| *"First step is simple"*: step 1 alone with the model, set against the hand-written step 1 | [S2.2.2](s2.2.2_model_runtime.md), T2.2.2.8 (T2.2.0f.4) |
+| a grammar a step | [S2.2.3](s2.2.3_gbnf.md), T2.2.3.3, and [Q-M2.6](../open_questions/formalizer/Q-M2.6-one-gbnf-or-many.md) |
+| the steps, a prompt each; *select before synthesise* inside steps 2 and 3; the catalogue serving steps 2 and 3; the contract's check on each step's program; the program in synthesis order | [S2.2.4](s2.2.4_passes.md) |
+| `einaf from-text` runs the steps, and the record keeps each step's program and its judgement | [S2.2.5](s2.2.5_from_text.md) |
+| *"After formalization is done we can run solver and consume feedback"*: a repair changes the theory before the facts; a fact rewritten after step 1 is counted; the facts' faithfulness judged at step 1 | [P2.4](../p2.4_loop/README.md#the-theory-before-the-facts), [S2.4.4](../p2.4_loop/s2.4.4_faithfulness.md) |
+| what partial programs show of the kernel | each stage's task of what it found of Ein (T2.2.0f.6) |
+| S2.2.1, S2.2.3, S2.2.4 and S2.2.5 re-planned to the steps, with the notes in P2.4 and S2.4.4 | done at the re-plan of 2026-11-26 that dissolved S2.2.0f (T2.2.0f.5) |
 
 ## What the formalizer emits
 
@@ -59,9 +152,13 @@ answer depends on, and the answer query's `:goal-text`, which is how the program
 | **instance** | `(R a b :source "…")` and `(not (R a b) :source "…")`, the text of each `:source` the sentence it states | a fact takes `:source`, `:rule` and `:using` and no other keyword ([Q-M1e2.28](../../../docs/decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)); names are ASCII; a number is a name, and a quantity that is computed is a numeral of the calculator, `(n z 5)` |
 | **query** | `(query :goal PREMISE :goal-text "…")`: **the answer query**, the one query that carries a `:goal-text`, a sentence that says the answer in the problem's words, as every arm is asked for one ([Q-M2.12](../open_questions/answer/Q-M2.12-what-prints-the-answer.md)); any other query is a check | a goal is held to what a rule's `:match` is held to, and names only relations the program writes ([§ 2.21](../../../docs/ein/user/04-reference/07-diagnostics.md#221-a-goal-is-held-to-what-a-rules-match-is-held-to)) |
 
+**The five parts are made in the three steps** ([above](#the-three-steps)): the instance and the answer query in
+step 1, with the ontology begun; the ontology completed and the theory begun in step 2; the theory and the
+hypothesis mechanism completed in step 3. The program's text is their outputs in that order.
+
 Four things follow, and each is a stage's subject.
 
-**The theory part is selection before synthesis, and selecting is spelling.**
+**The theory part is selection before synthesis, inside steps 2 and 3, and selecting is spelling.**
 [F12](../../followups/f12_rules_and_relations/ideas.md): *select a theory, do not invent properties*. The order
 is the user's three neural actions ([F13](../../followups/f13_puzzles_beyond_zebra/ideas.md): reinterpretation,
 theory selection, theory synthesis) with the third made expensive on purpose, and it is the activator induction
@@ -123,9 +220,9 @@ what both use and the formalizer of one of them.
 | | the filter (B2 to B5) | the tool (B6) |
 |---|---|---|
 | the runtime ([S2.2.2](s2.2.2_model_runtime.md)) | every call, thinking off | every turn, with a function declared to the model and the context kept between turns |
-| the contract and what the model is given ([S2.2.1](s2.2.1_contract.md)) | the prompt of every pass | the tool's function description, which carries what the filter's prompt holds of Ein ([S2.4.6](../p2.4_loop/s2.4.6_ein_as_a_tool.md)) |
-| the grammars ([S2.2.3](s2.2.3_gbnf.md)) | the filter's mechanism: the whole output of a call held to Ein | none: the model writes Ein as it can |
-| the passes ([S2.2.4](s2.2.4_passes.md)) | GENERATE | none |
+| the contract and what the model is given ([S2.2.1](s2.2.1_contract.md)) | the prompt of every step | the tool's function description, which carries what the filter's prompt holds of Ein ([S2.4.6](../p2.4_loop/s2.4.6_ein_as_a_tool.md)) |
+| the grammars ([S2.2.3](s2.2.3_gbnf.md)) | the filter's mechanism: the whole output of a call held to Ein, a grammar a step | none: the model writes Ein as it can |
+| the steps ([S2.2.4](s2.2.4_passes.md)) | GENERATE | none |
 | the answer and its formatters ([S2.2.5](s2.2.5_from_text.md)) | what the program prints | what the tool's last run printed, where the record compares the two |
 
 ## Stages
@@ -133,24 +230,27 @@ what both use and the formalizer of one of them.
 | ID | title | ends with |
 |---|---|---|
 | [S2.2.0a](s2.2.0a_zebra_formulations.md) | Three Zebras: the generic vocabulary, the projections, and the text's own words | `zebra.ein` and `zebra2.ein` measured side by side for a formalizer (distance from the text, the theory and who writes it, the kernel's work and what it says back, what a mistake does); `examples/zebra3.ein`, its facts the sentences' own words, monotone and held to the published answer; each encoding written in its synthesis order (facts, ontology, theory) and held to the same answer; the target shape decided by the table |
-| [S2.2.0f](s2.2.0f_formalization_in_steps.md) | Formalization in steps: the facts first, then the ontology, then the theory | the three steps stated; the Zebra puzzle and other texts through them by hand, each step's program judged; the model's first step probed by hand; S2.2.1, S2.2.3, S2.2.4 and S2.2.5 re-planned to the steps |
-| [S2.2.1](s2.2.1_contract.md) | The formalization contract: B1 to B4 | one page, `docs/einaf/contract.md`: the input, the five-part output with the hypothesis mechanism and the answer query, what a flagged program is, the categories with which of them is a faithfulness event, what the model receives, what is recorded |
-| [S2.2.2](s2.2.2_model_runtime.md) | The model's runtime, and whether the model writes Ein | the binding chosen and built for the GPU, the model's file pinned by its SHA, the envelope every call returns, the binding held to `llama-server` on the same file; **the probe**: parse rate, load rate and the kinds of error of Ein written with no grammar |
-| [S2.2.3](s2.2.3_gbnf.md) | The grammars | a GBNF grammar generated from `ein.l` and `ein.y`, held to the parser in both directions; the restricted grammars, parameterised on a program's own vocabulary; where a grammar begins and how an output ends; [Q-M2.6](../open_questions/formalizer/Q-M2.6-one-gbnf-or-many.md) decided |
-| [S2.2.4](s2.2.4_passes.md) | The passes: ontology, theory, instance, query | the catalogue of the library, each entry run by the kernel; four passes with their prompts; the theory pass selecting, stating the hypothesis mechanism and synthesising only on a named condition; the contract's check on the assembled program; [Q9](../open_questions/formalizer/Q9-ontology-provenance.md) decided |
-| [S2.2.5](s2.2.5_from_text.md) | From a text to a short answer | `einaf from-text`, one shot, the kernel run through EinAf's bounded call; the answer formatters, written to be [M1p](../../m1p_ein_to_natural_language/README.md)'s starting point; the fixed texts EinAf answers with where no program prints an answer; the record per run; the Zebra puzzle and the word problems from their texts to their answers |
+| [S2.2.1](s2.2.1_contract.md) | The formalization contract: B1 to B4, and the steps | one page, `docs/einaf/contract.md`: the input, the five-part output made in three steps with the hypothesis mechanism and the answer query, the steps stated with the five design questions decided, what a flagged program is, the categories by step with which of them is a faithfulness event, what the model receives, what is recorded; the Zebra puzzle and other texts through the three steps by hand, each step's program a file a test judges |
+| [S2.2.2](s2.2.2_model_runtime.md) | The model's runtime, and whether the model writes Ein | the binding chosen and built for the GPU, the model's file pinned by its SHA, the envelope every call returns, the binding held to `llama-server` on the same file; **the probe**, first the user's experiment (the Zebra puzzle with a working Zebra program as its example), then parse rate, load rate and the kinds of error of Ein written with no grammar, and step 1 alone set against the hand-written step 1 |
+| [S2.2.3](s2.2.3_gbnf.md) | The grammars | a GBNF grammar generated from `ein.l` and `ein.y`, held to the parser in both directions; a grammar a step, parameterised on the program's own vocabulary where the step has one; where a grammar begins and how an output ends; [Q-M2.6](../open_questions/formalizer/Q-M2.6-one-gbnf-or-many.md) decided |
+| [S2.2.4](s2.2.4_passes.md) | The steps: the facts first, then the ontology, then the theory | the catalogue of the library, each entry run by the kernel; three steps with their prompts; step 1 writing the facts, the answer query and a partial ontology; steps 2 and 3 selecting before they synthesise, and stating the hypothesis mechanism; the program assembled in synthesis order, each step's program checked and judged at root; [Q9](../open_questions/formalizer/Q9-ontology-provenance.md) decided |
+| [S2.2.5](s2.2.5_from_text.md) | From a text to a short answer | `einaf from-text`, one shot in three steps, the kernel run through EinAf's bounded call; the answer formatters, written to be [M1p](../../m1p_ein_to_natural_language/README.md)'s starting point; the fixed texts EinAf answers with where no program prints an answer; the record per run, each step's program and judgement in it; the Zebra puzzle and the word problems from their texts to their answers |
 
 ### Order
 
-**S2.2.0a, then S2.2.0f, come first** (the user, 2026-11-25: *"p2.2 new stage before first stage - s2.2.0f"* and
-*"another stage even before - s2.2.0a"*). S2.2.0f ends by re-planning S2.2.1, S2.2.3, S2.2.4 and S2.2.5 to the
-steps, so what those files say of the passes' order and of the target shape holds until then and no longer.
+**S2.2.0a comes first** (the user, 2026-11-25: *"another stage even before - s2.2.0a"*): the target shape it
+settles, `zebra3.ein` and its check of the synthesis order are what the stages after it read. **The user's notes on
+the steps govern every stage** (the user, 2026-11-26, above); they were re-planned to them when S2.2.0f was
+dissolved, and each says in its own words what of them it carries.
 
-S2.2.1 and S2.2.2 do not wait for each other. **S2.2.2's probe is the phase's first measurement**: it needs the
-package ([S2.1.1](../p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md)), the kernel's diagnostics as
-values ([S2.1.2](../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md)) and the model, and nothing of
-the contract but the shape its examples show. It runs before a grammar is built, because its result says what a
-grammar would have prevented. S2.2.3 follows the probe; S2.2.4 follows S2.2.1 and S2.2.3; S2.2.5 closes the phase.
+S2.2.1 and S2.2.2 do not wait for each other, but for one item: S2.2.2's step 1 with the model (T2.2.2.8) is set
+against the hand-written step 1 of S2.2.1's T2.2.1.8. **S2.2.2's probe is the phase's first measurement**, and its
+first item is the user's first experiment: it needs the package
+([S2.1.1](../p2.1_kernel_as_instrumentation/s2.1.1_tree_and_outcomes.md)), the kernel's diagnostics as values
+([S2.1.2](../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md)), the model and the target shape, and
+nothing of the contract but the shape its examples show. It runs before a grammar is built, because its result
+says what a grammar would have prevented. S2.2.3 follows the probe; S2.2.4 follows S2.2.1 and S2.2.3; S2.2.5
+closes the phase.
 
 **How every stage reaches the kernel.** One module of EinAf calls the engine's crates, `einaf::kernel`
 ([S2.1.3](../p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md)'s acceptance), and a program is run only
@@ -177,11 +277,19 @@ first part of [S2.5.3](../p2.5_harness/s2.5.3_metrics.md)) before this phase's n
   and match the gold short answer exactly, and the mechanical judge finds no event in any.
 - Every form of every program the phase recorded is in exactly one row of the contract's table of categories, by
   reading the program and the record alone.
+- **The steps by hand**: the Zebra puzzle from its text to `zebra3.ein` (or the target shape S2.2.0a settles)
+  through the three steps, and two or more other texts the same way, each step's program judged by a test of
+  EinAf's gate step ([S2.2.1](s2.2.1_contract.md), T2.2.1.8).
+- **The user's first experiment has a record**: the Zebra puzzle with a working Zebra program as its example,
+  and step 1 alone on the same texts set against the hand-written step 1 ([S2.2.2](s2.2.2_model_runtime.md)).
+- Every one-shot record holds each step's program and its judgement at root beside the complete program's.
 - A record replays: the same fields give the same program, or the record names the field that moved.
 - A program whose saturation has no fixpoint comes back *not decided* within the bound of EinAf's kernel call,
   from the probe on.
 - No prompt holds a benchmark instance's solution: every corpus program a prompt quotes is listed in the record,
-  and the list is handed to [S2.3.4](../p2.3_benchmark/s2.3.4_splits.md) as out of every split.
+  and the list is handed to [S2.3.4](../p2.3_benchmark/s2.3.4_splits.md) as out of every split. The first
+  experiment's Zebra program is on the list; the Zebra instance is in no split
+  ([S2.2.5](s2.2.5_from_text.md), T2.2.5.4).
 - The probe's record exists, and [Q-M2.6](../open_questions/formalizer/Q-M2.6-one-gbnf-or-many.md) and
   [Q9](../open_questions/formalizer/Q9-ontology-provenance.md) are decided in the ledger, each with the measurement it
   rests on.
@@ -192,7 +300,7 @@ first part of [S2.5.3](../p2.5_harness/s2.5.3_metrics.md)) before this phase's n
 
 - **A model of 4.2B parameters may not select a theory in one shot.** The Zebra acceptance asks for `std.slots`
   spelled right, an activator of five arguments among its six, and eighteen facts, from a model that was never
-  trained on Ein. If it is not met, the phase reports the nearest miss pass by pass and the one-shot number stands as
+  trained on Ein. If it is not met, the phase reports the nearest miss step by step and the one-shot number stands as
   baseline B2: a low B2 is a finding, the loop ([P2.4](../p2.4_loop/README.md)) is where the model gets a second
   chance, and whether the gate's first criterion is held as written is the user's at the Level B gate.
 - **The failures that matter are silent.** An activator under an unlisted name, a program with no mechanism, a
@@ -200,6 +308,13 @@ first part of [S2.5.3](../p2.5_harness/s2.5.3_metrics.md)) before this phase's n
   ([the audit, runs s04, s11, s15](../analysis/audit_p2.2.md#snippet-runs-the-table-sections-a-to-c-cite)). A
   grammar makes none of them impossible but the vocabulary ones. The contract's check
   ([S2.2.4](s2.2.4_passes.md)) is EinAf's own and is what tells them apart from a formalization that worked.
+- **Literal facts move work into the theory**, and a theory of the program's own is the expensive move
+  ([F12](../../followups/f12_rules_and_relations/ideas.md)): the steps may trade an easy step 1 for a hard step 3.
+  [S2.2.0a](s2.2.0a_zebra_formulations.md)'s table and the hand-written steps of [S2.2.1](s2.2.1_contract.md)'s
+  T2.2.1.8 measure the trade; no stage argues it.
+- **A wrong coreference in step 1 is costly to undo** when the facts are the part that changes least. The one shot
+  does not change one ([S2.2.4](s2.2.4_passes.md)); the loop has to be able to, at a cost it records
+  ([P2.4](../p2.4_loop/README.md#the-theory-before-the-facts)).
 - **A closed-world reading is one `absent` away from a flagged program.** *The youngest is the one who is older
   than nobody* is flagged where a commitment can add an `older` fact and is monotone under `(solve :no-search)`
   ([S2.2.1](s2.2.1_contract.md) has both runs). A formalizer will write such programs; a flagged program is an
@@ -225,7 +340,11 @@ first part of [S2.5.3](../p2.5_harness/s2.5.3_metrics.md)) before this phase's n
   [paths](../README.md#where-einafs-things-are).
 - [The audit of this phase](../analysis/audit_p2.2.md), [the host](../analysis/host.md), and
   [the analysis, § 3, P2.2](../analysis/README.md#p22--the-formalizer-audit).
-- [Idea 04](../../ideas/04-nlp-to-graph-to-solver-pipeline.md), the pipeline sketch;
+- [Idea 04](../../ideas/04-nlp-to-graph-to-solver-pipeline.md), the pipeline sketch
+  ([§ Sketch of the pipeline](../../ideas/04-nlp-to-graph-to-solver-pipeline.md#sketch-of-the-pipeline));
+  [F13](../../followups/f13_puzzles_beyond_zebra/ideas.md)'s three neural actions, of which step 1 is the first,
+  *reinterpretation*; [F16](../../followups/f16_autoformalization/ideas.md): *autoformalization is not
+  translation*, and step 1 is the part that is;
   [idea 01](../../ideas/01-self-modifying-constraint-language.md), GBNF as the syntactic firewall;
   [`docs/lib/01`](../../../docs/lib/01-llm-constrained-generation.md).
 - [F16](../../followups/f16_autoformalization/ideas.md), [F12](../../followups/f12_rules_and_relations/ideas.md),
@@ -247,7 +366,7 @@ Each is this re-plan's, recorded so that the user can correct it; none is a ruli
    `examples/zebra2.ein`; the Zebra acceptance accepts either formulation, since it is stated on the answer.
    **Reopened by the user** (2026-11-25): [S2.2.0a](s2.2.0a_zebra_formulations.md) measures the two against a
    third, literal encoding and settles the target shape by the table.
-2. **The hypothesis mechanism is a part of the contract of its own**, stated by the theory pass. A program that
+2. **The hypothesis mechanism is a part of the contract of its own**, stated in step 3. A program that
    states none is recorded as the kernel reports it, `blind`, and is not refused.
 3. **A category is computed, not written**: by EinAf, from the program, the input text and the catalogue, and kept
    in the record keyed by the form's canonical text. A fact outside the library's with no `:source` is a
@@ -258,16 +377,18 @@ Each is this re-plan's, recorded so that the user can correct it; none is a ruli
    ruled ([Q-M2.12](../open_questions/answer/Q-M2.12-what-prints-the-answer.md)). A program with none has no answer; with two, the first is read and the check reports it. The model
    writes every `:why`, and EinAf never loads with the `:why` requirement off.
 5. **Texts are English** (the frame's default 9): the Russian half of the old plan is dropped.
-6. **S2.2.1 and S2.2.2 are independent**, and the probe is the phase's first measurement.
+6. **S2.2.1 and S2.2.2 are independent**, but for step 1 with the model, which is set against S2.2.1's hand-written
+   steps; and the probe, the user's first experiment its first item, is the phase's first measurement.
 7. **This phase's own runs are greedy** (temperature 0), so that one run is the whole distribution. Which
    sampler chain the arms run with is [S2.5.2](../p2.5_harness/s2.5.2_baselines.md)'s, whose default is the
    model's own; the one shot runs under it unchanged.
 8. **The reference run of `llama-server` is by hand, from a recorded request**; a Rust client of it is written
    only if the fallback is taken.
-9. **The probe's items** are a few small texts and the sixteen word problems over the library alone, which is
-   the main arms' condition, and the sixteen again with the word theory given, which is the library ablation's
-   widest and is labelled so; no item is shown an example of its own text family; thinking off and on; the
-   output read whole and by its first fenced block.
+9. **The probe's items** are, first, the user's first experiment (the Zebra puzzle with a working Zebra program
+   as its example, default 31); then a few small texts and the sixteen word problems over the library alone,
+   which is the main arms' condition, and the sixteen again with the word theory given, which is the library
+   ablation's widest and is labelled so; and step 1 alone (default 32). No item but the first is shown an example
+   of its own text family; thinking off and on; the output read whole and by its first fenced block.
 10. **The grammar is held to the parser in both directions** offline, and to llama.cpp's own sampler over the
     corpus by hand; the old echo round-trip through the model is dropped. No speed target is inherited.
 11. **A grammar begins at the first token, thinking off**, in the arms; the start after the thinking is built for
@@ -276,7 +397,7 @@ Each is this re-plan's, recorded so that the user can correct it; none is a ruli
     alone**: a family's own module is its canonical program's, is not shown to the model in the main arms, and
     is offered only under the widest condition of the library ablation
     ([S2.6.4](../p2.6_ablations/s2.6.4_representation_ablations.md)).
-13. **The passes are the formalizer; the whole program in one call is kept as a mode**, and both are recorded.
+13. **The steps are the formalizer; the whole program in one call is kept as a mode**, and both are recorded.
 14. **EinAf rewrites nothing the model wrote**: a number is a numeral because the model wrote one.
 15. **`einaf from-text` always asks the kernel**; the old *direct* mode is `--out`.
 16. **With no formatter applied, EinAf's line is the kernel's, byte for byte**: that equality, over every
@@ -301,10 +422,14 @@ Each is this re-plan's, recorded so that the user can correct it; none is a ruli
     word alone.
 23. **A formatted value enters the answer by filling the query's template again**, never by editing the line
     the kernel filled: a value's text is not unique inside a line.
-24. **The contract's check is built once, in [S2.2.4](s2.2.4_passes.md)**; the feedback ladder's lints
+24. **The contract's check is built once, in [S2.2.4](s2.2.4_passes.md)**, and runs on each step's program with
+    the findings that apply to it; the feedback ladder's lints
     ([S2.4.3](../p2.4_loop/s2.4.3_feedback_ladder.md)) are its findings given a sentence each.
 25. **The contract's table says which category is a faithfulness event**
-    ([S2.4.4](../p2.4_loop/s2.4.4_faithfulness.md)): only a fact stated as holding with no sentence behind it.
+    ([S2.4.4](../p2.4_loop/s2.4.4_faithfulness.md)): only a fact stated as holding with no sentence behind it, a
+    membership no sentence states among them, which
+    [Q-M2.22](open_questions/answer/Q-M2.22-is-a-membership-no-sentence-states-a-faithfulness-event.md) asks the
+    user about, since the steps make memberships ontology.
     What a program needs to be well formed or to state its lattice (a declaration, an import, a `(solve …)`
     form, a closure, a written `(open F)`) is never one.
 26. **This stage writes the answer lines its own runs need** (each asks for a sentence: how many, for the word
@@ -313,3 +438,50 @@ Each is this re-plan's, recorded so that the user can correct it; none is a ruli
 27. **The probes of this re-plan are in the files' own text** (the contract's worked example in three forms, the
     five forms with no mechanism, the rule with no fixpoint, a word problem over the calculator): this re-plan wrote only into its own folder, so
     none is banked under [`analysis/probes/`](../analysis/README.md) yet.
+
+Taken at the re-plan of 2026-11-26, which dissolved S2.2.0f into the notes above on the user's word and re-planned
+the stages to the steps:
+
+28. **The five design questions of the steps take the defaults written beside them**
+    ([above](#five-design-questions-each-with-its-default)); the old stage said *four* and listed five, the third
+    (the program's text in synthesis order) added with S2.2.0a's T2.2.0a.3.
+29. **The steps are stated in the contract, by [S2.2.1](s2.2.1_contract.md)'s T2.2.1.7**, which was T2.2.0f.1:
+    the steps are what the formalizer emits and in what order, so they are the contract's content, written straight
+    into `docs/einaf/contract.md` with no plan page between.
+30. **The steps by hand are [S2.2.1](s2.2.1_contract.md)'s T2.2.1.8**, which was T2.2.0f.2 and T2.2.0f.3: the
+    Zebra puzzle to `zebra3.ein` and two or three other texts, as the contract's worked examples and as files of
+    `einaf/` a test judges, not probes under `analysis/`. They need no model and are read by four stages after
+    them (S2.2.2's step 1, S2.2.3's step grammars, S2.2.4's replay tests, S2.2.5's Zebra reference), so the first
+    stage with no model holds them; S2.2.4, where the prompts are built, was the other candidate, and comes after
+    the probe that reads them.
+31. **The user's first experiment is the first item of [S2.2.2](s2.2.2_model_runtime.md)'s probe** (T2.2.2.6):
+    the Zebra text, and as the prompt's one example the target shape S2.2.0a settles, run by the kernel, beside its
+    text; the excerpt of Ein's syntax and semantics in the prompt as in every prompt; the whole program in one call,
+    thinking off and on. The family rule yields to it by the user's word; it is labelled as the item shown its own
+    program, a floor, and none of its numbers enters a table.
+32. **Step 1 with the model is [S2.2.2](s2.2.2_model_runtime.md)'s T2.2.2.8**, which was T2.2.0f.4: through the
+    stage's runtime rather than `llama-server` by hand (the fallback is `llama-server` in any case), after the
+    first experiment, and set against T2.2.1.8's hand-written step 1.
+33. **What partial programs show of the kernel**, T2.2.0f.6, goes to each stage's own task of what it found of Ein
+    (T2.2.1.6, T2.2.2.7, T2.2.4.10, T2.2.5.6).
+34. **[S2.2.4](s2.2.4_passes.md) keeps its file name**, `s2.2.4_passes.md`, with the steps as its title: a step is
+    one call of the model, or two where step 2 synthesises, and a rename would move every link to the file for no
+    reader's gain.
+35. **Step 1 is one call over the whole text**: which words name the same object is decided across sentences. The
+    first re-plan's instance pass, a call a sentence with the sentence marked, is kept as a mode of step 1.
+36. **Select before synthesise, inside steps 2 and 3**: step 2's first call selects, with `rule` forms off, and a
+    second call with them on runs only on the marker of a missing property; step 3 writes the rules still missing,
+    each after its marker, and the hypothesis mechanism. Where step 2's rules end and step 3's begin is what the
+    hand-written steps show, and the prompts follow them.
+37. **Step 2 writes the complete ontology whole**, and it stands in the assembled program in place of step 1's
+    partial one; what it changed is recorded. No later step's output holds a step-1 statement: a fact a later step
+    states for a sentence step 1 already stated otherwise is reported by the check and counted, and changing a
+    step-1 fact is the loop's.
+38. **A grammar a step** is [Q-M2.6](../open_questions/formalizer/Q-M2.6-one-gbnf-or-many.md)'s working answer as
+    [S2.2.3](s2.2.3_gbnf.md) takes it. Step 1 writes its facts before their declarations, so no grammar closes its
+    vocabulary and the contract's check holds a step-1 fact to a declaration; steps 2 and 3 are rendered on step 1's
+    relations and names.
+39. **`einaf from-text` runs the steps by default** (`--mode steps|whole`), and judges each step's program at root
+    through the bounded call; the model is not shown that judgement before the next step (P2.6's arm).
+40. **The step a form came from is a column of the sidecar**, beside its category, and the categories are given by
+    step in the contract ([S2.2.1](s2.2.1_contract.md), T2.2.1.2).

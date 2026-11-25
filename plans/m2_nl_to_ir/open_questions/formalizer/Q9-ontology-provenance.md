@@ -31,3 +31,9 @@ pass, and option A is `--ontology PATH` on `einaf from-text`, kept as the
 escape hatch. "User review before solving" does not survive: the loop's
 reviewer is the kernel, and a human in the loop is the one thing Stage D's
 matched-budget comparison cannot price. [S2.2.4](../../p2.2_formalizer/s2.2.4_passes.md).
+
+**Since (the re-plan of P2.2 to the user's steps, 2026-11-26).** The passes are three steps, the facts first
+([the user's notes on P2.2](../../p2.2_formalizer/README.md#formalization-in-steps-the-users-notes-on-the-whole-phase)):
+option B is the vocabulary step 1 begins from the text and step 2 completes, option C the catalogue step 2 selects
+from, and option A is `--module-dir DIR` on `einaf from-text`, a module the program imports, whose declarations
+step 1 is shown. [S2.2.4](../../p2.2_formalizer/s2.2.4_passes.md) decides.

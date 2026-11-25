@@ -20,3 +20,12 @@ tool writes Ein with none ([Q-M2.13](../einaf/Q-M2.13-who-calls-the-kernel.md)),
 write Ein without one, which [S2.2.2](../../p2.2_formalizer/s2.2.2_model_runtime.md) measures before a grammar is
 built. A grammar over the whole output of a thinking model took the thinking too: where the grammar begins is
 part of [S2.2.3](../../p2.2_formalizer/s2.2.3_gbnf.md)'s design.
+
+**Since (the re-plan of P2.2 to the user's steps, 2026-11-26).** The formalization is made in three steps, the facts
+and a partial ontology, then the complete ontology and a partial theory, then the complete theory
+([the user's notes on P2.2](../../p2.2_formalizer/README.md#formalization-in-steps-the-users-notes-on-the-whole-phase)),
+so *many* reads **one grammar a step** (and one for step 2's second call, which writes rules on a marker), as
+[S2.2.3](../../p2.2_formalizer/s2.2.3_gbnf.md) now plans it. Step 1 writes its facts before their declarations, so
+no grammar closes its vocabulary and EinAf's check holds a step-1 fact to a declaration; the closure a restricted
+grammar buys is steps 2 and 3's. The verdict is still S2.2.3's, on the probe's errors, the speeds and what that
+closure is worth.

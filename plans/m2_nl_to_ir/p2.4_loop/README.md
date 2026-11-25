@@ -5,7 +5,7 @@
 ([S2.1.2](../p2.1_kernel_as_instrumentation/s2.1.2_diagnostics_surface.md)) and the feedback object
 ([S2.1.3](../p2.1_kernel_as_instrumentation/s2.1.3_feedback_object.md)), the one value every level of the ladder
 renders and the tool returns, with the bounded kernel call through which both arrangements reach the kernel.
-[P2.2](../p2.2_formalizer/README.md): the one-shot formalizer is GENERATE
+[P2.2](../p2.2_formalizer/README.md): the one-shot formalizer, in its three steps, is GENERATE
 ([S2.2.5](../p2.2_formalizer/s2.2.5_from_text.md)), which also words the answer's fixed texts; the contract's
 check is EinAf's ([S2.2.4](../p2.2_formalizer/s2.2.4_passes.md)); the model's runtime gives thinking on or off a
 call and the context kept between the turns of one episode
@@ -130,6 +130,28 @@ decided in S2.4.1.
 hypothesis, `(open F)`, with a reading owed; the corpus has the pattern. What is left is the experiment between
 emitting both readings and committing to one. [S2.4.5](s2.4.5_alternatives_as_hypotheses.md).
 
+### The theory before the facts
+
+The one shot is made in three steps, the facts and a partial ontology first, then the complete ontology and a
+partial theory, then the complete theory
+([the user's notes on the formalizer](../p2.2_formalizer/README.md#formalization-in-steps-the-users-notes-on-the-whole-phase)),
+and the same notes hand this phase what comes after them: *"After formalization is done we can run solver and
+consume feedback"*, under the principle that the facts are *"as close to original text as possible and changed
+less then more variable rules"*. Three things follow, in both arrangements where they apply:
+
+- **A repair changes the theory before the facts.** The repair prompt ([S2.4.2](s2.4.2_repair.md)) says so beside
+  the research plan's instruction: a step-1 fact is changed only where the feedback names it (a fact in a core, a
+  sentence a refuted fact quotes) and no change of the ontology or the theory answers it. Nothing enforces it, since
+  a grammar cannot tell the text's fact from the theory's; what a repair did to step 1's facts is counted.
+- **A fact rewritten after step 1 is counted.** Against the step-1 program the record keeps, a step-1 statement a
+  repair removed or changed is the note `rewritten_fact` of the faithfulness judge
+  ([S2.4.4](s2.4.4_faithfulness.md)), counted per run and per level beside the hallucination rate; the event
+  `deleted_source_fact` stays for a sentence left with no fact.
+- **The facts' faithfulness is judged at step 1**, where they are closest to the text: the mechanical judge's
+  `:source` check and the categories of step 1's program are the facts' judgement, and each later program is
+  judged for what it adds and for what it changed of them. The tool has no steps, and a program it carries is
+  judged whole.
+
 ### What the phase records of Ein
 
 The ladder is where the kernel's diagnostics are judged as feedback, and the tool is where a model meets Ein with
@@ -237,6 +259,18 @@ Each is the re-plan's, recorded so that the user or the stage can correct it; no
     banked rendering is of a monotone program, and none banks a flagged program's answer.
 17. **Where a stage's answer lands**: Q-M2.3 and Q-M2.4 are answers about EinAf, so each is written beside its
     question in [the ledger](../open_questions/README.md) and becomes a page of `docs/einaf/` with the code.
+
+Taken 2026-11-26, when the formalizer's steps became the user's notes on the whole of P2.2
+([§ The theory before the facts](#the-theory-before-the-facts)):
+
+18. **A repair is told to change the theory before the facts**, in its prompt beside the research plan's
+    instruction; nothing enforces it, and what a repair did to step 1's facts is counted.
+19. **A step-1 statement a repair removed or changed is the note `rewritten_fact`**, counted per run and per
+    level; `deleted_source_fact` stays the event, for a sentence left with no fact.
+20. **The facts' faithfulness is judged at step 1** in the filter; the tool, which has no steps, is judged on each
+    program whole.
+21. **Regenerate runs the one shot's steps again**, the rendered feedback in each step's prompt; repair is one turn
+    that writes the whole program, as [S2.4.2](s2.4.2_repair.md) has it.
 
 ## Connections
 

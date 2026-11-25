@@ -9,4 +9,6 @@ under the same topic; what is ruled goes with the phase's folder.
 
 ## Index
 
-None yet.
+| id | question | topic | status | from |
+|---|---|---|---|---|
+| [Q-M2.22](answer/Q-M2.22-is-a-membership-no-sentence-states-a-faithfulness-event.md) | Is a membership no sentence states a faithfulness event, or the ontology the formalization searches for? | `answer` | open | the re-plan to [the user's steps](../README.md#formalization-in-steps-the-users-notes-on-the-whole-phase), 2026-11-26; [S2.2.1](../s2.2.1_contract.md)'s T2.2.1.2, the README's defaults 25 and 40 |
