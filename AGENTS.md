@@ -408,7 +408,8 @@ paragraph, no register count, no measurement (the user's rule).
   goal is the Zebra puzzle solved by the model with Ein), and it keeps
   [an evaluation of Ein](plans/m2_nl_to_ir/ein_evaluation.md), what this
   application finds of the kernel, for the iteration of Ein that follows.
-  **No stage has run, and no phase of it starts until the user says so.** M1f, the structure of the hypothesis
+  **P2.1 is started on the user's word, and runs to its end and stops there
+  for the user's review; no other phase of it starts until the user says so.** M1f, the structure of the hypothesis
   set and the documentation, is closed on the user's word and its plans deleted
   (`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation`): its
   answers are decisions under `docs/decisions/`, its rulings about the process

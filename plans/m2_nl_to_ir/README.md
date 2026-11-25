@@ -6,8 +6,9 @@ the same day ([the ledger](open_questions.md) holds each ruling) and stated the 
 ([below](#the-two-main-ideas-the-user-2026-11-25)); and the plan is **re-planned** to them, 2026-11-25, on the
 user's word, *"Do not start any phase. Do re-plan if ready and no open questions"*. The user then answered what
 the re-plan asked (what of the kernel may change, the answer as a sentence, the minimal goal, one tree), and those
-rulings are written in below: *"Yet not start stages, write down decisions and stop"*. **No stage has run, and no
-phase starts until the user says so.**
+rulings are written in below: *"Yet not start stages, write down decisions and stop"*. **P2.1 is started
+2026-11-25** on the user's word, *"start implementation of M2, everything in p2.1, then stop and let me review; each stage in subagents, subagents commit their work"*; it runs to its end and stops there for the user's review. **No other phase
+starts until the user says so.**
 **Depends on:** the kernel as it stands after M1f's close
 ([Q-M2.1](open_questions.md#q-m21--when-is-the-kernel-frozen)). No other milestone runs for it:
 [M1p](../m1p_ein_to_natural_language/README.md), Ein to natural language, stays unstarted

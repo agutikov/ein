@@ -1,5 +1,7 @@
 # P2.1 — The kernel as instrumentation (Stage A)
 
+**Status:** **started 2026-11-25** on the user's word, *"start implementation of M2, everything in p2.1, then stop and let me review; each stage in subagents, subagents commit their work"*. The phase runs its three stages to
+the end and stops for the user's review; no phase after it starts until the user says so.
 **Depends on:** the kernel as it stands after M1f's close
 ([Q-M2.1](../open_questions.md#q-m21--when-is-the-kernel-frozen)), and nothing else.
 **Blocks:** [P2.2](../p2.2_formalizer/README.md): its code goes into the package this phase creates, and the
