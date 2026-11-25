@@ -27,8 +27,9 @@ EinAf's, the process's checks, the bench smoke). The nightly ran after it becaus
 | [S2.1.1](../s2.1.1_tree_and_outcomes.md) EinAf's tree and the outcomes | `einaf/`, one Cargo package outside the engine's workspace that links `ein-core`, `ein-ir`, `ein-infer`, `ein-render`; a gate step and a CI step; `docs/einaf/`; **the seven outcomes** as a function over the library's values, under every question and reading, held over the 917 corpus programs | `0effa7b0`, record `556c368e` |
 | [S2.1.2](../s2.1.2_diagnostics_surface.md) the kernel's diagnostics as values, and a bound inside a saturation | **in Ein**: every saturation a question computes is bounded, by `-T` (now read inside a saturation) and by a new cap, `--max-steps` (decision [Q-M2.16](../../../../docs/decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md)); every refusal a value with one of 38 kinds, a place and its unchanged line; every line a run prints a value of the JSON summary (`diagnostics`), a summary written for a refused or aborted run too; `ein test --json-report`'s error rows carry why; a core's `:source` texts beside it (`region.core_sources`) (decision [Q-M2.9](../../../../docs/decisions/diagnostics/Q-M2.9-a-refusal-is-a-value-with-a-kind-a-place-and-its.md)). **In EinAf**: the outcomes read off those values | bound `83b82833` + `fd2fcd48`, `11d927f2`; EinAf's arm `d61176a3`; clippy for rustc 1.100 `acd04b13`; values `62a8ee45` + `95f5dc49`; surfaces `e74139cf`; EinAf `d13dc4d9`; record `913f8f8c` |
 | [S2.1.3](../s2.1.3_feedback_object.md) the feedback object | `einaf::kernel::call`, **the one door** to the engine, every bound set on every call, a panic caught; **`einaf-feedback/1`**, one JSON object for one program under one question; `einaf feedback`; agreement with the binary's summary on every compared corpus run | `0ab1aef0`, record `ddb1006e` |
+| [S2.1.4](../s2.1.4_bugs_the_phase_found.md) four findings fixed, after this report | **in Ein**: no walk of a term recurses on its depth (E-79); a missing file is one line from the library and every command (E-74); a module is named as the program names it (E-101); `ein test`'s abort on stderr (E-90). **In EinAf**: the corpus comparison without its strip of the repository's root | Ein `df75643c`; EinAf `3e801779`; record `a69feac5` |
 
-**What a user of `ein` sees change** (nothing of the language, no answer, no exit code, no message):
+**What a user of `ein` sees change** with S2.1.1 to S2.1.3 (nothing of the language, no answer, no exit code, no message):
 
 - `ein solve` and `ein test` take `--max-steps N` (firings one saturation may take, default 2²⁰); past it the
   run is *not decided*, exit 0, `region.stopped = {why: steps, steps, saturation: root|node}`.
@@ -41,6 +42,23 @@ EinAf's, the process's checks, the bench smoke). The nightly ran after it becaus
 - [`07-diagnostics.md`](../../../../docs/ein/user/04-reference/07-diagnostics.md) names a kind under every section
   (`**Kind:**`), with four sections added (§ 2.32 to § 2.35) for twelve refusals no section stated;
   [`08-read-out.md`](../../../../docs/ein/user/04-reference/08-read-out.md) § 10 a kind for each line a run writes.
+
+**What S2.1.4 changed** (no answer, no exit code; three messages; the release binary of `df75643c`, before as the
+entries recorded it):
+
+| finding | command | before | now |
+|---|---|---|---|
+| E-79 | `ein saturate --max-steps 40000 ein.rs/crates/ein-cli/tests/bounded/grow.ein` | *thread 'main' has overflowed its stack*, exit 134 | exit 0, `!! saturator step limit hit: --max-steps 40000 stopped saturation after 40000 firings, before it checked for a fixpoint. The last firing: (grow) with ?x = (s (s (s …`, the terms whole (489 473 bytes) |
+| E-74 | `ein solve nope.ein`; `ein_ir::load_file`; `ein test nope.ein examples/zebra2.ein` | three spellings: `FileNotFoundError: …`, `nope.ein: No such file or directory (os error 2)`, `error: nope.ein: …` ending the whole selection, exit 2 | one line, `FileNotFoundError: [Errno 2] No such file or directory: 'nope.ein'` (Q-M2.21's default; the question stays open); `ein test` rows it `ERROR        nope.ein` and goes on to `zebra2.ein`, `1 error`, exit 2 |
+| E-101 | `ein solve examples/broken/load/import_cycle.ein`, and from `ein.rs/` on `../examples/…` | both files absolute | `kb load error: import cycle: examples/broken/load/import_cycle_b.ein -> examples/broken/load/import_cycle.ein -> examples/broken/load/import_cycle_b.ein (at None)`; from `ein.rs/` the same with `../examples/…` |
+| E-90 | `ein test examples/lattice/18_two_candidates.ein -T 0` | the abort on stdout as the `ERROR` row's line, stderr empty | stderr `** aborted: --max-time 0 s reached before the question was decided **`; stdout `ERROR        examples/lattice/18_two_candidates.ein`, `    aborted before an answer`, the tally; exit 2 |
+
+E-79's fix keeps every byte: the binary of `837acf6e` and of `df75643c` print the same on every surface up to 19 800
+levels, where the old one crashes from some 20 000 (and from 1 000 on a 256 KiB stack); the new one runs at 39 600,
+and the read-out of S2.1.3's deep probe is 4.5 s → 0.25 s at 5 000 levels, 356 s → 3.9 s at 20 000, since the old
+printers copied each level's text into the next. What is left of that cost is E-102. A `std.*` module is still
+named by the absolute path the binary found the library under (E-103, filed, not changed). The record lists every
+walk of a term, the ten made iterative and those that never recursed on depth.
 
 **EinAf's pages**: [README](../../../../docs/einaf/README.md), [01 the outcomes](../../../../docs/einaf/01-outcomes.md),
 [02 the kernel's invariants](../../../../docs/einaf/02-kernel-invariants.md),
@@ -84,6 +102,14 @@ $E solve examples/zebra2.ein --max-steps 100                                 # a
 # The probes of S2.1.3 (programs written to exhaust the kernel)
 $A outcome plans/m2_nl_to_ir/analysis/probes/p2.1/wide_join.ein --single -T 1
 python3 plans/m2_nl_to_ir/analysis/probes/p2.1/deep_term.py 5000 > /tmp/deep.ein && $A outcome /tmp/deep.ein --single
+
+# S2.1.4's four fixes (§ 1 has the outputs)
+$E saturate --max-steps 40000 ein.rs/crates/ein-cli/tests/bounded/grow.ein | cut -c1-200   # E-79: exit 0, no stack overflow
+$E solve nope.ein; $E test nope.ein examples/zebra2.ein                       # E-74: one line; ein test goes on past it
+$E solve examples/broken/load/import_cycle.ein                               # E-101: the modules as the program names them
+(cd ein.rs && target/release/ein solve ../examples/broken/load/import_cycle.ein)
+$E test examples/lattice/18_two_candidates.ein -T 0                           # E-90: the abort on stderr, ERROR on stdout
+$E solve examples/broken/load/import_module_not_found.ein                    # E-103, open: a std.* module's path is the host's
 
 # EinAf's tests, with the corpus's count of each outcome
 cargo test --manifest-path einaf/Cargo.toml --profile gate -- --nocapture
@@ -211,7 +237,9 @@ programs and the generator are under [`analysis/probes/p2.1/`](../../analysis/pr
 | `deep_term.py 20000` | one, after 256 s, 77 MB, no stack overflow | | |
 
 Every probe returns, so the worker process the work order kept in reserve is not built; memory is bounded only
-through the cap (E-100).
+through the cap (E-100). After S2.1.4 the deep probe is *one* after 0.5 s at 5 000 levels and 6.3 s at 20 000, the
+same bytes ([its record](../s2.1.4_bugs_the_phase_found.md#what-the-old-binary-and-the-new-one-do)); the read-out is
+still outside the clock (E-102).
 
 ## 6. The feedback object
 
@@ -334,7 +362,10 @@ items 2 and 6 are the milestone's; item 4 is ruled.
 [The evaluation](../../evaluation/README.md) gained E-62 to E-101 in this phase, which live in
 [the phase's `evaluation/`](../evaluation/README.md) until it closes (E-62 to E-67 S2.1.1's, E-68 to E-93
 S2.1.2's, E-94 to E-101 S2.1.3's), and closed E-20, E-21, E-45, E-62, E-64, E-65, E-67 (for EinAf), E-76, E-77,
-E-78, E-88. Open, by section:
+E-78, E-88. Open, by section, as the three stages left them; **S2.1.4 then closed E-74, E-79, E-90 and E-101**
+(`df75643c`, E-101's EinAf part `3e801779`), closed E-99 as far as the old printers' cost went, and filed **E-102**
+(a deep fact's text and drawing cost the square of its depth, after the run and outside the clock) and **E-103** (a
+`std.*` module is named by the path the binary found the library under), both open; the next free id is E-104:
 
 | section | entries |
 |---|---|
