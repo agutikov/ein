@@ -178,6 +178,31 @@ pub fn run(m: &ArgMatches) -> i32 {
     if m.get_flag("monotone") {
         return run_monotone(m, &file);
     }
+    // The run's bound reaches every saturation the command makes, the
+    // load's judgement of the mechanisms and `--trace`'s root among them
+    // (`explore`'s § A saturation is bounded): taken before the load, as the
+    // clock always was.
+    let max_time = m.get_one::<f64>("max-time").copied();
+    let bound = ein_infer::saturator::Bound {
+        deadline: max_time.map(|s| Instant::now() + Duration::from_secs_f64(s.max(0.0))),
+        max_steps: Some(max_steps(m)),
+    };
+    ein_infer::saturator::bounded(bound, || run_bounded(m, file, counting, bound))
+}
+
+/// `--max-steps`, or its default ([`explore::DEFAULT_MAX_STEPS`]).
+pub fn max_steps(m: &ArgMatches) -> u64 {
+    m.get_one::<i64>("max-steps")
+        .map_or(explore::DEFAULT_MAX_STEPS, |&n| n as u64)
+}
+
+/// [`run`] under the run's `bound`.
+fn run_bounded(
+    m: &ArgMatches,
+    file: String,
+    counting: bool,
+    bound: ein_infer::saturator::Bound,
+) -> i32 {
     let mut opts = explore::Options::new(mode_of(m));
     if let Some(&b) = m.get_one::<i64>("region-budget") {
         opts.budget = b as u64;
@@ -192,7 +217,8 @@ pub fn run(m: &ArgMatches) -> i32 {
     opts.limit = (*m.get_one::<i64>("region-limit").unwrap_or(&16)).clamp(0, 63) as u32;
     opts.jobs = crate::solve::resolve_jobs(*m.get_one::<i64>("jobs").unwrap_or(&1));
     let max_time = m.get_one::<f64>("max-time").copied();
-    opts.deadline = max_time.map(|s| Instant::now() + Duration::from_secs_f64(s.max(0.0)));
+    opts.deadline = bound.deadline;
+    opts.max_steps = bound.max_steps;
 
     // `--dump-answer` makes its directory before the run, so a path that
     // cannot be written fails before the work. Every state file carries the
@@ -288,6 +314,18 @@ pub fn run(m: &ArgMatches) -> i32 {
     let root_firings = match trace {
         Some(_) => match ein_infer::region::root_derivation(&mut kb, &mut terms, &ast) {
             Ok(f) => Some(f),
+            // Root past the cap: the run below says so, and the trace tells
+            // no derivation.
+            Err(ein_infer::SolveError::Saturate(ein_infer::saturator::SaturateError::Steps(_))) => {
+                Some(Vec::new())
+            }
+            Err(ein_infer::SolveError::Deadline) => {
+                eprintln!(
+                    "** aborted: --max-time {} s reached before the question was decided **",
+                    max_time.unwrap_or(0.0)
+                );
+                return 2;
+            }
             Err(e) => {
                 eprintln!("{e}");
                 return 1;
@@ -740,6 +778,11 @@ pub(crate) fn extras(
     ast: &Ast,
 ) -> Result<Vec<(&'static str, String)>, String> {
     use crate::factdump::{Mode as Dump, final_state_lines};
+    // A run a saturation stopped at the cap knows neither H nor a state: no
+    // form has anything to draw.
+    if let Some(Stopped::Steps { .. }) = r.answer.stopped {
+        return Ok(Vec::new());
+    }
     let mut left = text.left();
     let mut uncut: Vec<(&'static str, String)> = Vec::new();
     if shown.universe {
@@ -1006,6 +1049,10 @@ impl Watcher {
 /// read-out names it. A mode on the state route meets only the states its
 /// question needs (Q-M1e2.31); describe meets every alive one.
 pub(crate) fn route_words(answer: &explore::Answer) -> &'static str {
+    // A run a saturation stopped at the cap took no route to its end.
+    if let Some(Stopped::Steps { .. }) = answer.stopped {
+        return "none to its end: a saturation was stopped at --max-steps";
+    }
     // `--count` takes describe's route.
     let describe = answer.mode.which == explore::Which::All
         && matches!(

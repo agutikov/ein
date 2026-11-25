@@ -34,6 +34,7 @@ the test suite runs every caption again and compares the block, so every block i
 | [X19](#x19--features07_unstratifiableein---no-search-flagged-and-its-strata) | `features/07_unstratifiable.ein` | 1 | `--no-search` on a flagged program: the static check's rows and the strata, the cube not read |
 | [X20](#x20--ein-bugswrong-answersoblig-derived-activatorein-a-debt-root-does-not-owe) | `ein-bugs/wrong-answers/oblig-derived-activator.ein` | 2 | a debt root does not owe and a commitment can bring: the `later debt` row, and what H holds for it |
 | [X21](#x21--testssaved04_a_saved_nodeein-a-saved-file-a-node-of-its-programs-lattice) | `tests/saved/04_a_saved_node.ein` | 0 | a saved file: the `commit` row, the part of the program's R above the node, and the program's claims not checked |
+| [X22](#x22--zebra2ein---max-steps-100-a-saturation-stopped-at-the-cap) | `zebra2.ein` | 56 | a saturation stopped at `--max-steps`: not decided, and nothing of R established; under describe and `--single` |
 
 ## X1 — `branching/05_mini_zebra.ein`: everything at once
 
@@ -2479,6 +2480,47 @@ solve · tests/saved/04_a_saved_node.ein
 
 stderr: note: tests/saved/04_a_saved_node.ein: query :expect NOT CHECKED — the claim is the program's, about the program's R, and this saved file is a node of its lattice: the program checks it
 stderr: note: tests/saved/04_a_saved_node.ein: (solve :expect) NOT CHECKED — the claim is the program's, about the program's R, and this saved file is a node of its lattice: the program checks it
+
+exit 0
+```
+
+## X22 — `zebra2.ein --max-steps 100`: a saturation stopped at the cap
+
+X10's program under a cap on every saturation of the run far below what root's needs: root's saturation is stopped
+before its fixpoint, so neither root's standing nor H is known, and nothing of R is established. The run is not
+decided, as a run a budget stops is, says which saturation was stopped, answers no query, and exits 0; its summary's
+`region.stopped` is `{why: steps, steps: 100, saturation: root}`, and its `monotonicity` and `root` blocks are
+`null`. Under the default cap the same program is X10.
+
+`ein solve --max-steps 100 examples/zebra2.ein`
+
+```text
+solve · --max-steps 100 examples/zebra2.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  exhausted         no — root's saturation needed more than --max-steps 100 firings, and was stopped before its fixpoint: nothing of R is established
+
+  query             (and (drink-loc Water ?h_water) (nation-loc ?who_water ?h_water) (pet-loc Zebra ?h_zebra) (nation-loc ?who_zebra ?h_zebra))
+  over              all of R — no state to answer from: root's saturation needed more than --max-steps 100 firings, and was stopped before its fixpoint
+
+stderr: note: examples/zebra2.ein: partial — root's saturation needed more than --max-steps 100 firings, and was stopped before its fixpoint. Established: nothing of R, neither root's standing nor H. A larger --max-steps lets every saturation run further
+
+exit 0
+```
+
+`ein solve --single --max-steps 100 examples/zebra2.ein`
+
+```text
+solve · --single --max-steps 100 examples/zebra2.ein
+──────────────────────────────────────────────────────────────
+  asked             is R one state? (--single)
+  verdict           not decided — the run stopped first
+  decided           no — root's saturation needed more than --max-steps 100 firings, and was stopped before its fixpoint: nothing of R is established
+
+  query             (and (drink-loc Water ?h_water) (nation-loc ?who_water ?h_water) (pet-loc Zebra ?h_zebra) (nation-loc ?who_zebra ?h_zebra))
+  over              all of R — no state to answer from: root's saturation needed more than --max-steps 100 firings, and was stopped before its fixpoint
+
+stderr: note: examples/zebra2.ein: partial — root's saturation needed more than --max-steps 100 firings, and was stopped before its fixpoint. Established: nothing of R, neither root's standing nor H. A larger --max-steps lets every saturation run further
 
 exit 0
 ```

@@ -664,7 +664,14 @@ pub fn run(m: &ArgMatches) -> i32 {
     let mut rows: Vec<Row> = Vec::new();
     for path in &files {
         tally.files += 1;
-        check_file(path, m, volume, &mut tally, &mut rows);
+        // Every saturation of the file, its load's judgement of the
+        // mechanisms among them, under the cap; each question adds the
+        // file's deadline (`explore`'s § A saturation is bounded).
+        let cap = ein_infer::saturator::Bound {
+            deadline: None,
+            max_steps: Some(crate::modes::max_steps(m)),
+        };
+        ein_infer::saturator::bounded(cap, || check_file(path, m, volume, &mut tally, &mut rows));
         // What its load noticed, after the file's rows.
         crate::common::say_notes();
     }
@@ -1280,8 +1287,8 @@ impl Asked {
 }
 
 /// Ask `mode` of a **freshly loaded** program, deciding its claims
-/// ([`explore::Options::refute`]), within `--region-budget` and the file's
-/// deadline, narrating into `--events`. `Err` is why the run is no verdict.
+/// ([`explore::Options::refute`]), within `--region-budget`, `--max-steps` and
+/// the file's deadline, narrating into `--events`. `Err` is why the run is no verdict.
 fn ask(
     path: &Path,
     m: &ArgMatches,
@@ -1296,6 +1303,7 @@ fn ask(
         opts.budget = b as u64;
     }
     opts.deadline = deadline;
+    opts.max_steps = Some(crate::modes::max_steps(m));
     opts.refute = true;
     opts.no_search = m.get_flag("no-search");
     // A claim states no core: the run takes one only where `--events` prints

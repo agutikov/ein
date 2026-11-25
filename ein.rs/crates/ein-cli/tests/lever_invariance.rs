@@ -37,6 +37,13 @@
 //!   which [`the_librarys_question_does_the_binarys_work`] holds on the cell
 //!   that once ran for most of an hour.
 //!
+//! **The bound on a saturation** (Q-M2.16) is swept beside the flags too, as
+//! one setting, [`UNBOUNDED`]: every question asked with no cap and a clock
+//! a day away, where the default has the cap, `--max-steps`, and no clock.
+//! A run whose every saturation stays within a bound is the run without it,
+//! byte for byte, so the default cap and the clock's reads inside a
+//! saturation move nothing on any program whose R is known.
+//!
 //! **`--in-flight`** (Q-M1f.656) is swept beside the flags, in-process, on
 //! the same programs and questions: it runs the pass that writes a state's
 //! `open` facts at every state a run builds, where by default only root, a
@@ -477,6 +484,17 @@ fn flipped(c: &SolverConfig, flag: &str) -> String {
 /// at `path`: the read-out uncut, its stderr lines and its exit code, then
 /// the `--json-summary` as [`scrub`] leaves it — or why there is none.
 fn printed(path: &Path, text: &str, flags: &[String], mode: Mode) -> String {
+    printed_under(path, text, flags, mode, |_| {})
+}
+
+/// [`printed`], the question's options set by `set` before it is asked.
+fn printed_under(
+    path: &Path,
+    text: &str,
+    flags: &[String],
+    mode: Mode,
+    set: impl FnOnce(&mut explore::Options),
+) -> String {
     let mut ast = Ast::new();
     let mut terms = ein_core::Terms::new();
     let file = path.to_string_lossy().to_string();
@@ -488,7 +506,8 @@ fn printed(path: &Path, text: &str, flags: &[String], mode: Mode) -> String {
         Ok(kb) => kb,
         Err(e) => return format!("<load> {}", e.0),
     };
-    let opts = explore::Options::new(mode);
+    let mut opts = explore::Options::new(mode);
+    set(&mut opts);
     let r = match ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts) {
         Ok(r) => r,
         Err(e) => return format!("<solve> {e}"),
@@ -520,6 +539,12 @@ fn printed(path: &Path, text: &str, flags: &[String], mode: Mode) -> String {
         t.code
     )
 }
+
+/// The bound on a saturation lifted (Q-M2.16), swept as a setting beside the
+/// `(config …)` flags: no cap, `--max-steps` off, and a clock a day away,
+/// read inside every saturation as `-T` is, where the default has the cap and
+/// no clock.
+const UNBOUNDED: &str = "--max-steps none -T 86400";
 
 /// The option that runs the pass at every state (Q-M1f.656), swept as a
 /// setting beside the `(config …)` flags: `ein solve --in-flight`, asked in
@@ -710,6 +735,7 @@ fn no_config_flag_moves_a_line_of_any_mode() {
         items.push((i, None));
         items.extend(FLAGS.iter().map(|(f, _)| (i, Some(*f))));
         items.push((i, Some(IN_FLIGHT)));
+        items.push((i, Some(UNBOUNDED)));
     }
     // One unit per (program, setting, question), so that the questions of a
     // program with a large R run side by side rather than one after another
@@ -743,6 +769,13 @@ fn no_config_flag_moves_a_line_of_any_mode() {
             if flag == Some(IN_FLIGHT) {
                 return ein_infer::open::at_every_state(true, || {
                     printed(&k.path, &k.text, flags, *mode)
+                });
+            }
+            if flag == Some(UNBOUNDED) {
+                return printed_under(&k.path, &k.text, flags, *mode, |o| {
+                    o.max_steps = None;
+                    o.deadline =
+                        Some(std::time::Instant::now() + std::time::Duration::from_secs(86_400));
                 });
             }
             let text = match flag {

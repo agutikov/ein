@@ -9,8 +9,10 @@ A run classifies commitments until its question is decided, and no further:
 - **A bound.** `--region-budget`, or `--region-limit` on a flagged program, stops a run before its question is
   decided, and the run says so: `exhausted` or `decided` reads *no* with the reason, the description is partial
   and bounds what it did not certify, a stderr `note:` gives what was spent and what the next step would cost,
-  and a claim the run could not decide is NOT CHECKED rather than held or refuted. `--max-time` ends a run that
-  has not decided its question, with nothing on stdout.
+  and a claim the run could not decide is NOT CHECKED rather than held or refuted. `--max-steps`, past which a
+  saturation of the run is stopped, stops it with nothing of R established, and says so the same way
+  ([Q-M2.16](Q-M2.16-every-saturation-a-question-about-r-computes.md)). `--max-time` ends a run that has not decided
+  its question, wherever it is, inside a saturation too, with nothing on stdout.
 
 No run stops on a heuristic, *no new state for k layers* or the like, and none says `exhausted` of a part it did
 not classify. A criterion that would certify all of R sooner than the routes do, on purpose and for a class of

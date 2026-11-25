@@ -16,8 +16,9 @@ pub enum SolveError {
     /// A question the engine does not answer, or a claim it cannot read: the
     /// message says which.
     Unsupported(String),
-    /// `-T`: the wall clock ran out inside the run. A
-    /// machine-dependent limit is never an answer.
+    /// `-T`: the wall clock ran out inside the run, between a route's steps
+    /// or inside a saturation, root's among them. A machine-dependent limit
+    /// is never an answer.
     Deadline,
     /// `-y` on a program the static check calls monotone found a parent path
     /// that reaches another state: the static check's theorem
@@ -44,9 +45,15 @@ impl std::fmt::Display for SolveError {
     }
 }
 
+/// A saturation the clock ended is the run's deadline, wherever it was: the
+/// one error `-T` has, between a route's steps or inside a saturation, root's
+/// among them.
 impl From<SaturateError> for SolveError {
     fn from(e: SaturateError) -> Self {
-        SolveError::Saturate(e)
+        match e {
+            SaturateError::Deadline => SolveError::Deadline,
+            e => SolveError::Saturate(e),
+        }
     }
 }
 

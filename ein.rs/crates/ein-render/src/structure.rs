@@ -166,6 +166,11 @@ pub fn stopped(s: &Option<Stopped>) -> Json {
         ]),
         Some(Stopped::Deadline) => Json::obj(vec![("why", text("deadline"))]),
         Some(Stopped::NoSearch) => Json::obj(vec![("why", text("no-search"))]),
+        Some(Stopped::Steps { cap, root }) => Json::obj(vec![
+            ("why", text("steps")),
+            ("steps", int(*cap)),
+            ("saturation", text(if *root { "root" } else { "node" })),
+        ]),
     }
 }
 
@@ -1217,6 +1222,10 @@ fn stopped_words(s: &Stopped) -> String {
         }
         Stopped::Deadline => "at the deadline".to_string(),
         Stopped::NoSearch => "before any node, by asking".to_string(),
+        Stopped::Steps { cap, root } => format!(
+            "at --max-steps {cap}, {} saturation stopped before its fixpoint",
+            if *root { "root's" } else { "a node's" }
+        ),
     }
 }
 

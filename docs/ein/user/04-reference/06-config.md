@@ -16,7 +16,7 @@ command does is [`05-cli.md`](05-cli.md); what a run prints is [`08-read-out.md`
 | surface | how many | where the list is |
 |---|---:|---|
 | `(config …)` flags | **2** | § [2](#2-config---the-two-solver-flags) |
-| CLI options | **99** | `ein <command> --help`, and § [3](#3-the-cli) |
+| CLI options | **101** | `ein <command> --help`, and § [3](#3-the-cli) |
 | `EIN_*` environment | **2** read by the shipped binary | § [4](#4-the-environment) |
 
 **Precedence**, highest first:
@@ -135,8 +135,9 @@ opened, so a container whose program sets a retired flag is refused where its `.
 *No configuration option affects the problem's lattice; configuration may only affect the speed of the search*
 ([Q-M1e2.30](../../../decisions/answer/Q-M1e2.30-no-configuration-option-lever-or-flag-changes-r.md)). The answer is
 the region R, and it is the same under every knob on this page. A **budget** (`--region-budget`, `--region-limit`,
-§ [3.3](#33-what-an-option-can-do-to-the-answer)) does not change R either: it stops a run, and the read-out then says
-the answer is partial. `-T` aborts a run and prints no answer. A knob that changed R, or changed a reported answer
+`--max-steps`, § [3.3](#33-what-an-option-can-do-to-the-answer)) does not change R either: it stops a run, and the
+read-out then says the answer is partial, or under `--max-steps` that nothing of it is established. `-T` aborts a run
+and prints no answer. A knob that changed R, or changed a reported answer
 that does not say it is partial, would be a wrong answer and not a mode, and is retired (§ 2.4).
 
 - **R.** The oracle's universe is built with no configuration, and its nodes by saturation alone
@@ -175,13 +176,13 @@ not a lever: it decides whether a program loads, and a program loads to what it 
 **`ein <command> --help`.** Each option's long name, short key, metavar, arity, default, choices, group and help
 string is fixed, and the test suite holds the help of every command to a checked-in rendering of it; what is free
 is `clap`'s layout ([Q-M1a.13](../../../decisions/cli/Q-M1a.13-the-clis-behaviour-is-fixed-and-its-helps-layout.md),
-[`05-cli.md` § 5](05-cli.md)). What this page states is the *shape*: **99** options across eighteen parsers, in the
+[`05-cli.md` § 5](05-cli.md)). What this page states is the *shape*: **101** options across eighteen parsers, in the
 default build (the `einb`, `parallel` and `snmalloc` features, which `ein --version` names).
 
 | parser | options |
 |---|---:|
-| `ein solve` | 36 |
-| `ein test` | 12 |
+| `ein solve` | 37 |
+| `ein test` | 13 |
 | `ein oracle` | 11 |
 | `ein saturate` | 6 |
 | `ein render h-space` | 6 |
@@ -235,7 +236,7 @@ R and never R; the fourth and fifth ask about the hypothesis set and not about R
 a program to answer about.
 
 - **The question and its budget** — `--minimal`, `--maximal`, `--single`, `-n`/`--solutions`, `--count`,
-  `--monotone`, `--region-budget`, `--region-limit`, `-T`/`--max-time`. The first five choose what is asked about R
+  `--monotone`, `--region-budget`, `--region-limit`, `--max-steps`, `-T`/`--max-time`. The first five choose what is asked about R
   ([`05-cli.md` § 2.1](05-cli.md)). `--count` is over all of R only: a description's route, R's two counts and the rows
   that qualify them, no state read, so no query is answered and no claim checked, which one `claims` row and a
   `note:` per claim say. Beside an option that asks what it does not answer (a line, `-n`, `--single`,
@@ -245,7 +246,16 @@ a program to answer about.
   root for every question, [Q-M1e2.35](../../../decisions/cli/Q-M1e2.35-the-default-region-budget-is-2-20-facts.md);
   `ein solve --help` states it), the cube's limit and the deadline stop a run. A budget or a limit that stops one
   leaves every surface saying the answer is partial: a lower bound, a `note:` on stderr, `exhausted no` and why. A
-  `-T` abort exits 2 and prints no answer, because a machine-dependent limit is never an answer. **`-n 0` is
+  `-T` abort exits 2 and prints no answer, because a machine-dependent limit is never an answer; the clock is read
+  inside every saturation as between a route's steps. **`--max-steps`**, on `ein solve` and `ein test`, is the most
+  firings any one saturation of the run may make, root's first, the load's judgement of the mechanisms and
+  `--trace`'s root among them: default $2^{20}$, 1 048 576, far above every saturation a corpus program makes
+  ([Q-M2.16](../../../decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md); `ein solve --help` states it), one or more. **Does it change the answer: no.** A run
+  whose every saturation stays within it is the run without it, byte for byte; a saturation that needs more stops
+  the run, which is not decided and establishes nothing of R, neither root's standing nor H, and says so on every
+  surface, with a `note:`, at exit 0 ([`08-read-out.md`](08-read-out.md)). `ein saturate --max-steps` is the same cap on
+  its one saturation and has no default; `ein oracle`, which saturates every node of its cube to its fixpoint, takes
+  none, and `ein render lattice` runs its describing question under the default. **`-n 0` is
   refused**, exit 2, and so is every negative
   ([Q-M1e.24](../../../decisions/cli/Q-M1e.24-n-takes-a-count-of-one-or-more.md)).
 - **The question not asked** — `--no-search`, on `ein solve` and `ein test`. **Does it change the answer: no — it

@@ -149,7 +149,8 @@ only an `absent` breaks; and the **status**'s, which an obligation's trigger or 
 - `--json-summary`'s `monotonicity` block, which every run carries, monotone or not: each site's `concludes` and
   `at_stake`, then `assumes`, `cycles`, `order`, `status`, `state` (every stale node, uncut) and `paths`. On a monotone
   program `assumes`, `status`, `state` and `paths` are `null` and the two lists empty, because `ein-summary/2` has one
-  shape;
+  shape. A run a saturation stopped at `--max-steps` read no static check, and its block is `null`
+  ([Q-M2.16](../../../decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md));
 - `region.md`'s header and `region.json`'s `status` and `state`, which `ein render region` labels.
 
 On such a program the engine answers under the reading that every node is a fork of root, warns, and claims nothing

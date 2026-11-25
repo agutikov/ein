@@ -208,7 +208,12 @@ fn leftover_block(
     let taken = matches!(std::env::var("EIN_LEFTOVER").as_deref(), Ok("1"));
     let mut counts: Vec<Json> = Vec::new();
     let mut by_relation: Vec<Json> = Vec::new();
-    if taken {
+    // A run a saturation stopped at the cap lists no state.
+    let cut = matches!(
+        r.answer.stopped,
+        Some(ein_infer::explore::Stopped::Steps { .. })
+    );
+    if taken && !cut {
         let a = &r.answer;
         let sets: Vec<Vec<ein_core::FactId>> = r
             .listed()
@@ -277,6 +282,13 @@ pub fn build_region(
         ("source", Json::str(source)),
     ];
     pairs.extend(ein_render::dump::region_answer::summary_blocks(r));
+    // A run a saturation stopped at the cap read neither the static check nor
+    // root's fixpoint: both blocks are `null`, as a block that does not apply
+    // is (`explore`'s § A saturation is bounded).
+    let cut = matches!(
+        r.answer.stopped,
+        Some(ein_infer::explore::Stopped::Steps { .. })
+    );
     let mut m = ein_render::dump::region::monotonicity_json(&r.answer.monotonicity, terms);
     if let Json::Object(fields) = &mut m {
         fields.extend(
@@ -288,10 +300,14 @@ pub fn build_region(
             .map(|(k, v)| (k.to_string(), v)),
         );
     }
-    pairs.push(("monotonicity", m));
+    pairs.push(("monotonicity", if cut { Json::Null } else { m }));
     // Read before the probe forks the states, though the probe leaves root as
     // it is: the block is root as the routes left it.
-    let root = root_block(terms, kb, &r.answer.root);
+    let root = if cut {
+        Json::Null
+    } else {
+        root_block(terms, kb, &r.answer.root)
+    };
     pairs.push(("leftover", leftover_block(ast, terms, kb, r)?));
     pairs.push(("root", root));
     pairs.push(("config", config_block(config)));

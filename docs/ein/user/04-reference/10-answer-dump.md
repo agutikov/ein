@@ -46,7 +46,8 @@ out/
 - **`owing/`** holds the frontier of an empty R whose nodes all owe, each with what it owes; where describe's route did
   not compute the frontier (the tree and the classes), the nodes it met, each owing with every extension dead, which
   `answer.txt` says.
-- **`nogoods.json`** is `[]` where N is empty or was not computed by a line mode; where describe's route did not
+- **`nogoods.json`** is `[]` where N is empty or was not computed by a line mode or by a run a saturation stopped at
+  `--max-steps`; where describe's route did not
   compute it (the tree and the classes), it holds the members the run met, the candidates dead alone, and the
   summary's `region.nogoods` is `null`. Each member is `{set, core, core_status, refuted_by}`:
   - `refuted_by` names the rules of the last step of the core's derivation: for each fact of the contradiction the
@@ -217,8 +218,9 @@ A saved file is its program with one commitment of the program's H, and every co
   program that imports, that program keeps every declaration its imports brought, and the commitments are the
   `.ein`'s ([Q-M1f.27](../../../decisions/cli/Q-M1f.27-a-containers-answer-directory-saves-the-program.md)). Every
   other file is the `.ein`'s, but for the path it names.
-- **A budget stop is an answer**: `--region-budget` and `--region-limit` write the whole directory, and `index.json`'s
-  `region` says `exhausted: false` and `stopped: {why, …}`. **A `-T` abort is not**: it exits 2, and the directory it
+- **A budget stop is an answer**: `--region-budget`, `--region-limit` and `--max-steps` write the whole directory, and
+  `index.json`'s `region` says `exhausted: false` and `stopped: {why, …}`; past `--max-steps` nothing of R is
+  established, so no state file is written, and `answer.json`'s `monotonicity` and `root` are `null` ([Q-M2.16](../../../decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md)). **A `-T` abort is not**: it exits 2, and the directory it
   made first stays empty.
 - **A second dump into the same directory leaves nothing stale.** When `index.json` names an answer directory's
   format, this one or an earlier one, `models/`, `owing/` and `forms/` are cleared before writing. A directory holding anything else is written beside and nothing
@@ -256,7 +258,8 @@ root and not recomputed, so a summary adds no work and no option moves the block
 holds root's standing too, `dead`, `owes` and `owed`, on every question: `ein solve --no-search` states no R, so its
 `region` is `null` as `--monotone`'s is, and the block is where it says what root is
 ([Q-M1f.259](../../../decisions/read-out/Q-M1f.259-under-no-search-the-summary-states-no-region.md)); the three
-are the full run's `region.root`, `root_owes` and `root_owed`.
+are the full run's `region.root`, `root_owes` and `root_owed`. A run a saturation stopped at `--max-steps` knows no
+root's fixpoint, and its block is `null` ([Q-M2.16](../../../decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md)).
 
 | field | what it holds |
 |---|---|

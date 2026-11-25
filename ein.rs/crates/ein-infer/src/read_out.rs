@@ -176,7 +176,15 @@ pub fn run_with(
     events: &mut crate::events::Events,
 ) -> Result<ReadOut, SolveError> {
     let answer = explore::run_with(root, terms, ast, opts, events)?;
-    of_answer(root, terms, ast, answer, opts)
+    let wall = answer.wall;
+    // The states it lists are read under the run's bound, as they were
+    // computed (`explore`'s § A saturation is bounded).
+    match crate::saturator::bounded(opts.bound(), || of_answer(root, terms, ast, answer, opts)) {
+        Err(SolveError::Saturate(crate::saturator::SaturateError::Steps(cap))) => {
+            of_answer(root, terms, ast, explore::cut(opts, cap, false, wall), opts)
+        }
+        other => other,
+    }
 }
 
 /// The read-out of an `answer` already computed about `root` — `ein oracle`'s,
@@ -188,6 +196,9 @@ pub fn of_answer(
     mut answer: Answer,
     opts: &explore::Options,
 ) -> Result<ReadOut, SolveError> {
+    if let Some(explore::Stopped::Steps { .. }) = answer.stopped {
+        return Ok(cut(root, ast, answer));
+    }
     if answer.mode.ask == Ask::Count {
         return counted(root, terms, ast, answer, opts);
     }
@@ -542,6 +553,60 @@ pub fn of_answer(
     })
 }
 
+/// The read-out of a run a saturation stopped at the cap
+/// ([`explore::Stopped::Steps`]): no state, every query unanswered, and every
+/// claim not checked, with why. Nothing of `R` is established, so nothing is
+/// read, and no claim is refuted either: what refutes one is a state found or
+/// root's standing, and neither is known.
+fn cut(root: &Kb, ast: &Ast, answer: Answer) -> ReadOut {
+    let not_checked = || Report {
+        outcome: Outcome::NotChecked,
+        lines: vec![undecided_words(&answer)],
+    };
+    let saved = root.program().commit.is_some();
+    let claim_of = |expect: bool| {
+        expect.then(|| {
+            if saved {
+                Report {
+                    outcome: Outcome::NotChecked,
+                    lines: vec![SAVED_CHECKS_NO_CLAIM.to_string()],
+                }
+            } else {
+                not_checked()
+            }
+        })
+    };
+    let queries = asked(root, ast)
+        .into_iter()
+        .map(|g| Query {
+            goal: ein_ir::dump::dump_compact(ast, g.written),
+            over: g.over,
+            as_asked: true,
+            exact: false,
+            classes: Vec::new(),
+            lists_open: false,
+            claim: claim_of(g.expect.is_some()),
+        })
+        .collect();
+    let claim = root
+        .program()
+        .solve()
+        .and_then(|solve| claim_of(solve_value(ast, solve, "expect").is_some()));
+    let listing = if answer.mode.ask == Ask::Count {
+        Listing::Counted
+    } else {
+        Listing::Members
+    };
+    ReadOut {
+        answer,
+        listing,
+        states: Vec::new(),
+        queries,
+        claim,
+        spot: None,
+    }
+}
+
 // ── The question a program's claims are ────────────────────────────────
 
 /// The claims a program states, by their shapes: whether its `(solve …)`
@@ -684,6 +749,11 @@ pub fn undecided_words(answer: &Answer) -> String {
         Some(explore::Stopped::NoSearch) => {
             "read root alone (--no-search), and R was not searched".to_string()
         }
+        Some(explore::Stopped::Steps { cap, root }) => format!(
+            "stopped at --max-steps {cap}: {} saturation needed more firings, so nothing of R \
+             is established",
+            if *root { "root's" } else { "a node's" }
+        ),
         None => {
             let k = answer.states.len();
             format!(

@@ -88,6 +88,19 @@ $$
 \exists n.\; T_P^{\,n+1}(K) = T_P^{\,n}(K)
 $$
 
+**A question about $R$ bounds every saturation it computes**
+([Q-M2.16](../../../decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md)). A saturation
+passes through knowledge bases one firing at a time, $K = K_0'' \subseteq K_1'' \subseteq \cdots$, in [the
+agenda's](#the-agenda-the-order-rules-fire-in) order, and a run that asks a question of $R$ carries two bounds on
+every one of them, root's first: a count $N$, so that a saturation that makes more than $N$ firings, a firing
+that adds nothing among them, is stopped at $K_{N+1}''$, and a time, past which a saturation is stopped wherever
+it is. Neither is part of $\operatorname{sat}$. A saturation stopped short of its fixpoint is a state that is not
+known, neither known alive nor known dead, and every part of $R$ rests on states, so a run one of whose
+saturations the count stopped establishes nothing of $R$, root's standing and $H$ among it: it is not decided, as
+every stopped run is. A run the time stopped is no answer at all, the time being the machine's. Where every
+saturation the run computes reaches its fixpoint in at most $N$ firings, the run is the run without the bound,
+since nothing it computes is stopped: a bound decides whether an answer is computed, never what it is.
+
 **A derivation is a graph.** Read with what each firing matched, the chain is a directed acyclic graph: a fact
 is a node, a firing is a node, an arrow leads from each premise into the firing and from the firing to what it
 adds. Two firings below take three stated facts to a contradiction; the first adds

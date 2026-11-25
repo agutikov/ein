@@ -142,6 +142,7 @@ add("""---
 | [X19](#x19--features07_unstratifiableein---no-search-flagged-and-its-strata) | `features/07_unstratifiable.ein` | 1 | `--no-search` on a flagged program: the static check's rows and the strata, the cube not read |
 | [X20](#x20--ein-bugswrong-answersoblig-derived-activatorein-a-debt-root-does-not-owe) | `ein-bugs/wrong-answers/oblig-derived-activator.ein` | 2 | a debt root does not owe and a commitment can bring: the `later debt` row, and what H holds for it |
 | [X21](#x21--testssaved04_a_saved_nodeein-a-saved-file-a-node-of-its-programs-lattice) | `tests/saved/04_a_saved_node.ein` | 0 | a saved file: the `commit` row, the part of the program's R above the node, and the program's claims not checked |
+| [X22](#x22--zebra2ein---max-steps-100-a-saturation-stopped-at-the-cap) | `zebra2.ein` | 56 | a saturation stopped at `--max-steps`: not decided, and nothing of R established; under describe and `--single` |
 """)
 
 add("""## X1 — `branching/05_mini_zebra.ein`: everything at once
@@ -476,6 +477,17 @@ is H less the choice, here no candidate, so R is {∅}, ∅ being the node, and 
 it. The program's claims are about the program's R, so none is checked, and the run exits 0.
 """)
 add(block(["tests/saved/04_a_saved_node.ein"]))
+
+add("""## X22 — `zebra2.ein --max-steps 100`: a saturation stopped at the cap
+
+X10's program under a cap on every saturation of the run far below what root's needs: root's saturation is stopped
+before its fixpoint, so neither root's standing nor H is known, and nothing of R is established. The run is not
+decided, as a run a budget stops is, says which saturation was stopped, answers no query, and exits 0; its summary's
+`region.stopped` is `{why: steps, steps: 100, saturation: root}`, and its `monotonicity` and `root` blocks are
+`null`. Under the default cap the same program is X10.
+""")
+add(block(["--max-steps", "100", "examples/zebra2.ein"]))
+add(block(["--single", "--max-steps", "100", "examples/zebra2.ein"]))
 
 PAGE = re.sub("\x00(\\d+)\x00", lambda m: RUNS[int(m.group(1))].result(), "\n".join(S))
 POOL.shutdown()

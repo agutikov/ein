@@ -172,6 +172,7 @@ fn stopped(a: &Answer) -> Result<Region, String> {
                 Some(Stopped::Budget { .. }) => "budget",
                 Some(Stopped::Deadline) => "deadline",
                 Some(Stopped::NoSearch) => "no-search",
+                Some(Stopped::Steps { .. }) => "steps",
                 None => "?",
             }
             .to_string(),

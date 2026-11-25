@@ -102,6 +102,22 @@
 //! [`crate::region::Nodes`]' readers, which no route stops. Not taken,
 //! `saturate` runs to the fixpoint.
 //!
+//! ### A saturation is bounded
+//!
+//! A program may have no fixpoint: a rule that nests its conclusion one
+//! deeper than its premise derives a new fact at every firing. A saturation
+//! carries a [`Bound`] (Q-M2.16): a cap on its firings, every one counted, a
+//! redundant one too, and a deadline, read every [`CLOCK_EVERY`] firings and
+//! at each quiescence. Past either, [`Saturator::step`] fails,
+//! [`SaturateError::Steps`] or [`SaturateError::Deadline`], with the firing
+//! that passed the cap applied: what the KB holds then is no fixpoint, and
+//! nothing reads it as one. Neither bound is the saturation's own: one built
+//! by [`Saturator::new`] takes the [`bounded`] switch of its thread, none by
+//! default, and one resumed takes its snapshot's, so a worker's node is
+//! bounded as the root it resumes. A question about `R` sets the switch
+//! (`crate::explore`'s § A saturation is bounded); `ein saturate` drives its
+//! one saturation under its own cap, and no other reader sets one.
+//!
 //! ### The plans a fact seeds
 //!
 //! A new fact is handed to the plans that read its relation at a top-level
@@ -173,6 +189,61 @@ thread_local! {
     /// snapshot's.
     static AGENDA_SWITCH: Cell<Option<Option<FailFirst>>> = const { Cell::new(None) };
     static STOP_FIRST: Cell<bool> = const { Cell::new(false) };
+    /// [`bounded`]'s bound on this thread; `None`, no switch, and a
+    /// saturation takes its snapshot's, or none.
+    static BOUND_SWITCH: Cell<Option<Bound>> = const { Cell::new(None) };
+}
+
+/// **What stops a saturation short of its fixpoint** (the module's § A
+/// saturation is bounded): the wall clock, `-T`, and a cap on its firings,
+/// `--max-steps`. Neither is the saturation's own: a run that asks a question
+/// about `R` brings them ([`crate::explore::Options`]), and every saturation
+/// that run computes takes them, root's first. [`Bound::NONE`] stops none.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct Bound {
+    /// Past it, the saturation ends with [`SaturateError::Deadline`]: read
+    /// every [`CLOCK_EVERY`] firings and at each quiescence.
+    pub deadline: Option<std::time::Instant>,
+    /// More firings than this, and the saturation ends with
+    /// [`SaturateError::Steps`]. Every firing counts, a redundant one too, as
+    /// `ein saturate --max-steps` counts them.
+    pub max_steps: Option<u64>,
+}
+
+impl Bound {
+    /// No bound: a saturation runs to its fixpoint, however long it takes.
+    pub const NONE: Bound = Bound {
+        deadline: None,
+        max_steps: None,
+    };
+}
+
+/// How many firings a saturation makes between two reads of the clock,
+/// a power of two: the cost of one read is a share of this many firings'
+/// that no measurement sees, and a run stops within as many past its
+/// deadline.
+pub const CLOCK_EVERY: u64 = 1 << 10;
+
+/// Run `f` with every saturation built on this thread, by [`Saturator::new`]
+/// or [`Saturator::resume`], bounded by `bound` (the module's § A saturation
+/// is bounded); a snapshot keeps it, so a saturation resumed from one on
+/// another thread, a worker's, takes it too. Restored when `f` returns or
+/// unwinds.
+pub fn bounded<T>(bound: Bound, f: impl FnOnce() -> T) -> T {
+    struct Restore(Option<Bound>);
+    impl Drop for Restore {
+        fn drop(&mut self) {
+            BOUND_SWITCH.with(|s| s.set(self.0));
+        }
+    }
+    let _restore = Restore(BOUND_SWITCH.with(|s| s.replace(Some(bound))));
+    f()
+}
+
+/// The bound a saturation built now on this thread by [`Saturator::new`]
+/// takes: [`bounded`]'s, else [`Bound::NONE`].
+pub fn current_bound() -> Bound {
+    BOUND_SWITCH.with(Cell::get).unwrap_or(Bound::NONE)
 }
 
 /// The bit a candidate's rank carries when its rule is not among the first:
@@ -267,6 +338,11 @@ pub enum SaturateError {
     Fire(FireError),
     /// `SaturatorStepLimitError` — the runaway-debugging budget ran out.
     StepLimit(String),
+    /// The saturation's [`Bound::deadline`] passed before its fixpoint.
+    Deadline,
+    /// The saturation needed more firings than its [`Bound::max_steps`],
+    /// the cap it holds.
+    Steps(u64),
 }
 
 impl std::fmt::Display for SaturateError {
@@ -275,6 +351,12 @@ impl std::fmt::Display for SaturateError {
             SaturateError::Compile(e) => write!(f, "{e}"),
             SaturateError::Fire(e) => write!(f, "{e}"),
             SaturateError::StepLimit(m) => f.write_str(m),
+            SaturateError::Deadline => f.write_str("--max-time reached inside a saturation"),
+            SaturateError::Steps(cap) => write!(
+                f,
+                "a saturation needed more than --max-steps {cap} firings, and was stopped \
+                 before its fixpoint"
+            ),
         }
     }
 }
@@ -515,6 +597,13 @@ pub struct Saturator {
     /// [`stopping_at_first_contradiction`] as it stood when this saturation
     /// was built, or `Saturator::stop_at_first_contradiction` since.
     stop_first: bool,
+    /// What stops this saturation short of its fixpoint ([`Bound`]): the
+    /// switch's where it was built by [`Saturator::new`], its snapshot's where
+    /// it was resumed.
+    bound: Bound,
+    /// The firings this saturation has made, every one counted: what
+    /// [`Bound::max_steps`] caps, and what times the clock's reads.
+    steps: u64,
     /// Per plan, whether its candidate fires before every other, under the
     /// agenda and under the written order alone: its rule states
     /// `:ein inconsistent`, or refutes a fact beside one holding it, alone
@@ -620,6 +709,9 @@ pub struct Snapshot {
     /// The agenda the saturation was built under, which a resumed one takes
     /// on whatever thread it runs (the module's § The agenda).
     fail_first: Option<FailFirst>,
+    /// The bound the saturation was built under, which a resumed one takes
+    /// on whatever thread it runs (the module's § A saturation is bounded).
+    bound: Bound,
     /// A saved file's node ([`crate::region::Floor`]), whose commitment every
     /// fork of this snapshot is written with beside its own: the node
     /// function reads it and the saturator does not. `None` at a program's
@@ -990,6 +1082,8 @@ impl Saturator {
             fail_first: is_fail_first(),
             first: Vec::new(),
             stop_first: is_stopping_at_first_contradiction(),
+            bound: current_bound(),
+            steps: 0,
             at_once: Vec::new(),
             pair_at: Vec::new(),
             end_plans: Vec::new(),
@@ -1037,6 +1131,7 @@ impl Saturator {
             facts: kb.facts().collect(),
             mark: kb.mark(),
             fail_first: self.fail_first,
+            bound: self.bound,
             floor: None,
             open: None,
             tables: Arc::new(self.tables(kb, terms)),
@@ -1155,6 +1250,8 @@ impl Saturator {
             fail_first: AGENDA_SWITCH.with(Cell::get).unwrap_or(snapshot.fail_first),
             first: Vec::new(),
             stop_first: is_stopping_at_first_contradiction(),
+            bound: BOUND_SWITCH.with(Cell::get).unwrap_or(snapshot.bound),
+            steps: 0,
             at_once: if kept {
                 tables.at_once.clone()
             } else {
@@ -1219,6 +1316,7 @@ impl Saturator {
     pub fn step(&mut self, s: &mut Session<'_>) -> Result<Option<Firing>, SaturateError> {
         loop {
             if let Some(f) = self.closure_step(s)? {
+                self.count()?;
                 return Ok(Some(f));
             }
             // Positive quiescence — the boundary gets to speak.
@@ -1237,6 +1335,10 @@ impl Saturator {
                 });
             }
             let start = std::time::Instant::now();
+            // The clock at a quiescence, a read the boundary takes anyway.
+            if self.bound.deadline.is_some_and(|d| start >= d) {
+                return Err(SaturateError::Deadline);
+            }
             let admitted = self.admit_from_boundary(s)?;
             self.boundary_nanos += start.elapsed().as_nanos() as u64;
             if admitted == 0 {
@@ -1484,7 +1586,39 @@ impl Saturator {
         if self.needs_enqueue {
             self.match_ends(s)?;
         }
-        self.fire_next(s, true)
+        let firing = self.fire_next(s, true)?;
+        if firing.is_some() {
+            self.count()?;
+        }
+        Ok(firing)
+    }
+
+    /// One more firing against the bound (the module's § A saturation is
+    /// bounded): past [`Bound::max_steps`] the saturation ends, and every
+    /// [`CLOCK_EVERY`] firings the clock is read. The firing is applied
+    /// already; a saturation that ends here is no fixpoint, and nothing reads
+    /// what it wrote as one.
+    #[inline]
+    fn count(&mut self) -> Result<(), SaturateError> {
+        self.steps += 1;
+        if let Some(cap) = self.bound.max_steps
+            && self.steps > cap
+        {
+            return Err(SaturateError::Steps(cap));
+        }
+        if self.steps & (CLOCK_EVERY - 1) == 0
+            && let Some(d) = self.bound.deadline
+            && std::time::Instant::now() >= d
+        {
+            return Err(SaturateError::Deadline);
+        }
+        Ok(())
+    }
+
+    /// The firings this saturation has made so far, every one counted, as
+    /// [`Bound::max_steps`] counts them.
+    pub fn steps(&self) -> u64 {
+        self.steps
     }
 
     /// Enqueue what the pending pass would for the plans of rules that state
@@ -2818,6 +2952,97 @@ mod tests {
         assert!(msg.contains("max_steps=2"), "{msg}");
         assert!(msg.contains("without reaching fixed point"), "{msg}");
         assert!(sat.last_firing().is_some());
+    }
+
+    /// **A saturation is bounded** (the module's § A saturation is bounded):
+    /// a rule that nests its conclusion one deeper than its premise has no
+    /// fixpoint, and under [`bounded`] its saturation ends past the cap, with
+    /// [`SaturateError::Steps`] after the cap's firings and one more, and at
+    /// a deadline already past, with [`SaturateError::Deadline`] at the
+    /// clock's first read. A saturation resumed from a bounded one's snapshot
+    /// takes its bound on a thread with no switch. A saturation that needs
+    /// exactly the cap's firings reaches its fixpoint.
+    #[test]
+    fn a_bound_ends_a_saturation_with_no_fixpoint() {
+        let grow = "(relation num N :why \"{?3} is a number\")\n\
+                    (rule grow () :match (num ?x) :assert (num (s ?x)) :why \"its successor\")\n\
+                    (num zero)\n";
+        let saturate = |src: &str, bound: Bound| -> (Result<usize, SaturateError>, u64) {
+            let mut ast = Ast::new();
+            let mut terms = Terms::new();
+            let forms = parse(&mut ast, src, Some("<test>")).expect("parses");
+            let mut kb = load(&mut ast, &mut terms, &forms, None).expect("loads");
+            let mut ev = Events::off();
+            let mut s = Session {
+                kb: &mut kb,
+                terms: &mut terms,
+                ast: &ast,
+                events: &mut ev,
+                memo: SharedMemo::default(),
+            };
+            let mut sat = bounded(bound, || Saturator::new(&mut s)).expect("compiles");
+            let out = sat.saturate(&mut s, None, &mut |_| {});
+            (out, sat.steps())
+        };
+        let cap = Bound {
+            deadline: None,
+            max_steps: Some(100),
+        };
+        let (out, steps) = saturate(grow, cap);
+        assert!(matches!(out, Err(SaturateError::Steps(100))), "{out:?}");
+        assert_eq!(steps, 101, "the cap's firings and the one past it");
+        let clock = Bound {
+            deadline: Some(std::time::Instant::now()),
+            max_steps: None,
+        };
+        let (out, steps) = saturate(grow, clock);
+        assert!(matches!(out, Err(SaturateError::Deadline)), "{out:?}");
+        assert_eq!(steps, CLOCK_EVERY, "the clock's first read ends it");
+        // Three firings to the fixpoint: a cap of three is no stop.
+        let three = "(relation num N :why \"{?3} is a number\")\n\
+                     (relation big N :why \"{?3} is big\")\n\
+                     (rule big () :match (num ?x) :assert (big ?x) :why \"big\")\n\
+                     (num a)\n(num b)\n(num c)\n";
+        let (out, steps) = saturate(
+            three,
+            Bound {
+                deadline: None,
+                max_steps: Some(3),
+            },
+        );
+        assert_eq!(out.expect("a fixpoint within the cap"), 3);
+        assert_eq!(steps, 3);
+        assert_eq!(
+            current_bound(),
+            Bound::NONE,
+            "the switch holds only while it runs"
+        );
+        // A resumed saturation takes its snapshot's bound, on a thread with
+        // no switch: a worker's.
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(&mut ast, three, Some("<test>")).expect("parses");
+        let mut kb = load(&mut ast, &mut terms, &forms, None).expect("loads");
+        let mut ev = Events::off();
+        let mut s = Session {
+            kb: &mut kb,
+            terms: &mut terms,
+            ast: &ast,
+            events: &mut ev,
+            memo: SharedMemo::default(),
+        };
+        let mut sat = bounded(cap, || Saturator::new(&mut s)).expect("compiles");
+        sat.saturate(&mut s, None, &mut |_| {}).expect("saturates");
+        let snapshot = sat.snapshot(s.kb, s.terms);
+        let resumed = std::thread::scope(|t| {
+            t.spawn(|| {
+                let delta = snapshot.new_facts_of(s.kb);
+                Saturator::resume(&mut s, &snapshot, delta).map(|r| r.bound)
+            })
+            .join()
+            .expect("the thread runs")
+        });
+        assert_eq!(resumed.expect("resumes"), cap);
     }
 
     /// The agenda: a rule whose conclusion a contradiction can be made of

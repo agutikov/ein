@@ -248,7 +248,8 @@ pub struct Options {
     /// have to number a new fact hands its node back, and every new fact is
     /// therefore numbered by the calling thread in the order `1` numbers it.
     pub jobs: usize,
-    /// `ein oracle -T`: checked before each batch of nodes. Reaching it is
+    /// `ein oracle -T`: checked before each batch of nodes, and inside every
+    /// saturation, root's among them. Reaching it is
     /// [`SolveError::Deadline`], never a smaller cube.
     pub deadline: Option<Instant>,
     /// Which dead nodes' unsat cores the run takes beyond root's and the
@@ -494,17 +495,27 @@ pub fn compute_with(
     events: &mut Events,
 ) -> Result<Outcome, SolveError> {
     let t_root = Instant::now();
-    let prepared = prepare_with(root, terms, ast, events)?;
-    compute_prepared(
-        root,
-        terms,
-        ast,
-        prepared,
-        t_root,
-        opts,
-        on_projection,
-        events,
-    )
+    // The clock reaches inside every saturation of the cube, root's first;
+    // no cap does: the reference saturates every node to its fixpoint, and
+    // its one bound past the limit is the clock (`explore`'s § A saturation
+    // is bounded).
+    let bound = crate::saturator::Bound {
+        deadline: opts.deadline,
+        max_steps: None,
+    };
+    crate::saturator::bounded(bound, || {
+        let prepared = prepare_with(root, terms, ast, events)?;
+        compute_prepared(
+            root,
+            terms,
+            ast,
+            prepared,
+            t_root,
+            opts,
+            on_projection,
+            events,
+        )
+    })
 }
 
 /// [`compute`] after [`prepare`] — how [`crate::explore`] reaches the cube
@@ -1770,7 +1781,8 @@ impl<'a> Nodes<'a> {
 
     /// [`Self::with_fixpoint_supported`], the node saturated only while its
     /// applications have derived at most `max_derived` facts: `Ok(Err(n))`
-    /// where it was stopped, by either bound, after deriving `n`, and
+    /// where it was stopped, by either bound or the run's cap
+    /// ([`crate::saturator::Bound`]), after deriving `n`, and
     /// nothing is read.
     pub(crate) fn with_fixpoint_supported_within<R>(
         &mut self,
@@ -1797,7 +1809,15 @@ impl<'a> Nodes<'a> {
             let delta = self.snapshot.new_facts_of(s.kb);
             let mut sat = Saturator::resume(&mut s, &self.snapshot, delta)?;
             sat.read_universals();
-            while let Some(firing) = sat.step(&mut s)? {
+            loop {
+                let firing = match sat.step(&mut s) {
+                    Ok(Some(firing)) => firing,
+                    Ok(None) => break,
+                    // The run's cap stops the node as its own bound does: a
+                    // reading the run goes on without.
+                    Err(crate::saturator::SaturateError::Steps(_)) => return Ok(false),
+                    Err(e) => return Err(e),
+                };
                 if firings.len() == max_firings {
                     return Ok(false);
                 }

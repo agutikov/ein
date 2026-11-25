@@ -58,6 +58,7 @@ fn stopped(s: &Option<Stopped>) -> Value {
         Some(Stopped::Limit { n, limit }) => json!({"why": "limit", "n": n, "limit": limit}),
         Some(Stopped::Deadline) => json!({"why": "deadline"}),
         Some(Stopped::NoSearch) => json!({"why": "no-search"}),
+        Some(Stopped::Steps { cap, root }) => json!({"why": "steps", "steps": cap, "root": root}),
     }
 }
 

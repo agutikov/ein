@@ -689,26 +689,18 @@ pub fn render(r: &ReadOut, o: &Options) -> Text {
         hint: dump_hint(o.command),
     };
     let a = &r.answer;
+    if let Some(Stopped::Steps { cap, root }) = a.stopped {
+        return render_cut(r, o, cap, root);
+    }
     if a.route == Route::Root {
         return render_root(r, o);
     }
     let cands: Vec<String> = a.candidates.iter().map(|c| c.text.clone()).collect();
-    let line = if a.mode.which == Which::All {
-        "R"
-    } else {
-        which_words(a.mode.which)
-    };
-    let asked = match a.mode.ask {
-        Ask::Describe if a.mode.which == Which::All => "all of R — describe".to_string(),
-        Ask::Describe => format!("{line} — every state on it"),
-        Ask::Find(n) => format!("{} of {line} (-n {n})", plural(n, "state", "states")),
-        Ask::Single => format!("is {line} one state? (--single)"),
-        Ask::Count => "how many states and commitments R holds (--count)".to_string(),
-    };
+    let line = line_words(a);
     out.line(format!("{} · {}", o.command, o.argv));
     out.line(RULE);
     loud_warning(&mut out, &a.monotonicity, o);
-    out.row(Row::Asked, asked);
+    out.row(Row::Asked, asked_words(a));
 
     match r.described() {
         Some(d) => describe_rows(&mut out, r, d, o),
@@ -725,33 +717,140 @@ pub fn render(r: &ReadOut, o: &Options) -> Text {
             listed: out.listed,
         };
     }
-    let mut code = queries(&mut out, r, o);
+    let code = queries(&mut out, r, o).max(solve_claim(&mut out, r, o));
+    Text {
+        stdout: out.text,
+        stderr: out.stderr,
+        code,
+        shown: out.shown,
+        listed: out.listed,
+    }
+}
 
-    if let Some(claim) = &r.claim {
-        out.blank();
-        let label = match claim.outcome {
-            Outcome::Held => "holds",
-            Outcome::Failed => "FAILED",
-            Outcome::NotChecked => "NOT CHECKED",
-        };
-        out.row(Row::SolveExpect, label);
-        for l in &claim.lines {
-            out.more(l);
+/// The part of R a question is about, as its rows name it.
+fn line_words(a: &ein_infer::explore::Answer) -> &'static str {
+    if a.mode.which == Which::All {
+        "R"
+    } else {
+        which_words(a.mode.which)
+    }
+}
+
+/// The `asked` row's value: the question.
+fn asked_words(a: &ein_infer::explore::Answer) -> String {
+    let line = line_words(a);
+    match a.mode.ask {
+        Ask::Describe if a.mode.which == Which::All => "all of R — describe".to_string(),
+        Ask::Describe => format!("{line} — every state on it"),
+        Ask::Find(n) => format!("{} of {line} (-n {n})", plural(n, "state", "states")),
+        Ask::Single => format!("is {line} one state? (--single)"),
+        Ask::Count => "how many states and commitments R holds (--count)".to_string(),
+    }
+}
+
+/// The program's `(solve … :expect …)`, checked: its row, its lines, its
+/// stderr line, and 1 where it failed.
+fn solve_claim(out: &mut Out, r: &ReadOut, o: &Options) -> i32 {
+    let Some(claim) = &r.claim else {
+        return 0;
+    };
+    out.blank();
+    let label = match claim.outcome {
+        Outcome::Held => "holds",
+        Outcome::Failed => "FAILED",
+        Outcome::NotChecked => "NOT CHECKED",
+    };
+    out.row(Row::SolveExpect, label);
+    for l in &claim.lines {
+        out.more(l);
+    }
+    let why = claim.lines.first().cloned().unwrap_or_default();
+    match claim.outcome {
+        Outcome::Held => 0,
+        Outcome::Failed => {
+            out.stderr
+                .push(format!("{}: (solve :expect) FAILED — {why}", o.file));
+            1
         }
-        let why = claim.lines.first().cloned().unwrap_or_default();
-        match claim.outcome {
-            Outcome::Held => {}
-            Outcome::Failed => {
-                out.stderr
-                    .push(format!("{}: (solve :expect) FAILED — {why}", o.file));
-                code = 1;
-            }
-            Outcome::NotChecked => out.stderr.push(format!(
+        Outcome::NotChecked => {
+            out.stderr.push(format!(
                 "note: {}: (solve :expect) NOT CHECKED — {why}",
                 o.file
-            )),
+            ));
+            0
         }
     }
+}
+
+/// Which saturation the cap stopped, as a stopped run's rows say it.
+pub fn cut_words(cap: u64, root: bool) -> String {
+    format!(
+        "{} saturation needed more than --max-steps {cap} firings, and was stopped before its \
+         fixpoint",
+        if root { "root's" } else { "a node's" }
+    )
+}
+
+/// **A run a saturation stopped at the cap** ([`Stopped::Steps`]): not
+/// decided, and nothing of R established, neither root's standing nor H, and
+/// the static check not read. The question's own rows say so, as a budget's
+/// stop does: `exhausted`, or `--single`'s `verdict`, not decided, and
+/// `decided`, which says why; or `--no-search`'s `R`. A `note:`
+/// says it on stderr as every partial run's does; each query is unanswered
+/// and each claim not checked.
+fn render_cut(r: &ReadOut, o: &Options, cap: u64, root: bool) -> Text {
+    let mut out = Out {
+        text: String::new(),
+        stderr: Vec::new(),
+        listed: 0,
+        uncut: o.uncut,
+        shown: Vec::new(),
+        hint: dump_hint(o.command),
+    };
+    let a = &r.answer;
+    let what = cut_words(cap, root);
+    out.line(format!("{} · {}", o.command, o.argv));
+    out.line(RULE);
+    if a.route == Route::Root {
+        out.row(
+            Row::Asked,
+            "root alone — --no-search: root's fixpoint, and R is not searched",
+        );
+        out.row(Row::R, format!("not searched, and root not known — {what}"));
+    } else {
+        out.row(Row::Asked, asked_words(a));
+        if a.mode.ask == Ask::Single {
+            out.row(Row::Verdict, "not decided — the run stopped first");
+            out.row(
+                Row::Decided,
+                format!("no — {what}: nothing of R is established"),
+            );
+        } else {
+            out.row(
+                Row::Exhausted,
+                format!("no — {what}: nothing of R is established"),
+            );
+        }
+    }
+    partial_note(
+        &mut out,
+        o,
+        format!(
+            "{what}. Established: nothing of R, neither root's standing nor H. A larger \
+             --max-steps lets every saturation run further"
+        ),
+    );
+    if a.mode.ask == Ask::Count {
+        count_claims(&mut out, r, o);
+        return Text {
+            stdout: out.text,
+            stderr: out.stderr,
+            code: 0,
+            shown: out.shown,
+            listed: out.listed,
+        };
+    }
+    let code = queries(&mut out, r, o).max(solve_claim(&mut out, r, o));
     Text {
         stdout: out.text,
         stderr: out.stderr,
@@ -1434,32 +1533,7 @@ pub fn render_root(r: &ReadOut, o: &Options) -> Text {
             out.row(Row::RefutedBy, root.refuted_by.join(", "));
         }
     }
-    let mut code = queries(&mut out, r, o);
-    if let Some(claim) = &r.claim {
-        out.blank();
-        let label = match claim.outcome {
-            Outcome::Held => "holds",
-            Outcome::Failed => "FAILED",
-            Outcome::NotChecked => "NOT CHECKED",
-        };
-        out.row(Row::SolveExpect, label);
-        for l in &claim.lines {
-            out.more(l);
-        }
-        let why = claim.lines.first().cloned().unwrap_or_default();
-        match claim.outcome {
-            Outcome::Held => {}
-            Outcome::Failed => {
-                out.stderr
-                    .push(format!("{}: (solve :expect) FAILED — {why}", o.file));
-                code = 1;
-            }
-            Outcome::NotChecked => out.stderr.push(format!(
-                "note: {}: (solve :expect) NOT CHECKED — {why}",
-                o.file
-            )),
-        }
-    }
+    let code = queries(&mut out, r, o).max(solve_claim(&mut out, r, o));
     Text {
         stdout: out.text,
         stderr: out.stderr,
@@ -2251,6 +2325,10 @@ fn mode_rows(out: &mut Out, r: &ReadOut, o: &Options, line: &str) {
         Some(Stopped::Deadline) => out.row(Row::Exhausted, "no — --max-time"),
         // `render_root`'s, and never a mode's.
         Some(Stopped::NoSearch) => out.row(Row::Exhausted, "no — --no-search"),
+        // `render_cut`'s, and never a mode's.
+        Some(Stopped::Steps { cap, root }) => {
+            out.row(Row::Exhausted, format!("no — {}", cut_words(*cap, *root)))
+        }
     }
     // A dead root leaves no node of R, so no hole (L0).
     let holes = if a
@@ -2688,6 +2766,14 @@ fn query_block(out: &mut Out, r: &ReadOut, q: &Query, qi: usize, n_q: usize) {
     {
         out.blank();
         out.line(numbered_line(Row::Query, qi, n_q, &q.goal));
+        // A run a saturation stopped at the cap established no state.
+        if let Some(Stopped::Steps { cap, root }) = a.stopped {
+            out.row(
+                Row::Over,
+                format!("{over} — no state to answer from: {}", cut_words(cap, root)),
+            );
+            return;
+        }
         if q.classes.is_empty() && q.exact {
             let empty = if r.states.is_empty() {
                 empty_words(a)

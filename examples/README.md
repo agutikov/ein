@@ -67,6 +67,7 @@ Four rings, outermost first:
 ```text
 ein-cli/tests/acceptance_cli.rs
 ein-cli/tests/answer_dump.rs
+ein-cli/tests/bounded_saturation.rs
 ein-cli/tests/cli_semantics.rs
 ein-cli/tests/corpus_cli.rs
 ein-cli/tests/einb_cli.rs

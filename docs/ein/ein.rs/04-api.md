@@ -116,7 +116,8 @@ answering path, the one `ein solve` takes.
 | `budget` | facts beyond root, their `open` facts aside, summed over every fixpoint the run computes: `--region-budget`, [$2^{20}$ by default](../../decisions/cli/Q-M1e2.35-the-default-region-budget-is-2-20-facts.md). A run that reaches it stops and says what it established, with `exhausted` false; it never changes an answer |
 | `limit` | the largest `n` whose whole cube a program the static check flags gets: `--region-limit` |
 | `jobs` | `> 1` fans the nodes out over threads, with the same answer. Inert without the `parallel` feature |
-| `deadline` | `-T`: an `Instant`, past which the run is an error, never an answer |
+| `deadline` | `-T`: an `Instant`, past which the run is an error, `SolveError::Deadline`, never an answer. It is read between a route's steps and inside every saturation the run computes, root's first, so a program with no fixpoint ends at it |
+| `max_steps` | `--max-steps`: the most firings any one saturation of the run may make, root's first; `Options::new` takes `explore::DEFAULT_MAX_STEPS`, $2^{20}$, and `None` caps none. A saturation that needs more ends the run with an answer, not decided: `stopped` is `Stopped::Steps { cap, root }`, `root` saying whether it was root's saturation, and nothing of `R` is established, no candidate, state, count or verdict. A run whose every saturation stays within it is the run without it ([Q-M2.16](../../decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md)) |
 | `cores` | which dead nodes' cores the run takes beyond root's and the minimal holes', which the read-out prints (`region::Cores`): `visited`, each dead node the run visits, for a watch that reads them as `--events` and `--dump-lattice` do; `nogoods`, each member of `N` under describe, for `--dump-answer` and `--trace`, which refuse a member without one. A core is an explanation search and can cost far more than its node, so `Options::new` takes neither, as `ein solve` does; no answer depends on it ([Q-M1f.6](../../decisions/answer/Q-M1f.6-a-core-is-an-explanation.md)) |
 
 `read_out::run` is `explore::run` plus every listed state read through the node function: each state's `(model …)`
@@ -130,8 +131,13 @@ and each `(query …)`'s projection classes. `read_out::run_with` and `explore::
 `Contradiction` (`R` is empty and every node is dead) or **`Open`** (`R` is empty and every alive node owes an
 obligation the program stated). `Open` is the arm an embedder is most likely to mis-file, because `R` is empty
 exactly as it is for a `Contradiction`, and it means *not yet a model* where `Contradiction` means *no model*
-([Q-M1d.6](../../decisions/answer/Q-M1d.6-contradiction-is-said-only-where-no-node-is.md)). `None` means a budget or
-the deadline stopped the run before it decided.
+([Q-M1d.6](../../decisions/answer/Q-M1d.6-contradiction-is-said-only-where-no-node-is.md)). `None` means a budget, the
+limit or `max_steps` stopped the run before it decided, which `answer.stopped` says.
+
+**A saturation driven by hand is bounded only when asked.** `Saturator::new` takes the bound of the
+`saturator::bounded` switch on its thread, none by default, and `Saturator::resume` its snapshot's; past it `step`
+fails with `SaturateError::Steps` or `SaturateError::Deadline` (`saturator::Bound`). `explore::run` and
+`read_out::run` set the switch from `Options::bound` for every saturation they compute.
 
 A described `R` is `answer.described`: its states with their commitments and lines, its counts (`k_s`, `k_c`), `N`,
 root's own debts and core, and how the run was partial if it was. The bindings come from **each state's own

@@ -43,9 +43,10 @@ held for every mode under every lever by `ein-cli/tests/lever_invariance.rs`.
 |---|---|
 | `--jobs N` | the nodes of a batch computed on `N` threads; nothing a run prints ([`03-design/08-parallelism.md`](03-design/08-parallelism.md)) |
 | `--region-budget F` | how far a run goes before it stops and says what it established |
+| `--max-steps N` | the most firings any one saturation of a run may make, root's first; past it the run stops, not decided, and establishes nothing of `R` |
 | `--region-limit N` | how large a flagged program's cube a run computes whole |
 | `--describe-route tree\|states` | which of describe's two routes runs on a monotone program |
-| `-T S` | a deadline, past which the run is an error |
+| `-T S` | a deadline, past which the run is an error, read between a route's steps and inside every saturation |
 | `--no-search` | the question: root alone, `R` not discovered |
 | `(config :lattice-sanity-check true)`, `-y` | the parent-path spot check, read by the read-out |
 | `(config :record-alternative-justifications false)` | alternatives not recorded; the one lever that may change a dead node's core, never `R` |
@@ -123,6 +124,27 @@ skipped unless one of them grew.
 
 A node of the search does not start this loop from nothing: `Saturator::resume` continues root's snapshot over a
 fork, with the commitment as its first delta (§ 7).
+
+**The bound** (`saturator::Bound`, [Q-M2.16](../../decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md)) is counted in `step`: every firing the loop returns, a
+redundant one too, adds one to the saturation's count, and the count past `max_steps` ends the saturation with
+`SaturateError::Steps`; every `saturator::CLOCK_EVERY` firings, and at each quiescence before the boundary
+round, the clock is read, and a deadline past ends it with `SaturateError::Deadline`. A saturation takes its bound
+where it is built, from the `saturator::bounded` switch of its thread, and a resumed one from its snapshot, so a
+worker's node is bounded as root is. `explore::run` runs everything under the question's
+`explore::Options::bound`; a cap past turns into the answer `Stopped::Steps`, a deadline into
+`SolveError::Deadline`.
+
+```text
+step():
+    loop:
+        if closure_step() returns a firing:
+            count += 1
+            if count > max_steps: fail Steps
+            if count is a multiple of CLOCK_EVERY and now ≥ deadline: fail Deadline
+            return the firing
+        if now ≥ deadline: fail Deadline          # a quiescence
+        if admit_from_boundary() admitted none: mark the fixpoint; return None
+```
 
 ## 5. The matcher: a plan run as a register machine
 

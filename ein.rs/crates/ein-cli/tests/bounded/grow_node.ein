@@ -1,0 +1,18 @@
+;;; grow.ein's rule, started by a hypothesis: root reaches its fixpoint, and the
+;;; node that commits (seed zero) has none. Its claim is what the node would
+;;; settle; no run under a cap it passes checks it.
+(relation num N :why "{?3} is a number")
+(relation seed N :why "{?3} is a seed")
+(rule grow ()
+  :match (num ?x)
+  :assert (num (s ?x))
+  :why "the successor of a number is a number")
+(rule start ()
+  :match (seed ?x)
+  :assert (num ?x)
+  :why "a seed is a number")
+(rule may-seed ()
+  :match ()
+  :assert (open (seed zero))
+  :why "zero may be a seed")
+(query :goal (seed ?x) :goal-text "{?x}" :expect (model (seed zero)))

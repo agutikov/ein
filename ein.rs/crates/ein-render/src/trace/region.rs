@@ -334,6 +334,21 @@ pub fn of_read_out(
         .take_while(|l| !l.is_empty())
         .map(str::to_string)
         .collect();
+    // A run a saturation stopped at the cap derived nothing it claims: its
+    // trace is its head, and why no derivation is told.
+    if let Some(ein_infer::explore::Stopped::Steps { cap, root }) = a.stopped {
+        let mut lines = vec!["# Region trace".to_string(), String::new()];
+        lines.push("```text".to_string());
+        lines.extend(head);
+        lines.push("```".to_string());
+        lines.push(String::new());
+        lines.push(format!(
+            "_No derivation is told: {}._",
+            crate::read_out::cut_words(cap, root)
+        ));
+        lines.push(String::new());
+        return Ok(format!("{}\n", lines.join("\n").trim_end()));
+    }
     let root = crate::trace::steps_of_with(ast, terms, root_firings, kb, drawing, &[], relevant);
     let mut states = Vec::new();
     let k = r.states.len();

@@ -53,8 +53,8 @@ it needs, and the whole cube is computed only when `ein oracle` is asked for it 
 ### 2.1 `ein solve`
 
 ```text
-ein solve FILE  [WHICH]  [ASK]  [--region-budget FACTS] [--region-limit N] [-T SECONDS] [-j JOBS]
-                [presentation] [artefacts]
+ein solve FILE  [WHICH]  [ASK]  [--region-budget FACTS] [--region-limit N] [--max-steps N] [-T SECONDS]
+                [-j JOBS] [presentation] [artefacts]
 
 WHICH   (all of R, the default) | --minimal | --maximal
 ASK     (describe, the default) | -n N | --single | --count (over all of R only)
@@ -94,6 +94,13 @@ ASK     (describe, the default) | -n N | --single | --count (over all of R only)
   `exhausted` its question, and the work done, in saturations and facts ([`08-read-out.md`](08-read-out.md)). A run the
   budget stopped prints what it established and bounds for the rest, and a `note:` on stderr says how far it got,
   what the next step would cost, and which option takes it further.
+- **Every saturation the run computes is bounded, root's first** ([Q-M2.16](../../../decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md)). `--max-steps N`
+  is the most firings any one of them may make, $2^{20}$ by default, far above the largest the corpus makes; a
+  saturation that needs more stops the run, which is then **not decided** and establishes nothing of R, neither root's
+  standing nor H: its `exhausted` row, or `--single`'s `verdict` and `decided`, say which saturation was stopped, a
+  `note:` on stderr says it too, no query is answered, no claim is checked, and it exits 0. `-T` is read inside every
+  saturation as between a route's steps, so a program with no fixpoint ends at the clock as any run does (§ 3).
+  A run whose every saturation stays within the cap is the run without it.
 
 The options beside the two axes — the budgets, the presentation forms, the artefacts — are listed by
 `ein solve --help` and classed by what they can do to the answer in [`06-config.md` § 3.3](06-config.md).
@@ -122,8 +129,8 @@ ein oracle FILE  [--region-limit N] [--dump DIR] [--states] [-j JOBS] [-T SECOND
 ### 2.3 `ein test`
 
 ```text
-ein test PATH…  [-v | -q] [--diff [stats | full]] [--region-budget FACTS] [-T SECONDS] [--no-search] [--in-flight]
-                [--json-report FILE] [--json-summary FILE] [--events FILE]
+ein test PATH…  [-v | -q] [--diff [stats | full]] [--region-budget FACTS] [--max-steps N] [-T SECONDS] [--no-search]
+                [--in-flight] [--json-report FILE] [--json-summary FILE] [--events FILE]
 ```
 
 `ein test` turns a selection of programs into a status code, so that **nothing reads output**. Each `PATH` is a
@@ -201,8 +208,9 @@ before a path takes the path for its level and is refused, exit 2, with the two 
 `--no-search` asks each file root alone, as `ein solve --no-search` does: a claim root decides is held or `FAILED`
 as the full run decides it, and every other is `NOT CHECKED`, which moves no exit code
 ([Q-M1f.257](../../../decisions/cli/Q-M1f.257-under-no-search-a-claim-not-checked-moves-no.md)). `-T` aborts a file
-after N seconds, and the abort is an `ERROR`: nothing was established either way. `--region-budget` bounds each
-question a file is asked, and a claim no question decided within it is `NOT CHECKED`. `--events` and
+after N seconds, wherever the run is, and the abort is an `ERROR`: nothing was established either way.
+`--region-budget` bounds each question a file is asked, and `--max-steps` each saturation of each question, its load's
+among them, as `ein solve`'s do; a claim no question decided within them is `NOT CHECKED`. `--events` and
 `--json-summary` name one run, so they are refused over a selection of more than one file; where a file was asked
 two questions, they hold the last. `--json-report` is § [5](#5-what-is-fixed-about-the-command-line)'s.
 
@@ -227,7 +235,11 @@ them, those the program writes and those the pass writes at its fixpoint
 ([Q-M1f.572](../../../decisions/read-out/Q-M1f.572-a-states-open-facts-are-part-of-it-listed-drawn.md)). It is how a commitment is checked by
 hand, too: add its facts to a copy of the program and saturate the copy (§ [4.4](#44-checking)). `--max-steps N`
 stops it after N firings (§ [5](#5-what-is-fixed-about-the-command-line)), and `--progress-every N` logs a progress
-line every N steps (0 logs none).
+line every N steps (0 logs none). It has no cap unless asked: it asks no question about R, and what it shows is
+the saturation itself, as far as it runs. `ein oracle` takes no cap either, every node of its cube being saturated
+to its fixpoint, and its `-T` is read inside every saturation; `ein show hyps`, `ein render h-space`, `ein render kb`
+and `ein solve --monotone` read root's fixpoint and take neither, and `ein render lattice` runs its describing
+question under `ein solve`'s default cap.
 
 ### 2.5 `ein render` and `ein show`
 
@@ -293,8 +305,9 @@ one whose relations, rules or macros lack a `:why` ([`06-config.md` § 3.4](06-c
 
 **An answer is never an exit code**
 ([Q-M1e2.33](../../../decisions/cli/Q-M1e2.33-every-answer-exits-0.md)): R empty, one state or many, a run the budget
-stopped with a part of R, each of `--single`'s four words, every `--monotone` verdict — each exits 0. A run the
-budget stopped writes one `note:` to stderr. **On a program the static check flags, the first line on stderr is the
+stopped with a part of R, a run a saturation past `--max-steps` stopped with nothing of R established, each of
+`--single`'s four words, every `--monotone` verdict — each exits 0. A run the budget or the cap stopped writes one
+`note:` to stderr. **On a program the static check flags, the first line on stderr is the
 warning**, in capitals, that the program is not monotone and that nothing is claimed of the answer: every command
 that answers about a commitment writes it, and a read-out opens with it as its `WARNING` row
 ([`08-read-out.md` § 5.1](08-read-out.md#51-under-lattice-and-monotone-the-warning)). A claim `ein solve` could not check is a `note:` on stderr and exits 0;
@@ -318,7 +331,9 @@ claim false; `ein test --no-search` decides what root decides, and a claim it le
 asked not to search, moves no exit code.
 
 **A `-T` abort** prints one line on stderr, `** aborted: --max-time S s reached before the question was decided **`,
-nothing on stdout, and exits 2: a machine-dependent limit is never an answer.
+nothing on stdout, and exits 2: a machine-dependent limit is never an answer. The clock is read between a route's
+steps and inside every saturation, root's first, every thousand-odd firings and at each quiescence, so a run ends
+at it wherever it is, a saturation with no fixpoint among them ([Q-M2.16](../../../decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md)).
 
 **A closed stdout is no code either.** A write to a pipe whose reader has gone ends any command by `SIGPIPE`, with
 nothing on stderr, which a shell reports as 141, as it does for `cat`
@@ -387,7 +402,7 @@ itself, is in R there, and every alive extension is a second state. That is what
 | question | command |
 |---|---|
 | How much would describing it cost? | `ein solve F`. Past the budget it stops, prints what is certified, and forecasts what the next step needs |
-| Spend more, or less | `--region-budget FACTS` for a count of facts, `-T S` for a wall-clock abort |
+| Spend more, or less | `--region-budget FACTS` for a count of facts, `--max-steps N` for the firings of any one saturation, `-T S` for a wall-clock abort |
 | Faster, the same answer | `-j N`, or `-j auto` |
 | What did the run visit? | the `work` row; `-t` for where the wall clock went; `--dump-lattice DIR` for every node; `ein render lattice F`, or `ein render region ORACLE_DIR --visited DIR` to draw them on the cube |
 | The whole lattice, drawn | `ein oracle F --dump D`, then `ein render region D` |

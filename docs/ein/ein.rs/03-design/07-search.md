@@ -172,17 +172,20 @@ line is $\{\emptyset\}$.
 
 ### 4.1 Budgets
 
-A run has two bounds: the **region budget**, facts beyond root, their `open` facts aside, summed over every fixpoint
+A run has three bounds: the **region budget**, facts beyond root, their `open` facts aside, summed over every fixpoint
 the run computes
 (`--region-budget`, [$2^{20}$ by default](../../../decisions/cli/Q-M1e2.35-the-default-region-budget-is-2-20-facts.md)),
 checked before each step, and on the cube the **region limit**, the largest `n` whose whole cube a flagged program
-gets (`--region-limit`). **A budget stops work and never changes an answer**: a stopped run says what it established,
+gets (`--region-limit`), and the **cap on a saturation**, the most firings any one saturation of the run may make,
+root's first (`--max-steps`, `explore::DEFAULT_MAX_STEPS` by default), counted inside the saturator, where a cap
+past stops the run with nothing of `R` established
+([Q-M2.16](../../../decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md)). **A budget stops work and never changes an answer**: a stopped run says what it established,
 members found, a line's members found, a verdict reached, with `exhausted` false, and no more
 ([Q-M1d.1](../../../decisions/answer/Q-M1d.1-a-search-stops-early-only-on-a-decided-question.md)). Past the limit a
 question that needs the whole cube meets `R`'s members in layer order up to the limit, and describe certifies what it
 can of them; a line mode answers from the same description
 ([Q-M1e2.19](../../../decisions/answer/Q-M1e2.19-past-the-limit-a-line-mode-certifies-what.md)). `-T` is a deadline, past
-which the run is an error. A count is exact at any size and reported up to $2^{63} - 1$
+which the run is an error, read between the steps and inside every saturation. A count is exact at any size and reported up to $2^{63} - 1$
 ([`count.rs`](../../../../ein.rs/crates/ein-infer/src/count.rs),
 [Q-M1f.218](../../../decisions/answer/Q-M1f.218-a-count-is-exact-and-reported-up-to-2-63-1.md)).
 

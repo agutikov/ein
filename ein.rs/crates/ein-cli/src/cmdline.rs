@@ -84,6 +84,39 @@ fn region_budget_spec(s: &str) -> Result<i64, String> {
     }
 }
 
+/// `--max-steps`' count — one or more, as the budget's: a cap of none would
+/// stop every saturation that fires at all.
+fn max_steps_spec(s: &str) -> Result<i64, String> {
+    match int_arg(s)? {
+        n if n >= 1 => Ok(n),
+        n => Err(format!(
+            "invalid step cap: '{n}' (expected 1 or more firings)"
+        )),
+    }
+}
+
+/// `2^20 = 1048576`: `--max-steps`' default as the help states it, from the
+/// one constant that defines it ([`ein_infer::explore::DEFAULT_MAX_STEPS`]).
+fn default_max_steps() -> String {
+    let b = ein_infer::explore::DEFAULT_MAX_STEPS;
+    format!("2^{} = {b}", b.trailing_zeros())
+}
+
+/// `--max-steps` on a command that asks a question about R: `ein solve`,
+/// and `ein test` of each question a file is asked. `what` says what a
+/// saturation past it does to the command's answer.
+fn max_steps(what: &str) -> Arg {
+    Arg::new("max-steps")
+        .long("max-steps")
+        .value_name("MAX_STEPS")
+        .value_parser(max_steps_spec)
+        .help(format!(
+            "the most firings any one saturation may make, root's first (default \
+             {}). {what}; never a different answer",
+            default_max_steps()
+        ))
+}
+
 /// `--region-limit`'s `n` — **not negative**, a shape `int_arg` alone would
 /// let through.
 fn region_limit_spec(s: &str) -> Result<i64, String> {
@@ -744,6 +777,10 @@ fn solve_command() -> Command {
                      question that needs the cube is answered in part",
                 ),
         )
+        .arg(max_steps(
+            "A saturation that needs more stops the run, which is then not \
+             decided and establishes nothing of R",
+        ))
         .arg(
             Arg::new("max-time")
                 .short('T')
@@ -752,7 +789,8 @@ fn solve_command() -> Command {
                 .value_parser(float_arg)
                 .help(
                     "abort after N wall-clock seconds, exit 2; checked before each \
-                     step of work. A machine-dependent limit is never an answer",
+                     step of work and inside every saturation. A machine-dependent \
+                     limit is never an answer",
                 ),
         )
         // The route workers' count, the same under every route.
@@ -1002,6 +1040,10 @@ fn test_command() -> Command {
                     default_budget()
                 )),
         )
+        .arg(max_steps(
+            "A saturation that needs more stops the question a file is asked, \
+             and a claim no question decided is NOT CHECKED",
+        ))
         .arg(
             Arg::new("max-time")
                 .short('T')
@@ -1182,7 +1224,8 @@ fn oracle_command() -> Command {
                 .value_parser(float_arg)
                 .help(
                     "abort after N wall-clock seconds, exit 2. Checked before each \
-                     batch of the cube's nodes; a stopped cube is never an answer",
+                     batch of the cube's nodes and inside every saturation; a \
+                     stopped cube is never an answer",
                 ),
         )
         .arg(

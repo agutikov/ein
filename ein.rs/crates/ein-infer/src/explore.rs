@@ -32,6 +32,28 @@
 //! - **A budget stops work and never changes an answer.** A stopped run says
 //!   what it established — members found, a line's members found, a verdict
 //!   reached — with [`Answer::exhausted`] false, and no more.
+//! - **Every saturation of a run is bounded by the run** (§ A saturation is
+//!   bounded): a run that asks no more of a saturation than the program's
+//!   own fixpoint gets the same answer under any bound it does not reach.
+//!
+//! ### A saturation is bounded
+//!
+//! A program may have no fixpoint: a rule that nests its conclusion one
+//! deeper than its premise derives a new fact at every firing. [`run`] runs
+//! every saturation it computes, root's first and every node's after it,
+//! under [`Options::bound`]: the deadline, read inside the saturation as
+//! between a route's steps, and [`Options::max_steps`], a cap on any one
+//! saturation's firings that depends on no machine
+//! ([`crate::saturator::Bound`]). The deadline ends the run with
+//! [`SolveError::Deadline`], as it always did, wherever it falls. A
+//! saturation past the cap ends it with [`Stopped::Steps`]: the run is not
+//! decided, [`Answer::exhausted`] false and no verdict, and **nothing of `R`
+//! is established**, root's standing and `H` among it, since a state whose
+//! saturation was stopped is neither known alive nor known dead, and every
+//! part of `R` a route reads rests on its nodes' states. The cap's default,
+//! [`DEFAULT_MAX_STEPS`], is far above every saturation the corpus makes,
+//! so it moves no answer; `ein-cli/tests/lever_invariance.rs` holds a run
+//! under any cap it does not reach to the run without one.
 //!
 //! `ein-infer/tests/region.rs`'s `every_mode_is_the_oracle` holds every mode
 //! to the oracle on every program whose cube the oracle enumerates.
@@ -174,6 +196,13 @@ impl Mode {
     }
 }
 
+/// The firings one saturation of a run may make by default, `--max-steps`'s
+/// default: 2^20, the region budget's power, far above every saturation a
+/// corpus program makes, which `ein-cli/tests/lever_invariance.rs` holds by
+/// asking every question again with no cap (the module's § A saturation is
+/// bounded).
+pub const DEFAULT_MAX_STEPS: u64 = 1 << 20;
+
 /// How [`run`] is asked.
 #[derive(Clone, Copy, Debug)]
 pub struct Options {
@@ -186,8 +215,16 @@ pub struct Options {
     /// The largest `n` whose whole cube a flagged program gets.
     pub limit: u32,
     pub jobs: usize,
-    /// `-T`: checked before each step, as the budget is.
+    /// `-T`: checked before each step, as the budget is, and inside every
+    /// saturation the run computes, root's among them (the module's § A
+    /// saturation is bounded).
     pub deadline: Option<Instant>,
+    /// `--max-steps`: the most firings any one saturation of the run may
+    /// make, root's first; `None` caps none. [`Options::new`] takes
+    /// [`DEFAULT_MAX_STEPS`]. A saturation past it ends the run, not decided,
+    /// with nothing of `R` established ([`Stopped::Steps`]); a run whose every
+    /// saturation stays within it is the run without it.
+    pub max_steps: Option<u64>,
     /// `-y`: the parent-path spot check, unbounded and on every program — read
     /// by the read-out ([`crate::read_out`]), not by a route, so no answer and
     /// no `work` count depends on it. The program's own `(config
@@ -284,12 +321,22 @@ impl Options {
             limit: region::DEFAULT_LIMIT,
             jobs: 1,
             deadline: None,
+            max_steps: Some(DEFAULT_MAX_STEPS),
             sanity: false,
             cores: Cores::READ_OUT,
             refute: false,
             nogoods: true,
             no_search: false,
             describe_route: DescribeRoute::Tree,
+        }
+    }
+
+    /// What bounds every saturation the run computes: the deadline and the
+    /// cap ([`crate::saturator::Bound`]).
+    pub fn bound(&self) -> crate::saturator::Bound {
+        crate::saturator::Bound {
+            deadline: self.deadline,
+            max_steps: self.max_steps,
         }
     }
 }
@@ -515,6 +562,12 @@ pub enum Stopped {
     Deadline,
     /// `--no-search`: the run read root alone, by asking ([`Options::no_search`]).
     NoSearch,
+    /// A saturation of the run needed more firings than `cap`,
+    /// [`Options::max_steps`]: root's own where `root`, else a node's. Its
+    /// state is not known, and nothing of `R` is established: no state, no
+    /// count, no verdict, and neither root's standing nor `H` (the module's
+    /// § A saturation is bounded).
+    Steps { cap: u64, root: bool },
 }
 
 /// What [`run`] found.
@@ -660,7 +713,76 @@ pub fn run_with(
         return Ok(answer);
     }
     let t0 = Instant::now();
-    let prepared = region::prepare_with(root, terms, ast, events)?;
+    // Every saturation of the run, root's first, under the run's bound: a
+    // node's past the cap ends the run as root's does (the module's § A
+    // saturation is bounded).
+    match crate::saturator::bounded(opts.bound(), || {
+        run_bounded(root, terms, ast, opts, events, t0)
+    }) {
+        Err(SolveError::Saturate(crate::saturator::SaturateError::Steps(cap))) => {
+            Ok(cut(opts, cap, false, t0.elapsed()))
+        }
+        other => other,
+    }
+}
+
+/// The answer of a run a saturation stopped at the cap, [`Stopped::Steps`]:
+/// not decided, and nothing of `R` established — no candidate, no state, no
+/// count and no verdict, root's standing unknown, and the static check not
+/// read, its [`Monotonicity`] empty (the module's § A saturation is bounded).
+/// Its route is [`Route::Root`] under `--no-search`, which is how the
+/// read-out names the question, and [`Route::States`] otherwise; no surface
+/// prints either for it.
+pub(crate) fn cut(opts: &Options, cap: u64, root: bool, wall: Duration) -> Answer {
+    Answer {
+        mode: opts.mode,
+        candidates: Vec::new(),
+        monotonicity: Monotonicity::default(),
+        root_dead: false,
+        root_owes: 0,
+        route: if opts.no_search {
+            Route::Root
+        } else {
+            Route::States
+        },
+        licences: Vec::new(),
+        states: Vec::new(),
+        minimal: Vec::new(),
+        shape: None,
+        counts: None,
+        described: None,
+        partial: None,
+        exhausted: false,
+        verdict: None,
+        stopped: Some(Stopped::Steps { cap, root }),
+        saturations: 0,
+        facts: 0,
+        denials: 0,
+        order: None,
+        wall,
+        warning: None,
+        root: RootStats::default(),
+        tree_work: None,
+        describe_alt: None,
+    }
+}
+
+/// [`run_with`] past `--count`, under the run's bound: root's saturation past
+/// the cap is the answer [`cut`] makes; a node's is [`run_with`]'s to make.
+fn run_bounded(
+    root: &mut Kb,
+    terms: &mut Terms,
+    ast: &Ast,
+    opts: &Options,
+    events: &mut Events,
+    t0: Instant,
+) -> Result<Answer, SolveError> {
+    let prepared = match region::prepare_with(root, terms, ast, events) {
+        Err(SolveError::Saturate(crate::saturator::SaturateError::Steps(cap))) => {
+            return Ok(cut(opts, cap, true, t0.elapsed()));
+        }
+        prepared => prepared?,
+    };
     // What the run finds in flight, read once it is done (Q-M1f.574).
     let writers = prepared.snapshot.open().cloned();
     if opts.no_search {

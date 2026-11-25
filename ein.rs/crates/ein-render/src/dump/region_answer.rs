@@ -93,6 +93,11 @@ fn stopped(r: &ReadOut, d: Option<&Described>) -> Json {
         ]),
         Some(Stopped::Deadline) => Json::obj(vec![("why", Json::str("deadline"))]),
         Some(Stopped::NoSearch) => Json::obj(vec![("why", Json::str("no-search"))]),
+        Some(Stopped::Steps { cap, root }) => Json::obj(vec![
+            ("why", Json::str("steps")),
+            ("steps", Json::int(*cap as i64)),
+            ("saturation", Json::str(if *root { "root" } else { "node" })),
+        ]),
     }
 }
 
@@ -171,6 +176,9 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
             }
             _ => Json::Null,
         };
+        // A run a saturation stopped at the cap established nothing of R,
+        // H's size and the route among it.
+        let cut = matches!(a.stopped, Some(Stopped::Steps { .. }));
         return Json::obj(vec![
             ("k_s", Json::Null),
             ("k_c", Json::Null),
@@ -191,12 +199,23 @@ fn region(r: &ReadOut, cands: &[String]) -> Json {
             ("holes", Json::Null),
             (
                 "universe",
-                Json::obj(vec![
-                    ("candidates", Json::int(a.n() as i64)),
-                    ("dead_alone", Json::Null),
-                ]),
+                if cut {
+                    Json::Null
+                } else {
+                    Json::obj(vec![
+                        ("candidates", Json::int(a.n() as i64)),
+                        ("dead_alone", Json::Null),
+                    ])
+                },
             ),
-            ("route", Json::str(route(a.route))),
+            (
+                "route",
+                if cut {
+                    Json::Null
+                } else {
+                    Json::str(route(a.route))
+                },
+            ),
             ("licences", licences(r)),
             ("states", states_json(states)),
             ("frontier", frontier),
@@ -549,7 +568,9 @@ pub fn summary_blocks(r: &ReadOut) -> Vec<(&'static str, Json)> {
         ),
         (
             "region",
-            if root_alone {
+            // A run a saturation stopped says so here under `--no-search`
+            // too: root is not known, and no `root` block says it.
+            if root_alone && !matches!(a.stopped, Some(Stopped::Steps { .. })) {
                 Json::Null
             } else {
                 region(r, &cands)

@@ -16,7 +16,7 @@
 #[cfg(feature = "einb")]
 use ein_corpus::{Scratch, golden, golden_path};
 
-/// The surface, counted from the parsers themselves — 73 options across 12
+/// The surface, counted from the parsers themselves — 79 options across 12
 /// parsers, `-h` and `-V` excluded as parser furniture (see `help_shape`'s
 /// skip). An extractor that silently returned nothing would pass an empty
 /// diff; it does not pass this.
@@ -39,11 +39,12 @@ const EXPECTED: [(&str, usize); 12] = [
     // `--count`, `--no-require-why`, as every command that loads a program
     // takes it, `--no-search`, root alone, R not searched, and
     // `--describe-route`, describe's two routes, one R, `--fold`, the
-    // trace's drawings folded (Q-M1f.419), and `--in-flight`, the pass at
-    // every state (Q-M1f.656). The retired options
+    // trace's drawings folded (Q-M1f.419), `--in-flight`, the pass at
+    // every state (Q-M1f.656), and `--max-steps`, the cap on every
+    // saturation of the run (Q-M2.16). The retired options
     // are hidden, refused with what replaced each: `-e`, `-m`, `-E`, `-o`,
     // `-z`, `-d`, `-D`, `--dump-region`, `--region-states`, `-L` and `-K`.
-    ("COMMAND ein solve\n", 36),
+    ("COMMAND ein solve\n", 37),
     // `ein oracle`: `--region-limit`, `--dump`, `--states`, `--jobs`,
     // `--stats`; the four from `solve`, `-T`, `--json-summary`, `-p` and
     // `-P`; `--no-require-why` and `--in-flight`.
@@ -69,9 +70,9 @@ const EXPECTED: [(&str, usize); 12] = [
 
 /// `ein test`'s parser
 /// ([`05-cli.md` § 2.3](../../../../docs/ein/user/04-reference/05-cli.md#23-ein-test)).
-/// **Twelve**, and the number is the design: the two that decide whether a
-/// run can finish (`--region-budget`, `-T`; `-m` and `-E` are retired with
-/// `solve`'s), the two that decide how much of a passing run to print (`-v`,
+/// **Thirteen**, and the number is the design: the three that decide whether a
+/// run can finish (`--region-budget`, `--max-steps`, `-T`; `-m` and `-E` are
+/// retired with `solve`'s), the two that decide how much of a passing run to print (`-v`,
 /// `-q`), `--diff`, which explains each claim, its models against what the
 /// run found, and decides nothing, the three file-only artefact ones
 /// (`--events`, `--events-level`, `--json-summary`), `--json-report`,
@@ -82,7 +83,7 @@ const EXPECTED: [(&str, usize); 12] = [
 /// line flag and no `--exhaustive`: a claim says what it is about, and `ein
 /// test` runs the mode that decides it, so a *missing* option is exactly the
 /// kind of thing this count exists to notice.
-const TESTER: [(&str, usize); 1] = [("COMMAND ein test\n", 12)];
+const TESTER: [(&str, usize); 1] = [("COMMAND ein test\n", 13)];
 
 /// The container's surface, registered only under the `einb` feature, and here for
 /// the same reason the other parsers are — an extractor that stopped seeing a
@@ -114,10 +115,10 @@ fn the_extractor_finds_the_whole_surface() {
     }
     assert_eq!(
         total,
-        78 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
+        79 + TESTER.iter().map(|(_, n)| n).sum::<usize>()
             + CONTAINER.iter().map(|(_, n)| n).sum::<usize>(),
-        "78 options across the twelve parsers of `ein`, `solve`, `oracle`, \
-         `saturate` and `render`, plus `ein test`'s twelve and `ein kb save`'s two"
+        "79 options across the twelve parsers of `ein`, `solve`, `oracle`, \
+         `saturate` and `render`, plus `ein test`'s thirteen and `ein kb save`'s two"
     );
 }
 

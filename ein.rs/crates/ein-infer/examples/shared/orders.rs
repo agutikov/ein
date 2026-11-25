@@ -450,6 +450,7 @@ fn stopped(s: &Option<Stopped>) -> Value {
         Some(Stopped::Limit { .. }) => json!("limit"),
         Some(Stopped::Deadline) => json!("deadline"),
         Some(Stopped::NoSearch) => json!("no-search"),
+        Some(Stopped::Steps { .. }) => json!("steps"),
     }
 }
 
