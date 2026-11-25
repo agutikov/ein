@@ -1,0 +1,16 @@
+h-space      examples/zebra.ein
+H            112 candidates · 36 dead alone · 0 at root · from `union`
+pairs        6 216 · 2 052 saturated · 1 656 excluded at root · 324 interacting · 1 024 implications · 17 equivalence classes
+theory       512 pairs excluded by the theory alone · of root's 1 656, 224 the theory's and 1 432 the puzzle's · the small KB drops 18 of 66 stated facts and kills 0 candidates alone
+supports     not asked: --supports names the statements each pair of the puzzle rests on
+cover        352 groups · 0 candidates in no group · 5 components of the theory's graph
+exactly one  36 owed groups · 316 groups nothing owes (0 an unlicensed instance is about) · 0 owed sets that are no group · 0 instances L5 does not license, of the 36 root owes
+grids        0 grids · 0 bijections · 5 components that are no grid
+coupling     352 questions · 2 554 ties · 33 305 edges (1 of three questions or more, 0 a debt's alone) · 34 309 edges one application back · 0 debts that are edges (0 unlicensed)
+components   1 over every edge · 1 over the conflicts' and the derivations' alone · 0 debts across those
+work         root's layer 2 165 saturations · 705 808 facts beyond root; the small KB's 6 273 saturations · 266 960 facts beyond its own root; the whole node 1 saturation · 393 facts beyond root; supports 0 saturations
+graph        exclusion.dot · 112 nodes · 1 944 lines
+graph        cover.dot · 464 nodes · 1 216 lines
+graph        coupling.dot · 353 nodes · 33 628 lines
+graph        coupling_one_step.dot · 1 267 nodes · 39 561 lines
+whole        yes: nothing was stopped or cut at --region-budget 1048576

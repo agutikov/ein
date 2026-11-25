@@ -1,0 +1,8 @@
+;;; A macro called in a rule written before the macro's definition.
+(p a :source "a is p.")
+(query :goal (q ?x))
+(solve :no-search)
+(rule use () :match (is-p ?x) :assert (q ?x) :why "{?x} is p, so q")
+(macro is-p (?x) (p ?x) :why "{?x} is p")
+(relation p T :why "{?3} is p")
+(relation q T :why "{?3} is q")

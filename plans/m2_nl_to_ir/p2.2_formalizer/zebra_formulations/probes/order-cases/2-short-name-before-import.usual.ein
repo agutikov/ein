@@ -1,0 +1,7 @@
+;;; The same forms, the import first.
+(import std.algebra :symbols (symmetric))
+(relation near T T :why "{?3} is near {?4}")
+(symmetric near)
+(near a b :source "a is near b.")
+(query :goal (near ?x ?y))
+(solve :no-search)

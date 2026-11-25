@@ -1,0 +1,7 @@
+;;; A relation declared at two counts, in a program that imports nothing: it loads.
+(relation likes Person Drink :why "{?3} likes {?4}")
+(relation likes Person       :why "{?3} likes something")
+(likes Ann Tea :source "Ann likes tea.")
+(likes Bob     :source "Bob likes something.")
+(query :goal (likes ?who ?what))
+(solve :no-search)

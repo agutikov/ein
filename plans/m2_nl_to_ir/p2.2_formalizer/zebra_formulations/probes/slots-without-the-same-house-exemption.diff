@@ -1,0 +1,18 @@
+--- a/stdlib/slots.ein	2026-11-20 04:35:18.848418332 +0400
++++ b/stdlib/slots.ein	2026-11-26 03:18:25.296429530 +0400
+@@ -417,7 +417,6 @@
+   :match  (and (?S ?a ?b)
+                (?R ?b ?p1) (?isa ?p1 ?PT)
+                (?isa ?p_o ?PT)
+-               (neq ?p_o ?p1)
+                (absent (?S ?p_o ?p1)))
+   :assert (not (?R ?a ?p_o))
+   :why    "{?b} is at {?p1}, so {?a} is at an {?S}-source of {?p1}; {?p_o} is not one.")
+@@ -426,7 +425,6 @@
+   :match  (and (?S ?a ?b)
+                (?R ?a ?p2) (?isa ?p2 ?PT)
+                (?isa ?p_o ?PT)
+-               (neq ?p_o ?p2)
+                (absent (?S ?p2 ?p_o)))
+   :assert (not (?R ?b ?p_o))
+   :why    "{?a} is at {?p2}, so {?b} is at an {?S}-target of {?p2}; {?p_o} is not one.")

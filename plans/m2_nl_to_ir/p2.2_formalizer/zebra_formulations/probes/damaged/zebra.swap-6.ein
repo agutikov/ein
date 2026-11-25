@@ -1,0 +1,346 @@
+;;; zebra, damaged: the two arguments of sentence (6) swapped: *the ivory house is immediately to the right of the green house*. Written by measure.py.
+;;; Ein — Zebra puzzle (Einstein's puzzle): the ONE-GENERIC-LINK ontology.
+;;;
+;;; Setup: five houses in a row. Each house has a colour, occupant
+;;; nationality, drink, cigarette brand, and pet. Each attribute
+;;; appears exactly once across the five positions.
+;;;
+;;; Question: Who drinks water? Who owns the zebra?
+;;; Answer:   Norwegian drinks Water; Japanese owns Zebra.
+;;;
+;;; ── Editing this file ────────────────────────────────────────
+;;;
+;;; It is a **world anchor**: tests in six crates hard-code facts about it,
+;;; and three goldens that may never be re-blessed are taken from it. The list
+;;; of what an edit fans out into is examples/README.md § What an edit to these
+;;; two files fans out into — generated, and diffed by
+;;; ein-cli/tests/world_anchors.rs, so it cannot go stale here.
+;;;
+;;;
+;;; ── What makes this file different from examples/zebra2.ein ──────────
+;;;
+;;; The two are TWO ONTOLOGIES FOR ONE PUZZLE, not "classic vs modern".
+;;; Both are valid ein-lang; they commit to different vocabularies and
+;;; therefore to different inference:
+;;;
+;;;   zebra2.ein — FIVE TYPED PROJECTIONS. `color-loc : Color → House`,
+;;;     `nation-loc : Nationality → House`, … Each is declared
+;;;     `(bijective …)`, and the whole std.bijection pipeline (negative
+;;;     completion, domain/range elimination, typecheck) keys off that
+;;;     per-relation property. Cross-attribute facts are *activators*
+;;;     (`(co-located nation-loc Englishman color-loc Red)`), and
+;;;     "same house" is a join through the shared House argument.
+;;;
+;;;   zebra.ein (this file) — ONE GENERIC LINK. A single `co-located`
+;;;     equivalence relation over ALL attribute values, whose classes
+;;;     *are* the houses. Cross-attribute facts are ordinary facts
+;;;     (`(co-located Englishman Red)`), spatial clues are ordinary
+;;;     spatial facts between attribute values (`(right-of Green Ivory)`
+;;;     = "Green's house is immediately right of Ivory's house"), and
+;;;     "same house" is `co-located`'s own equivalence structure rather
+;;;     than a shared argument.
+;;;     Membership stays SPLIT — `(instance V T)` for membership,
+;;;     `(type Sub Super)` for subtyping — instead of zebra2's unified
+;;;     `is-a`.
+;;;
+;;; The interesting consequence: `bijective` is a property of a relation,
+;;; and `co-located` is NOT a bijection — it is an equivalence whose
+;;; classes hold exactly one instance of each attribute type. So the
+;;; whole std.bijection stack is inapplicable here, and the inference it
+;;; licenses has to be re-derived from the *slot-partition* property
+;;; instead (std.slots, imported below). That property is TYPE-SCOPED —
+;;; it quantifies over the attribute types, not over one relation — which
+;;; is exactly the expressivity a split encoding needs and a property of
+;;; one relation cannot give.
+;;;
+;;; ── Provenance convention ───────────────────────────────────────────
+;;;   no annotation  — IMPLICIT assumptions: schema, instance
+;;;                    enumerations, property-application facts,
+;;;                    structural facts derived from background context
+;;;                    (e.g. condition (1) "five in a row").
+;;;   `:source "…"`  — EXPLICIT problem statements: the numbered puzzle
+;;;                    conditions (1)-(15). Every given clue carries one,
+;;;                    so the contradiction frontier and the `--trace`
+;;;                    can name the clue a conclusion rests on.
+;;;   `:rule`/`:using` — DERIVED facts the engine produces at runtime.
+;;;                    None at authoring time.
+;;;
+;;; Every rule carries a `:why` template; every relation carries a `:why`
+;;; that reads its own declaration, `{?3}` its first label. Together with
+;;; the query's `:goal-text` that makes this file the NL ⇄ IR
+;;; round-trip target, not just a fixture. See
+;;; docs/ein/user/02-guide/06-zebra-walkthrough.md.
+
+
+;; ──── Search control ───────────────────────────────────────────────
+;; Explicit rather than defaulted, because this encoding is the one that
+;; stresses hypothesis filtering: `co-located` spans 30 attribute values
+;; (zebra2's five projections each span 5), so an unfiltered enumeration
+;; is ~20x larger. The hypothesis rule's activators are what actually
+;; bound it; these knobs decide how hard each candidate is tested
+;; before it is entered.
+(config
+  ;; `:record-alternative-justifications` is the one flag set here, and
+  ;; no flag changes R: this one may change which core a dead node's
+  ;; refutation names, and no state (docs/ein/user/04-reference/06-config.md). It is
+  ;; set
+  ;; OFF, and this is the single most consequential knob in the file.
+  ;; With multi-justification provenance on, a dead branch's no-good is
+  ;; explained by searching the AND/OR proof graph for a genuinely
+  ;; minimal frontier. That search is affordable when each fact has one
+  ;; or two derivations; here it is not. One generic `co-located` edge is
+  ;; re-derivable many ways — `symmetric`, `slot-locate`, `slot-occupied`
+  ;; and the spatial rules all reach the same pair — so the graph is
+  ;; densely multi-justified and the minimisation explodes: measured at
+  ;; ~22.7 s PER dead branch (50% of a whole stop-after-1 solve), against
+  ;; ~2 s for the branch's own saturation. Off, the frontier falls back
+  ;; to the recorded-primary walk: still sound, merely order-dependent in
+  ;; WHICH minimal-ish core it names.
+  ;;
+  ;; This is a property of the ontology, not of the engine: five typed
+  ;; relations (zebra2) give each fact essentially one derivation, so
+  ;; zebra2 can afford the search and leaves the knob at its default.
+  :record-alternative-justifications false)
+
+
+;; ──── Imported property rules ──────────────────────────────────────
+;; The std.algebra property closures, imported rather than written in
+;; this file; the module comes whole, and the
+;; list names the rules the property-application facts below activate
+;; (`(symmetric co-located)`, `(symmetric next-to)`, `(includes right-of
+;; next-to)`), so they are written short. `(includes R S)` copies every
+;; R fact into S: here, every `right-of` pair is a `next-to` pair.
+;;
+;; `symmetric-negative-setup` is load-bearing, not decoration: a
+;; symmetric relation has a symmetric COMPLEMENT too, and this encoding
+;; derives most of its negatives in one argument order only. Without the
+;; mirror, `(not (co-located House-2 Green))` never reaches a rule that
+;; matches `(not (co-located Green House-2))`, and the whole
+;; *Blue@H_2 ⟹ ¬Green@H_2 ⟹ ¬Ivory@H_1 ⟹ Yellow@H_1* chain of the human
+;; walkthrough stalls at its first step. zebra2 needs no such mirror
+;; because its `*-loc` relations are directed Attribute→House, so there
+;; is only one order to begin with.
+(import std.algebra
+  :symbols (symmetric symmetric-negative-setup includes))
+
+;; ──── The slot-partition property (std.slots) ──────────────────────
+;; One declaration — the `(slot-partition …)` fact below — says:
+;; `co-located` is an equivalence relation whose classes are *slots*;
+;; each slot holds exactly one `instance` of every `type` that is a
+;; direct subtype of `Attribute`; and the `House` member of a slot is its
+;; name. From that, std.slots derives the operational activators this
+;; puzzle needs: placement, same-type exclusion, seat occupancy, negative
+;; propagation across the equivalence, elimination in both directions,
+;; and the two no-room contradictions. It is the type-scoped counterpart
+;; of zebra2's per-relation `(bijective …)`.
+;;
+;; The second entry point, `slot-spatial-setup`, does the same for a
+;; spatial relation between attribute values, which means "their slots
+;; are spatially related".
+;; `(slot-spatial co-located next-to instance House)` says: `next-to`
+;; relates attribute values exactly when it relates their slots, and the
+;; slot type carrying the spatial structure is `House`. std.slots then
+;; supplies the propagation zebra2 gets from `adjacent-via-*`: positive
+;; propagation across a unique neighbour, its contrapositive, the
+;; disjunctive domain pruning, and the endpoint exclusions.
+(import std.slots :symbols (slot-partition-setup slot-spatial-setup))
+
+
+;; ──── On the "square rule" ─────────────────────────────────────────
+;; Earlier revisions of this file carried a local pair of rules,
+;; `square-fwd` / `square-bwd`, projecting a directional spatial relation
+;; across the `co-located` bridge:
+;;
+;;   ?x  ──R──▶ ?y       (the spatial leg)
+;;   ▲           ▲
+;;   │ co-loc    │ co-loc (one is bridge, the other inferred)
+;;   ?a  ──R──▶ ?b       (the attribute leg)
+;;
+;; They are gone, because they are the special case of std.slots'
+;; `slot-adjacent-fwd` / `slot-adjacent-bwd` in which the
+;; unique-neighbour guard is vacuous. Their restriction to *directional*
+;; relations (never `(square-fwd next-to)` — for a symmetric relation the
+;; conclusion is disjunctive, since a position can have two neighbours)
+;; is exactly what that guard expresses, and expresses better: it admits
+;; the corner cases of a symmetric relation, which `square-fwd` had to
+;; refuse wholesale and `square-unique` had to re-implement with a
+;; hand-written NAF clause. One mechanism replaced three.
+
+
+;; ──── Hypothesis generation ────────────────────────────────────────
+;; Byte-for-byte zebra2's hypothesis rule: the guessed RELATION rides in as
+;; the parameter ?R, so the body names only kernel primitives and variables,
+;; and its activators, facts `(guess …)` after the conditions, say what
+;; to speculate about. What differs between the two encodings is *only* the
+;; activator list — zebra2 names five different typed relations, this file names
+;; the SAME generic `co-located` five times, once per attribute type
+;; that has to be placed:
+;;
+;;   zebra2   (guess color-loc Color House) (guess nation-loc Nationality House) …
+;;   zebra    (guess co-located Color House) (guess co-located Nationality House) …
+;;
+;; Either way the candidate space is the 25 attribute values × 5 houses
+;; = 125 raw `(?R V H)` facts — and ~18x smaller than the unguided
+;; enumeration the file would get without one (2255 candidates over
+;; `co-located` × `next-to`: with no hypothesis rule, the blind enumerator
+;; fills EVERY slot of EVERY open relation, type-blind).
+;;
+;; House is deliberately not an activator's ?T1: a house's own placement
+;; is not a degree of freedom, and `(co-located House-i House-j)` is
+;; excluded by same-type slot exclusion anyway.
+(rule guess (?R ?T1 ?T2)
+  :match  (and (instance ?a ?T1)
+               (instance ?b ?T2))
+  :assert (open (?R ?a ?b))
+  :why    "guess: ({?R} {?a} {?b})?")
+
+
+;; ──── Relation signatures ──────────────────────────────────────────
+;; `type` / `instance` are ORDINARY relations — declared here like any
+;; other, and handed to the imported rules as the `?isa` / `?sub`
+;; parameters of the property facts below, so no rule body names them.
+;; They are this ontology's membership vocabulary; zebra2 unifies them
+;; into `is-a`. `T` is the
+;; universal-top type annotation: these meta-relations span the
+;; hierarchy, so their args aren't constrained to Attribute.
+;; `(type Sub Super)` = Sub's parent type is Super;
+;; `(instance Thing Type)` = Thing is an instance of Type.
+;;
+;; Each `:why` reads its own declaration: `{?3}` and `{?4}` are the
+;; declaration's two labels, and `--trace` prints the sentence after the
+;; declaration where a rule reads it. A fact of the relation takes no text
+;; from it (Q-M1f.58).
+(relation type       T T :why "{?3} is a subtype of {?4}")
+(relation instance   T T :why "{?3} is an instance of {?4}")
+;; `co-located`'s template is the honest limit of one generic link: the
+;; relation is symmetric and untyped, so its declaration reads "Attribute
+;; and Attribute are in the same house", where zebra2's `drink-loc` reads
+;; "Drink is drunk in House". The typed encoding carries more NL structure
+;; in its signatures; this one carries more of it in its rules' `:why`.
+(relation co-located Attribute Attribute :why "{?3} and {?4} are in the same house")
+(relation right-of   Attribute Attribute :why "{?3}'s house is immediately right of {?4}'s")
+(relation next-to    Attribute Attribute :why "{?3}'s house is next to {?4}'s")
+
+;; ──── Property-application facts ───────────────────────────────────
+;; IMPLICIT: the puzzle text never says "co-located is symmetric" —
+;; that is universal context the reader supplies.
+(symmetric  co-located)
+(symmetric  next-to)
+(includes   right-of next-to)
+
+;; co-located's classes are the houses: one instance of every direct
+;; subtype of Attribute per class, and the House member of a class NAMES
+;; it. This single fact drives std.slots.
+;;
+;; Note what is NOT declared: `(transitive co-located)`. Transitivity
+;; HOLDS — it is what justifies std.slots' `slot-locate` /
+;; `slot-negative` / `slot-elimination` — but enumerating it materialises
+;; every pair inside each house (150 positive edges, and a 900-pair
+;; negative square), and the negative-propagation rules join positives
+;; against negatives, so the cost is the product. std.slots' Index
+;; anchoring puts the same information on the 25-value × 5-house
+;; rectangle zebra2's typed relations occupy. Measured: declaring
+;; `transitive` here costs ~4.3 s per hypothesis instead of ~0.1 s.
+(slot-partition co-located instance type Attribute House)
+
+;; Both spatial relations are congruences of co-located, carried by the
+;; House slot type.
+(slot-spatial co-located right-of instance House)
+(slot-spatial co-located next-to  instance House)
+
+;; ──── Type schema. Flat attribute hierarchy. ───────────────────────
+(type Attribute   T)
+(type House       Attribute)
+(type Color       Attribute)
+(type Nationality Attribute)
+(type Pet         Attribute)
+(type Cigarette   Attribute)
+(type Drink       Attribute)
+
+;; ──── Instance enumeration. IMPLICIT: the puzzle text mentions each
+;; ──── attribute (Norwegian, Red, House-1, …) without literally saying
+;; ──── "Norwegian is a Nationality"; the reader supplies the typing.
+(instance House-1 House) (instance House-2 House) (instance House-3 House)
+(instance House-4 House) (instance House-5 House)
+(instance Red    Color) (instance Green Color) (instance Ivory Color)
+(instance Yellow Color) (instance Blue  Color)
+(instance Englishman Nationality) (instance Spaniard  Nationality)
+(instance Ukrainian  Nationality) (instance Norwegian Nationality)
+(instance Japanese   Nationality)
+(instance Dog   Pet)   (instance Snail Pet) (instance Fox Pet)
+(instance Horse Pet)   (instance Zebra Pet)
+(instance Old_Gold      Cigarette) (instance Kools        Cigarette)
+(instance Chesterfields Cigarette) (instance Lucky_Strike Cigarette)
+(instance Parliament    Cigarette)
+(instance Coffee Drink) (instance Tea   Drink) (instance Milk Drink)
+(instance Juice  Drink) (instance Water Drink)
+
+;; ──── The 15 numbered puzzle conditions ────────────────────────────
+;;
+;; (1) Five houses in a row. The cardinality statement is explicit; the
+;; pairwise consequences are reader-supplied, hence `:source` pointing
+;; at the originating condition. `(includes right-of next-to)` +
+;; `(symmetric next-to)` derive the eight next-to pairs for free.
+(right-of House-2 House-1 :source "condition (1)")
+(right-of House-3 House-2 :source "condition (1)")
+(right-of House-4 House-3 :source "condition (1)")
+(right-of House-5 House-4 :source "condition (1)")
+
+;; (2) The Englishman lives in the red house.
+(co-located Englishman Red       :source "condition (2)")
+;; (3) The Spaniard owns the dog.
+(co-located Spaniard Dog         :source "condition (3)")
+;; (4) Coffee is drunk in the green house.
+(co-located Coffee Green         :source "condition (4)")
+;; (5) The Ukrainian drinks tea.
+(co-located Ukrainian Tea        :source "condition (5)")
+;; (6) The green house is immediately right of the ivory house.
+(right-of   Ivory Green          :source "condition (6)")
+;; (7) The Old Gold smoker owns snails.
+(co-located Old_Gold Snail       :source "condition (7)")
+;; (8) Kools are smoked in the yellow house.
+(co-located Kools Yellow         :source "condition (8)")
+;; (9) Milk is drunk in the middle house.
+(co-located Milk House-3         :source "condition (9)")
+;; (10) The Norwegian lives in the first house.
+(co-located Norwegian House-1    :source "condition (10)")
+;; (11) Chesterfields is smoked next to the house with the fox.
+(next-to    Chesterfields Fox    :source "condition (11)")
+;; (12) Kools is smoked next to the house with the horse.
+(next-to    Kools Horse          :source "condition (12)")
+;; (13) The Lucky Strike smoker drinks orange juice.
+(co-located Lucky_Strike Juice   :source "condition (13)")
+;; (14) The Japanese smokes Parliaments.
+(co-located Japanese Parliament  :source "condition (14)")
+;; (15) The Norwegian lives next to the blue house.
+(next-to    Norwegian Blue       :source "condition (15)")
+
+;; One activator per attribute type that must be placed — all five
+;; naming the same generic link relation.
+(guess co-located Color       House)
+(guess co-located Nationality House)
+(guess co-located Drink       House)
+(guess co-located Cigarette   House)
+(guess co-located Pet         House)
+
+(query
+  ;; The two puzzle questions are "who drinks water?" and "who owns the
+  ;; zebra?" — a Nationality, not a House (who, not where). The
+  ;; goal binds the drink's / pet's house, then joins back through
+  ;; co-located to a Nationality. Under solve() the goal is
+  ;; projection-only (the verdict is consistent ∧ complete, not
+  ;; goal-match), so the `instance` conjuncts don't gate the search;
+  ;; they disambiguate which of the slot-mates the answer names.
+  :goal (and (co-located Water ?h_water)
+             (instance ?h_water House)
+             (co-located ?who_water ?h_water)
+             (instance ?who_water Nationality)
+             (co-located Zebra ?h_zebra)
+             (instance ?h_zebra House)
+             (co-located ?who_zebra ?h_zebra)
+             (instance ?who_zebra Nationality))
+  :goal-text "The {?who_water} drinks water in {?h_water}; the {?who_zebra} owns zebra in {?h_zebra}")
+
+;; Expected solution facts:
+;;   - (co-located Norwegian ?h) ∧ (co-located Water ?h) — same ?h
+;;   - (co-located Japanese  ?h) ∧ (co-located Zebra ?h) — same ?h

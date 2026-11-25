@@ -1,0 +1,6 @@
+;;; The same forms, the relations first.
+(relation thing T :why "{?3} is a thing")
+(relation q T :why "{?3} is q")
+(thing a :source "a is a thing.")
+(solve :hypothesis-relations (q))
+(query :goal (q ?x))

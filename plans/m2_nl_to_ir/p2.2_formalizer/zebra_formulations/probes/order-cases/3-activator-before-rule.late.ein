@@ -1,0 +1,8 @@
+;;; An activating fact written before the rule it activates.
+(copy p q)
+(p a :source "a is p.")
+(query :goal (q ?x))
+(solve :no-search)
+(relation p T :why "{?3} is p")
+(relation q T :why "{?3} is q")
+(rule copy (?from ?to) :match (?from ?x) :assert (?to ?x) :why "{?x} is {?from}, so {?to}")

@@ -1,0 +1,18 @@
+h-space      examples/zebra3.3.ein
+H            112 candidates · 36 dead alone · 0 at root · from `obligations`
+pairs        6 216 · 1 104 saturated · 818 excluded at root · 243 interacting · 1 024 implications · 17 equivalence classes
+theory       0 pairs excluded by the theory alone · of root's 818, 0 the theory's and 818 the puzzle's · the small KB drops 27 of 91 stated facts and kills 0 candidates alone
+supports     not asked: --supports names the statements each pair of the puzzle rests on
+cover        0 groups · 112 candidates in no group · 0 components of the theory's graph
+exactly one  0 owed groups · 0 groups nothing owes (0 an unlicensed instance is about) · 36 owed sets that are no group · 0 instances L5 does not license, of the 36 root owes
+grids        0 grids · 0 bijections · 0 components that are no grid
+coupling     112 questions · 1 859 ties · 1 880 edges (11 of three questions or more, 20 a debt's alone) · 2 017 edges one application back · 27 debts that are edges (0 unlicensed)
+components   1 over every edge · 1 over the conflicts' and the derivations' alone · 0 debts across those
+work         root's layer 1 217 saturations · 1 061 112 facts beyond root; the small KB's 6 273 saturations · 26 418 facts beyond its own root; the whole node 1 saturation · 1 153 facts beyond root; supports 0 saturations
+graph        exclusion.dot · 76 nodes · 818 lines
+graph        cover.dot · 0 nodes · 0 lines
+graph        coupling.dot · 123 nodes · 1 978 lines
+graph        coupling_one_step.dot · 232 nodes · 2 345 lines
+whole        NO: 2 things were stopped, cut or left unread at --region-budget 1048576
+unread       root's pair layer stopped at the budget, 1 061 112 facts spent and the next step projecting 871: 0 singles and 948 pairs were not read, and its lists hold what was
+unread       root's pairs were not all read: the ties of the pair layer are those of the pairs read

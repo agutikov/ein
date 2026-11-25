@@ -1,0 +1,514 @@
+{
+ "zebra": {
+  "as-written~synthesis": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": "same",
+   "events": {
+    "lines": 14722,
+    "differing": 2,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpulh6vih4/as-written/trace\", \"--events\", \"/tmp/tmpulh6vih4/as-written/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpulh6vih4/synthesis/trace\", \"--events\", \"/tmp/tmpulh6vih4/synthesis/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}"
+    ]
+   }
+  },
+  "as-written~conventional": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": "same",
+   "events": {
+    "lines": 14722,
+    "differing": 2,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpulh6vih4/as-written/trace\", \"--events\", \"/tmp/tmpulh6vih4/as-written/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpulh6vih4/conventional/trace\", \"--events\", \"/tmp/tmpulh6vih4/conventional/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}"
+    ]
+   }
+  },
+  "synthesis~conventional": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": "same",
+   "events": {
+    "lines": 14722,
+    "differing": 2,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpulh6vih4/synthesis/trace\", \"--events\", \"/tmp/tmpulh6vih4/synthesis/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpulh6vih4/conventional/trace\", \"--events\", \"/tmp/tmpulh6vih4/conventional/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}"
+    ]
+   }
+  },
+  "synthesis+bad~conventional+bad": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": "same",
+   "events": {
+    "lines": 12620,
+    "differing": 2,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpulh6vih4/synthesis+bad/trace\", \"--events\", \"/tmp/tmpulh6vih4/synthesis+bad/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpulh6vih4/conventional+bad/trace\", \"--events\", \"/tmp/tmpulh6vih4/conventional+bad/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}"
+    ]
+   }
+  }
+ },
+ "zebra2": {
+  "as-written~synthesis": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": "same",
+   "events": {
+    "lines": 10753,
+    "differing": 4,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpoty7sqon/as-written/trace\", \"--events\", \"/tmp/tmpoty7sqon/as-written/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": true}}",
+     "< {\"e\": \"load\", \"n\": 1, \"relations\": 52, \"rules\": 75, \"hypothesis_rules\": 1, \"macros\": 2, \"facts\": 89, \"relation_names\": [\"is-a\", \"is-a*\", \"color-loc\", \"nation-loc\", \"drink-loc\", \"smoke-loc\", \"pet-loc\", \"right-of\", \"next-to\", \"bijection-hierarchy\", \"typecheck-hierarchy\", \"includes\", \"transitive\", \"symmetric\", \"bijective\", \"co-located\", \"adjacent-via\", \"guess\", \"adjacent-via-bwd\", \"adjacent-via-bwd-negative\", \"adjacent-via-endpoint-bwd\", \"adjacent-via-endpoint-fwd\", \"adjacent-via-fwd\", \"adjacent-via-fwd-negative\", \"co-located-negative\", \"disjunctive-prune-bwd\", \"disjunctive-prune-fwd\", \"join\", \"std.algebra.compose\", \"std.algebra.converse\", \"std.algebra.functional\", \"std.algebra.injective\", \"std.algebra.join-l\", \"std.algebra.join-r\", \"std.algebra.surjective\", \"std.algebra.surjective-owed\", \"std.algebra.symmetric-negative\", \"std.algebra.total\", \"std.algebra.total-owed\", \"std.bijection.domain-elimination\", \"std.bijection.functional-negative\", \"std.bijection.injective-negative\", \"std.bijection.range-elimination\", \"std.bijection.typecheck-arg-0\", \"std.bijection.typecheck-arg-1\", \"std.contradiction.clash-0\", \"std.contradiction.clash-1\", \"std.contradiction.clash-2\", \"std.contradiction.clash-3\", \"std.contradiction.clash-4\", \"std.contradiction.clash-5\", \"std.contradiction.clash-6\"], \"rule_names\": [\"std.contradiction.clash-0\", \"std.contradiction.clash-1\", \"std.contradiction.clash-2\", \"std.contradiction.clash-3\", \"std.contradiction.clash-4\", \"std.contradiction.clash-5\", \"std.contradiction.clash-6\", \"std.contradiction.clash-of-0\", \"std.contradiction.clash-of-1\", \"std.contradiction.clash-of-2\", \"std.contradiction.clash-of-3\", \"std.contradiction.clash-of-4\", \"std.contradiction.clash-of-5\", \"std.contradiction.clash-of-6\", \"std.algebra.converse\", \"std.algebra.imply1\", \"std.algebra.imply2-fwd\", \"std.algebra.imply2-reverse\", \"std.algebra.symmetric-is-self-converse\", \"std.algebra.self-converse-is-symmetric\", \"std.algebra.converse-pair-symmetric\", \"std.algebra.converse-illtyped-dom\", \"std.algebra.converse-illtyped-ran\", \"std.algebra.compose\", \"std.algebra.identity\", \"std.algebra.meet\", \"std.algebra.difference\", \"std.algebra.derive-join\", \"std.algebra.join-l\", \"std.algebra.join-r\", \"std.algebra.empty\", \"std.algebra.top\", \"std.algebra.complement\", \"std.algebra.functional\", \"std.algebra.injective\", \"std.algebra.bijective-properties\", \"std.algebra.total\", \"std.algebra.surjective\", \"std.algebra.irreflexive\", \"std.algebra.antisymmetric\", \"std.algebra.asymmetric\", \"std.algebra.connex\", \"std.algebra.difunctional\", \"symmetric\", \"std.algebra.symmetric-negative-setup\", \"std.algebra.symmetric-negative\", \"transitive\", \"includes\", \"std.algebra.compose-negative-s\", \"std.algebra.compose-negative-r\", \"std.algebra.compose-contravariant\", \"std.algebra.join-converse\", \"bijective-setup\", \"typecheck-setup\", \"std.bijection.functional-negative\", \"std.bijection.injective-negative\", \"std.bijection.domain-elimination\", \"std.bijection.range-elimination\", \"std.bijection.typecheck-arg-0\", \"std.bijection.typecheck-arg-1\", \"co-located\", \"co-located-fanout\", \"co-located-negative\", \"adjacent-via-fwd\", \"adjacent-via-bwd\", \"adjacent-via-fwd-negative\", \"adjacent-via-bwd-negative\", \"derive-adjacent-via\", \"derive-adjacent-via-fwd-fanout\", \"derive-adjacent-via-bwd-fanout\", \"disjunctive-prune-fwd\", \"disjunctive-prune-bwd\", \"adjacent-via-endpoint-fwd\", \"adjacent-via-endpoint-bwd\", \"std.core.inconsistent\"]}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpoty7sqon/synthesis/trace\", \"--events\", \"/tmp/tmpoty7sqon/synthesis/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": true}}",
+     "> {\"e\": \"load\", \"n\": 1, \"relations\": 52, \"rules\": 75, \"hypothesis_rules\": 1, \"macros\": 2, \"facts\": 89, \"relation_names\": [\"is-a\", \"is-a*\", \"color-loc\", \"nation-loc\", \"drink-loc\", \"smoke-loc\", \"pet-loc\", \"right-of\", \"next-to\", \"co-located\", \"adjacent-via\", \"bijection-hierarchy\", \"typecheck-hierarchy\", \"includes\", \"transitive\", \"symmetric\", \"bijective\", \"guess\", \"adjacent-via-bwd\", \"adjacent-via-bwd-negative\", \"adjacent-via-endpoint-bwd\", \"adjacent-via-endpoint-fwd\", \"adjacent-via-fwd\", \"adjacent-via-fwd-negative\", \"co-located-negative\", \"disjunctive-prune-bwd\", \"disjunctive-prune-fwd\", \"join\", \"std.algebra.compose\", \"std.algebra.converse\", \"std.algebra.functional\", \"std.algebra.injective\", \"std.algebra.join-l\", \"std.algebra.join-r\", \"std.algebra.surjective\", \"std.algebra.surjective-owed\", \"std.algebra.symmetric-negative\", \"std.algebra.total\", \"std.algebra.total-owed\", \"std.bijection.domain-elimination\", \"std.bijection.functional-negative\", \"std.bijection.injective-negative\", \"std.bijection.range-elimination\", \"std.bijection.typecheck-arg-0\", \"std.bijection.typecheck-arg-1\", \"std.contradiction.clash-0\", \"std.contradiction.clash-1\", \"std.contradiction.clash-2\", \"std.contradiction.clash-3\", \"std.contradiction.clash-4\", \"std.contradiction.clash-5\", \"std.contradiction.clash-6\"], \"rule_names\": [\"std.contradiction.clash-0\", \"std.contradiction.clash-1\", \"std.contradiction.clash-2\", \"std.contradiction.clash-3\", \"std.contradiction.clash-4\", \"std.contradiction.clash-5\", \"std.contradiction.clash-6\", \"std.contradiction.clash-of-0\", \"std.contradiction.clash-of-1\", \"std.contradiction.clash-of-2\", \"std.contradiction.clash-of-3\", \"std.contradiction.clash-of-4\", \"std.contradiction.clash-of-5\", \"std.contradiction.clash-of-6\", \"std.algebra.converse\", \"std.algebra.imply1\", \"std.algebra.imply2-fwd\", \"std.algebra.imply2-reverse\", \"std.algebra.symmetric-is-self-converse\", \"std.algebra.self-converse-is-symmetric\", \"std.algebra.converse-pair-symmetric\", \"std.algebra.converse-illtyped-dom\", \"std.algebra.converse-illtyped-ran\", \"std.algebra.compose\", \"std.algebra.identity\", \"std.algebra.meet\", \"std.algebra.difference\", \"std.algebra.derive-join\", \"std.algebra.join-l\", \"std.algebra.join-r\", \"std.algebra.empty\", \"std.algebra.top\", \"std.algebra.complement\", \"std.algebra.functional\", \"std.algebra.injective\", \"std.algebra.bijective-properties\", \"std.algebra.total\", \"std.algebra.surjective\", \"std.algebra.irreflexive\", \"std.algebra.antisymmetric\", \"std.algebra.asymmetric\", \"std.algebra.connex\", \"std.algebra.difunctional\", \"symmetric\", \"std.algebra.symmetric-negative-setup\", \"std.algebra.symmetric-negative\", \"transitive\", \"includes\", \"std.algebra.compose-negative-s\", \"std.algebra.compose-negative-r\", \"std.algebra.compose-contravariant\", \"std.algebra.join-converse\", \"bijective-setup\", \"typecheck-setup\", \"std.bijection.functional-negative\", \"std.bijection.injective-negative\", \"std.bijection.domain-elimination\", \"std.bijection.range-elimination\", \"std.bijection.typecheck-arg-0\", \"std.bijection.typecheck-arg-1\", \"co-located\", \"co-located-fanout\", \"co-located-negative\", \"adjacent-via-fwd\", \"adjacent-via-bwd\", \"adjacent-via-fwd-negative\", \"adjacent-via-bwd-negative\", \"derive-adjacent-via\", \"derive-adjacent-via-fwd-fanout\", \"derive-adjacent-via-bwd-fanout\", \"disjunctive-prune-fwd\", \"disjunctive-prune-bwd\", \"adjacent-via-endpoint-fwd\", \"adjacent-via-endpoint-bwd\", \"std.core.inconsistent\"]}"
+    ]
+   }
+  },
+  "as-written~conventional": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": "same",
+   "events": {
+    "lines": 10753,
+    "differing": 4,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpoty7sqon/as-written/trace\", \"--events\", \"/tmp/tmpoty7sqon/as-written/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": true}}",
+     "< {\"e\": \"load\", \"n\": 1, \"relations\": 52, \"rules\": 75, \"hypothesis_rules\": 1, \"macros\": 2, \"facts\": 89, \"relation_names\": [\"is-a\", \"is-a*\", \"color-loc\", \"nation-loc\", \"drink-loc\", \"smoke-loc\", \"pet-loc\", \"right-of\", \"next-to\", \"bijection-hierarchy\", \"typecheck-hierarchy\", \"includes\", \"transitive\", \"symmetric\", \"bijective\", \"co-located\", \"adjacent-via\", \"guess\", \"adjacent-via-bwd\", \"adjacent-via-bwd-negative\", \"adjacent-via-endpoint-bwd\", \"adjacent-via-endpoint-fwd\", \"adjacent-via-fwd\", \"adjacent-via-fwd-negative\", \"co-located-negative\", \"disjunctive-prune-bwd\", \"disjunctive-prune-fwd\", \"join\", \"std.algebra.compose\", \"std.algebra.converse\", \"std.algebra.functional\", \"std.algebra.injective\", \"std.algebra.join-l\", \"std.algebra.join-r\", \"std.algebra.surjective\", \"std.algebra.surjective-owed\", \"std.algebra.symmetric-negative\", \"std.algebra.total\", \"std.algebra.total-owed\", \"std.bijection.domain-elimination\", \"std.bijection.functional-negative\", \"std.bijection.injective-negative\", \"std.bijection.range-elimination\", \"std.bijection.typecheck-arg-0\", \"std.bijection.typecheck-arg-1\", \"std.contradiction.clash-0\", \"std.contradiction.clash-1\", \"std.contradiction.clash-2\", \"std.contradiction.clash-3\", \"std.contradiction.clash-4\", \"std.contradiction.clash-5\", \"std.contradiction.clash-6\"], \"rule_names\": [\"std.contradiction.clash-0\", \"std.contradiction.clash-1\", \"std.contradiction.clash-2\", \"std.contradiction.clash-3\", \"std.contradiction.clash-4\", \"std.contradiction.clash-5\", \"std.contradiction.clash-6\", \"std.contradiction.clash-of-0\", \"std.contradiction.clash-of-1\", \"std.contradiction.clash-of-2\", \"std.contradiction.clash-of-3\", \"std.contradiction.clash-of-4\", \"std.contradiction.clash-of-5\", \"std.contradiction.clash-of-6\", \"std.algebra.converse\", \"std.algebra.imply1\", \"std.algebra.imply2-fwd\", \"std.algebra.imply2-reverse\", \"std.algebra.symmetric-is-self-converse\", \"std.algebra.self-converse-is-symmetric\", \"std.algebra.converse-pair-symmetric\", \"std.algebra.converse-illtyped-dom\", \"std.algebra.converse-illtyped-ran\", \"std.algebra.compose\", \"std.algebra.identity\", \"std.algebra.meet\", \"std.algebra.difference\", \"std.algebra.derive-join\", \"std.algebra.join-l\", \"std.algebra.join-r\", \"std.algebra.empty\", \"std.algebra.top\", \"std.algebra.complement\", \"std.algebra.functional\", \"std.algebra.injective\", \"std.algebra.bijective-properties\", \"std.algebra.total\", \"std.algebra.surjective\", \"std.algebra.irreflexive\", \"std.algebra.antisymmetric\", \"std.algebra.asymmetric\", \"std.algebra.connex\", \"std.algebra.difunctional\", \"symmetric\", \"std.algebra.symmetric-negative-setup\", \"std.algebra.symmetric-negative\", \"transitive\", \"includes\", \"std.algebra.compose-negative-s\", \"std.algebra.compose-negative-r\", \"std.algebra.compose-contravariant\", \"std.algebra.join-converse\", \"bijective-setup\", \"typecheck-setup\", \"std.bijection.functional-negative\", \"std.bijection.injective-negative\", \"std.bijection.domain-elimination\", \"std.bijection.range-elimination\", \"std.bijection.typecheck-arg-0\", \"std.bijection.typecheck-arg-1\", \"co-located\", \"co-located-fanout\", \"co-located-negative\", \"adjacent-via-fwd\", \"adjacent-via-bwd\", \"adjacent-via-fwd-negative\", \"adjacent-via-bwd-negative\", \"derive-adjacent-via\", \"derive-adjacent-via-fwd-fanout\", \"derive-adjacent-via-bwd-fanout\", \"disjunctive-prune-fwd\", \"disjunctive-prune-bwd\", \"adjacent-via-endpoint-fwd\", \"adjacent-via-endpoint-bwd\", \"std.core.inconsistent\"]}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpoty7sqon/conventional/trace\", \"--events\", \"/tmp/tmpoty7sqon/conventional/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": true}}",
+     "> {\"e\": \"load\", \"n\": 1, \"relations\": 52, \"rules\": 75, \"hypothesis_rules\": 1, \"macros\": 2, \"facts\": 89, \"relation_names\": [\"is-a\", \"is-a*\", \"color-loc\", \"nation-loc\", \"drink-loc\", \"smoke-loc\", \"pet-loc\", \"right-of\", \"next-to\", \"bijection-hierarchy\", \"typecheck-hierarchy\", \"includes\", \"transitive\", \"symmetric\", \"bijective\", \"guess\", \"co-located\", \"adjacent-via\", \"adjacent-via-bwd\", \"adjacent-via-bwd-negative\", \"adjacent-via-endpoint-bwd\", \"adjacent-via-endpoint-fwd\", \"adjacent-via-fwd\", \"adjacent-via-fwd-negative\", \"co-located-negative\", \"disjunctive-prune-bwd\", \"disjunctive-prune-fwd\", \"join\", \"std.algebra.compose\", \"std.algebra.converse\", \"std.algebra.functional\", \"std.algebra.injective\", \"std.algebra.join-l\", \"std.algebra.join-r\", \"std.algebra.surjective\", \"std.algebra.surjective-owed\", \"std.algebra.symmetric-negative\", \"std.algebra.total\", \"std.algebra.total-owed\", \"std.bijection.domain-elimination\", \"std.bijection.functional-negative\", \"std.bijection.injective-negative\", \"std.bijection.range-elimination\", \"std.bijection.typecheck-arg-0\", \"std.bijection.typecheck-arg-1\", \"std.contradiction.clash-0\", \"std.contradiction.clash-1\", \"std.contradiction.clash-2\", \"std.contradiction.clash-3\", \"std.contradiction.clash-4\", \"std.contradiction.clash-5\", \"std.contradiction.clash-6\"], \"rule_names\": [\"std.contradiction.clash-0\", \"std.contradiction.clash-1\", \"std.contradiction.clash-2\", \"std.contradiction.clash-3\", \"std.contradiction.clash-4\", \"std.contradiction.clash-5\", \"std.contradiction.clash-6\", \"std.contradiction.clash-of-0\", \"std.contradiction.clash-of-1\", \"std.contradiction.clash-of-2\", \"std.contradiction.clash-of-3\", \"std.contradiction.clash-of-4\", \"std.contradiction.clash-of-5\", \"std.contradiction.clash-of-6\", \"std.algebra.converse\", \"std.algebra.imply1\", \"std.algebra.imply2-fwd\", \"std.algebra.imply2-reverse\", \"std.algebra.symmetric-is-self-converse\", \"std.algebra.self-converse-is-symmetric\", \"std.algebra.converse-pair-symmetric\", \"std.algebra.converse-illtyped-dom\", \"std.algebra.converse-illtyped-ran\", \"std.algebra.compose\", \"std.algebra.identity\", \"std.algebra.meet\", \"std.algebra.difference\", \"std.algebra.derive-join\", \"std.algebra.join-l\", \"std.algebra.join-r\", \"std.algebra.empty\", \"std.algebra.top\", \"std.algebra.complement\", \"std.algebra.functional\", \"std.algebra.injective\", \"std.algebra.bijective-properties\", \"std.algebra.total\", \"std.algebra.surjective\", \"std.algebra.irreflexive\", \"std.algebra.antisymmetric\", \"std.algebra.asymmetric\", \"std.algebra.connex\", \"std.algebra.difunctional\", \"symmetric\", \"std.algebra.symmetric-negative-setup\", \"std.algebra.symmetric-negative\", \"transitive\", \"includes\", \"std.algebra.compose-negative-s\", \"std.algebra.compose-negative-r\", \"std.algebra.compose-contravariant\", \"std.algebra.join-converse\", \"bijective-setup\", \"typecheck-setup\", \"std.bijection.functional-negative\", \"std.bijection.injective-negative\", \"std.bijection.domain-elimination\", \"std.bijection.range-elimination\", \"std.bijection.typecheck-arg-0\", \"std.bijection.typecheck-arg-1\", \"co-located\", \"co-located-fanout\", \"co-located-negative\", \"adjacent-via-fwd\", \"adjacent-via-bwd\", \"adjacent-via-fwd-negative\", \"adjacent-via-bwd-negative\", \"derive-adjacent-via\", \"derive-adjacent-via-fwd-fanout\", \"derive-adjacent-via-bwd-fanout\", \"disjunctive-prune-fwd\", \"disjunctive-prune-bwd\", \"adjacent-via-endpoint-fwd\", \"adjacent-via-endpoint-bwd\", \"std.core.inconsistent\"]}"
+    ]
+   }
+  },
+  "synthesis~conventional": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": "same",
+   "events": {
+    "lines": 10753,
+    "differing": 4,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpoty7sqon/synthesis/trace\", \"--events\", \"/tmp/tmpoty7sqon/synthesis/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": true}}",
+     "< {\"e\": \"load\", \"n\": 1, \"relations\": 52, \"rules\": 75, \"hypothesis_rules\": 1, \"macros\": 2, \"facts\": 89, \"relation_names\": [\"is-a\", \"is-a*\", \"color-loc\", \"nation-loc\", \"drink-loc\", \"smoke-loc\", \"pet-loc\", \"right-of\", \"next-to\", \"co-located\", \"adjacent-via\", \"bijection-hierarchy\", \"typecheck-hierarchy\", \"includes\", \"transitive\", \"symmetric\", \"bijective\", \"guess\", \"adjacent-via-bwd\", \"adjacent-via-bwd-negative\", \"adjacent-via-endpoint-bwd\", \"adjacent-via-endpoint-fwd\", \"adjacent-via-fwd\", \"adjacent-via-fwd-negative\", \"co-located-negative\", \"disjunctive-prune-bwd\", \"disjunctive-prune-fwd\", \"join\", \"std.algebra.compose\", \"std.algebra.converse\", \"std.algebra.functional\", \"std.algebra.injective\", \"std.algebra.join-l\", \"std.algebra.join-r\", \"std.algebra.surjective\", \"std.algebra.surjective-owed\", \"std.algebra.symmetric-negative\", \"std.algebra.total\", \"std.algebra.total-owed\", \"std.bijection.domain-elimination\", \"std.bijection.functional-negative\", \"std.bijection.injective-negative\", \"std.bijection.range-elimination\", \"std.bijection.typecheck-arg-0\", \"std.bijection.typecheck-arg-1\", \"std.contradiction.clash-0\", \"std.contradiction.clash-1\", \"std.contradiction.clash-2\", \"std.contradiction.clash-3\", \"std.contradiction.clash-4\", \"std.contradiction.clash-5\", \"std.contradiction.clash-6\"], \"rule_names\": [\"std.contradiction.clash-0\", \"std.contradiction.clash-1\", \"std.contradiction.clash-2\", \"std.contradiction.clash-3\", \"std.contradiction.clash-4\", \"std.contradiction.clash-5\", \"std.contradiction.clash-6\", \"std.contradiction.clash-of-0\", \"std.contradiction.clash-of-1\", \"std.contradiction.clash-of-2\", \"std.contradiction.clash-of-3\", \"std.contradiction.clash-of-4\", \"std.contradiction.clash-of-5\", \"std.contradiction.clash-of-6\", \"std.algebra.converse\", \"std.algebra.imply1\", \"std.algebra.imply2-fwd\", \"std.algebra.imply2-reverse\", \"std.algebra.symmetric-is-self-converse\", \"std.algebra.self-converse-is-symmetric\", \"std.algebra.converse-pair-symmetric\", \"std.algebra.converse-illtyped-dom\", \"std.algebra.converse-illtyped-ran\", \"std.algebra.compose\", \"std.algebra.identity\", \"std.algebra.meet\", \"std.algebra.difference\", \"std.algebra.derive-join\", \"std.algebra.join-l\", \"std.algebra.join-r\", \"std.algebra.empty\", \"std.algebra.top\", \"std.algebra.complement\", \"std.algebra.functional\", \"std.algebra.injective\", \"std.algebra.bijective-properties\", \"std.algebra.total\", \"std.algebra.surjective\", \"std.algebra.irreflexive\", \"std.algebra.antisymmetric\", \"std.algebra.asymmetric\", \"std.algebra.connex\", \"std.algebra.difunctional\", \"symmetric\", \"std.algebra.symmetric-negative-setup\", \"std.algebra.symmetric-negative\", \"transitive\", \"includes\", \"std.algebra.compose-negative-s\", \"std.algebra.compose-negative-r\", \"std.algebra.compose-contravariant\", \"std.algebra.join-converse\", \"bijective-setup\", \"typecheck-setup\", \"std.bijection.functional-negative\", \"std.bijection.injective-negative\", \"std.bijection.domain-elimination\", \"std.bijection.range-elimination\", \"std.bijection.typecheck-arg-0\", \"std.bijection.typecheck-arg-1\", \"co-located\", \"co-located-fanout\", \"co-located-negative\", \"adjacent-via-fwd\", \"adjacent-via-bwd\", \"adjacent-via-fwd-negative\", \"adjacent-via-bwd-negative\", \"derive-adjacent-via\", \"derive-adjacent-via-fwd-fanout\", \"derive-adjacent-via-bwd-fanout\", \"disjunctive-prune-fwd\", \"disjunctive-prune-bwd\", \"adjacent-via-endpoint-fwd\", \"adjacent-via-endpoint-bwd\", \"std.core.inconsistent\"]}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpoty7sqon/conventional/trace\", \"--events\", \"/tmp/tmpoty7sqon/conventional/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": true}}",
+     "> {\"e\": \"load\", \"n\": 1, \"relations\": 52, \"rules\": 75, \"hypothesis_rules\": 1, \"macros\": 2, \"facts\": 89, \"relation_names\": [\"is-a\", \"is-a*\", \"color-loc\", \"nation-loc\", \"drink-loc\", \"smoke-loc\", \"pet-loc\", \"right-of\", \"next-to\", \"bijection-hierarchy\", \"typecheck-hierarchy\", \"includes\", \"transitive\", \"symmetric\", \"bijective\", \"guess\", \"co-located\", \"adjacent-via\", \"adjacent-via-bwd\", \"adjacent-via-bwd-negative\", \"adjacent-via-endpoint-bwd\", \"adjacent-via-endpoint-fwd\", \"adjacent-via-fwd\", \"adjacent-via-fwd-negative\", \"co-located-negative\", \"disjunctive-prune-bwd\", \"disjunctive-prune-fwd\", \"join\", \"std.algebra.compose\", \"std.algebra.converse\", \"std.algebra.functional\", \"std.algebra.injective\", \"std.algebra.join-l\", \"std.algebra.join-r\", \"std.algebra.surjective\", \"std.algebra.surjective-owed\", \"std.algebra.symmetric-negative\", \"std.algebra.total\", \"std.algebra.total-owed\", \"std.bijection.domain-elimination\", \"std.bijection.functional-negative\", \"std.bijection.injective-negative\", \"std.bijection.range-elimination\", \"std.bijection.typecheck-arg-0\", \"std.bijection.typecheck-arg-1\", \"std.contradiction.clash-0\", \"std.contradiction.clash-1\", \"std.contradiction.clash-2\", \"std.contradiction.clash-3\", \"std.contradiction.clash-4\", \"std.contradiction.clash-5\", \"std.contradiction.clash-6\"], \"rule_names\": [\"std.contradiction.clash-0\", \"std.contradiction.clash-1\", \"std.contradiction.clash-2\", \"std.contradiction.clash-3\", \"std.contradiction.clash-4\", \"std.contradiction.clash-5\", \"std.contradiction.clash-6\", \"std.contradiction.clash-of-0\", \"std.contradiction.clash-of-1\", \"std.contradiction.clash-of-2\", \"std.contradiction.clash-of-3\", \"std.contradiction.clash-of-4\", \"std.contradiction.clash-of-5\", \"std.contradiction.clash-of-6\", \"std.algebra.converse\", \"std.algebra.imply1\", \"std.algebra.imply2-fwd\", \"std.algebra.imply2-reverse\", \"std.algebra.symmetric-is-self-converse\", \"std.algebra.self-converse-is-symmetric\", \"std.algebra.converse-pair-symmetric\", \"std.algebra.converse-illtyped-dom\", \"std.algebra.converse-illtyped-ran\", \"std.algebra.compose\", \"std.algebra.identity\", \"std.algebra.meet\", \"std.algebra.difference\", \"std.algebra.derive-join\", \"std.algebra.join-l\", \"std.algebra.join-r\", \"std.algebra.empty\", \"std.algebra.top\", \"std.algebra.complement\", \"std.algebra.functional\", \"std.algebra.injective\", \"std.algebra.bijective-properties\", \"std.algebra.total\", \"std.algebra.surjective\", \"std.algebra.irreflexive\", \"std.algebra.antisymmetric\", \"std.algebra.asymmetric\", \"std.algebra.connex\", \"std.algebra.difunctional\", \"symmetric\", \"std.algebra.symmetric-negative-setup\", \"std.algebra.symmetric-negative\", \"transitive\", \"includes\", \"std.algebra.compose-negative-s\", \"std.algebra.compose-negative-r\", \"std.algebra.compose-contravariant\", \"std.algebra.join-converse\", \"bijective-setup\", \"typecheck-setup\", \"std.bijection.functional-negative\", \"std.bijection.injective-negative\", \"std.bijection.domain-elimination\", \"std.bijection.range-elimination\", \"std.bijection.typecheck-arg-0\", \"std.bijection.typecheck-arg-1\", \"co-located\", \"co-located-fanout\", \"co-located-negative\", \"adjacent-via-fwd\", \"adjacent-via-bwd\", \"adjacent-via-fwd-negative\", \"adjacent-via-bwd-negative\", \"derive-adjacent-via\", \"derive-adjacent-via-fwd-fanout\", \"derive-adjacent-via-bwd-fanout\", \"disjunctive-prune-fwd\", \"disjunctive-prune-bwd\", \"adjacent-via-endpoint-fwd\", \"adjacent-via-endpoint-bwd\", \"std.core.inconsistent\"]}"
+    ]
+   }
+  },
+  "synthesis+bad~conventional+bad": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": "same",
+   "events": {
+    "lines": 8158,
+    "differing": 4,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpoty7sqon/synthesis+bad/trace\", \"--events\", \"/tmp/tmpoty7sqon/synthesis+bad/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": true}}",
+     "< {\"e\": \"load\", \"n\": 1, \"relations\": 52, \"rules\": 75, \"hypothesis_rules\": 1, \"macros\": 2, \"facts\": 90, \"relation_names\": [\"is-a\", \"is-a*\", \"color-loc\", \"nation-loc\", \"drink-loc\", \"smoke-loc\", \"pet-loc\", \"right-of\", \"next-to\", \"co-located\", \"adjacent-via\", \"bijection-hierarchy\", \"typecheck-hierarchy\", \"includes\", \"transitive\", \"symmetric\", \"bijective\", \"guess\", \"adjacent-via-bwd\", \"adjacent-via-bwd-negative\", \"adjacent-via-endpoint-bwd\", \"adjacent-via-endpoint-fwd\", \"adjacent-via-fwd\", \"adjacent-via-fwd-negative\", \"co-located-negative\", \"disjunctive-prune-bwd\", \"disjunctive-prune-fwd\", \"join\", \"std.algebra.compose\", \"std.algebra.converse\", \"std.algebra.functional\", \"std.algebra.injective\", \"std.algebra.join-l\", \"std.algebra.join-r\", \"std.algebra.surjective\", \"std.algebra.surjective-owed\", \"std.algebra.symmetric-negative\", \"std.algebra.total\", \"std.algebra.total-owed\", \"std.bijection.domain-elimination\", \"std.bijection.functional-negative\", \"std.bijection.injective-negative\", \"std.bijection.range-elimination\", \"std.bijection.typecheck-arg-0\", \"std.bijection.typecheck-arg-1\", \"std.contradiction.clash-0\", \"std.contradiction.clash-1\", \"std.contradiction.clash-2\", \"std.contradiction.clash-3\", \"std.contradiction.clash-4\", \"std.contradiction.clash-5\", \"std.contradiction.clash-6\"], \"rule_names\": [\"std.contradiction.clash-0\", \"std.contradiction.clash-1\", \"std.contradiction.clash-2\", \"std.contradiction.clash-3\", \"std.contradiction.clash-4\", \"std.contradiction.clash-5\", \"std.contradiction.clash-6\", \"std.contradiction.clash-of-0\", \"std.contradiction.clash-of-1\", \"std.contradiction.clash-of-2\", \"std.contradiction.clash-of-3\", \"std.contradiction.clash-of-4\", \"std.contradiction.clash-of-5\", \"std.contradiction.clash-of-6\", \"std.algebra.converse\", \"std.algebra.imply1\", \"std.algebra.imply2-fwd\", \"std.algebra.imply2-reverse\", \"std.algebra.symmetric-is-self-converse\", \"std.algebra.self-converse-is-symmetric\", \"std.algebra.converse-pair-symmetric\", \"std.algebra.converse-illtyped-dom\", \"std.algebra.converse-illtyped-ran\", \"std.algebra.compose\", \"std.algebra.identity\", \"std.algebra.meet\", \"std.algebra.difference\", \"std.algebra.derive-join\", \"std.algebra.join-l\", \"std.algebra.join-r\", \"std.algebra.empty\", \"std.algebra.top\", \"std.algebra.complement\", \"std.algebra.functional\", \"std.algebra.injective\", \"std.algebra.bijective-properties\", \"std.algebra.total\", \"std.algebra.surjective\", \"std.algebra.irreflexive\", \"std.algebra.antisymmetric\", \"std.algebra.asymmetric\", \"std.algebra.connex\", \"std.algebra.difunctional\", \"symmetric\", \"std.algebra.symmetric-negative-setup\", \"std.algebra.symmetric-negative\", \"transitive\", \"includes\", \"std.algebra.compose-negative-s\", \"std.algebra.compose-negative-r\", \"std.algebra.compose-contravariant\", \"std.algebra.join-converse\", \"bijective-setup\", \"typecheck-setup\", \"std.bijection.functional-negative\", \"std.bijection.injective-negative\", \"std.bijection.domain-elimination\", \"std.bijection.range-elimination\", \"std.bijection.typecheck-arg-0\", \"std.bijection.typecheck-arg-1\", \"co-located\", \"co-located-fanout\", \"co-located-negative\", \"adjacent-via-fwd\", \"adjacent-via-bwd\", \"adjacent-via-fwd-negative\", \"adjacent-via-bwd-negative\", \"derive-adjacent-via\", \"derive-adjacent-via-fwd-fanout\", \"derive-adjacent-via-bwd-fanout\", \"disjunctive-prune-fwd\", \"disjunctive-prune-bwd\", \"adjacent-via-endpoint-fwd\", \"adjacent-via-endpoint-bwd\", \"std.core.inconsistent\"]}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpoty7sqon/conventional+bad/trace\", \"--events\", \"/tmp/tmpoty7sqon/conventional+bad/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": true}}",
+     "> {\"e\": \"load\", \"n\": 1, \"relations\": 52, \"rules\": 75, \"hypothesis_rules\": 1, \"macros\": 2, \"facts\": 90, \"relation_names\": [\"is-a\", \"is-a*\", \"color-loc\", \"nation-loc\", \"drink-loc\", \"smoke-loc\", \"pet-loc\", \"right-of\", \"next-to\", \"bijection-hierarchy\", \"typecheck-hierarchy\", \"includes\", \"transitive\", \"symmetric\", \"bijective\", \"guess\", \"co-located\", \"adjacent-via\", \"adjacent-via-bwd\", \"adjacent-via-bwd-negative\", \"adjacent-via-endpoint-bwd\", \"adjacent-via-endpoint-fwd\", \"adjacent-via-fwd\", \"adjacent-via-fwd-negative\", \"co-located-negative\", \"disjunctive-prune-bwd\", \"disjunctive-prune-fwd\", \"join\", \"std.algebra.compose\", \"std.algebra.converse\", \"std.algebra.functional\", \"std.algebra.injective\", \"std.algebra.join-l\", \"std.algebra.join-r\", \"std.algebra.surjective\", \"std.algebra.surjective-owed\", \"std.algebra.symmetric-negative\", \"std.algebra.total\", \"std.algebra.total-owed\", \"std.bijection.domain-elimination\", \"std.bijection.functional-negative\", \"std.bijection.injective-negative\", \"std.bijection.range-elimination\", \"std.bijection.typecheck-arg-0\", \"std.bijection.typecheck-arg-1\", \"std.contradiction.clash-0\", \"std.contradiction.clash-1\", \"std.contradiction.clash-2\", \"std.contradiction.clash-3\", \"std.contradiction.clash-4\", \"std.contradiction.clash-5\", \"std.contradiction.clash-6\"], \"rule_names\": [\"std.contradiction.clash-0\", \"std.contradiction.clash-1\", \"std.contradiction.clash-2\", \"std.contradiction.clash-3\", \"std.contradiction.clash-4\", \"std.contradiction.clash-5\", \"std.contradiction.clash-6\", \"std.contradiction.clash-of-0\", \"std.contradiction.clash-of-1\", \"std.contradiction.clash-of-2\", \"std.contradiction.clash-of-3\", \"std.contradiction.clash-of-4\", \"std.contradiction.clash-of-5\", \"std.contradiction.clash-of-6\", \"std.algebra.converse\", \"std.algebra.imply1\", \"std.algebra.imply2-fwd\", \"std.algebra.imply2-reverse\", \"std.algebra.symmetric-is-self-converse\", \"std.algebra.self-converse-is-symmetric\", \"std.algebra.converse-pair-symmetric\", \"std.algebra.converse-illtyped-dom\", \"std.algebra.converse-illtyped-ran\", \"std.algebra.compose\", \"std.algebra.identity\", \"std.algebra.meet\", \"std.algebra.difference\", \"std.algebra.derive-join\", \"std.algebra.join-l\", \"std.algebra.join-r\", \"std.algebra.empty\", \"std.algebra.top\", \"std.algebra.complement\", \"std.algebra.functional\", \"std.algebra.injective\", \"std.algebra.bijective-properties\", \"std.algebra.total\", \"std.algebra.surjective\", \"std.algebra.irreflexive\", \"std.algebra.antisymmetric\", \"std.algebra.asymmetric\", \"std.algebra.connex\", \"std.algebra.difunctional\", \"symmetric\", \"std.algebra.symmetric-negative-setup\", \"std.algebra.symmetric-negative\", \"transitive\", \"includes\", \"std.algebra.compose-negative-s\", \"std.algebra.compose-negative-r\", \"std.algebra.compose-contravariant\", \"std.algebra.join-converse\", \"bijective-setup\", \"typecheck-setup\", \"std.bijection.functional-negative\", \"std.bijection.injective-negative\", \"std.bijection.domain-elimination\", \"std.bijection.range-elimination\", \"std.bijection.typecheck-arg-0\", \"std.bijection.typecheck-arg-1\", \"co-located\", \"co-located-fanout\", \"co-located-negative\", \"adjacent-via-fwd\", \"adjacent-via-bwd\", \"adjacent-via-fwd-negative\", \"adjacent-via-bwd-negative\", \"derive-adjacent-via\", \"derive-adjacent-via-fwd-fanout\", \"derive-adjacent-via-bwd-fanout\", \"disjunctive-prune-fwd\", \"disjunctive-prune-bwd\", \"adjacent-via-endpoint-fwd\", \"adjacent-via-endpoint-bwd\", \"std.core.inconsistent\"]}"
+    ]
+   }
+  }
+ },
+ "zebra3.1": {
+  "as-written~synthesis": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": "same",
+   "events": {
+    "lines": 18719,
+    "differing": 2,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpv0j2f09d/as-written/trace\", \"--events\", \"/tmp/tmpv0j2f09d/as-written/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpv0j2f09d/synthesis/trace\", \"--events\", \"/tmp/tmpv0j2f09d/synthesis/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}"
+    ]
+   }
+  },
+  "as-written~conventional": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": {
+    "lines": 87768,
+    "differing": 5954,
+    "first": [
+     "< > next-to includes is-immediately-to-the-right-of: from Green →is-immediately-to-the-right-of→ Ivory, derive Green →next-to→ Ivory.",
+     "< ",
+     "< Premises: `is-immediately-to-the-right-of(Green, Ivory)` — from The green house is immediately to the right of the ivory house.",
+     "< ",
+     "< Derives `next-to(Green, Ivory)`.",
+     "< "
+    ]
+   },
+   "events": {
+    "lines": 18719,
+    "differing": 3510,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpv0j2f09d/as-written/trace\", \"--events\", \"/tmp/tmpv0j2f09d/as-written/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpv0j2f09d/conventional/trace\", \"--events\", \"/tmp/tmpv0j2f09d/conventional/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "< {\"e\": \"enqueue\", \"n\": 218, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Green\"], [\"b\", \"Ivory\"]], \"tiebreaker\": 170, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 219, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Second\"], [\"b\", \"First\"]], \"tiebreaker\": 171, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 220, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Middle\"], [\"b\", \"Second\"]], \"tiebreaker\": 172, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 221, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Fourth\"], [\"b\", \"Middle\"]], \"tiebreaker\": 173, \"parked\": false}"
+    ]
+   }
+  },
+  "synthesis~conventional": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": {
+    "lines": 87768,
+    "differing": 5954,
+    "first": [
+     "< > next-to includes is-immediately-to-the-right-of: from Green →is-immediately-to-the-right-of→ Ivory, derive Green →next-to→ Ivory.",
+     "< ",
+     "< Premises: `is-immediately-to-the-right-of(Green, Ivory)` — from The green house is immediately to the right of the ivory house.",
+     "< ",
+     "< Derives `next-to(Green, Ivory)`.",
+     "< "
+    ]
+   },
+   "events": {
+    "lines": 18719,
+    "differing": 3510,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpv0j2f09d/synthesis/trace\", \"--events\", \"/tmp/tmpv0j2f09d/synthesis/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpv0j2f09d/conventional/trace\", \"--events\", \"/tmp/tmpv0j2f09d/conventional/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "< {\"e\": \"enqueue\", \"n\": 218, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Green\"], [\"b\", \"Ivory\"]], \"tiebreaker\": 170, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 219, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Second\"], [\"b\", \"First\"]], \"tiebreaker\": 171, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 220, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Middle\"], [\"b\", \"Second\"]], \"tiebreaker\": 172, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 221, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Fourth\"], [\"b\", \"Middle\"]], \"tiebreaker\": 173, \"parked\": false}"
+    ]
+   }
+  },
+  "synthesis+bad~conventional+bad": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": {
+    "lines": 413236,
+    "differing": 7702,
+    "first": [
+     "< > next-to includes is-immediately-to-the-right-of: from Green →is-immediately-to-the-right-of→ Ivory, derive Green →next-to→ Ivory.",
+     "< ",
+     "< Premises: `is-immediately-to-the-right-of(Green, Ivory)` — from The green house is immediately to the right of the ivory house.",
+     "< ",
+     "< Derives `next-to(Green, Ivory)`.",
+     "< "
+    ]
+   },
+   "events": {
+    "lines": 17696,
+    "differing": 3632,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpv0j2f09d/synthesis+bad/trace\", \"--events\", \"/tmp/tmpv0j2f09d/synthesis+bad/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpv0j2f09d/conventional+bad/trace\", \"--events\", \"/tmp/tmpv0j2f09d/conventional+bad/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "< {\"e\": \"enqueue\", \"n\": 219, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Green\"], [\"b\", \"Ivory\"]], \"tiebreaker\": 171, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 220, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Second\"], [\"b\", \"First\"]], \"tiebreaker\": 172, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 221, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Middle\"], [\"b\", \"Second\"]], \"tiebreaker\": 173, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 222, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Fourth\"], [\"b\", \"Middle\"]], \"tiebreaker\": 174, \"parked\": false}"
+    ]
+   }
+  }
+ },
+ "zebra3.2": {
+  "as-written~synthesis": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": "same",
+   "events": {
+    "lines": 31340,
+    "differing": 2,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpbme6dtl7/as-written/trace\", \"--events\", \"/tmp/tmpbme6dtl7/as-written/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpbme6dtl7/synthesis/trace\", \"--events\", \"/tmp/tmpbme6dtl7/synthesis/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}"
+    ]
+   }
+  },
+  "as-written~conventional": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": {
+    "lines": 101889,
+    "differing": 4900,
+    "first": [
+     "> > next-to includes immediately-to-the-right-of: from Second →immediately-to-the-right-of→ First, derive Second →next-to→ First.",
+     "> ",
+     "> Premises: `immediately-to-the-right-of(Second, First)`",
+     "> ",
+     "> Derives `next-to(Second, First)`.",
+     "> "
+    ]
+   },
+   "events": {
+    "lines": 31340,
+    "differing": 2572,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpbme6dtl7/as-written/trace\", \"--events\", \"/tmp/tmpbme6dtl7/as-written/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpbme6dtl7/conventional/trace\", \"--events\", \"/tmp/tmpbme6dtl7/conventional/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "< {\"e\": \"enqueue\", \"n\": 64, \"rule\": \"includes\", \"activator\": [\"immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"(the Green House)\"], [\"b\", \"(the Ivory House)\"]], \"tiebreaker\": 29, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 65, \"rule\": \"includes\", \"activator\": [\"immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Second\"], [\"b\", \"First\"]], \"tiebreaker\": 30, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 66, \"rule\": \"includes\", \"activator\": [\"immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Middle\"], [\"b\", \"Second\"]], \"tiebreaker\": 31, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 67, \"rule\": \"includes\", \"activator\": [\"immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Fourth\"], [\"b\", \"Middle\"]], \"tiebreaker\": 32, \"parked\": false}"
+    ]
+   }
+  },
+  "synthesis~conventional": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": {
+    "lines": 101889,
+    "differing": 4900,
+    "first": [
+     "> > next-to includes immediately-to-the-right-of: from Second →immediately-to-the-right-of→ First, derive Second →next-to→ First.",
+     "> ",
+     "> Premises: `immediately-to-the-right-of(Second, First)`",
+     "> ",
+     "> Derives `next-to(Second, First)`.",
+     "> "
+    ]
+   },
+   "events": {
+    "lines": 31340,
+    "differing": 2572,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpbme6dtl7/synthesis/trace\", \"--events\", \"/tmp/tmpbme6dtl7/synthesis/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpbme6dtl7/conventional/trace\", \"--events\", \"/tmp/tmpbme6dtl7/conventional/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "< {\"e\": \"enqueue\", \"n\": 64, \"rule\": \"includes\", \"activator\": [\"immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"(the Green House)\"], [\"b\", \"(the Ivory House)\"]], \"tiebreaker\": 29, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 65, \"rule\": \"includes\", \"activator\": [\"immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Second\"], [\"b\", \"First\"]], \"tiebreaker\": 30, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 66, \"rule\": \"includes\", \"activator\": [\"immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Middle\"], [\"b\", \"Second\"]], \"tiebreaker\": 31, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 67, \"rule\": \"includes\", \"activator\": [\"immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Fourth\"], [\"b\", \"Middle\"]], \"tiebreaker\": 32, \"parked\": false}"
+    ]
+   }
+  },
+  "synthesis+bad~conventional+bad": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": {
+    "lines": 483890,
+    "differing": 4722,
+    "first": [
+     "> > next-to includes immediately-to-the-right-of: from Second →immediately-to-the-right-of→ First, derive Second →next-to→ First.",
+     "> ",
+     "> Premises: `immediately-to-the-right-of(Second, First)`",
+     "> ",
+     "> Derives `next-to(Second, First)`.",
+     "> "
+    ]
+   },
+   "events": {
+    "lines": 22643,
+    "differing": 2556,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpbme6dtl7/synthesis+bad/trace\", \"--events\", \"/tmp/tmpbme6dtl7/synthesis+bad/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpbme6dtl7/conventional+bad/trace\", \"--events\", \"/tmp/tmpbme6dtl7/conventional+bad/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "< {\"e\": \"enqueue\", \"n\": 64, \"rule\": \"includes\", \"activator\": [\"immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"(the Green House)\"], [\"b\", \"(the Ivory House)\"]], \"tiebreaker\": 29, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 65, \"rule\": \"includes\", \"activator\": [\"immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Second\"], [\"b\", \"First\"]], \"tiebreaker\": 30, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 66, \"rule\": \"includes\", \"activator\": [\"immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Middle\"], [\"b\", \"Second\"]], \"tiebreaker\": 31, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 67, \"rule\": \"includes\", \"activator\": [\"immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"Fourth\"], [\"b\", \"Middle\"]], \"tiebreaker\": 32, \"parked\": false}"
+    ]
+   }
+  }
+ },
+ "zebra3.3": {
+  "as-written~synthesis": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": "same",
+   "events": {
+    "lines": 23958,
+    "differing": 2,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpfvqj9fj0/as-written/trace\", \"--events\", \"/tmp/tmpfvqj9fj0/as-written/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpfvqj9fj0/synthesis/trace\", \"--events\", \"/tmp/tmpfvqj9fj0/synthesis/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}"
+    ]
+   }
+  },
+  "as-written~conventional": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": {
+    "lines": 116263,
+    "differing": 6960,
+    "first": [
+     "< > next-to includes is-immediately-to-the-right-of: from (green House) →is-immediately-to-the-right-of→ (ivory House), derive (green House) →next-to→ (ivory House).",
+     "< ",
+     "< Premises: `is-immediately-to-the-right-of(green(House), ivory(House))` — from The green house is immediately to the right of the ivory house.",
+     "< ",
+     "< Derives `next-to(green(House), ivory(House))`.",
+     "< "
+    ]
+   },
+   "events": {
+    "lines": 23958,
+    "differing": 3564,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpfvqj9fj0/as-written/trace\", \"--events\", \"/tmp/tmpfvqj9fj0/as-written/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpfvqj9fj0/conventional/trace\", \"--events\", \"/tmp/tmpfvqj9fj0/conventional/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "< {\"e\": \"enqueue\", \"n\": 235, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"(green House)\"], [\"b\", \"(ivory House)\"]], \"tiebreaker\": 184, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 236, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"House-2\"], [\"b\", \"House-1\"]], \"tiebreaker\": 185, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 237, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"House-3\"], [\"b\", \"House-2\"]], \"tiebreaker\": 186, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 238, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"House-4\"], [\"b\", \"House-3\"]], \"tiebreaker\": 187, \"parked\": false}"
+    ]
+   }
+  },
+  "synthesis~conventional": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": {
+    "lines": 116263,
+    "differing": 6960,
+    "first": [
+     "< > next-to includes is-immediately-to-the-right-of: from (green House) →is-immediately-to-the-right-of→ (ivory House), derive (green House) →next-to→ (ivory House).",
+     "< ",
+     "< Premises: `is-immediately-to-the-right-of(green(House), ivory(House))` — from The green house is immediately to the right of the ivory house.",
+     "< ",
+     "< Derives `next-to(green(House), ivory(House))`.",
+     "< "
+    ]
+   },
+   "events": {
+    "lines": 23958,
+    "differing": 3564,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpfvqj9fj0/synthesis/trace\", \"--events\", \"/tmp/tmpfvqj9fj0/synthesis/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpfvqj9fj0/conventional/trace\", \"--events\", \"/tmp/tmpfvqj9fj0/conventional/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "< {\"e\": \"enqueue\", \"n\": 235, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"(green House)\"], [\"b\", \"(ivory House)\"]], \"tiebreaker\": 184, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 236, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"House-2\"], [\"b\", \"House-1\"]], \"tiebreaker\": 185, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 237, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"House-3\"], [\"b\", \"House-2\"]], \"tiebreaker\": 186, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 238, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"House-4\"], [\"b\", \"House-3\"]], \"tiebreaker\": 187, \"parked\": false}"
+    ]
+   }
+  },
+  "synthesis+bad~conventional+bad": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": {
+    "lines": 526917,
+    "differing": 51662,
+    "first": [
+     "< > next-to includes is-immediately-to-the-right-of: from (green House) →is-immediately-to-the-right-of→ (ivory House), derive (green House) →next-to→ (ivory House).",
+     "< ",
+     "< Premises: `is-immediately-to-the-right-of(green(House), ivory(House))` — from The green house is immediately to the right of the ivory house.",
+     "< ",
+     "< Derives `next-to(green(House), ivory(House))`.",
+     "< "
+    ]
+   },
+   "events": {
+    "lines": 22844,
+    "differing": 31006,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpfvqj9fj0/synthesis+bad/trace\", \"--events\", \"/tmp/tmpfvqj9fj0/synthesis+bad/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmpfvqj9fj0/conventional+bad/trace\", \"--events\", \"/tmp/tmpfvqj9fj0/conventional+bad/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": false}}",
+     "< {\"e\": \"enqueue\", \"n\": 236, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"(green House)\"], [\"b\", \"(ivory House)\"]], \"tiebreaker\": 185, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 237, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"House-2\"], [\"b\", \"House-1\"]], \"tiebreaker\": 186, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 238, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"House-3\"], [\"b\", \"House-2\"]], \"tiebreaker\": 187, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 239, \"rule\": \"includes\", \"activator\": [\"is-immediately-to-the-right-of\", \"next-to\"], \"bindings\": [[\"p\", \"is-immediately-to-the-right-of\"], [\"q\", \"next-to\"], [\"a\", \"House-4\"], [\"b\", \"House-3\"]], \"tiebreaker\": 188, \"parked\": false}"
+    ]
+   }
+  }
+ },
+ "zebra3.4": {
+  "as-written~synthesis": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": "same",
+   "events": {
+    "lines": 13454,
+    "differing": 2,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmp8j5he597/as-written/trace\", \"--events\", \"/tmp/tmp8j5he597/as-written/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": true}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmp8j5he597/synthesis/trace\", \"--events\", \"/tmp/tmp8j5he597/synthesis/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": true}}"
+    ]
+   }
+  },
+  "as-written~conventional": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": {
+    "lines": 23451,
+    "differing": 1352,
+    "first": [
+     "< > is-a* includes is-a: from First →is-a→ House, derive First →is-a*→ House.",
+     "< ",
+     "< Premises: `is-a(First, House)` — from There are five houses.",
+     "< ",
+     "< Derives `is-a*(First, House)`.",
+     "< "
+    ]
+   },
+   "events": {
+    "lines": 13454,
+    "differing": 512,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmp8j5he597/as-written/trace\", \"--events\", \"/tmp/tmp8j5he597/as-written/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": true}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmp8j5he597/conventional/trace\", \"--events\", \"/tmp/tmp8j5he597/conventional/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": true}}",
+     "< {\"e\": \"enqueue\", \"n\": 67, \"rule\": \"includes\", \"activator\": [\"is-a\", \"is-a*\"], \"bindings\": [[\"p\", \"is-a\"], [\"q\", \"is-a*\"], [\"a\", \"First\"], [\"b\", \"House\"]], \"tiebreaker\": 32, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 68, \"rule\": \"includes\", \"activator\": [\"is-a\", \"is-a*\"], \"bindings\": [[\"p\", \"is-a\"], [\"q\", \"is-a*\"], [\"a\", \"Second\"], [\"b\", \"House\"]], \"tiebreaker\": 33, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 69, \"rule\": \"includes\", \"activator\": [\"is-a\", \"is-a*\"], \"bindings\": [[\"p\", \"is-a\"], [\"q\", \"is-a*\"], [\"a\", \"Middle\"], [\"b\", \"House\"]], \"tiebreaker\": 34, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 70, \"rule\": \"includes\", \"activator\": [\"is-a\", \"is-a*\"], \"bindings\": [[\"p\", \"is-a\"], [\"q\", \"is-a*\"], [\"a\", \"Fourth\"], [\"b\", \"House\"]], \"tiebreaker\": 35, \"parked\": false}"
+    ]
+   }
+  },
+  "synthesis~conventional": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": {
+    "lines": 23451,
+    "differing": 1352,
+    "first": [
+     "< > is-a* includes is-a: from First →is-a→ House, derive First →is-a*→ House.",
+     "< ",
+     "< Premises: `is-a(First, House)` — from There are five houses.",
+     "< ",
+     "< Derives `is-a*(First, House)`.",
+     "< "
+    ]
+   },
+   "events": {
+    "lines": 13454,
+    "differing": 512,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmp8j5he597/synthesis/trace\", \"--events\", \"/tmp/tmp8j5he597/synthesis/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": true}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmp8j5he597/conventional/trace\", \"--events\", \"/tmp/tmp8j5he597/conventional/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": true}}",
+     "< {\"e\": \"enqueue\", \"n\": 67, \"rule\": \"includes\", \"activator\": [\"is-a\", \"is-a*\"], \"bindings\": [[\"p\", \"is-a\"], [\"q\", \"is-a*\"], [\"a\", \"First\"], [\"b\", \"House\"]], \"tiebreaker\": 32, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 68, \"rule\": \"includes\", \"activator\": [\"is-a\", \"is-a*\"], \"bindings\": [[\"p\", \"is-a\"], [\"q\", \"is-a*\"], [\"a\", \"Second\"], [\"b\", \"House\"]], \"tiebreaker\": 33, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 69, \"rule\": \"includes\", \"activator\": [\"is-a\", \"is-a*\"], \"bindings\": [[\"p\", \"is-a\"], [\"q\", \"is-a*\"], [\"a\", \"Middle\"], [\"b\", \"House\"]], \"tiebreaker\": 34, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 70, \"rule\": \"includes\", \"activator\": [\"is-a\", \"is-a*\"], \"bindings\": [[\"p\", \"is-a\"], [\"q\", \"is-a*\"], [\"a\", \"Fourth\"], [\"b\", \"House\"]], \"tiebreaker\": 35, \"parked\": false}"
+    ]
+   }
+  },
+  "synthesis+bad~conventional+bad": {
+   "readout.describe": "same",
+   "readout.single": "same",
+   "trace": {
+    "lines": 107045,
+    "differing": 1352,
+    "first": [
+     "< > is-a* includes is-a: from First →is-a→ House, derive First →is-a*→ House.",
+     "< ",
+     "< Premises: `is-a(First, House)` — from There are five houses.",
+     "< ",
+     "< Derives `is-a*(First, House)`.",
+     "< "
+    ]
+   },
+   "events": {
+    "lines": 8380,
+    "differing": 512,
+    "first": [
+     "< {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmp8j5he597/synthesis+bad/trace\", \"--events\", \"/tmp/tmp8j5he597/synthesis+bad/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": true}}",
+     "> {\"e\": \"run\", \"n\": 0, \"version\": \"ein-events/1\", \"level\": \"normal\", \"impl\": \"ein.rs\", \"file\": \"FILE\", \"argv\": [\"solve\", \"FILE\", \"--single\", \"--trace\", \"/tmp/tmp8j5he597/conventional+bad/trace\", \"--events\", \"/tmp/tmp8j5he597/conventional+bad/events\"], \"config\": {\"lattice-sanity-check\": false, \"record-alternative-justifications\": true}}",
+     "< {\"e\": \"enqueue\", \"n\": 67, \"rule\": \"includes\", \"activator\": [\"is-a\", \"is-a*\"], \"bindings\": [[\"p\", \"is-a\"], [\"q\", \"is-a*\"], [\"a\", \"First\"], [\"b\", \"House\"]], \"tiebreaker\": 32, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 68, \"rule\": \"includes\", \"activator\": [\"is-a\", \"is-a*\"], \"bindings\": [[\"p\", \"is-a\"], [\"q\", \"is-a*\"], [\"a\", \"Second\"], [\"b\", \"House\"]], \"tiebreaker\": 33, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 69, \"rule\": \"includes\", \"activator\": [\"is-a\", \"is-a*\"], \"bindings\": [[\"p\", \"is-a\"], [\"q\", \"is-a*\"], [\"a\", \"Middle\"], [\"b\", \"House\"]], \"tiebreaker\": 34, \"parked\": false}",
+     "< {\"e\": \"enqueue\", \"n\": 70, \"rule\": \"includes\", \"activator\": [\"is-a\", \"is-a*\"], \"bindings\": [[\"p\", \"is-a\"], [\"q\", \"is-a*\"], [\"a\", \"Fourth\"], [\"b\", \"House\"]], \"tiebreaker\": 35, \"parked\": false}"
+    ]
+   }
+  }
+ }
+}

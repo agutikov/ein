@@ -1,0 +1,416 @@
+{
+ "zebra": {
+  "program": {
+   "kb": {
+    "bytes": 29068,
+    "nodes": 5,
+    "edges": 232,
+    "lines": 323
+   },
+   "rule_guess_lhs_rhs": {
+    "bytes": 1876,
+    "nodes": 13,
+    "edges": 11,
+    "lines": 36
+   },
+   "query": {
+    "bytes": 3334,
+    "nodes": 19,
+    "edges": 24,
+    "lines": 48
+   }
+  },
+  "kb": {
+   "bytes": 434343,
+   "nodes": 5,
+   "edges": 3065,
+   "lines": 4283
+  },
+  "h-space-exclusion": {
+   "bytes": 147654,
+   "nodes": 112,
+   "edges": 1944,
+   "lines": 2060
+  }
+ },
+ "zebra2": {
+  "program": {
+   "kb": {
+    "bytes": 33748,
+    "nodes": 5,
+    "edges": 277,
+    "lines": 377
+   },
+   "rule_co_located_lhs_rhs": {
+    "bytes": 1026,
+    "nodes": 8,
+    "edges": 6,
+    "lines": 23
+   },
+   "rule_co_located_fanout_lhs_rhs": {
+    "bytes": 2255,
+    "nodes": 14,
+    "edges": 15,
+    "lines": 38
+   },
+   "rule_co_located_negative_lhs_rhs": {
+    "bytes": 1914,
+    "nodes": 12,
+    "edges": 10,
+    "lines": 37
+   },
+   "rule_adjacent_via_fwd_lhs_rhs": {
+    "bytes": 1973,
+    "nodes": 13,
+    "edges": 13,
+    "lines": 38
+   },
+   "rule_adjacent_via_bwd_lhs_rhs": {
+    "bytes": 1973,
+    "nodes": 13,
+    "edges": 13,
+    "lines": 38
+   },
+   "rule_adjacent_via_fwd_negative_lhs_rhs": {
+    "bytes": 2871,
+    "nodes": 17,
+    "edges": 17,
+    "lines": 52
+   },
+   "rule_adjacent_via_bwd_negative_lhs_rhs": {
+    "bytes": 2871,
+    "nodes": 17,
+    "edges": 17,
+    "lines": 52
+   },
+   "rule_derive_adjacent_via_lhs_rhs": {
+    "bytes": 2615,
+    "nodes": 16,
+    "edges": 18,
+    "lines": 43
+   },
+   "rule_derive_adjacent_via_fwd_fanout_lhs_rhs": {
+    "bytes": 3622,
+    "nodes": 18,
+    "edges": 24,
+    "lines": 51
+   },
+   "rule_derive_adjacent_via_bwd_fanout_lhs_rhs": {
+    "bytes": 3622,
+    "nodes": 18,
+    "edges": 24,
+    "lines": 51
+   },
+   "rule_disjunctive_prune_fwd_lhs_rhs": {
+    "bytes": 2917,
+    "nodes": 20,
+    "edges": 18,
+    "lines": 53
+   },
+   "rule_disjunctive_prune_bwd_lhs_rhs": {
+    "bytes": 2917,
+    "nodes": 20,
+    "edges": 18,
+    "lines": 53
+   },
+   "rule_adjacent_via_endpoint_fwd_lhs_rhs": {
+    "bytes": 2799,
+    "nodes": 18,
+    "edges": 18,
+    "lines": 51
+   },
+   "rule_adjacent_via_endpoint_bwd_lhs_rhs": {
+    "bytes": 2799,
+    "nodes": 18,
+    "edges": 18,
+    "lines": 51
+   },
+   "rule_guess_lhs_rhs": {
+    "bytes": 1828,
+    "nodes": 13,
+    "edges": 11,
+    "lines": 36
+   },
+   "query": {
+    "bytes": 1977,
+    "nodes": 14,
+    "edges": 12,
+    "lines": 31
+   }
+  },
+  "kb": {
+   "bytes": 261986,
+   "nodes": 5,
+   "edges": 1934,
+   "lines": 2623
+  },
+  "h-space-exclusion": {
+   "bytes": 33751,
+   "nodes": 56,
+   "edges": 410,
+   "lines": 470
+  }
+ },
+ "zebra3.1": {
+  "program": {
+   "kb": {
+    "bytes": 46730,
+    "nodes": 5,
+    "edges": 376,
+    "lines": 505
+   },
+   "query": {
+    "bytes": 1091,
+    "nodes": 9,
+    "edges": 6,
+    "lines": 20
+   }
+  },
+  "kb": {
+   "bytes": 519846,
+   "nodes": 5,
+   "edges": 3698,
+   "lines": 5116
+  },
+  "h-space-exclusion": {
+   "bytes": 102131,
+   "nodes": 112,
+   "edges": 1371,
+   "lines": 1487
+  }
+ },
+ "zebra3.2": {
+  "program": {
+   "kb": {
+    "bytes": 47973,
+    "nodes": 8,
+    "edges": 369,
+    "lines": 534
+   },
+   "rule_the_thing_named_lhs_rhs": {
+    "bytes": 1547,
+    "nodes": 11,
+    "edges": 9,
+    "lines": 32
+   },
+   "rule_the_thing_described_lhs_rhs": {
+    "bytes": 1722,
+    "nodes": 12,
+    "edges": 10,
+    "lines": 34
+   },
+   "rule_the_thing_named_first_lhs_rhs": {
+    "bytes": 1559,
+    "nodes": 11,
+    "edges": 9,
+    "lines": 32
+   },
+   "rule_the_thing_described_first_lhs_rhs": {
+    "bytes": 1734,
+    "nodes": 12,
+    "edges": 10,
+    "lines": 34
+   },
+   "rule_what_is_the_same_lhs_rhs": {
+    "bytes": 1820,
+    "nodes": 13,
+    "edges": 12,
+    "lines": 34
+   },
+   "rule_the_one_who_lhs_rhs": {
+    "bytes": 3243,
+    "nodes": 21,
+    "edges": 22,
+    "lines": 55
+   },
+   "query": {
+    "bytes": 3149,
+    "nodes": 18,
+    "edges": 20,
+    "lines": 49
+   }
+  },
+  "kb": {
+   "bytes": 505616,
+   "nodes": 8,
+   "edges": 3579,
+   "lines": 4996
+  },
+  "h-space-exclusion": {
+   "bytes": 102832,
+   "nodes": 76,
+   "edges": 1258,
+   "lines": 1338
+  }
+ },
+ "zebra3.3": {
+  "program": {
+   "kb": {
+    "bytes": 54114,
+    "nodes": 8,
+    "edges": 424,
+    "lines": 598
+   },
+   "rule_a_house_of_a_colour_lhs_rhs": {
+    "bytes": 1482,
+    "nodes": 10,
+    "edges": 8,
+    "lines": 30
+   },
+   "rule_a_house_of_a_colour_first_lhs_rhs": {
+    "bytes": 1494,
+    "nodes": 10,
+    "edges": 8,
+    "lines": 30
+   },
+   "rule_a_house_has_its_colour_lhs_rhs": {
+    "bytes": 1418,
+    "nodes": 10,
+    "edges": 8,
+    "lines": 27
+   },
+   "rule_a_colour_is_an_adjective_lhs_rhs": {
+    "bytes": 3235,
+    "nodes": 16,
+    "edges": 17,
+    "lines": 42
+   },
+   "rule_a_house_in_a_place_lhs_rhs": {
+    "bytes": 1845,
+    "nodes": 12,
+    "edges": 11,
+    "lines": 35
+   },
+   "query": {
+    "bytes": 1091,
+    "nodes": 9,
+    "edges": 6,
+    "lines": 20
+   }
+  },
+  "kb": {
+   "bytes": 637235,
+   "nodes": 8,
+   "edges": 4496,
+   "lines": 6253
+  },
+  "h-space-exclusion": {
+   "bytes": 68189,
+   "nodes": 76,
+   "edges": 818,
+   "lines": 898
+  }
+ },
+ "zebra3.4": {
+  "program": {
+   "kb": {
+    "bytes": 34032,
+    "nodes": 7,
+    "edges": 273,
+    "lines": 375
+   },
+   "rule_same_house_lhs_rhs": {
+    "bytes": 1026,
+    "nodes": 8,
+    "edges": 6,
+    "lines": 23
+   },
+   "rule_same_house_both_ways_lhs_rhs": {
+    "bytes": 2261,
+    "nodes": 14,
+    "edges": 15,
+    "lines": 38
+   },
+   "rule_same_house_negative_lhs_rhs": {
+    "bytes": 1914,
+    "nodes": 12,
+    "edges": 10,
+    "lines": 37
+   },
+   "rule_house_next_to_reads_lhs_rhs": {
+    "bytes": 1775,
+    "nodes": 13,
+    "edges": 11,
+    "lines": 33
+   },
+   "rule_house_immediately_right_of_reads_lhs_rhs": {
+    "bytes": 1921,
+    "nodes": 13,
+    "edges": 11,
+    "lines": 33
+   },
+   "rule_adjacent_via_fwd_lhs_rhs": {
+    "bytes": 1973,
+    "nodes": 13,
+    "edges": 13,
+    "lines": 38
+   },
+   "rule_adjacent_via_bwd_lhs_rhs": {
+    "bytes": 1973,
+    "nodes": 13,
+    "edges": 13,
+    "lines": 38
+   },
+   "rule_adjacent_via_fwd_negative_lhs_rhs": {
+    "bytes": 2871,
+    "nodes": 17,
+    "edges": 17,
+    "lines": 52
+   },
+   "rule_adjacent_via_bwd_negative_lhs_rhs": {
+    "bytes": 2871,
+    "nodes": 17,
+    "edges": 17,
+    "lines": 52
+   },
+   "rule_adjacent_via_both_ways_lhs_rhs": {
+    "bytes": 7371,
+    "nodes": 28,
+    "edges": 54,
+    "lines": 91
+   },
+   "rule_disjunctive_prune_fwd_lhs_rhs": {
+    "bytes": 2917,
+    "nodes": 20,
+    "edges": 18,
+    "lines": 53
+   },
+   "rule_disjunctive_prune_bwd_lhs_rhs": {
+    "bytes": 2917,
+    "nodes": 20,
+    "edges": 18,
+    "lines": 53
+   },
+   "rule_adjacent_via_endpoint_fwd_lhs_rhs": {
+    "bytes": 2799,
+    "nodes": 18,
+    "edges": 18,
+    "lines": 51
+   },
+   "rule_adjacent_via_endpoint_bwd_lhs_rhs": {
+    "bytes": 2799,
+    "nodes": 18,
+    "edges": 18,
+    "lines": 51
+   },
+   "query": {
+    "bytes": 1997,
+    "nodes": 14,
+    "edges": 12,
+    "lines": 31
+   }
+  },
+  "kb": {
+   "bytes": 246841,
+   "nodes": 7,
+   "edges": 1834,
+   "lines": 2469
+  },
+  "h-space-exclusion": {
+   "bytes": 33736,
+   "nodes": 56,
+   "edges": 410,
+   "lines": 470
+  }
+ }
+}

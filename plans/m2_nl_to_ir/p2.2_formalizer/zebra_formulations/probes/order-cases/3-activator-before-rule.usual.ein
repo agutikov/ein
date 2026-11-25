@@ -1,0 +1,8 @@
+;;; The same forms, the rule first.
+(rule copy (?from ?to) :match (?from ?x) :assert (?to ?x) :why "{?x} is {?from}, so {?to}")
+(relation p T :why "{?3} is p")
+(relation q T :why "{?3} is q")
+(copy p q)
+(p a :source "a is p.")
+(query :goal (q ?x))
+(solve :no-search)

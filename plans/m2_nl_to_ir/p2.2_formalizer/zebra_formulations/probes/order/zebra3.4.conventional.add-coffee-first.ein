@@ -1,0 +1,252 @@
+;;; zebra3.4, its forms in conventional order. Written by measure.py; the forms are the file's, unchanged.
+;;;
+;;; Ein — the Zebra puzzle in the text's own words: the verb as an argument.
+;;;
+;;; Every value of the puzzle is in a house, and each kind of value is in it
+;;; by its own verb: a man *lives in* a house, a colour is the colour *of*
+;;; it, a drink *is drunk in* it, cigarettes *are smoked in* it, a pet *is
+;;; kept in* it. Those five verbs are the relations a state is made of,
+;;; `(lives-in Norwegian First)`, `(color-of Red Middle)`, each a bijection
+;;; between its kind and the houses. A sentence that names its house is one
+;;; of them: *Milk is drunk in the middle house* is `(is-drunk-in Milk
+;;; Middle)`. A sentence that relates two values names each with the verb
+;;; that puts it in its house:
+;;;
+;;;   (same-house Englishman lives-in Red color-of)
+;;;
+;;; reads *the house the Englishman lives in is the one Red is the colour of*,
+;;; and `house-next-to` and `house-immediately-right-of` say the same of two
+;;; neighbouring houses. A man the text describes is written as the word the
+;;; description is built on, by the verb of that word: *the Old Gold smoker
+;;; owns snails* is `(same-house Old_Gold are-smoked-in Snail is-kept-in)`.
+;;; The houses are named by their places in the row, the first and the
+;;; middle as the text names them.
+;;;
+;;; The file is written in the order a formalization makes it: the
+;;; statements in the text's order, each with its sentence as `:source`, and
+;;; the questions; then the ontology; then the theory.
+;;;
+;;; The theory is std.bijection's for each of the five verbs, which also
+;;; writes the hypotheses through its obligations, and rules of the file's
+;;; own for what a relation algebra of three variables cannot say: a
+;;; `same-house` carries a placement and a refusal from one verb to the
+;;; other, and a neighbour's sentence is read onto the row, the positive
+;;; where the neighbour is unique, its contrapositive, and the houses it rules
+;;; out. They are `zebra2.ein`'s rules, written over the verbs.
+;;;
+;;; Answer: the Norwegian drinks water; the Japanese owns the zebra.
+;;; examples/README.md § Zebra puzzle compares it with the other encodings.
+
+;; ──── import ────
+(import std.algebra :symbols (symmetric transitive includes))
+(import std.bijection :symbols (bijective-setup typecheck-setup))
+
+;; ──── rule ────
+;; A sentence of one house, read both ways: what places one value places the
+;; other, and what keeps one out of a house keeps the other out.
+(rule same-house (?V1 ?R1 ?V2 ?R2)
+  :match  (?R1 ?V1 ?h)
+  :assert (?R2 ?V2 ?h)
+  :why    "the {?V1} {?R1} {?h}, so the {?V2} {?R2} {?h}")
+(rule same-house-both-ways ()
+  :match  (same-house ?V1 ?R1 ?V2 ?R2)
+  :assert (and (same-house ?V2 ?R2 ?V1 ?R1)
+               (same-house-negative ?V1 ?R1 ?V2 ?R2))
+  :why    "the {?V1} that {?R1} and the {?V2} that {?R2} are in one house, read from either side, and of the houses they are not in")
+(rule same-house-negative (?V1 ?R1 ?V2 ?R2)
+  :match  (not (?R1 ?V1 ?h))
+  :assert (not (?R2 ?V2 ?h))
+  :why    "the {?V1} is not in {?h}, so the {?V2} is not either")
+;; A sentence of two neighbouring houses, read onto the row: the positive
+;; where the neighbour is unique, its contrapositive, the houses that are no
+;; neighbour, and an end of the row.
+(rule house-next-to-reads ()
+  :match  (house-next-to ?V2 ?R2 ?V1 ?R1)
+  :assert (adjacent-via next-to ?R1 ?V1 ?R2 ?V2)
+  :why    "the house the {?V2} {?R2} is next to the house the {?V1} {?R1}")
+(rule house-immediately-right-of-reads ()
+  :match  (house-immediately-right-of ?V2 ?R2 ?V1 ?R1)
+  :assert (adjacent-via right-of ?R1 ?V1 ?R2 ?V2)
+  :why    "the house the {?V2} {?R2} is immediately to the right of the house the {?V1} {?R1}")
+(rule adjacent-via-fwd (?S ?R1 ?V1 ?R2 ?V2)
+  :match  (and (?R1 ?V1 ?h1)
+               (?S ?h2 ?h1)
+               (absent (and (?S ?h_o ?h1) (neq ?h_o ?h2))))
+  :assert (?R2 ?V2 ?h2)
+  :why    "the {?V1} {?R1} {?h1}, whose only {?S}-neighbour is {?h2}, so the {?V2} {?R2} {?h2}")
+(rule adjacent-via-bwd (?S ?R1 ?V1 ?R2 ?V2)
+  :match  (and (?R2 ?V2 ?h2)
+               (?S ?h2 ?h1)
+               (absent (and (?S ?h2 ?h_o) (neq ?h_o ?h1))))
+  :assert (?R1 ?V1 ?h1)
+  :why    "the {?V2} {?R2} {?h2}, whose only {?S}-neighbour the other way is {?h1}, so the {?V1} {?R1} {?h1}")
+(rule adjacent-via-fwd-negative (?S ?R1 ?V1 ?R2 ?V2)
+  :match  (and (not (?R2 ?V2 ?h2))
+               (?S ?h2 ?h1)
+               (absent (and (?S ?h_o ?h1) (neq ?h_o ?h2))))
+  :assert (not (?R1 ?V1 ?h1))
+  :why    "the {?V2} is not in {?h2}, the only {?S}-neighbour of {?h1}, so the {?V1} is not in {?h1}")
+(rule adjacent-via-bwd-negative (?S ?R1 ?V1 ?R2 ?V2)
+  :match  (and (not (?R1 ?V1 ?h1))
+               (?S ?h2 ?h1)
+               (absent (and (?S ?h2 ?h_o) (neq ?h_o ?h1))))
+  :assert (not (?R2 ?V2 ?h2))
+  :why    "the {?V1} is not in {?h1}, the only {?S}-neighbour the other way of {?h2}, so the {?V2} is not in {?h2}")
+(rule adjacent-via-both-ways ()
+  :match  (adjacent-via ?S ?R1 ?V1 ?R2 ?V2)
+  :assert (and (adjacent-via-fwd ?S ?R1 ?V1 ?R2 ?V2)
+               (adjacent-via-bwd ?S ?R1 ?V1 ?R2 ?V2)
+               (adjacent-via-fwd-negative ?S ?R1 ?V1 ?R2 ?V2)
+               (adjacent-via-bwd-negative ?S ?R1 ?V1 ?R2 ?V2)
+               (disjunctive-prune-fwd ?S ?R1 ?V1 ?R2 ?V2)
+               (disjunctive-prune-bwd ?S ?R1 ?V1 ?R2 ?V2)
+               (adjacent-via-endpoint-fwd ?S ?R1 ?V1 ?R2 ?V2)
+               (adjacent-via-endpoint-bwd ?S ?R1 ?V1 ?R2 ?V2))
+  :why    "the house the {?V2} {?R2} is {?S} the house the {?V1} {?R1}: read it both ways, and of the houses it rules out")
+(rule disjunctive-prune-fwd (?S ?R1 ?V1 ?R2 ?V2)
+  :match  (and (?R1 ?V1 ?h1)
+               (relation ?R2 ?A ?B)
+               (is-a ?h_other ?B)
+               (absent (?S ?h_other ?h1)))
+  :assert (not (?R2 ?V2 ?h_other))
+  :why    "the {?V1} {?R1} {?h1}, and {?h_other} is not {?S} it, so the {?V2} is not in {?h_other}")
+(rule disjunctive-prune-bwd (?S ?R1 ?V1 ?R2 ?V2)
+  :match  (and (?R2 ?V2 ?h1)
+               (relation ?R1 ?A ?B)
+               (is-a ?h_other ?B)
+               (absent (?S ?h1 ?h_other)))
+  :assert (not (?R1 ?V1 ?h_other))
+  :why    "the {?V2} {?R2} {?h1}, which is not {?S} {?h_other}, so the {?V1} is not in {?h_other}")
+(rule adjacent-via-endpoint-fwd (?S ?R1 ?V1 ?R2 ?V2)
+  :match  (and (relation ?R1 ?A ?B)
+               (is-a ?h1 ?B)
+               (absent (and (is-a ?h2 ?B) (?S ?h2 ?h1))))
+  :assert (not (?R1 ?V1 ?h1))
+  :why    "no house is {?S} {?h1}, so the {?V1} is not in {?h1}")
+(rule adjacent-via-endpoint-bwd (?S ?R1 ?V1 ?R2 ?V2)
+  :match  (and (relation ?R2 ?A ?B)
+               (is-a ?h2 ?B)
+               (absent (and (is-a ?h1 ?B) (?S ?h2 ?h1))))
+  :assert (not (?R2 ?V2 ?h2))
+  :why    "{?h2} is {?S} no house, so the {?V2} is not in {?h2}")
+
+;; ──── declaration ────
+;; The five verbs that put a value in a house, the three that relate two
+;; houses through the values in them, the row, and the kinds.
+(relation lives-in      Nationality House :why "the {?3} lives in {?4}")
+(relation color-of      Color       House :why "{?3} is the colour of {?4}")
+(relation is-drunk-in   Drink       House :why "{?3} is drunk in {?4}")
+(relation are-smoked-in Cigarette   House :why "{?3} are smoked in {?4}")
+(relation is-kept-in    Pet         House :why "the {?3} is kept in {?4}")
+(relation same-house    Value Verb Value Verb :why "the house a {?3} {?4} is the house a {?5} {?6}")
+(relation house-next-to Value Verb Value Verb :why "the house a {?3} {?4} is next to the house a {?5} {?6}")
+(relation house-immediately-right-of Value Verb Value Verb
+  :why "the house a {?3} {?4} is immediately to the right of the house a {?5} {?6}")
+(relation right-of      House House :why "{?3} is immediately to the right of {?4}")
+(relation next-to       House House :why "{?3} is next to {?4}")
+(relation is-a          T T :why "{?3} is a {?4}")
+(relation is-a*         T T :why "{?3} is a {?4} (transitively)")
+
+;; ──── selector ────
+;; Each verb a bijection between its kind and the houses: a value in one
+;; house, a house with one value of each kind, and the eliminations; and two
+;; houses side by side are neighbours.
+(bijection-hierarchy is-a)
+(typecheck-hierarchy is-a*)
+(includes   is-a is-a*)
+(transitive is-a*)
+(symmetric  next-to)
+(includes   right-of next-to)
+(bijective lives-in)
+(bijective color-of)
+(bijective is-drunk-in)
+(bijective are-smoked-in)
+(bijective is-kept-in)
+
+;; ──── membership ────
+(is-a Attribute   T)
+(is-a House       Attribute)
+(is-a Color       Attribute)
+(is-a Nationality Attribute)
+(is-a Drink       Attribute)
+(is-a Cigarette   Attribute)
+(is-a Pet         Attribute)
+(is-a Red    Color)
+(is-a Green Color)
+(is-a Ivory Color)
+(is-a Yellow Color)
+(is-a Blue  Color)
+(is-a Englishman Nationality)
+(is-a Spaniard  Nationality)
+(is-a Ukrainian  Nationality)
+(is-a Norwegian Nationality)
+(is-a Japanese   Nationality)
+(is-a Coffee Drink)
+(is-a Tea   Drink)
+(is-a Milk Drink)
+(is-a Juice  Drink)
+(is-a Water Drink)
+(is-a Old_Gold      Cigarette)
+(is-a Kools        Cigarette)
+(is-a Chesterfields Cigarette)
+(is-a Lucky_Strike Cigarette)
+(is-a Parliament    Cigarette)
+(is-a Dog   Pet)
+(is-a Snail Pet)
+(is-a Fox Pet)
+(is-a Horse Pet)
+(is-a Zebra Pet)
+
+;; ──── structure ────
+;; The row the text speaks of and never states.
+(right-of Second First)
+(right-of Middle Second)
+(right-of Fourth Middle)
+(right-of Fifth  Fourth)
+
+;; ──── statement ────
+;; *There are five houses* names five things of one kind, and no more.
+(is-a First  House :source "There are five houses.")
+(is-a Second House :source "There are five houses.")
+(is-a Middle House :source "There are five houses.")
+(is-a Fourth House :source "There are five houses.")
+(is-a Fifth  House :source "There are five houses.")
+(same-house Englishman lives-in Red color-of
+  :source "The Englishman lives in the red house.")
+(same-house Spaniard lives-in Dog is-kept-in
+  :source "The Spaniard owns the dog.")
+(same-house Coffee is-drunk-in Green color-of
+  :source "Coffee is drunk in the green house.")
+(same-house Ukrainian lives-in Tea is-drunk-in
+  :source "The Ukrainian drinks tea.")
+(house-immediately-right-of Green color-of Ivory color-of
+  :source "The green house is immediately to the right of the ivory house.")
+(same-house Old_Gold are-smoked-in Snail is-kept-in
+  :source "The Old Gold smoker owns snails.")
+(same-house Kools are-smoked-in Yellow color-of
+  :source "Kools are smoked in the yellow house.")
+(is-drunk-in Milk Middle
+  :source "Milk is drunk in the middle house.")
+(lives-in Norwegian First
+  :source "The Norwegian lives in the first house.")
+(house-next-to Chesterfields are-smoked-in Fox is-kept-in
+  :source "The man who smokes Chesterfields lives in the house next to the man with the fox.")
+(house-next-to Kools are-smoked-in Horse is-kept-in
+  :source "Kools are smoked in the house next to the house where the horse is kept.")
+(same-house Lucky_Strike are-smoked-in Juice is-drunk-in
+  :source "The Lucky Strike smoker drinks orange juice.")
+(same-house Japanese lives-in Parliament are-smoked-in
+  :source "The Japanese smokes Parliaments.")
+(house-next-to Norwegian lives-in Blue color-of
+  :source "The Norwegian lives next to the blue house.")
+
+;; ──── query ────
+;; *Who drinks water? Who owns the zebra?* — the man who lives where water is
+;; drunk, and where the zebra is kept.
+(is-drunk-in Coffee First :source "Coffee is drunk in the first house.")
+
+(query
+  :goal (and (is-drunk-in Water ?water_house) (lives-in ?who_water ?water_house)
+             (is-kept-in Zebra ?zebra_house) (lives-in ?who_zebra ?zebra_house))
+  :goal-text "The {?who_water} drinks water. The {?who_zebra} owns the zebra.")
+

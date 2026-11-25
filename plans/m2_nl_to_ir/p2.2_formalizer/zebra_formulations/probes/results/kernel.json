@@ -1,0 +1,2816 @@
+{
+ "zebra": {
+  "hyps": {
+   "writer": "union",
+   "n": 112,
+   "notes": [
+    "note: examples/zebra.ein: H, from `union`: 112 candidates"
+   ]
+  },
+  "questions": {
+   "describe": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "one"
+      ],
+      [
+       "minimal",
+       "one"
+      ],
+      [
+       "maximal",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state",
+      "one state",
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": 1,
+      "k_c": 68719459314,
+      "minimal": 1,
+      "maximal": 1,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 353,
+      "facts": 34060,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 36,
+     "classes": [
+      [
+       [
+        {
+         "h_water": "House-1",
+         "h_zebra": "House-5",
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 703,
+    "root_owes": 36,
+    "work": {
+     "saturations": 353,
+     "facts": 34060,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”"
+    ],
+    "notes": []
+   },
+   "single": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "one"
+      ]
+     ],
+     "why": [
+      "Solution: one state"
+     ],
+     "readings": {
+      "word": {
+       "part": "all",
+       "word": "Solution"
+      },
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 9,
+      "facts": 784,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "h_water": "House-1",
+         "h_zebra": "House-5",
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 703,
+    "root_owes": 36,
+    "work": {
+     "saturations": 9,
+     "facts": 784,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”"
+    ],
+    "notes": []
+   },
+   "maximal": {
+    "feedback": {
+     "outcome": [
+      [
+       "maximal",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": 1,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 9,
+      "facts": 784,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "h_water": "House-1",
+         "h_zebra": "House-5",
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 703,
+    "root_owes": 36,
+    "work": {
+     "saturations": 9,
+     "facts": 784,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”"
+    ],
+    "notes": []
+   },
+   "minimal": {
+    "feedback": {
+     "outcome": [
+      [
+       "minimal",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": null,
+      "k_c": null,
+      "minimal": 1,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 663,
+      "facts": 57360,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "h_water": "House-1",
+         "h_zebra": "House-5",
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 703,
+    "root_owes": 36,
+    "work": {
+     "saturations": 663,
+     "facts": 57360,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”"
+    ],
+    "notes": []
+   },
+   "maximal-single": {
+    "feedback": {
+     "outcome": [
+      [
+       "maximal",
+       "one"
+      ]
+     ],
+     "why": [
+      "Solution: one state"
+     ],
+     "readings": {
+      "word": {
+       "part": "maximal",
+       "word": "Solution"
+      },
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 9,
+      "facts": 784,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "h_water": "House-1",
+         "h_zebra": "House-5",
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 703,
+    "root_owes": 36,
+    "work": {
+     "saturations": 9,
+     "facts": 784,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”"
+    ],
+    "notes": []
+   },
+   "minimal-single": {
+    "feedback": {
+     "outcome": [
+      [
+       "minimal",
+       "one"
+      ]
+     ],
+     "why": [
+      "Solution: one state"
+     ],
+     "readings": {
+      "word": {
+       "part": "minimal",
+       "word": "Solution"
+      },
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 663,
+      "facts": 57360,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "h_water": "House-1",
+         "h_zebra": "House-5",
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 703,
+    "root_owes": 36,
+    "work": {
+     "saturations": 663,
+     "facts": 57360,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”"
+    ],
+    "notes": []
+   },
+   "count": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": 1,
+      "k_c": 68719459314,
+      "minimal": 1,
+      "maximal": 1,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 353,
+      "facts": 34060,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 36,
+     "classes": [
+      []
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 703,
+    "root_owes": 36,
+    "work": {
+     "saturations": 353,
+     "facts": 34060,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [],
+    "notes": []
+   },
+   "no-search": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "not-decided"
+      ]
+     ],
+     "why": [
+      "--no-search: root is alive, and R was not searched"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": false,
+      "stopped": {
+       "why": "asked",
+       "saturation": null
+      }
+     },
+     "work": {
+      "saturations": 1,
+      "facts": 0,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 36,
+     "classes": [
+      []
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": null,
+    "root_facts": 703,
+    "root_owes": 36,
+    "work": {
+     "saturations": 1,
+     "facts": 0,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [],
+    "notes": []
+   }
+  }
+ },
+ "zebra2": {
+  "hyps": {
+   "writer": "union",
+   "n": 56,
+   "notes": [
+    "note: examples/zebra2.ein: H, from `union`: 56 candidates"
+   ]
+  },
+  "questions": {
+   "describe": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "one"
+      ],
+      [
+       "minimal",
+       "one"
+      ],
+      [
+       "maximal",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state",
+      "one state",
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": 1,
+      "k_c": 261982,
+      "minimal": 1,
+      "maximal": 1,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 120,
+      "facts": 5411,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 36,
+     "classes": [
+      [
+       [
+        {
+         "h_water": "House-1",
+         "h_zebra": "House-5",
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 56,
+    "root_facts": 543,
+    "root_owes": 36,
+    "work": {
+     "saturations": 120,
+     "facts": 5411,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”"
+    ],
+    "notes": []
+   },
+   "single": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "one"
+      ]
+     ],
+     "why": [
+      "Solution: one state"
+     ],
+     "readings": {
+      "word": {
+       "part": "all",
+       "word": "Solution"
+      },
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 7,
+      "facts": 278,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "h_water": "House-1",
+         "h_zebra": "House-5",
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 56,
+    "root_facts": 543,
+    "root_owes": 36,
+    "work": {
+     "saturations": 7,
+     "facts": 278,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”"
+    ],
+    "notes": []
+   },
+   "maximal": {
+    "feedback": {
+     "outcome": [
+      [
+       "maximal",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": 1,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 7,
+      "facts": 278,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "h_water": "House-1",
+         "h_zebra": "House-5",
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 56,
+    "root_facts": 543,
+    "root_owes": 36,
+    "work": {
+     "saturations": 7,
+     "facts": 278,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”"
+    ],
+    "notes": []
+   },
+   "minimal": {
+    "feedback": {
+     "outcome": [
+      [
+       "minimal",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": null,
+      "k_c": null,
+      "minimal": 1,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 267,
+      "facts": 11807,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "h_water": "House-1",
+         "h_zebra": "House-5",
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 56,
+    "root_facts": 543,
+    "root_owes": 36,
+    "work": {
+     "saturations": 267,
+     "facts": 11807,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”"
+    ],
+    "notes": []
+   },
+   "maximal-single": {
+    "feedback": {
+     "outcome": [
+      [
+       "maximal",
+       "one"
+      ]
+     ],
+     "why": [
+      "Solution: one state"
+     ],
+     "readings": {
+      "word": {
+       "part": "maximal",
+       "word": "Solution"
+      },
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 7,
+      "facts": 278,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "h_water": "House-1",
+         "h_zebra": "House-5",
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 56,
+    "root_facts": 543,
+    "root_owes": 36,
+    "work": {
+     "saturations": 7,
+     "facts": 278,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”"
+    ],
+    "notes": []
+   },
+   "minimal-single": {
+    "feedback": {
+     "outcome": [
+      [
+       "minimal",
+       "one"
+      ]
+     ],
+     "why": [
+      "Solution: one state"
+     ],
+     "readings": {
+      "word": {
+       "part": "minimal",
+       "word": "Solution"
+      },
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 267,
+      "facts": 11807,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "h_water": "House-1",
+         "h_zebra": "House-5",
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 56,
+    "root_facts": 543,
+    "root_owes": 36,
+    "work": {
+     "saturations": 267,
+     "facts": 11807,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”"
+    ],
+    "notes": []
+   },
+   "count": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": 1,
+      "k_c": 261982,
+      "minimal": 1,
+      "maximal": 1,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 120,
+      "facts": 5411,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 36,
+     "classes": [
+      []
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 56,
+    "root_facts": 543,
+    "root_owes": 36,
+    "work": {
+     "saturations": 120,
+     "facts": 5411,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [],
+    "notes": []
+   },
+   "no-search": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "not-decided"
+      ]
+     ],
+     "why": [
+      "--no-search: root is alive, and R was not searched"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": false,
+      "stopped": {
+       "why": "asked",
+       "saturation": null
+      }
+     },
+     "work": {
+      "saturations": 1,
+      "facts": 0,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 36,
+     "classes": [
+      []
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": null,
+    "root_facts": 543,
+    "root_owes": 36,
+    "work": {
+     "saturations": 1,
+     "facts": 0,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [],
+    "notes": []
+   }
+  }
+ },
+ "zebra3.1": {
+  "hyps": {
+   "writer": "obligations",
+   "n": 112,
+   "notes": [
+    "note: examples/zebra3.1.ein: H, from `obligations`: 112 candidates"
+   ]
+  },
+  "questions": {
+   "describe": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "one"
+      ],
+      [
+       "minimal",
+       "one"
+      ],
+      [
+       "maximal",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state",
+      "one state",
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": 1,
+      "k_c": 68719459314,
+      "minimal": 1,
+      "maximal": 1,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 353,
+      "facts": 74213,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 36,
+     "classes": [
+      [
+       [
+        {
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 882,
+    "root_owes": 36,
+    "work": {
+     "saturations": 353,
+     "facts": 74213,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "single": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "one"
+      ]
+     ],
+     "why": [
+      "Solution: one state"
+     ],
+     "readings": {
+      "word": {
+       "part": "all",
+       "word": "Solution"
+      },
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 9,
+      "facts": 1679,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 882,
+    "root_owes": 36,
+    "work": {
+     "saturations": 9,
+     "facts": 1679,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "maximal": {
+    "feedback": {
+     "outcome": [
+      [
+       "maximal",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": 1,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 9,
+      "facts": 1679,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 882,
+    "root_owes": 36,
+    "work": {
+     "saturations": 9,
+     "facts": 1679,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "minimal": {
+    "feedback": {
+     "outcome": [
+      [
+       "minimal",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": null,
+      "k_c": null,
+      "minimal": 1,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 663,
+      "facts": 117598,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 882,
+    "root_owes": 36,
+    "work": {
+     "saturations": 663,
+     "facts": 117598,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "maximal-single": {
+    "feedback": {
+     "outcome": [
+      [
+       "maximal",
+       "one"
+      ]
+     ],
+     "why": [
+      "Solution: one state"
+     ],
+     "readings": {
+      "word": {
+       "part": "maximal",
+       "word": "Solution"
+      },
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 9,
+      "facts": 1679,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 882,
+    "root_owes": 36,
+    "work": {
+     "saturations": 9,
+     "facts": 1679,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "minimal-single": {
+    "feedback": {
+     "outcome": [
+      [
+       "minimal",
+       "one"
+      ]
+     ],
+     "why": [
+      "Solution: one state"
+     ],
+     "readings": {
+      "word": {
+       "part": "minimal",
+       "word": "Solution"
+      },
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 663,
+      "facts": 117598,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 882,
+    "root_owes": 36,
+    "work": {
+     "saturations": 663,
+     "facts": 117598,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "count": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": 1,
+      "k_c": 68719459314,
+      "minimal": 1,
+      "maximal": 1,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 353,
+      "facts": 74213,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 36,
+     "classes": [
+      []
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 882,
+    "root_owes": 36,
+    "work": {
+     "saturations": 353,
+     "facts": 74213,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [],
+    "notes": []
+   },
+   "no-search": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "not-decided"
+      ]
+     ],
+     "why": [
+      "--no-search: root is alive, and R was not searched"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": false,
+      "stopped": {
+       "why": "asked",
+       "saturation": null
+      }
+     },
+     "work": {
+      "saturations": 1,
+      "facts": 0,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 36,
+     "classes": [
+      []
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": null,
+    "root_facts": 882,
+    "root_owes": 36,
+    "work": {
+     "saturations": 1,
+     "facts": 0,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [],
+    "notes": []
+   }
+  }
+ },
+ "zebra3.2": {
+  "hyps": {
+   "writer": "obligations",
+   "n": 112,
+   "notes": [
+    "note: examples/zebra3.2.ein: H, from `obligations`: 112 candidates"
+   ]
+  },
+  "questions": {
+   "describe": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "one"
+      ],
+      [
+       "minimal",
+       "one"
+      ],
+      [
+       "maximal",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state",
+      "one state",
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": 1,
+      "k_c": 68719459314,
+      "minimal": 1,
+      "maximal": 1,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 353,
+      "facts": 60418,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 36,
+     "classes": [
+      [
+       [
+        {
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 788,
+    "root_owes": 36,
+    "work": {
+     "saturations": 353,
+     "facts": 60418,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "single": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "one"
+      ]
+     ],
+     "why": [
+      "Solution: one state"
+     ],
+     "readings": {
+      "word": {
+       "part": "all",
+       "word": "Solution"
+      },
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 9,
+      "facts": 1278,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 788,
+    "root_owes": 36,
+    "work": {
+     "saturations": 9,
+     "facts": 1278,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "maximal": {
+    "feedback": {
+     "outcome": [
+      [
+       "maximal",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": 1,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 9,
+      "facts": 1278,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 788,
+    "root_owes": 36,
+    "work": {
+     "saturations": 9,
+     "facts": 1278,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "minimal": {
+    "feedback": {
+     "outcome": [
+      [
+       "minimal",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": null,
+      "k_c": null,
+      "minimal": 1,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 663,
+      "facts": 94916,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 788,
+    "root_owes": 36,
+    "work": {
+     "saturations": 663,
+     "facts": 94916,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "maximal-single": {
+    "feedback": {
+     "outcome": [
+      [
+       "maximal",
+       "one"
+      ]
+     ],
+     "why": [
+      "Solution: one state"
+     ],
+     "readings": {
+      "word": {
+       "part": "maximal",
+       "word": "Solution"
+      },
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 9,
+      "facts": 1278,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 788,
+    "root_owes": 36,
+    "work": {
+     "saturations": 9,
+     "facts": 1278,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "minimal-single": {
+    "feedback": {
+     "outcome": [
+      [
+       "minimal",
+       "one"
+      ]
+     ],
+     "why": [
+      "Solution: one state"
+     ],
+     "readings": {
+      "word": {
+       "part": "minimal",
+       "word": "Solution"
+      },
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 663,
+      "facts": 94916,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 788,
+    "root_owes": 36,
+    "work": {
+     "saturations": 663,
+     "facts": 94916,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "count": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": 1,
+      "k_c": 68719459314,
+      "minimal": 1,
+      "maximal": 1,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 353,
+      "facts": 60418,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 36,
+     "classes": [
+      []
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 788,
+    "root_owes": 36,
+    "work": {
+     "saturations": 353,
+     "facts": 60418,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [],
+    "notes": []
+   },
+   "no-search": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "not-decided"
+      ]
+     ],
+     "why": [
+      "--no-search: root is alive, and R was not searched"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": false,
+      "stopped": {
+       "why": "asked",
+       "saturation": null
+      }
+     },
+     "work": {
+      "saturations": 1,
+      "facts": 0,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 36,
+     "classes": [
+      []
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": null,
+    "root_facts": 788,
+    "root_owes": 36,
+    "work": {
+     "saturations": 1,
+     "facts": 0,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [],
+    "notes": []
+   }
+  }
+ },
+ "zebra3.3": {
+  "hyps": {
+   "writer": "obligations",
+   "n": 112,
+   "notes": [
+    "note: examples/zebra3.3.ein: H, from `obligations`: 112 candidates"
+   ]
+  },
+  "questions": {
+   "describe": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "one"
+      ],
+      [
+       "minimal",
+       "one"
+      ],
+      [
+       "maximal",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state",
+      "one state",
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": 1,
+      "k_c": 68719459314,
+      "minimal": 1,
+      "maximal": 1,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 353,
+      "facts": 85675,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 36,
+     "classes": [
+      [
+       [
+        {
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 1083,
+    "root_owes": 36,
+    "work": {
+     "saturations": 353,
+     "facts": 85675,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "single": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "one"
+      ]
+     ],
+     "why": [
+      "Solution: one state"
+     ],
+     "readings": {
+      "word": {
+       "part": "all",
+       "word": "Solution"
+      },
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 9,
+      "facts": 1956,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 1083,
+    "root_owes": 36,
+    "work": {
+     "saturations": 9,
+     "facts": 1956,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "maximal": {
+    "feedback": {
+     "outcome": [
+      [
+       "maximal",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": 1,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 9,
+      "facts": 1956,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 1083,
+    "root_owes": 36,
+    "work": {
+     "saturations": 9,
+     "facts": 1956,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "minimal": {
+    "feedback": {
+     "outcome": [
+      [
+       "minimal",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": null,
+      "k_c": null,
+      "minimal": 1,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 663,
+      "facts": 136130,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 1083,
+    "root_owes": 36,
+    "work": {
+     "saturations": 663,
+     "facts": 136130,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "maximal-single": {
+    "feedback": {
+     "outcome": [
+      [
+       "maximal",
+       "one"
+      ]
+     ],
+     "why": [
+      "Solution: one state"
+     ],
+     "readings": {
+      "word": {
+       "part": "maximal",
+       "word": "Solution"
+      },
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 9,
+      "facts": 1956,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 1083,
+    "root_owes": 36,
+    "work": {
+     "saturations": 9,
+     "facts": 1956,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "minimal-single": {
+    "feedback": {
+     "outcome": [
+      [
+       "minimal",
+       "one"
+      ]
+     ],
+     "why": [
+      "Solution: one state"
+     ],
+     "readings": {
+      "word": {
+       "part": "minimal",
+       "word": "Solution"
+      },
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 663,
+      "facts": 136130,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 1083,
+    "root_owes": 36,
+    "work": {
+     "saturations": 663,
+     "facts": 136130,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "count": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": 1,
+      "k_c": 68719459314,
+      "minimal": 1,
+      "maximal": 1,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 353,
+      "facts": 85675,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 36,
+     "classes": [
+      []
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 112,
+    "root_facts": 1083,
+    "root_owes": 36,
+    "work": {
+     "saturations": 353,
+     "facts": 85675,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [],
+    "notes": []
+   },
+   "no-search": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "not-decided"
+      ]
+     ],
+     "why": [
+      "--no-search: root is alive, and R was not searched"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": false,
+      "stopped": {
+       "why": "asked",
+       "saturation": null
+      }
+     },
+     "work": {
+      "saturations": 1,
+      "facts": 0,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 36,
+     "classes": [
+      []
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": null,
+    "root_facts": 1083,
+    "root_owes": 36,
+    "work": {
+     "saturations": 1,
+     "facts": 0,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [],
+    "notes": []
+   }
+  }
+ },
+ "zebra3.4": {
+  "hyps": {
+   "writer": "obligations",
+   "n": 56,
+   "notes": [
+    "note: examples/zebra3.4.ein: H, from `obligations`: 56 candidates"
+   ]
+  },
+  "questions": {
+   "describe": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "one"
+      ],
+      [
+       "minimal",
+       "one"
+      ],
+      [
+       "maximal",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state",
+      "one state",
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": 1,
+      "k_c": 261982,
+      "minimal": 1,
+      "maximal": 1,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 124,
+      "facts": 5600,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 36,
+     "classes": [
+      [
+       [
+        {
+         "water_house": "First",
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese",
+         "zebra_house": "Fifth"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 56,
+    "root_facts": 485,
+    "root_owes": 36,
+    "work": {
+     "saturations": 124,
+     "facts": 5600,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "single": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "one"
+      ]
+     ],
+     "why": [
+      "Solution: one state"
+     ],
+     "readings": {
+      "word": {
+       "part": "all",
+       "word": "Solution"
+      },
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 11,
+      "facts": 449,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "water_house": "First",
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese",
+         "zebra_house": "Fifth"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 56,
+    "root_facts": 485,
+    "root_owes": 36,
+    "work": {
+     "saturations": 11,
+     "facts": 449,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "maximal": {
+    "feedback": {
+     "outcome": [
+      [
+       "maximal",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": 1,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 11,
+      "facts": 449,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "water_house": "First",
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese",
+         "zebra_house": "Fifth"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 56,
+    "root_facts": 485,
+    "root_owes": 36,
+    "work": {
+     "saturations": 11,
+     "facts": 449,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "minimal": {
+    "feedback": {
+     "outcome": [
+      [
+       "minimal",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": null,
+      "k_c": null,
+      "minimal": 1,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 267,
+      "facts": 11814,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "water_house": "First",
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese",
+         "zebra_house": "Fifth"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 56,
+    "root_facts": 485,
+    "root_owes": 36,
+    "work": {
+     "saturations": 267,
+     "facts": 11814,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "maximal-single": {
+    "feedback": {
+     "outcome": [
+      [
+       "maximal",
+       "one"
+      ]
+     ],
+     "why": [
+      "Solution: one state"
+     ],
+     "readings": {
+      "word": {
+       "part": "maximal",
+       "word": "Solution"
+      },
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 11,
+      "facts": 449,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "water_house": "First",
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese",
+         "zebra_house": "Fifth"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 56,
+    "root_facts": 485,
+    "root_owes": 36,
+    "work": {
+     "saturations": 11,
+     "facts": 449,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "minimal-single": {
+    "feedback": {
+     "outcome": [
+      [
+       "minimal",
+       "one"
+      ]
+     ],
+     "why": [
+      "Solution: one state"
+     ],
+     "readings": {
+      "word": {
+       "part": "minimal",
+       "word": "Solution"
+      },
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 267,
+      "facts": 11814,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 0,
+     "classes": [
+      [
+       [
+        {
+         "water_house": "First",
+         "who_water": "Norwegian",
+         "who_zebra": "Japanese",
+         "zebra_house": "Fifth"
+        }
+       ]
+      ]
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 56,
+    "root_facts": 485,
+    "root_owes": 36,
+    "work": {
+     "saturations": 267,
+     "facts": 11814,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [
+     "“The Norwegian drinks water. The Japanese owns the zebra.”"
+    ],
+    "notes": []
+   },
+   "count": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "one"
+      ]
+     ],
+     "why": [
+      "one state"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": 1,
+      "k_c": 261982,
+      "minimal": 1,
+      "maximal": 1,
+      "exhausted": true,
+      "stopped": null
+     },
+     "work": {
+      "saturations": 124,
+      "facts": 5600,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 36,
+     "classes": [
+      []
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": 56,
+    "root_facts": 485,
+    "root_owes": 36,
+    "work": {
+     "saturations": 124,
+     "facts": 5600,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [],
+    "notes": []
+   },
+   "no-search": {
+    "feedback": {
+     "outcome": [
+      [
+       "all",
+       "not-decided"
+      ]
+     ],
+     "why": [
+      "--no-search: root is alive, and R was not searched"
+     ],
+     "readings": {
+      "word": null,
+      "k_s": null,
+      "k_c": null,
+      "minimal": null,
+      "maximal": null,
+      "exhausted": false,
+      "stopped": {
+       "why": "asked",
+       "saturation": null
+      }
+     },
+     "work": {
+      "saturations": 1,
+      "facts": 0,
+      "layers": null
+     },
+     "diagnostics": [],
+     "flagged": null,
+     "core": null,
+     "owed_root": 36,
+     "classes": [
+      []
+     ],
+     "fault": null
+    },
+    "exit": 0,
+    "universe": null,
+    "root_facts": 485,
+    "root_owes": 36,
+    "work": {
+     "saturations": 1,
+     "facts": 0,
+     "layers": null
+    },
+    "monotone": true,
+    "answer": [],
+    "notes": []
+   }
+  }
+ }
+}

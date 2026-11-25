@@ -1,0 +1,5 @@
+;;; The same forms, the declaration first.
+(relation likes Person Drink :why "{?3} likes {?4}")
+(likes Ann Tea :source "Ann likes tea.")
+(query :goal (likes ?who ?what))
+(solve :no-search)

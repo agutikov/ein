@@ -1,0 +1,1767 @@
+{
+ "zebra": {
+  "sentences": [
+   {
+    "k": 1,
+    "sentence": "There are five houses.",
+    "facts": 4,
+    "forms": [
+     "(right-of House-2 House-1)",
+     "(right-of House-3 House-2)",
+     "(right-of House-4 House-3)",
+     "(right-of House-5 House-4)"
+    ],
+    "words": 2,
+    "kept": [
+     "houses"
+    ],
+    "lost": [
+     "five"
+    ]
+   },
+   {
+    "k": 2,
+    "sentence": "The Englishman lives in the red house.",
+    "facts": 1,
+    "forms": [
+     "(co-located Englishman Red)"
+    ],
+    "words": 5,
+    "kept": [
+     "englishman",
+     "red"
+    ],
+    "lost": [
+     "lives",
+     "in",
+     "house"
+    ]
+   },
+   {
+    "k": 3,
+    "sentence": "The Spaniard owns the dog.",
+    "facts": 1,
+    "forms": [
+     "(co-located Spaniard Dog)"
+    ],
+    "words": 3,
+    "kept": [
+     "spaniard",
+     "dog"
+    ],
+    "lost": [
+     "owns"
+    ]
+   },
+   {
+    "k": 4,
+    "sentence": "Coffee is drunk in the green house.",
+    "facts": 1,
+    "forms": [
+     "(co-located Coffee Green)"
+    ],
+    "words": 5,
+    "kept": [
+     "coffee",
+     "green"
+    ],
+    "lost": [
+     "drunk",
+     "in",
+     "house"
+    ]
+   },
+   {
+    "k": 5,
+    "sentence": "The Ukrainian drinks tea.",
+    "facts": 1,
+    "forms": [
+     "(co-located Ukrainian Tea)"
+    ],
+    "words": 3,
+    "kept": [
+     "ukrainian",
+     "tea"
+    ],
+    "lost": [
+     "drinks"
+    ]
+   },
+   {
+    "k": 6,
+    "sentence": "The green house is immediately to the right of the ivory house.",
+    "facts": 1,
+    "forms": [
+     "(right-of Green Ivory)"
+    ],
+    "words": 8,
+    "kept": [
+     "green",
+     "right",
+     "of",
+     "ivory"
+    ],
+    "lost": [
+     "house",
+     "immediately",
+     "to",
+     "house"
+    ]
+   },
+   {
+    "k": 7,
+    "sentence": "The Old Gold smoker owns snails.",
+    "facts": 1,
+    "forms": [
+     "(co-located Old_Gold Snail)"
+    ],
+    "words": 5,
+    "kept": [
+     "old",
+     "gold",
+     "snails"
+    ],
+    "lost": [
+     "smoker",
+     "owns"
+    ]
+   },
+   {
+    "k": 8,
+    "sentence": "Kools are smoked in the yellow house.",
+    "facts": 1,
+    "forms": [
+     "(co-located Kools Yellow)"
+    ],
+    "words": 5,
+    "kept": [
+     "kools",
+     "yellow"
+    ],
+    "lost": [
+     "smoked",
+     "in",
+     "house"
+    ]
+   },
+   {
+    "k": 9,
+    "sentence": "Milk is drunk in the middle house.",
+    "facts": 1,
+    "forms": [
+     "(co-located Milk House-3)"
+    ],
+    "words": 5,
+    "kept": [
+     "milk",
+     "house"
+    ],
+    "lost": [
+     "drunk",
+     "in",
+     "middle"
+    ]
+   },
+   {
+    "k": 10,
+    "sentence": "The Norwegian lives in the first house.",
+    "facts": 1,
+    "forms": [
+     "(co-located Norwegian House-1)"
+    ],
+    "words": 5,
+    "kept": [
+     "norwegian",
+     "house"
+    ],
+    "lost": [
+     "lives",
+     "in",
+     "first"
+    ]
+   },
+   {
+    "k": 11,
+    "sentence": "The man who smokes Chesterfields lives in the house next to the man with the fox.",
+    "facts": 1,
+    "forms": [
+     "(next-to Chesterfields Fox)"
+    ],
+    "words": 12,
+    "kept": [
+     "chesterfields",
+     "next",
+     "to",
+     "fox"
+    ],
+    "lost": [
+     "man",
+     "who",
+     "smokes",
+     "lives",
+     "in",
+     "house",
+     "man",
+     "with"
+    ]
+   },
+   {
+    "k": 12,
+    "sentence": "Kools are smoked in the house next to the house where the horse is kept.",
+    "facts": 1,
+    "forms": [
+     "(next-to Kools Horse)"
+    ],
+    "words": 10,
+    "kept": [
+     "kools",
+     "next",
+     "to",
+     "horse"
+    ],
+    "lost": [
+     "smoked",
+     "in",
+     "house",
+     "house",
+     "where",
+     "kept"
+    ]
+   },
+   {
+    "k": 13,
+    "sentence": "The Lucky Strike smoker drinks orange juice.",
+    "facts": 1,
+    "forms": [
+     "(co-located Lucky_Strike Juice)"
+    ],
+    "words": 6,
+    "kept": [
+     "lucky",
+     "strike",
+     "juice"
+    ],
+    "lost": [
+     "smoker",
+     "drinks",
+     "orange"
+    ]
+   },
+   {
+    "k": 14,
+    "sentence": "The Japanese smokes Parliaments.",
+    "facts": 1,
+    "forms": [
+     "(co-located Japanese Parliament)"
+    ],
+    "words": 3,
+    "kept": [
+     "japanese",
+     "parliaments"
+    ],
+    "lost": [
+     "smokes"
+    ]
+   },
+   {
+    "k": 15,
+    "sentence": "The Norwegian lives next to the blue house.",
+    "facts": 1,
+    "forms": [
+     "(next-to Norwegian Blue)"
+    ],
+    "words": 6,
+    "kept": [
+     "norwegian",
+     "next",
+     "to",
+     "blue"
+    ],
+    "lost": [
+     "lives",
+     "house"
+    ]
+   }
+  ],
+  "query": [
+   "(query ;; The two puzzle questions are \"who drinks water?\" and \"who owns the ;; zebra?\" — a Nationality, not a House (who, not where). The ;; goal binds the drink's / pet's house, then joins back through ;; co-located to a Nationality. Under solve() the goal is ;; projection-only (the verdict is consistent ∧ complete, not ;; goal-match), so the `instance` conjuncts don't gate the search; ;; they disambiguate which of the slot-mates the answer names. :goal (and (co-located Water ?h_water) (instance ?h_water House) (co-located ?who_water ?h_water) (instance ?who_water Nationality) (co-located Zebra ?h_zebra) (instance ?h_zebra House) (co-located ?who_zebra ?h_zebra) (instance ?who_zebra Nationality)) :goal-text \"The {?who_water} drinks water in {?h_water}; the {?who_zebra} owns zebra in {?h_zebra}\")"
+  ],
+  "kinds": {
+   "directive": 1,
+   "import": 2,
+   "rule": 1,
+   "declaration": 5,
+   "selector": 11,
+   "membership": 37,
+   "statement": 18,
+   "query": 1
+  }
+ },
+ "zebra2": {
+  "sentences": [
+   {
+    "k": 1,
+    "sentence": "There are five houses.",
+    "facts": 4,
+    "forms": [
+     "(right-of House-2 House-1)",
+     "(right-of House-3 House-2)",
+     "(right-of House-4 House-3)",
+     "(right-of House-5 House-4)"
+    ],
+    "words": 2,
+    "kept": [
+     "houses"
+    ],
+    "lost": [
+     "five"
+    ]
+   },
+   {
+    "k": 2,
+    "sentence": "The Englishman lives in the red house.",
+    "facts": 1,
+    "forms": [
+     "(co-located nation-loc Englishman color-loc Red)"
+    ],
+    "words": 5,
+    "kept": [
+     "englishman",
+     "red"
+    ],
+    "lost": [
+     "lives",
+     "in",
+     "house"
+    ]
+   },
+   {
+    "k": 3,
+    "sentence": "The Spaniard owns the dog.",
+    "facts": 1,
+    "forms": [
+     "(co-located nation-loc Spaniard pet-loc Dog)"
+    ],
+    "words": 3,
+    "kept": [
+     "spaniard",
+     "dog"
+    ],
+    "lost": [
+     "owns"
+    ]
+   },
+   {
+    "k": 4,
+    "sentence": "Coffee is drunk in the green house.",
+    "facts": 1,
+    "forms": [
+     "(co-located drink-loc Coffee color-loc Green)"
+    ],
+    "words": 5,
+    "kept": [
+     "coffee",
+     "green"
+    ],
+    "lost": [
+     "drunk",
+     "in",
+     "house"
+    ]
+   },
+   {
+    "k": 5,
+    "sentence": "The Ukrainian drinks tea.",
+    "facts": 1,
+    "forms": [
+     "(co-located nation-loc Ukrainian drink-loc Tea)"
+    ],
+    "words": 3,
+    "kept": [
+     "ukrainian",
+     "drinks",
+     "tea"
+    ],
+    "lost": []
+   },
+   {
+    "k": 6,
+    "sentence": "The green house is immediately to the right of the ivory house.",
+    "facts": 1,
+    "forms": [
+     "(adjacent-via right-of color-loc Ivory color-loc Green)"
+    ],
+    "words": 8,
+    "kept": [
+     "green",
+     "right",
+     "of",
+     "ivory"
+    ],
+    "lost": [
+     "house",
+     "immediately",
+     "to",
+     "house"
+    ]
+   },
+   {
+    "k": 7,
+    "sentence": "The Old Gold smoker owns snails.",
+    "facts": 1,
+    "forms": [
+     "(co-located smoke-loc Old_Gold pet-loc Snail)"
+    ],
+    "words": 5,
+    "kept": [
+     "old",
+     "gold",
+     "smoker",
+     "snails"
+    ],
+    "lost": [
+     "owns"
+    ]
+   },
+   {
+    "k": 8,
+    "sentence": "Kools are smoked in the yellow house.",
+    "facts": 1,
+    "forms": [
+     "(co-located smoke-loc Kools color-loc Yellow)"
+    ],
+    "words": 5,
+    "kept": [
+     "kools",
+     "smoked",
+     "yellow"
+    ],
+    "lost": [
+     "in",
+     "house"
+    ]
+   },
+   {
+    "k": 9,
+    "sentence": "Milk is drunk in the middle house.",
+    "facts": 1,
+    "forms": [
+     "(drink-loc Milk House-3)"
+    ],
+    "words": 5,
+    "kept": [
+     "milk",
+     "house"
+    ],
+    "lost": [
+     "drunk",
+     "in",
+     "middle"
+    ]
+   },
+   {
+    "k": 10,
+    "sentence": "The Norwegian lives in the first house.",
+    "facts": 1,
+    "forms": [
+     "(nation-loc Norwegian House-1)"
+    ],
+    "words": 5,
+    "kept": [
+     "norwegian",
+     "house"
+    ],
+    "lost": [
+     "lives",
+     "in",
+     "first"
+    ]
+   },
+   {
+    "k": 11,
+    "sentence": "The man who smokes Chesterfields lives in the house next to the man with the fox.",
+    "facts": 1,
+    "forms": [
+     "(adjacent-via next-to smoke-loc Chesterfields pet-loc Fox)"
+    ],
+    "words": 12,
+    "kept": [
+     "smokes",
+     "chesterfields",
+     "next",
+     "to",
+     "fox"
+    ],
+    "lost": [
+     "man",
+     "who",
+     "lives",
+     "in",
+     "house",
+     "man",
+     "with"
+    ]
+   },
+   {
+    "k": 12,
+    "sentence": "Kools are smoked in the house next to the house where the horse is kept.",
+    "facts": 1,
+    "forms": [
+     "(adjacent-via next-to smoke-loc Kools pet-loc Horse)"
+    ],
+    "words": 10,
+    "kept": [
+     "kools",
+     "smoked",
+     "next",
+     "to",
+     "horse"
+    ],
+    "lost": [
+     "in",
+     "house",
+     "house",
+     "where",
+     "kept"
+    ]
+   },
+   {
+    "k": 13,
+    "sentence": "The Lucky Strike smoker drinks orange juice.",
+    "facts": 1,
+    "forms": [
+     "(co-located smoke-loc Lucky_Strike drink-loc Juice)"
+    ],
+    "words": 6,
+    "kept": [
+     "lucky",
+     "strike",
+     "smoker",
+     "drinks",
+     "juice"
+    ],
+    "lost": [
+     "orange"
+    ]
+   },
+   {
+    "k": 14,
+    "sentence": "The Japanese smokes Parliaments.",
+    "facts": 1,
+    "forms": [
+     "(co-located nation-loc Japanese smoke-loc Parliament)"
+    ],
+    "words": 3,
+    "kept": [
+     "japanese",
+     "smokes",
+     "parliaments"
+    ],
+    "lost": []
+   },
+   {
+    "k": 15,
+    "sentence": "The Norwegian lives next to the blue house.",
+    "facts": 1,
+    "forms": [
+     "(adjacent-via next-to nation-loc Norwegian color-loc Blue)"
+    ],
+    "words": 6,
+    "kept": [
+     "norwegian",
+     "next",
+     "to",
+     "blue"
+    ],
+    "lost": [
+     "lives",
+     "house"
+    ]
+   }
+  ],
+  "query": [
+   "(query ;; The two puzzle questions are \"who drinks water?\" and \"who owns the ;; zebra?\" — a Nationality, not a House (who, not where). The goal ;; binds the located house, then joins through the shared house to ;; nation-loc so ?who_water / ?who_zebra carry the answer. The goal is ;; projection-only: it cuts each state of R down to its rows and ;; decides nothing about which states are in R, so the extra conjuncts ;; don't gate the search; they let the answer renderer report \"the ;; Norwegian drinks the water\". A query has no mode: what it asks of R ;; is the command's question (`ein solve`, `--single`, `ein test`). :goal (and (drink-loc Water ?h_water) (nation-loc ?who_water ?h_water) (pet-loc Zebra ?h_zebra) (nation-loc ?who_zebra ?h_zebra)) ;; :goal-text renders the headline NL result from the bound goal vars ;; (the rule/relation `:why` `{?var}` engine). This — not any hardcoded ;; verb table — is what prints \"The Norwegian drinks…\" on the solve table. :goal-text \"The {?who_water} drinks water in {?h_water}; the {?who_zebra} owns zebra in {?h_zebra}\")"
+  ],
+  "kinds": {
+   "import": 2,
+   "selector": 16,
+   "rule": 15,
+   "declaration": 9,
+   "membership": 37,
+   "statement": 18,
+   "query": 1
+  }
+ },
+ "zebra3.1": {
+  "sentences": [
+   {
+    "k": 1,
+    "sentence": "There are five houses.",
+    "facts": 5,
+    "forms": [
+     "(instance First House)",
+     "(instance Second House)",
+     "(instance Middle House)",
+     "(instance Fourth House)",
+     "(instance Fifth House)"
+    ],
+    "words": 2,
+    "kept": [
+     "houses"
+    ],
+    "lost": [
+     "five"
+    ]
+   },
+   {
+    "k": 2,
+    "sentence": "The Englishman lives in the red house.",
+    "facts": 1,
+    "forms": [
+     "(lives-in Englishman Red)"
+    ],
+    "words": 5,
+    "kept": [
+     "englishman",
+     "lives",
+     "in",
+     "red"
+    ],
+    "lost": [
+     "house"
+    ]
+   },
+   {
+    "k": 3,
+    "sentence": "The Spaniard owns the dog.",
+    "facts": 1,
+    "forms": [
+     "(owns Spaniard Dog)"
+    ],
+    "words": 3,
+    "kept": [
+     "spaniard",
+     "owns",
+     "dog"
+    ],
+    "lost": []
+   },
+   {
+    "k": 4,
+    "sentence": "Coffee is drunk in the green house.",
+    "facts": 1,
+    "forms": [
+     "(is-drunk-in Coffee Green)"
+    ],
+    "words": 5,
+    "kept": [
+     "coffee",
+     "drunk",
+     "in",
+     "green"
+    ],
+    "lost": [
+     "house"
+    ]
+   },
+   {
+    "k": 5,
+    "sentence": "The Ukrainian drinks tea.",
+    "facts": 1,
+    "forms": [
+     "(drinks Ukrainian Tea)"
+    ],
+    "words": 3,
+    "kept": [
+     "ukrainian",
+     "drinks",
+     "tea"
+    ],
+    "lost": []
+   },
+   {
+    "k": 6,
+    "sentence": "The green house is immediately to the right of the ivory house.",
+    "facts": 1,
+    "forms": [
+     "(is-immediately-to-the-right-of Green Ivory)"
+    ],
+    "words": 8,
+    "kept": [
+     "green",
+     "immediately",
+     "to",
+     "right",
+     "of",
+     "ivory"
+    ],
+    "lost": [
+     "house",
+     "house"
+    ]
+   },
+   {
+    "k": 7,
+    "sentence": "The Old Gold smoker owns snails.",
+    "facts": 1,
+    "forms": [
+     "(owns Old_Gold Snail)"
+    ],
+    "words": 5,
+    "kept": [
+     "old",
+     "gold",
+     "owns",
+     "snails"
+    ],
+    "lost": [
+     "smoker"
+    ]
+   },
+   {
+    "k": 8,
+    "sentence": "Kools are smoked in the yellow house.",
+    "facts": 1,
+    "forms": [
+     "(are-smoked-in Kools Yellow)"
+    ],
+    "words": 5,
+    "kept": [
+     "kools",
+     "smoked",
+     "in",
+     "yellow"
+    ],
+    "lost": [
+     "house"
+    ]
+   },
+   {
+    "k": 9,
+    "sentence": "Milk is drunk in the middle house.",
+    "facts": 1,
+    "forms": [
+     "(is-drunk-in Milk Middle)"
+    ],
+    "words": 5,
+    "kept": [
+     "milk",
+     "drunk",
+     "in",
+     "middle"
+    ],
+    "lost": [
+     "house"
+    ]
+   },
+   {
+    "k": 10,
+    "sentence": "The Norwegian lives in the first house.",
+    "facts": 1,
+    "forms": [
+     "(lives-in Norwegian First)"
+    ],
+    "words": 5,
+    "kept": [
+     "norwegian",
+     "lives",
+     "in",
+     "first"
+    ],
+    "lost": [
+     "house"
+    ]
+   },
+   {
+    "k": 11,
+    "sentence": "The man who smokes Chesterfields lives in the house next to the man with the fox.",
+    "facts": 1,
+    "forms": [
+     "(lives-next-to Chesterfields Fox)"
+    ],
+    "words": 12,
+    "kept": [
+     "chesterfields",
+     "lives",
+     "next",
+     "to",
+     "fox"
+    ],
+    "lost": [
+     "man",
+     "who",
+     "smokes",
+     "in",
+     "house",
+     "man",
+     "with"
+    ]
+   },
+   {
+    "k": 12,
+    "sentence": "Kools are smoked in the house next to the house where the horse is kept.",
+    "facts": 1,
+    "forms": [
+     "(are-smoked-next-to Kools Horse)"
+    ],
+    "words": 10,
+    "kept": [
+     "kools",
+     "smoked",
+     "next",
+     "to",
+     "horse"
+    ],
+    "lost": [
+     "in",
+     "house",
+     "house",
+     "where",
+     "kept"
+    ]
+   },
+   {
+    "k": 13,
+    "sentence": "The Lucky Strike smoker drinks orange juice.",
+    "facts": 1,
+    "forms": [
+     "(drinks Lucky_Strike Juice)"
+    ],
+    "words": 6,
+    "kept": [
+     "lucky",
+     "strike",
+     "drinks",
+     "juice"
+    ],
+    "lost": [
+     "smoker",
+     "orange"
+    ]
+   },
+   {
+    "k": 14,
+    "sentence": "The Japanese smokes Parliaments.",
+    "facts": 1,
+    "forms": [
+     "(smokes Japanese Parliament)"
+    ],
+    "words": 3,
+    "kept": [
+     "japanese",
+     "smokes",
+     "parliaments"
+    ],
+    "lost": []
+   },
+   {
+    "k": 15,
+    "sentence": "The Norwegian lives next to the blue house.",
+    "facts": 1,
+    "forms": [
+     "(lives-next-to Norwegian Blue)"
+    ],
+    "words": 6,
+    "kept": [
+     "norwegian",
+     "lives",
+     "next",
+     "to",
+     "blue"
+    ],
+    "lost": [
+     "house"
+    ]
+   }
+  ],
+  "query": [
+   "(query :goal (and (drinks ?who_water Water) (owns ?who_zebra Zebra)) :goal-text \"The {?who_water} drinks water. The {?who_zebra} owns the zebra.\")"
+  ],
+  "kinds": {
+   "statement": 19,
+   "query": 1,
+   "declaration": 22,
+   "membership": 32,
+   "structure": 4,
+   "import": 2,
+   "directive": 1,
+   "selector": 32
+  }
+ },
+ "zebra3.2": {
+  "sentences": [
+   {
+    "k": 1,
+    "sentence": "There are five houses.",
+    "facts": 5,
+    "forms": [
+     "(instance First House)",
+     "(instance Second House)",
+     "(instance Middle House)",
+     "(instance Fourth House)",
+     "(instance Fifth House)"
+    ],
+    "words": 2,
+    "kept": [
+     "houses"
+    ],
+    "lost": [
+     "five"
+    ]
+   },
+   {
+    "k": 2,
+    "sentence": "The Englishman lives in the red house.",
+    "facts": 1,
+    "forms": [
+     "(same (the Englishman (lives in) House) (the Red House))"
+    ],
+    "words": 5,
+    "kept": [
+     "englishman",
+     "lives",
+     "in",
+     "red",
+     "house"
+    ],
+    "lost": []
+   },
+   {
+    "k": 3,
+    "sentence": "The Spaniard owns the dog.",
+    "facts": 1,
+    "forms": [
+     "(same Spaniard (the Dog (is owned by) Man))"
+    ],
+    "words": 3,
+    "kept": [
+     "spaniard",
+     "dog"
+    ],
+    "lost": [
+     "owns"
+    ]
+   },
+   {
+    "k": 4,
+    "sentence": "Coffee is drunk in the green house.",
+    "facts": 1,
+    "forms": [
+     "(same (the Coffee (is drunk in) House) (the Green House))"
+    ],
+    "words": 5,
+    "kept": [
+     "coffee",
+     "drunk",
+     "in",
+     "green",
+     "house"
+    ],
+    "lost": []
+   },
+   {
+    "k": 5,
+    "sentence": "The Ukrainian drinks tea.",
+    "facts": 1,
+    "forms": [
+     "(same Ukrainian (the Tea (is drunk by) Man))"
+    ],
+    "words": 3,
+    "kept": [
+     "ukrainian",
+     "tea"
+    ],
+    "lost": [
+     "drinks"
+    ]
+   },
+   {
+    "k": 6,
+    "sentence": "The green house is immediately to the right of the ivory house.",
+    "facts": 1,
+    "forms": [
+     "(immediately-to-the-right-of (the Green House) (the Ivory House))"
+    ],
+    "words": 8,
+    "kept": [
+     "green",
+     "house",
+     "immediately",
+     "to",
+     "right",
+     "of",
+     "ivory",
+     "house"
+    ],
+    "lost": []
+   },
+   {
+    "k": 7,
+    "sentence": "The Old Gold smoker owns snails.",
+    "facts": 1,
+    "forms": [
+     "(same (the Old_Gold Smoker) (the Snail (is owned by) Man))"
+    ],
+    "words": 5,
+    "kept": [
+     "old",
+     "gold",
+     "smoker",
+     "snails"
+    ],
+    "lost": [
+     "owns"
+    ]
+   },
+   {
+    "k": 8,
+    "sentence": "Kools are smoked in the yellow house.",
+    "facts": 1,
+    "forms": [
+     "(same (the Kools (are smoked in) House) (the Yellow House))"
+    ],
+    "words": 5,
+    "kept": [
+     "kools",
+     "smoked",
+     "in",
+     "yellow",
+     "house"
+    ],
+    "lost": []
+   },
+   {
+    "k": 9,
+    "sentence": "Milk is drunk in the middle house.",
+    "facts": 1,
+    "forms": [
+     "(same (the Milk (is drunk in) House) (the Middle House))"
+    ],
+    "words": 5,
+    "kept": [
+     "milk",
+     "drunk",
+     "in",
+     "middle",
+     "house"
+    ],
+    "lost": []
+   },
+   {
+    "k": 10,
+    "sentence": "The Norwegian lives in the first house.",
+    "facts": 1,
+    "forms": [
+     "(same (the Norwegian (lives in) House) (the First House))"
+    ],
+    "words": 5,
+    "kept": [
+     "norwegian",
+     "lives",
+     "in",
+     "first",
+     "house"
+    ],
+    "lost": []
+   },
+   {
+    "k": 11,
+    "sentence": "The man who smokes Chesterfields lives in the house next to the man with the fox.",
+    "facts": 1,
+    "forms": [
+     "(next-to (the (the Chesterfields (is smoked by) Man) (lives in) House) (the Fox (with) Man))"
+    ],
+    "words": 12,
+    "kept": [
+     "man",
+     "smokes",
+     "chesterfields",
+     "lives",
+     "in",
+     "house",
+     "next",
+     "to",
+     "man",
+     "with",
+     "fox"
+    ],
+    "lost": [
+     "who"
+    ]
+   },
+   {
+    "k": 12,
+    "sentence": "Kools are smoked in the house next to the house where the horse is kept.",
+    "facts": 1,
+    "forms": [
+     "(next-to (the Kools (are smoked in) House) (the Horse (is kept in) House))"
+    ],
+    "words": 10,
+    "kept": [
+     "kools",
+     "smoked",
+     "in",
+     "house",
+     "next",
+     "to",
+     "house",
+     "horse",
+     "kept"
+    ],
+    "lost": [
+     "where"
+    ]
+   },
+   {
+    "k": 13,
+    "sentence": "The Lucky Strike smoker drinks orange juice.",
+    "facts": 1,
+    "forms": [
+     "(same (the Lucky_Strike Smoker) (the Juice (is drunk by) Man))"
+    ],
+    "words": 6,
+    "kept": [
+     "lucky",
+     "strike",
+     "smoker",
+     "juice"
+    ],
+    "lost": [
+     "drinks",
+     "orange"
+    ]
+   },
+   {
+    "k": 14,
+    "sentence": "The Japanese smokes Parliaments.",
+    "facts": 1,
+    "forms": [
+     "(same Japanese (the Parliament (is smoked by) Man))"
+    ],
+    "words": 3,
+    "kept": [
+     "japanese",
+     "smokes",
+     "parliaments"
+    ],
+    "lost": []
+   },
+   {
+    "k": 15,
+    "sentence": "The Norwegian lives next to the blue house.",
+    "facts": 1,
+    "forms": [
+     "(next-to (the Norwegian (lives in) House) (the Blue House))"
+    ],
+    "words": 6,
+    "kept": [
+     "norwegian",
+     "lives",
+     "next",
+     "to",
+     "blue",
+     "house"
+    ],
+    "lost": []
+   }
+  ],
+  "query": [
+   "(query :goal (and (same ?who_water (the Water (is drunk by) Man)) (same ?who_zebra (the Zebra (is owned by) Man))) :goal-text \"The {?who_water} drinks water. The {?who_zebra} owns the zebra.\")"
+  ],
+  "kinds": {
+   "statement": 19,
+   "query": 1,
+   "declaration": 11,
+   "membership": 32,
+   "structure": 4,
+   "import": 2,
+   "directive": 1,
+   "rule": 6,
+   "selector": 18
+  }
+ },
+ "zebra3.3": {
+  "sentences": [
+   {
+    "k": 1,
+    "sentence": "There are five houses.",
+    "facts": 5,
+    "forms": [
+     "(instance House-1 House)",
+     "(instance House-2 House)",
+     "(instance House-3 House)",
+     "(instance House-4 House)",
+     "(instance House-5 House)"
+    ],
+    "words": 2,
+    "kept": [
+     "houses"
+    ],
+    "lost": [
+     "five"
+    ]
+   },
+   {
+    "k": 2,
+    "sentence": "The Englishman lives in the red house.",
+    "facts": 1,
+    "forms": [
+     "(lives-in Englishman (red House))"
+    ],
+    "words": 5,
+    "kept": [
+     "englishman",
+     "lives",
+     "in",
+     "red",
+     "house"
+    ],
+    "lost": []
+   },
+   {
+    "k": 3,
+    "sentence": "The Spaniard owns the dog.",
+    "facts": 1,
+    "forms": [
+     "(owns Spaniard Dog)"
+    ],
+    "words": 3,
+    "kept": [
+     "spaniard",
+     "owns",
+     "dog"
+    ],
+    "lost": []
+   },
+   {
+    "k": 4,
+    "sentence": "Coffee is drunk in the green house.",
+    "facts": 1,
+    "forms": [
+     "(is-drunk-in Coffee (green House))"
+    ],
+    "words": 5,
+    "kept": [
+     "coffee",
+     "drunk",
+     "in",
+     "green",
+     "house"
+    ],
+    "lost": []
+   },
+   {
+    "k": 5,
+    "sentence": "The Ukrainian drinks tea.",
+    "facts": 1,
+    "forms": [
+     "(drinks Ukrainian Tea)"
+    ],
+    "words": 3,
+    "kept": [
+     "ukrainian",
+     "drinks",
+     "tea"
+    ],
+    "lost": []
+   },
+   {
+    "k": 6,
+    "sentence": "The green house is immediately to the right of the ivory house.",
+    "facts": 1,
+    "forms": [
+     "(is-immediately-to-the-right-of (green House) (ivory House))"
+    ],
+    "words": 8,
+    "kept": [
+     "green",
+     "house",
+     "immediately",
+     "to",
+     "right",
+     "of",
+     "ivory",
+     "house"
+    ],
+    "lost": []
+   },
+   {
+    "k": 7,
+    "sentence": "The Old Gold smoker owns snails.",
+    "facts": 1,
+    "forms": [
+     "(owns Old_Gold Snail)"
+    ],
+    "words": 5,
+    "kept": [
+     "old",
+     "gold",
+     "owns",
+     "snails"
+    ],
+    "lost": [
+     "smoker"
+    ]
+   },
+   {
+    "k": 8,
+    "sentence": "Kools are smoked in the yellow house.",
+    "facts": 1,
+    "forms": [
+     "(are-smoked-in Kools (yellow House))"
+    ],
+    "words": 5,
+    "kept": [
+     "kools",
+     "smoked",
+     "in",
+     "yellow",
+     "house"
+    ],
+    "lost": []
+   },
+   {
+    "k": 9,
+    "sentence": "Milk is drunk in the middle house.",
+    "facts": 1,
+    "forms": [
+     "(is-drunk-in Milk (middle House))"
+    ],
+    "words": 5,
+    "kept": [
+     "milk",
+     "drunk",
+     "in",
+     "middle",
+     "house"
+    ],
+    "lost": []
+   },
+   {
+    "k": 10,
+    "sentence": "The Norwegian lives in the first house.",
+    "facts": 1,
+    "forms": [
+     "(lives-in Norwegian (first House))"
+    ],
+    "words": 5,
+    "kept": [
+     "norwegian",
+     "lives",
+     "in",
+     "first",
+     "house"
+    ],
+    "lost": []
+   },
+   {
+    "k": 11,
+    "sentence": "The man who smokes Chesterfields lives in the house next to the man with the fox.",
+    "facts": 1,
+    "forms": [
+     "(lives-next-to Chesterfields Fox)"
+    ],
+    "words": 12,
+    "kept": [
+     "chesterfields",
+     "lives",
+     "next",
+     "to",
+     "fox"
+    ],
+    "lost": [
+     "man",
+     "who",
+     "smokes",
+     "in",
+     "house",
+     "man",
+     "with"
+    ]
+   },
+   {
+    "k": 12,
+    "sentence": "Kools are smoked in the house next to the house where the horse is kept.",
+    "facts": 1,
+    "forms": [
+     "(are-smoked-next-to Kools Horse)"
+    ],
+    "words": 10,
+    "kept": [
+     "kools",
+     "smoked",
+     "next",
+     "to",
+     "horse"
+    ],
+    "lost": [
+     "in",
+     "house",
+     "house",
+     "where",
+     "kept"
+    ]
+   },
+   {
+    "k": 13,
+    "sentence": "The Lucky Strike smoker drinks orange juice.",
+    "facts": 1,
+    "forms": [
+     "(drinks Lucky_Strike Juice)"
+    ],
+    "words": 6,
+    "kept": [
+     "lucky",
+     "strike",
+     "drinks",
+     "juice"
+    ],
+    "lost": [
+     "smoker",
+     "orange"
+    ]
+   },
+   {
+    "k": 14,
+    "sentence": "The Japanese smokes Parliaments.",
+    "facts": 1,
+    "forms": [
+     "(smokes Japanese Parliament)"
+    ],
+    "words": 3,
+    "kept": [
+     "japanese",
+     "smokes",
+     "parliaments"
+    ],
+    "lost": []
+   },
+   {
+    "k": 15,
+    "sentence": "The Norwegian lives next to the blue house.",
+    "facts": 1,
+    "forms": [
+     "(lives-next-to Norwegian (blue House))"
+    ],
+    "words": 6,
+    "kept": [
+     "norwegian",
+     "lives",
+     "next",
+     "to",
+     "blue",
+     "house"
+    ],
+    "lost": []
+   }
+  ],
+  "query": [
+   "(query :goal (and (drinks ?who_water Water) (owns ?who_zebra Zebra)) :goal-text \"The {?who_water} drinks water. The {?who_zebra} owns the zebra.\")"
+  ],
+  "kinds": {
+   "statement": 19,
+   "query": 1,
+   "declaration": 29,
+   "membership": 32,
+   "structure": 6,
+   "import": 2,
+   "directive": 1,
+   "selector": 34,
+   "rule": 5
+  }
+ },
+ "zebra3.4": {
+  "sentences": [
+   {
+    "k": 1,
+    "sentence": "There are five houses.",
+    "facts": 5,
+    "forms": [
+     "(is-a First House)",
+     "(is-a Second House)",
+     "(is-a Middle House)",
+     "(is-a Fourth House)",
+     "(is-a Fifth House)"
+    ],
+    "words": 2,
+    "kept": [
+     "houses"
+    ],
+    "lost": [
+     "five"
+    ]
+   },
+   {
+    "k": 2,
+    "sentence": "The Englishman lives in the red house.",
+    "facts": 1,
+    "forms": [
+     "(same-house Englishman lives-in Red color-of)"
+    ],
+    "words": 5,
+    "kept": [
+     "englishman",
+     "lives",
+     "in",
+     "red",
+     "house"
+    ],
+    "lost": []
+   },
+   {
+    "k": 3,
+    "sentence": "The Spaniard owns the dog.",
+    "facts": 1,
+    "forms": [
+     "(same-house Spaniard lives-in Dog is-kept-in)"
+    ],
+    "words": 3,
+    "kept": [
+     "spaniard",
+     "dog"
+    ],
+    "lost": [
+     "owns"
+    ]
+   },
+   {
+    "k": 4,
+    "sentence": "Coffee is drunk in the green house.",
+    "facts": 1,
+    "forms": [
+     "(same-house Coffee is-drunk-in Green color-of)"
+    ],
+    "words": 5,
+    "kept": [
+     "coffee",
+     "drunk",
+     "in",
+     "green",
+     "house"
+    ],
+    "lost": []
+   },
+   {
+    "k": 5,
+    "sentence": "The Ukrainian drinks tea.",
+    "facts": 1,
+    "forms": [
+     "(same-house Ukrainian lives-in Tea is-drunk-in)"
+    ],
+    "words": 3,
+    "kept": [
+     "ukrainian",
+     "tea"
+    ],
+    "lost": [
+     "drinks"
+    ]
+   },
+   {
+    "k": 6,
+    "sentence": "The green house is immediately to the right of the ivory house.",
+    "facts": 1,
+    "forms": [
+     "(house-immediately-right-of Green color-of Ivory color-of)"
+    ],
+    "words": 8,
+    "kept": [
+     "green",
+     "house",
+     "immediately",
+     "right",
+     "of",
+     "ivory",
+     "house"
+    ],
+    "lost": [
+     "to"
+    ]
+   },
+   {
+    "k": 7,
+    "sentence": "The Old Gold smoker owns snails.",
+    "facts": 1,
+    "forms": [
+     "(same-house Old_Gold are-smoked-in Snail is-kept-in)"
+    ],
+    "words": 5,
+    "kept": [
+     "old",
+     "gold",
+     "smoker",
+     "snails"
+    ],
+    "lost": [
+     "owns"
+    ]
+   },
+   {
+    "k": 8,
+    "sentence": "Kools are smoked in the yellow house.",
+    "facts": 1,
+    "forms": [
+     "(same-house Kools are-smoked-in Yellow color-of)"
+    ],
+    "words": 5,
+    "kept": [
+     "kools",
+     "smoked",
+     "in",
+     "yellow",
+     "house"
+    ],
+    "lost": []
+   },
+   {
+    "k": 9,
+    "sentence": "Milk is drunk in the middle house.",
+    "facts": 1,
+    "forms": [
+     "(is-drunk-in Milk Middle)"
+    ],
+    "words": 5,
+    "kept": [
+     "milk",
+     "drunk",
+     "in",
+     "middle"
+    ],
+    "lost": [
+     "house"
+    ]
+   },
+   {
+    "k": 10,
+    "sentence": "The Norwegian lives in the first house.",
+    "facts": 1,
+    "forms": [
+     "(lives-in Norwegian First)"
+    ],
+    "words": 5,
+    "kept": [
+     "norwegian",
+     "lives",
+     "in",
+     "first"
+    ],
+    "lost": [
+     "house"
+    ]
+   },
+   {
+    "k": 11,
+    "sentence": "The man who smokes Chesterfields lives in the house next to the man with the fox.",
+    "facts": 1,
+    "forms": [
+     "(house-next-to Chesterfields are-smoked-in Fox is-kept-in)"
+    ],
+    "words": 12,
+    "kept": [
+     "smokes",
+     "chesterfields",
+     "in",
+     "house",
+     "next",
+     "to",
+     "fox"
+    ],
+    "lost": [
+     "man",
+     "who",
+     "lives",
+     "man",
+     "with"
+    ]
+   },
+   {
+    "k": 12,
+    "sentence": "Kools are smoked in the house next to the house where the horse is kept.",
+    "facts": 1,
+    "forms": [
+     "(house-next-to Kools are-smoked-in Horse is-kept-in)"
+    ],
+    "words": 10,
+    "kept": [
+     "kools",
+     "smoked",
+     "in",
+     "house",
+     "next",
+     "to",
+     "house",
+     "horse",
+     "kept"
+    ],
+    "lost": [
+     "where"
+    ]
+   },
+   {
+    "k": 13,
+    "sentence": "The Lucky Strike smoker drinks orange juice.",
+    "facts": 1,
+    "forms": [
+     "(same-house Lucky_Strike are-smoked-in Juice is-drunk-in)"
+    ],
+    "words": 6,
+    "kept": [
+     "lucky",
+     "strike",
+     "smoker",
+     "juice"
+    ],
+    "lost": [
+     "drinks",
+     "orange"
+    ]
+   },
+   {
+    "k": 14,
+    "sentence": "The Japanese smokes Parliaments.",
+    "facts": 1,
+    "forms": [
+     "(same-house Japanese lives-in Parliament are-smoked-in)"
+    ],
+    "words": 3,
+    "kept": [
+     "japanese",
+     "smokes",
+     "parliaments"
+    ],
+    "lost": []
+   },
+   {
+    "k": 15,
+    "sentence": "The Norwegian lives next to the blue house.",
+    "facts": 1,
+    "forms": [
+     "(house-next-to Norwegian lives-in Blue color-of)"
+    ],
+    "words": 6,
+    "kept": [
+     "norwegian",
+     "lives",
+     "next",
+     "to",
+     "blue",
+     "house"
+    ],
+    "lost": []
+   }
+  ],
+  "query": [
+   "(query :goal (and (is-drunk-in Water ?water_house) (lives-in ?who_water ?water_house) (is-kept-in Zebra ?zebra_house) (lives-in ?who_zebra ?zebra_house)) :goal-text \"The {?who_water} drinks water. The {?who_zebra} owns the zebra.\")"
+  ],
+  "kinds": {
+   "statement": 19,
+   "query": 1,
+   "declaration": 12,
+   "membership": 32,
+   "structure": 4,
+   "import": 2,
+   "selector": 11,
+   "rule": 14
+  }
+ }
+}

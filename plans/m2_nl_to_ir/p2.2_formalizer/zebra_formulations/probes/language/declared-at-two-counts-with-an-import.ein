@@ -1,0 +1,8 @@
+;;; The same program with one import: it is refused.
+(import std.algebra)
+(relation likes Person Drink :why "{?3} likes {?4}")
+(relation likes Person       :why "{?3} likes something")
+(likes Ann Tea :source "Ann likes tea.")
+(likes Bob     :source "Bob likes something.")
+(query :goal (likes ?who ?what))
+(solve :no-search)

@@ -1,0 +1,7 @@
+;;; The same forms, the query last.
+(relation p T :why "{?3} is p")
+(relation q T :why "{?3} is q")
+(rule up () :match (p ?x) :assert (q ?x) :why "{?x} is p, so q")
+(p a :source "a is p.")
+(solve :no-search)
+(query :goal (q ?x) :goal-text "{?x} is q.")

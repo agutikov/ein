@@ -40,7 +40,8 @@ partial ontology first**, then the complete ontology and a partial theory, then 
 user's notes on the whole phase, [below](#formalization-in-steps-the-users-notes-on-the-whole-phase), and every
 stage carries its part of them. The phase begins with the one stage the user added before the others,
 [S2.2.0a](s2.2.0a_zebra_formulations.md): it compares the two Zebra encodings, measures how the generic vocabulary
-of `zebra.ein` fares against the literal projections of `zebra2.ein`, writes `zebra3.ein` in the text's own words,
+of `zebra.ein` fares against the literal projections of `zebra2.ein`, writes the text's own words four ways
+(`zebra3.1.ein` to `zebra3.4.ein`),
 and checks that a program written in the order the steps make it is read as Ein reads it in its usual order.
 
 The phase also takes the milestone's cheapest early measurement: **whether the model writes loadable Ein with no
@@ -128,7 +129,7 @@ Five things the steps leave to be decided. Each default is the plan's, for the u
 | the notes | where |
 |---|---|
 | the three steps stated: each step's input, its output, what *partial* means for it, what it decides and may change, how it is checked, and the five questions above with the choice taken | [S2.2.1](s2.2.1_contract.md), T2.2.1.7, a section of the contract (it was S2.2.0f's T2.2.0f.1) |
-| the Zebra puzzle through the three steps by hand, ending at `zebra3.ein`; two or three other texts the same way; each step's program judged | [S2.2.1](s2.2.1_contract.md), T2.2.1.8, the contract's worked examples of the steps (T2.2.0f.2 and T2.2.0f.3) |
+| the Zebra puzzle through the three steps by hand, ending at `zebra3.1.ein`, the target shape; two or three other texts the same way; each step's program judged | [S2.2.1](s2.2.1_contract.md), T2.2.1.8, the contract's worked examples of the steps (T2.2.0f.2 and T2.2.0f.3) |
 | *"Promt/context will contain ein syntax and semantic explanation anyway … So there would be examples"* | [S2.2.1](s2.2.1_contract.md), T2.2.1.3: B3's excerpt and examples, in every prompt of every arm |
 | *"first experiment would be with original zebra problem and with working zerba program as example - test for dummies"* | [S2.2.2](s2.2.2_model_runtime.md), T2.2.2.6: the probe's first item, the phase's first measurement |
 | *"First step is simple"*: step 1 alone with the model, set against the hand-written step 1 | [S2.2.2](s2.2.2_model_runtime.md), T2.2.2.8 (T2.2.0f.4) |
@@ -197,18 +198,23 @@ default 15).
 
 ### The target shape, and the program that is the model of it
 
-[`examples/zebra.ein`](../../../examples/zebra.ein), the `std.slots` formulation, **less its one rule (`guess`),
-that rule's five activators and its `(config …)`**, is the shape the contract describes: two imports with
-`:symbols`, five `relation` forms with `:why`, six library activators, the `type` and `instance` facts, eighteen
-condition facts with `:source`, one `query` with its `:goal-text`. It has no `rule` form, the library's
-obligations write H (`ein show hyps`: *H, from `obligations`: 112 candidates*), and `ein solve --single` answers
-`Solution` with *“The Norwegian drinks water in House-1; the Japanese owns zebra in House-5”* (the audit's run
-s22, run again at this re-plan). [`examples/zebra2.ein`](../../../examples/zebra2.ein), which the plan of August
-named as the program to reproduce, is not of that shape: it carries fifteen rules of its own, and twelve of its
-condition facts are activators of them
-([the audit, B.0](../analysis/audit_p2.2.md#b0-the-four-passes-in-todays-language)). Which encoding is the target shape is
-[S2.2.0a](s2.2.0a_zebra_formulations.md)'s to settle by measurement, with a third, `zebra3.ein`, whose facts are
-the sentences' own words. The word problems of
+[`examples/zebra3.1.ein`](../../../examples/zebra3.1.ein), the Zebra puzzle's statements in the text's own words with
+one relation a verb, **is the shape the contract describes**, by default ([S2.2.0a](s2.2.0a_zebra_formulations.md)'s
+table, [default 1](#defaults-taken-at-the-re-plan)): its nineteen statements are the sentences, each a fact of its
+verb in its voice with the sentence as `:source` (`(drinks Ukrainian Tea)`, `(is-drunk-in Coffee Green)`), a
+description written as the word it is built on; its one query asks the questions in the statements' own relations,
+`(drinks ?who_water Water)` and `(owns ?who_zebra Zebra)`, with its `:goal-text`; its ontology is twenty-two
+`relation` forms with `:why`, thirty-two memberships and the four facts of the row; its theory is two imports and
+thirty-two selecting facts of the library's (`std.slots`' partition and `std.algebra`'s `includes`, `converse`,
+`compose`, `top` and `meet`) and no rule; and it is written in that order. The library's obligations write H (`ein
+show hyps`: *H, from `obligations`: 112 candidates*), and `ein solve --single` answers `Solution` with *“The
+Norwegian drinks water. The Japanese owns the zebra.”*. The re-plan's model was
+[`examples/zebra.ein`](../../../examples/zebra.ein) less its rule (its facts the theory's own `co-located`), and
+[`examples/zebra2.ein`](../../../examples/zebra2.ein), which the plan of August named, carries fifteen rules of its
+own ([the audit, B.0](../analysis/audit_p2.2.md#b0-the-four-passes-in-todays-language)); the other literal
+vocabularies, `zebra3.2` (descriptions), `zebra3.3` (adjectives as relations) and `zebra3.4` (the verb as an
+argument), write six, five and fourteen rules of their own
+([the analysis](zebra_formulations/README.md#9-what-follows-for-the-formalizer)). The word problems of
 [`examples/word_problems/`](../../../examples/word_problems/README.md) are the model of a sentence beside the fact
 that states it. Their theory is four modules of that directory, the family's own: the main arms show the model
 the library and not those ([S2.2.4](s2.2.4_passes.md)), so a word problem there is written over the calculator
@@ -231,7 +237,7 @@ what both use and the formalizer of one of them.
 
 | ID | title | ends with |
 |---|---|---|
-| [S2.2.0a](s2.2.0a_zebra_formulations.md) | Three Zebras: the generic vocabulary, the projections, and the text's own words | `zebra.ein` and `zebra2.ein` measured side by side for a formalizer (distance from the text, the theory and who writes it, the kernel's work and what it says back, what a mistake does); `examples/zebra3.ein`, its facts the sentences' own words, monotone and held to the published answer; each encoding written in its synthesis order (facts, ontology, theory) and held to the same answer; the target shape decided by the table |
+| [S2.2.0a](s2.2.0a_zebra_formulations.md) | Three Zebras: the generic vocabulary, the projections, and the text's own words | **ran to its end** 2026-11-26 ([its record](s2.2.0a_zebra_formulations.md#record), [the analysis](zebra_formulations/README.md)): `examples/zebra3.1.ein` to `zebra3.4.ein`, the target shape `zebra3.1` by default. Planned to end with: `zebra.ein` and `zebra2.ein` measured side by side for a formalizer (distance from the text, the theory and who writes it, the kernel's work and what it says back, what a mistake does); `examples/zebra3.ein`, its facts the sentences' own words, monotone and held to the published answer; each encoding written in its synthesis order (facts, ontology, theory) and held to the same answer; the target shape decided by the table |
 | [S2.2.1](s2.2.1_contract.md) | The formalization contract: B1 to B4, and the steps | one page, `docs/einaf/contract.md`: the input, the five-part output made in three steps with the hypothesis mechanism and the answer query, the steps stated with the five design questions decided, what a flagged program is, the categories by step with which of them is a faithfulness event, what the model receives, what is recorded; the Zebra puzzle and other texts through the three steps by hand, each step's program a file a test judges |
 | [S2.2.2](s2.2.2_model_runtime.md) | The model's runtime, and whether the model writes Ein | the binding chosen and built for the GPU, the model's file pinned by its SHA, the envelope every call returns, the binding held to `llama-server` on the same file; **the probe**, first the user's experiment (the Zebra puzzle with a working Zebra program as its example), then parse rate, load rate and the kinds of error of Ein written with no grammar, and step 1 alone set against the hand-written step 1 |
 | [S2.2.3](s2.2.3_gbnf.md) | The grammars | a GBNF grammar generated from `ein.l` and `ein.y`, held to the parser in both directions; a grammar a step, parameterised on the program's own vocabulary where the step has one; where a grammar begins and how an output ends; [Q-M2.6](../open_questions/formalizer/Q-M2.6-one-gbnf-or-many.md) decided |
@@ -241,7 +247,7 @@ what both use and the formalizer of one of them.
 ### Order
 
 **S2.2.0a comes first** (the user, 2026-11-25: *"another stage even before - s2.2.0a"*): the target shape it
-settles, `zebra3.ein` and its check of the synthesis order are what the stages after it read. **The user's notes on
+settles, the four `zebra3.n.ein` and its check of the synthesis order are what the stages after it read. **The user's notes on
 the steps govern every stage** (the user, 2026-11-26, above); they were re-planned to them when S2.2.0f was
 dissolved, and each says in its own words what of them it carries.
 
@@ -279,7 +285,7 @@ first part of [S2.5.3](../p2.5_harness/s2.5.3_metrics.md)) before this phase's n
   and match the gold short answer exactly, and the mechanical judge finds no event in any.
 - Every form of every program the phase recorded is in exactly one row of the contract's table of categories, by
   reading the program and the record alone.
-- **The steps by hand**: the Zebra puzzle from its text to `zebra3.ein` (or the target shape S2.2.0a settles)
+- **The steps by hand**: the Zebra puzzle from its text to `zebra3.1.ein`, the target shape S2.2.0a settled
   through the three steps, and two or more other texts the same way, each step's program judged by a test of
   EinAf's gate step ([S2.2.1](s2.2.1_contract.md), T2.2.1.8).
 - **The user's first experiment has a record**: the Zebra puzzle with a working Zebra program as its example,
@@ -364,10 +370,22 @@ first part of [S2.5.3](../p2.5_harness/s2.5.3_metrics.md)) before this phase's n
 
 Each is this re-plan's, recorded so that the user can correct it; none is a ruling.
 
-1. **The model of the target shape is `examples/zebra.ein`** less its rule, its activators and its config, not
-   `examples/zebra2.ein`; the Zebra acceptance accepts either formulation, since it is stated on the answer.
-   **Reopened by the user** (2026-11-25): [S2.2.0a](s2.2.0a_zebra_formulations.md) measures the two against a
-   third, literal encoding and settles the target shape by the table.
+1. **The model of the target shape is `examples/zebra3.1.ein`**: the statements the text's verbs in their voice, a
+   description the word it is built on, the questions in the statements' relations, the theory selected from the
+   library with no rule of its own, H by the library's obligations, the program in synthesis order. The Zebra
+   acceptance accepts any formulation, since it is stated on the answer. The re-plan's default was `zebra.ein` less
+   its rule, its activators and its config; **reopened by the user** (2026-11-25), and **amended by
+   [S2.2.0a](s2.2.0a_zebra_formulations.md)** (2026-11-26) from [its table](zebra_formulations/README.md), as a
+   default for the user: of the six encodings, `zebra3.1` is the one whose facts are the text's words (59 of the
+   sentences' 83 words kept, against `zebra`'s 39 and `zebra2`'s 47) with no rule of its own (`zebra3.2`, closer to
+   the text, 75, writes six; `zebra2`, the cheapest to run, fifteen), monotone and `Solution` under every question,
+   whose cores name the sentences that contradict ([E-109](evaluation/natural-language/E-109-a-sentence-written-as-a-rule-s-activating-fact-is-in-no.md));
+   it costs the kernel twice `zebra`'s facts and fourteen times `zebra2`'s
+   ([E-111](evaluation/bounds/E-111-the-answer-in-the-statements-own-words-costs-the-kernel.md)), and its
+   thirty-two selecting facts are thirty-two spellings a model can get wrong in silence
+   ([E-107](evaluation/diagnostics/E-107-a-theory-s-missing-activating-fact-is-reported-as-the.md),
+   [E-110](evaluation/stdlib/E-110-the-library-has-no-reading-of-a-literal-vocabulary.md)). Which axis weighs most
+   is the user's.
 2. **The hypothesis mechanism is a part of the contract of its own**, stated in step 3. A program that
    states none is recorded as the kernel reports it, `blind`, and is not refused.
 3. **A category is computed, not written**: by EinAf, from the program, the input text and the catalogue, and kept
@@ -451,7 +469,7 @@ the stages to the steps:
     the steps are what the formalizer emits and in what order, so they are the contract's content, written straight
     into `docs/einaf/contract.md` with no plan page between.
 30. **The steps by hand are [S2.2.1](s2.2.1_contract.md)'s T2.2.1.8**, which was T2.2.0f.2 and T2.2.0f.3: the
-    Zebra puzzle to `zebra3.ein` and two or three other texts, as the contract's worked examples and as files of
+    Zebra puzzle to `zebra3.1.ein` and two or three other texts, as the contract's worked examples and as files of
     `einaf/` a test judges, not probes under `analysis/`. They need no model and are read by four stages after
     them (S2.2.2's step 1, S2.2.3's step grammars, S2.2.4's replay tests, S2.2.5's Zebra reference), so the first
     stage with no model holds them; S2.2.4, where the prompts are built, was the other candidate, and comes after

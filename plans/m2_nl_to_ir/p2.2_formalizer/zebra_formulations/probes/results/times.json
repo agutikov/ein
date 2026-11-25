@@ -1,0 +1,254 @@
+{
+ "zebra": {
+  "describe": {
+   "best_ms": 269.8,
+   "median_ms": 276.3,
+   "n": 7
+  },
+  "single": {
+   "best_ms": 27.9,
+   "median_ms": 28.7,
+   "n": 7
+  },
+  "maximal": {
+   "best_ms": 27.7,
+   "median_ms": 29.0,
+   "n": 7
+  },
+  "minimal": {
+   "best_ms": 399.5,
+   "median_ms": 401.7,
+   "n": 7
+  },
+  "maximal-single": {
+   "best_ms": 28.0,
+   "median_ms": 29.1,
+   "n": 7
+  },
+  "minimal-single": {
+   "best_ms": 401.6,
+   "median_ms": 410.7,
+   "n": 7
+  },
+  "count": {
+   "best_ms": 267.6,
+   "median_ms": 276.7,
+   "n": 7
+  },
+  "no-search": {
+   "best_ms": 20.1,
+   "median_ms": 21.2,
+   "n": 7
+  }
+ },
+ "zebra2": {
+  "describe": {
+   "best_ms": 91.6,
+   "median_ms": 96.6,
+   "n": 7
+  },
+  "single": {
+   "best_ms": 29.3,
+   "median_ms": 29.9,
+   "n": 7
+  },
+  "maximal": {
+   "best_ms": 28.4,
+   "median_ms": 29.4,
+   "n": 7
+  },
+  "minimal": {
+   "best_ms": 148.1,
+   "median_ms": 154.5,
+   "n": 7
+  },
+  "maximal-single": {
+   "best_ms": 28.4,
+   "median_ms": 29.6,
+   "n": 7
+  },
+  "minimal-single": {
+   "best_ms": 149.4,
+   "median_ms": 150.4,
+   "n": 7
+  },
+  "count": {
+   "best_ms": 88.5,
+   "median_ms": 92.5,
+   "n": 7
+  },
+  "no-search": {
+   "best_ms": 22.8,
+   "median_ms": 23.8,
+   "n": 7
+  }
+ },
+ "zebra3.1": {
+  "describe": {
+   "best_ms": 368.8,
+   "median_ms": 371.7,
+   "n": 7
+  },
+  "single": {
+   "best_ms": 25.1,
+   "median_ms": 25.3,
+   "n": 7
+  },
+  "maximal": {
+   "best_ms": 25.3,
+   "median_ms": 26.6,
+   "n": 7
+  },
+  "minimal": {
+   "best_ms": 548.7,
+   "median_ms": 555.7,
+   "n": 7
+  },
+  "maximal-single": {
+   "best_ms": 25.3,
+   "median_ms": 25.7,
+   "n": 7
+  },
+  "minimal-single": {
+   "best_ms": 549.5,
+   "median_ms": 562.5,
+   "n": 7
+  },
+  "count": {
+   "best_ms": 369.2,
+   "median_ms": 377.9,
+   "n": 7
+  },
+  "no-search": {
+   "best_ms": 13.8,
+   "median_ms": 14.5,
+   "n": 7
+  }
+ },
+ "zebra3.2": {
+  "describe": {
+   "best_ms": 601.0,
+   "median_ms": 615.7,
+   "n": 7
+  },
+  "single": {
+   "best_ms": 29.5,
+   "median_ms": 29.9,
+   "n": 7
+  },
+  "maximal": {
+   "best_ms": 29.4,
+   "median_ms": 30.1,
+   "n": 7
+  },
+  "minimal": {
+   "best_ms": 806.8,
+   "median_ms": 816.3,
+   "n": 7
+  },
+  "maximal-single": {
+   "best_ms": 29.5,
+   "median_ms": 30.4,
+   "n": 7
+  },
+  "minimal-single": {
+   "best_ms": 807.2,
+   "median_ms": 812.4,
+   "n": 7
+  },
+  "count": {
+   "best_ms": 594.5,
+   "median_ms": 597.9,
+   "n": 7
+  },
+  "no-search": {
+   "best_ms": 15.2,
+   "median_ms": 15.5,
+   "n": 7
+  }
+ },
+ "zebra3.3": {
+  "describe": {
+   "best_ms": 523.2,
+   "median_ms": 543.0,
+   "n": 7
+  },
+  "single": {
+   "best_ms": 31.3,
+   "median_ms": 33.0,
+   "n": 7
+  },
+  "maximal": {
+   "best_ms": 31.3,
+   "median_ms": 31.6,
+   "n": 7
+  },
+  "minimal": {
+   "best_ms": 762.8,
+   "median_ms": 774.3,
+   "n": 7
+  },
+  "maximal-single": {
+   "best_ms": 31.6,
+   "median_ms": 32.0,
+   "n": 7
+  },
+  "minimal-single": {
+   "best_ms": 757.7,
+   "median_ms": 771.6,
+   "n": 7
+  },
+  "count": {
+   "best_ms": 525.1,
+   "median_ms": 530.8,
+   "n": 7
+  },
+  "no-search": {
+   "best_ms": 16.1,
+   "median_ms": 16.7,
+   "n": 7
+  }
+ },
+ "zebra3.4": {
+  "describe": {
+   "best_ms": 82.4,
+   "median_ms": 83.6,
+   "n": 7
+  },
+  "single": {
+   "best_ms": 20.2,
+   "median_ms": 21.1,
+   "n": 7
+  },
+  "maximal": {
+   "best_ms": 19.8,
+   "median_ms": 20.3,
+   "n": 7
+  },
+  "minimal": {
+   "best_ms": 135.0,
+   "median_ms": 141.3,
+   "n": 7
+  },
+  "maximal-single": {
+   "best_ms": 19.7,
+   "median_ms": 20.7,
+   "n": 7
+  },
+  "minimal-single": {
+   "best_ms": 136.8,
+   "median_ms": 143.2,
+   "n": 7
+  },
+  "count": {
+   "best_ms": 78.8,
+   "median_ms": 79.9,
+   "n": 7
+  },
+  "no-search": {
+   "best_ms": 13.2,
+   "median_ms": 13.8,
+   "n": 7
+  }
+ }
+}

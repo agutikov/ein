@@ -1,0 +1,5 @@
+;;; A fact written before its relation's declaration.
+(likes Ann Tea :source "Ann likes tea.")
+(query :goal (likes ?who ?what))
+(solve :no-search)
+(relation likes Person Drink :why "{?3} likes {?4}")

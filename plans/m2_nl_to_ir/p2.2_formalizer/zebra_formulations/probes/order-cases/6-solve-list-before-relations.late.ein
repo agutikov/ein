@@ -1,0 +1,6 @@
+;;; A (solve …) list written before the relations it names.
+(solve :hypothesis-relations (q))
+(query :goal (q ?x))
+(thing a :source "a is a thing.")
+(relation thing T :why "{?3} is a thing")
+(relation q T :why "{?3} is q")

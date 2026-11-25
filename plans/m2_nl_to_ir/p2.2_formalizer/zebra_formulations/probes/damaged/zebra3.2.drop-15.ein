@@ -1,0 +1,209 @@
+;;; zebra3.2, damaged: sentence (15) dropped, *The Norwegian lives next to the blue house*. Written by measure.py.
+;;; Ein — the Zebra puzzle in the text's own words: descriptions, and what is
+;;; the same.
+;;;
+;;; A sentence of the puzzle says that two descriptions pick out one thing,
+;;; and a description is a fact of `the`, its verb phrase a fact too:
+;;; *Coffee is drunk in the green house* says that the house coffee is drunk
+;;; in is the green house,
+;;;
+;;;   (same (the Coffee (is drunk in) House) (the Green House))
+;;;
+;;; and *The Spaniard owns the dog* that the Spaniard is the man the dog is
+;;; owned by, `(same Spaniard (the Dog (is owned by) Man))`. A verb phrase
+;;; cannot be a relation, since a relation is a name and never a fact, so it
+;;; stands inside the description it builds: `(is drunk in)` is a fact of
+;;; `is`. A description may hold another: *the man who smokes Chesterfields
+;;; lives in the house next to …* is `(the (the Chesterfields (is smoked by)
+;;; Man) (lives in) House)`. The three sentences of a row say where two
+;;; houses are, not that two things are one, and are facts of the row's
+;;; relations between descriptions: `(next-to (the Norwegian (lives in)
+;;; House) (the Blue House))`. The questions ask the same way: who is the man
+;;; water is drunk by, `(same ?who (the Water (is drunk by) Man))`.
+;;;
+;;; `the` is written at two counts, `(the Red House)` and `(the Coffee (is
+;;; drunk in) House)`. A program that imports a module is refused a second
+;;; declaration of one relation at another count (`conflicting definitions of
+;;; 'the': same name, different body`), so the one below is of three
+;;; arguments, and the descriptions of two are of a relation no declaration
+;;; names.
+;;;
+;;; The file is written in the order a formalization makes it: the
+;;; statements in the text's order, each with its sentence as `:source`, and
+;;; the questions; then the ontology; then the theory.
+;;;
+;;; The theory reads each description as the name it is built on, the first
+;;; of its arguments, inside the sentence that holds it, and a `same` between
+;;; two names as `same-house`, which std.slots makes an equivalence whose
+;;; classes are the houses; the hypotheses are std.slots' obligations. The
+;;; questions are answered by a rule that writes, for each man, the
+;;; description of the drink and of the pet in his house.
+;;;
+;;; Answer: the Norwegian drinks water; the Japanese owns the zebra.
+;;; examples/README.md § Zebra puzzle compares it with the other encodings.
+
+
+;; ──── The statements ───────────────────────────────────────────
+
+;; *There are five houses* names five things of one kind, and no more; the
+;; first and the middle are named by their places.
+(instance First  House :source "There are five houses.")
+(instance Second House :source "There are five houses.")
+(instance Middle House :source "There are five houses.")
+(instance Fourth House :source "There are five houses.")
+(instance Fifth  House :source "There are five houses.")
+
+(same (the Englishman (lives in) House) (the Red House)
+  :source "The Englishman lives in the red house.")
+(same Spaniard (the Dog (is owned by) Man)
+  :source "The Spaniard owns the dog.")
+(same (the Coffee (is drunk in) House) (the Green House)
+  :source "Coffee is drunk in the green house.")
+(same Ukrainian (the Tea (is drunk by) Man)
+  :source "The Ukrainian drinks tea.")
+(immediately-to-the-right-of (the Green House) (the Ivory House)
+  :source "The green house is immediately to the right of the ivory house.")
+(same (the Old_Gold Smoker) (the Snail (is owned by) Man)
+  :source "The Old Gold smoker owns snails.")
+(same (the Kools (are smoked in) House) (the Yellow House)
+  :source "Kools are smoked in the yellow house.")
+(same (the Milk (is drunk in) House) (the Middle House)
+  :source "Milk is drunk in the middle house.")
+(same (the Norwegian (lives in) House) (the First House)
+  :source "The Norwegian lives in the first house.")
+(next-to (the (the Chesterfields (is smoked by) Man) (lives in) House)
+         (the Fox (with) Man)
+  :source "The man who smokes Chesterfields lives in the house next to the man with the fox.")
+(next-to (the Kools (are smoked in) House) (the Horse (is kept in) House)
+  :source "Kools are smoked in the house next to the house where the horse is kept.")
+(same (the Lucky_Strike Smoker) (the Juice (is drunk by) Man)
+  :source "The Lucky Strike smoker drinks orange juice.")
+(same Japanese (the Parliament (is smoked by) Man)
+  :source "The Japanese smokes Parliaments.")
+
+;; *Who drinks water? Who owns the zebra?*
+(query
+  :goal (and (same ?who_water (the Water (is drunk by) Man))
+             (same ?who_zebra (the Zebra (is owned by) Man)))
+  :goal-text "The {?who_water} drinks water. The {?who_zebra} owns the zebra.")
+
+
+;; ──── The ontology ─────────────────────────────────────────────
+
+;; The words of the sentences.
+(relation same        T T     :why "{?3} is {?4}")
+(relation the         T T T   :why "the {?5} {?3} {?4}")
+(relation is          T T     :why "is {?3} {?4}")
+(relation are         T T     :why "are {?3} {?4}")
+(relation lives       T       :why "lives {?3}")
+(relation with                :why "with")
+(relation next-to     Attribute Attribute :why "{?3}'s house is next to {?4}'s")
+(relation immediately-to-the-right-of Attribute Attribute
+  :why "{?3}'s house is immediately to the right of {?4}'s")
+
+;; What the theory reads the sentences into, and the kinds.
+(relation same-house  Attribute Attribute :why "{?3} and {?4} are in the same house")
+(relation instance    T T     :why "{?3} is a {?4}")
+(relation type        T T     :why "{?3} is a kind of {?4}")
+
+(type Attribute   T)
+(type House       Attribute)
+(type Color       Attribute)
+(type Nationality Attribute)
+(type Drink       Attribute)
+(type Cigarette   Attribute)
+(type Pet         Attribute)
+(instance Red    Color) (instance Green Color) (instance Ivory Color)
+(instance Yellow Color) (instance Blue  Color)
+(instance Englishman Nationality) (instance Spaniard  Nationality)
+(instance Ukrainian  Nationality) (instance Norwegian Nationality)
+(instance Japanese   Nationality)
+(instance Coffee Drink) (instance Tea   Drink) (instance Milk Drink)
+(instance Juice  Drink) (instance Water Drink)
+(instance Old_Gold      Cigarette) (instance Kools        Cigarette)
+(instance Chesterfields Cigarette) (instance Lucky_Strike Cigarette)
+(instance Parliament    Cigarette)
+(instance Dog   Pet) (instance Snail Pet) (instance Fox Pet)
+(instance Horse Pet) (instance Zebra Pet)
+
+;; The row the text speaks of and never states.
+(immediately-to-the-right-of Second First)
+(immediately-to-the-right-of Middle Second)
+(immediately-to-the-right-of Fourth Middle)
+(immediately-to-the-right-of Fifth  Fourth)
+
+
+;; ──── The theory ───────────────────────────────────────────────
+
+(import std.algebra :symbols (symmetric includes))
+(import std.slots)
+
+;; Whether an explanation searches every derivation of a fact for the smallest
+;; core. One link re-derived many ways (each verb, the symmetry, std.slots'
+;; placements all reach one pair) makes that search cost minutes for a state
+;; the run decides in milliseconds, wherever a dead state's core is printed
+;; (`--events`, `--dump-lattice`); off, a core is taken from the derivation
+;; recorded first. It changes which core is named, and no state.
+(config :record-alternative-justifications false)
+
+;; A description is where the name it is built on is: in a sentence, each
+;; description in either place is read as that name, a description inside a
+;; description by the same rules again.
+(rule the-thing-named (?R)
+  :match  (?R ?x (the ?k ?noun))
+  :assert (?R ?x ?k)
+  :why    "the {?k} {?noun} is where {?k} is")
+
+(rule the-thing-described (?R)
+  :match  (?R ?x (the ?k ?phrase ?noun))
+  :assert (?R ?x ?k)
+  :why    "the {?noun} {?k} {?phrase} is where {?k} is")
+
+(rule the-thing-named-first (?R)
+  :match  (?R (the ?k ?noun) ?y)
+  :assert (?R ?k ?y)
+  :why    "the {?k} {?noun} is where {?k} is")
+
+(rule the-thing-described-first (?R)
+  :match  (?R (the ?k ?phrase ?noun) ?y)
+  :assert (?R ?k ?y)
+  :why    "the {?noun} {?k} {?phrase} is where {?k} is")
+
+(the-thing-named     same)
+(the-thing-described same)
+(the-thing-named-first     same)
+(the-thing-described-first same)
+(the-thing-named     next-to)
+(the-thing-described next-to)
+(the-thing-named     immediately-to-the-right-of)
+(the-thing-described immediately-to-the-right-of)
+(the-thing-named-first     immediately-to-the-right-of)
+(the-thing-described-first immediately-to-the-right-of)
+
+;; Two names that are the same are in the same house.
+(rule what-is-the-same ()
+  :match  (and (same ?a ?b) (instance ?a ?A) (instance ?b ?B))
+  :assert (same-house ?a ?b)
+  :why    "the {?A} {?a} is the {?B} {?b}'s: they are in the same house")
+
+(symmetric same-house)
+(symmetric next-to)
+(includes  immediately-to-the-right-of next-to)
+
+;; `same-house`'s classes are the houses, each holding one value of every
+;; kind, and a house names its class; the two relations of a row hold
+;; between values exactly where they hold between their houses.
+(slot-partition same-house instance type Attribute House)
+(slot-spatial   same-house immediately-to-the-right-of instance House)
+(slot-spatial   same-house next-to instance House)
+
+;; The questions answered: each man is the man the drink in his house is
+;; drunk by, and the man the pet in his house is owned by.
+(rule the-one-who (?phrase ?A ?B)
+  :match  (and (same-house ?a ?h) (instance ?h House) (instance ?a ?A)
+               (same-house ?b ?h) (instance ?b ?B))
+  :assert (same ?a (the ?b ?phrase Man))
+  :why    "the {?A} {?a} and the {?B} {?b} are in {?h}: the {?a} is the man {?b} {?phrase}")
+
+(the-one-who (is drunk by) Nationality Drink)
+(the-one-who (is owned by) Nationality Pet)
