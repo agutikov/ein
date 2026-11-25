@@ -358,9 +358,9 @@ fn main() {
         match answer {
             Ok(c) => {
                 cells.extend(["cube".to_string(), c.k_c.to_string(), c.k_s.to_string()]);
-                for set in 0..N {
-                    cells.push(c.without[set].0.to_string());
-                    cells.push(c.without[set].1.to_string());
+                for w in &c.without[..N] {
+                    cells.push(w.0.to_string());
+                    cells.push(w.1.to_string());
                 }
             }
             Err(why) => {

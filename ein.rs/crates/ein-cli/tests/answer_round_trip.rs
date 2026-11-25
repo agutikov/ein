@@ -136,7 +136,7 @@ fn section(path: &Path) -> Result<ein_cli::saturate::Dumped, String> {
 
 /// The KB section of `ein saturate --dump`'s output, from its banner.
 fn printed_section(stdout: &str) -> String {
-    let at = stdout.find("\n=====").map_or(stdout.len(), |i| i);
+    let at = stdout.find("\n=====").unwrap_or(stdout.len());
     stdout[at..].to_string()
 }
 

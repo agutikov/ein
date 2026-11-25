@@ -183,7 +183,9 @@ pub fn read_facts(body: &[u8], terms: &mut Terms, maps: &mut Maps) -> Result<()>
 
 fn decode_rows(bytes: &[u8]) -> Vec<RawRow> {
     bytes
-        .chunks_exact(size_of::<RawRow>())
+        .as_chunks::<{ size_of::<RawRow>() }>()
+        .0
+        .iter()
         .map(|c| RawRow {
             rel: u32::from_le_bytes([c[0], c[1], c[2], c[3]]),
             args_at: u32::from_le_bytes([c[4], c[5], c[6], c[7]]),
@@ -199,8 +201,10 @@ fn u32_array<'a>(r: &mut Reader<'a>, n: usize) -> Result<Cow<'a, [u32]>> {
         Some(s) => Cow::Borrowed(s),
         None => Cow::Owned(
             bytes
-                .chunks_exact(4)
-                .map(|c| u32::from_le_bytes([c[0], c[1], c[2], c[3]]))
+                .as_chunks::<4>()
+                .0
+                .iter()
+                .map(|c| u32::from_le_bytes(*c))
                 .collect(),
         ),
     })
