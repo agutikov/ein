@@ -53,10 +53,12 @@ fn under_every_question(rel: &str, bounds: Bounds) -> Vec<Outcome> {
         .collect()
 }
 
-/// **invalid**: the load's refusal, at the parse with the parser's value and
-/// its place, at the load with the loader's message, and the judgement of
-/// the hypothesis mechanisms, which `ein solve` makes after the library's
-/// load, among the load's refusals.
+/// **invalid**: the load's refusal, read off its findings, the kernel's
+/// diagnostics: at the parse with the parser's value and each finding's
+/// place, at the load with the loader's finding and its kind, and the
+/// judgement of the hypothesis mechanisms, the step every command of Ein
+/// takes after the load, among the load's refusals, its findings of the kind
+/// `mechanisms`.
 #[test]
 fn invalid_is_read_off_the_refusal() {
     let root = ein_corpus::repo_root();
@@ -71,6 +73,12 @@ fn invalid_is_read_off_the_refusal() {
         "{}",
         parse.message
     );
+    assert_eq!(parse.kinds(), [ein_core::Kind::Parse]);
+    let place = parse.findings[0]
+        .place
+        .as_ref()
+        .expect("a parse finding's place");
+    assert_eq!((place.line, place.col), (4, 10));
 
     let load = Program::load_file(&root.join("examples/broken/load/rule_duplicate_name.ein"))
         .err()
@@ -80,6 +88,8 @@ fn invalid_is_read_off_the_refusal() {
         load.message,
         "kb load error: duplicate rule name 'r' at None"
     );
+    assert_eq!(load.kinds(), [ein_core::Kind::Declaration]);
+    assert!(load.findings[0].place.is_none(), "{:?}", load.findings);
 
     let mechanisms =
         Program::load_file(&root.join("examples/broken/load/no_hypothesis_beside_open.ein"))
@@ -93,11 +103,13 @@ fn invalid_is_read_off_the_refusal() {
         "{}",
         mechanisms.message
     );
+    assert_eq!(mechanisms.kinds(), [ein_core::Kind::Mechanisms]);
 
     let missing = Program::load_file(&root.join("examples/does-not-exist.ein"))
         .err()
         .expect("refused");
     assert_eq!(missing.stage, Stage::Read);
+    assert_eq!(missing.kinds(), [ein_core::Kind::Unreadable]);
 
     for rel in [
         "examples/broken/unclosed_paren.ein",

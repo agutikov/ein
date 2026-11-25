@@ -102,11 +102,29 @@ pub fn outcome(run: &Run, part: Part) -> Option<Reading> {
 
 fn read(run: &Run, part: Part) -> (Outcome, String) {
     let r: &ReadOut = match &run.answered {
+        // A refusal, read off its findings: their kinds name it, and the
+        // first one's line says it.
         Answered::Refused(refusal) => {
-            let first = refusal.message.lines().next().unwrap_or("").to_string();
+            let kinds: Vec<&str> = refusal.kinds().iter().map(|k| k.name()).collect();
+            let first = refusal
+                .findings
+                .first()
+                .map_or(refusal.message.as_str(), |d| d.message.as_str())
+                .lines()
+                .next()
+                .unwrap_or("")
+                .to_string();
             return (
                 Outcome::Invalid,
-                format!("refused {}: {first}", refusal.stage.words()),
+                if kinds.is_empty() {
+                    format!("refused {}: {first}", refusal.stage.words())
+                } else {
+                    format!(
+                        "refused {} ({}): {first}",
+                        refusal.stage.words(),
+                        kinds.join(", ")
+                    )
+                },
             );
         }
         Answered::Clock => {

@@ -10,9 +10,14 @@
 //!
 //! The load is the one `ein solve` makes: the text parsed and loaded against
 //! the program file's directory, then the judgement of the hypothesis
-//! mechanisms on a copy of root, which refuses what the binary refuses. The
-//! question is `ein solve`'s ([`Question`]), at its default bounds unless told
-//! otherwise ([`Bounds`]).
+//! mechanisms, `ein_infer::mechanisms::judge_loaded`, which refuses what the
+//! binary refuses. The question is `ein solve`'s ([`Question`]), at its
+//! default bounds unless told otherwise ([`Bounds`]).
+//!
+//! **A refusal is read off values**: its findings are the kernel's
+//! diagnostics, each with its kind, its place and its line
+//! ([`Refusal::findings`]), and a run's error by its kind
+//! (`SolveError::kind`), never by its text.
 
 mod outcome;
 
@@ -21,7 +26,7 @@ pub use outcome::{Outcome, Reading, outcome};
 use std::path::Path;
 use std::time::{Duration, Instant};
 
-use ein_core::{Kb, Terms};
+use ein_core::{Diagnostic, Kb, Kind, Terms};
 use ein_infer::explore::{self, Ask, Mode, Which};
 use ein_infer::read_out::ReadOut;
 use ein_ir::Ast;
@@ -203,15 +208,33 @@ impl Stage {
     }
 }
 
-/// **A program the kernel refused**, with the message it refused it with,
-/// as `ein solve` prints it on stderr.
+/// **A program the kernel refused**: its findings, as the kernel's values,
+/// and the message it refused it with, as `ein solve` prints it on stderr.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Refusal {
     pub stage: Stage,
     pub message: String,
+    /// The refusal's findings, each with its kind, the refusal of Ein's
+    /// reference it is, its place where the line names one, and its line.
+    /// Empty only for a run's error the kernel names no kind for.
+    pub findings: Vec<Diagnostic>,
     /// The parse error as the parser's value, every error with its place,
-    /// notes and repairs, where the refusal was the parse's.
+    /// notes and repairs, where the refusal was a parse's: the program's, or
+    /// a module's it imports.
     pub parse: Option<ein_ir::ParseError>,
+}
+
+impl Refusal {
+    /// The kinds of its findings, in order, each once.
+    pub fn kinds(&self) -> Vec<Kind> {
+        let mut out: Vec<Kind> = Vec::new();
+        for d in &self.findings {
+            if !out.contains(&d.kind) {
+                out.push(d.kind);
+            }
+        }
+        out
+    }
 }
 
 /// A failure of the engine that is none of the outcomes: a question the
@@ -233,6 +256,8 @@ pub struct Program {
     ast: Ast,
     terms: Terms,
     kb: Kb,
+    /// What the judgement of the mechanisms noted and did not refuse.
+    notes: Vec<Diagnostic>,
 }
 
 impl Program {
@@ -243,18 +268,21 @@ impl Program {
         let text = match ein_ir::read::read_program(path) {
             Ok(ein_ir::read::Held::Text(text)) => text,
             Ok(ein_ir::read::Held::Container(_)) => {
+                let message = format!(
+                    "{} is a .einb container: EinAf reads a program as text",
+                    path.display()
+                );
                 return Err(Refusal {
                     stage: Stage::Read,
-                    message: format!(
-                        "{} is a .einb container: EinAf reads a program as text",
-                        path.display()
-                    ),
+                    findings: vec![Diagnostic::error(Kind::Unreadable, message.clone())],
+                    message,
                     parse: None,
                 });
             }
             Err(e) => {
                 return Err(Refusal {
                     stage: Stage::Read,
+                    findings: vec![e.diagnostic()],
                     message: e.line,
                     parse: None,
                 });
@@ -278,42 +306,45 @@ impl Program {
             0,
             &ein_ir::LoadOptions::default(),
         )
-        .map_err(|e| refusal_of_load(e, text, name))?;
-        let program = Program {
+        .map_err(refusal_of_load)?;
+        let mut program = Program {
             ast,
             terms,
             kb: loaded.kb,
+            notes: Vec::new(),
         };
-        program.judge_mechanisms()?;
+        program.notes = program.judge_mechanisms()?;
         Ok(program)
     }
 
-    /// **The hypothesis mechanisms judged on root's fixpoint**, which `ein
-    /// solve` does after the load and refuses a conflict of at the load's
-    /// exit: the library's load does not, so EinAf asks for it as the binary
-    /// does, on a copy of root.
-    fn judge_mechanisms(&self) -> Result<(), Refusal> {
-        if !ein_infer::mechanisms::may_conflict(&self.kb, &self.terms, &self.ast) {
-            return Ok(());
-        }
-        let mut copy = self.clone();
-        let Some(report) = ein_infer::mechanisms::check(&copy.ast, &mut copy.terms, &mut copy.kb)
-        else {
-            return Ok(());
-        };
-        if report.conflicts.is_empty() {
-            return Ok(());
-        }
-        Err(Refusal {
+    /// **The hypothesis mechanisms judged on root's fixpoint**, the step
+    /// after the load every command of Ein takes,
+    /// `ein_infer::mechanisms::judge_loaded`, on a copy of the load: its
+    /// conflicts refuse the program, each a finding of the kind
+    /// `mechanisms`, and its notes are kept ([`Program::notes`]).
+    fn judge_mechanisms(&self) -> Result<Vec<Diagnostic>, Refusal> {
+        ein_infer::mechanisms::judge_loaded(&self.ast, &self.terms, &self.kb, |ast, terms| {
+            *ast = self.ast.clone();
+            *terms = self.terms.clone();
+            Some(self.kb.clone())
+        })
+        .map_err(|conflicts| Refusal {
             stage: Stage::Load,
-            message: report
-                .conflicts
+            message: conflicts
                 .iter()
-                .map(|l| format!("kb load error: {l}"))
+                .map(|d| format!("kb load error: {d}"))
                 .collect::<Vec<_>>()
                 .join("\n"),
+            findings: conflicts,
             parse: None,
         })
+    }
+
+    /// What the load noted and did not refuse: the judgement of the
+    /// mechanisms' notes, each a diagnostic of the kind `mechanisms`, which
+    /// `ein solve` prints as `note:` lines when its run ends.
+    pub fn notes(&self) -> &[Diagnostic] {
+        &self.notes
     }
 
     /// Ask `question` of a copy of this program, within `bounds`.
@@ -388,50 +419,62 @@ impl Program {
     }
 }
 
-/// **What a refused load says**, from the load's error: the parse's value
-/// where the parse refused, and otherwise the load's message, which the
-/// library hands back as text. The one place EinAf reads a refusal; the
-/// kernel's diagnostics as values replace what it reads here.
-fn refusal_of_load(e: ein_ir::saved::TextError, text: &str, name: &str) -> Refusal {
+/// **What a refused load says**, from the load's error, as values: its
+/// findings, each with its kind and its place, and the parse's value where a
+/// parse refused it, the program's or a module's.
+fn refusal_of_load(e: ein_ir::saved::TextError) -> Refusal {
+    let findings = e.findings();
     match e {
-        ein_ir::saved::TextError::Parse(message) => Refusal {
+        ein_ir::saved::TextError::Parse(p) => Refusal {
             stage: Stage::Parse,
-            // The load hands the parse's error back as its text: the parser
-            // is asked again for its value, which the text was printed from.
-            parse: ein_ir::parse(&mut Ast::new(), text, Some(name)).err(),
-            message,
+            message: p.to_string(),
+            findings,
+            parse: Some(p),
         },
-        load @ ein_ir::saved::TextError::Load(_) => Refusal {
+        ein_ir::saved::TextError::Load(k) => Refusal {
             stage: Stage::Load,
-            message: load.to_string(),
-            parse: None,
+            message: format!("kb load error: {k}"),
+            findings,
+            parse: k.parse().cloned(),
         },
     }
 }
 
-/// A run's error, as one of the outcomes' inputs or as the engine's.
+/// A run's error, as one of the outcomes' inputs or as the engine's: read
+/// by its kind, `SolveError::kind`, where the kernel names one, the clock's
+/// (`deadline`) and a saved file's choice that names no node (`saved-file`,
+/// the load's exit under `ein solve`); and by its variant where it names
+/// none.
 fn answered_of(e: ein_infer::SolveError) -> Result<Answered, EngineError> {
     use ein_infer::SaturateError as S;
     use ein_infer::SolveError as E;
+    match e.kind() {
+        Some(Kind::Deadline) => return Ok(Answered::Clock),
+        Some(kind) => {
+            let message = e.to_string();
+            return Ok(Answered::Refused(Refusal {
+                stage: Stage::Load,
+                findings: vec![Diagnostic::error(kind, message.clone())],
+                message,
+                parse: None,
+            }));
+        }
+        None => {}
+    }
     match e {
-        E::Deadline => Ok(Answered::Clock),
         // A conclusion no fact can hold, met at a firing, and a rule that
-        // does not compile: the program refused at its run.
+        // does not compile: the program refused at its run. The kernel names
+        // no kind for either, which no program it loads should reach.
         E::Saturate(S::Fire(ein_infer::FireError::NotAFact(m))) => Ok(Answered::Refused(Refusal {
             stage: Stage::Run,
             message: m,
+            findings: Vec::new(),
             parse: None,
         })),
         E::Saturate(S::Compile(c)) | E::Compile(c) => Ok(Answered::Refused(Refusal {
             stage: Stage::Run,
             message: c.to_string(),
-            parse: None,
-        })),
-        // A saved file's commitment that names no node of its lattice: the
-        // load's exit under `ein solve`.
-        E::Refused(m) => Ok(Answered::Refused(Refusal {
-            stage: Stage::Load,
-            message: m,
+            findings: Vec::new(),
             parse: None,
         })),
         other => Err(EngineError(other.to_string())),
