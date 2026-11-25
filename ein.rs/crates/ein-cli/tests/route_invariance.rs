@@ -116,7 +116,7 @@ fn printed(path: &Path, route: Route, budget: u64) -> Option<Printed> {
         text: format!(
             "{}\n--- stderr\n{}\n--- exit {}\n--- summary\n{summary}\n",
             rows.join("\n"),
-            t.stderr.join("\n"),
+            t.stderr().join("\n"),
             t.code
         ),
         exhausted,

@@ -19,6 +19,7 @@
 use std::collections::BTreeMap;
 use std::fmt::Write as _;
 
+use ein_core::{Diagnostic, Kind};
 use ein_infer::described::{Described, TreePartial};
 use ein_infer::detector::{ASSUMES, Paths, State, Status, WARNING, WARNING_MORE, Warning};
 use ein_infer::expect::Outcome;
@@ -406,7 +407,10 @@ pub struct Options<'a> {
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Text {
     pub stdout: String,
-    pub stderr: Vec<String>,
+    /// What it says beside the answer, each line of stderr as a value: the
+    /// static check's warning, a partial run's note, a claim not checked and a
+    /// claim refuted, in the order they are printed ([`Text::stderr`]).
+    pub diagnostics: Vec<Diagnostic>,
     pub code: i32,
     /// The states stdout printed, as indices into `ReadOut::states` — what
     /// `--trace` traces, and what the forms after the read-out draw from.
@@ -417,6 +421,11 @@ pub struct Text {
 }
 
 impl Text {
+    /// The stderr lines, one a diagnostic ([`Diagnostic::line`]).
+    pub fn stderr(&self) -> Vec<String> {
+        self.diagnostics.iter().map(Diagnostic::line).collect()
+    }
+
     /// What the read-out left of [`LIST_LINES`] for the forms printed after
     /// it.
     pub fn left(&self) -> usize {
@@ -499,7 +508,7 @@ pub fn wrapped(head: &str, items: &[String], indent: usize, width: usize) -> Vec
 /// The text being built, and the listing lines spent.
 struct Out {
     text: String,
-    stderr: Vec<String>,
+    stderr: Vec<Diagnostic>,
     listed: usize,
     uncut: bool,
     shown: Vec<usize>,
@@ -674,7 +683,7 @@ fn loud_warning(out: &mut Out, m: &Monotonicity, o: &Options) {
     // Found in flight alone, the stderr line was said when it was found
     // (Q-M1f.574).
     if !m.sites.is_empty() {
-        out.stderr.push(ein_infer::detector::warning_line(o.file));
+        out.stderr.push(ein_infer::detector::warning(o.file));
     }
 }
 
@@ -711,7 +720,7 @@ pub fn render(r: &ReadOut, o: &Options) -> Text {
         count_claims(&mut out, r, o);
         return Text {
             stdout: out.text,
-            stderr: out.stderr,
+            diagnostics: out.stderr,
             code: 0,
             shown: out.shown,
             listed: out.listed,
@@ -720,7 +729,7 @@ pub fn render(r: &ReadOut, o: &Options) -> Text {
     let code = queries(&mut out, r, o).max(solve_claim(&mut out, r, o));
     Text {
         stdout: out.text,
-        stderr: out.stderr,
+        diagnostics: out.stderr,
         code,
         shown: out.shown,
         listed: out.listed,
@@ -768,14 +777,16 @@ fn solve_claim(out: &mut Out, r: &ReadOut, o: &Options) -> i32 {
     match claim.outcome {
         Outcome::Held => 0,
         Outcome::Failed => {
-            out.stderr
-                .push(format!("{}: (solve :expect) FAILED — {why}", o.file));
+            out.stderr.push(Diagnostic::error(
+                Kind::ClaimFailed,
+                format!("{}: (solve :expect) FAILED — {why}", o.file),
+            ));
             1
         }
         Outcome::NotChecked => {
-            out.stderr.push(format!(
-                "note: {}: (solve :expect) NOT CHECKED — {why}",
-                o.file
+            out.stderr.push(Diagnostic::note(
+                Kind::ClaimNotChecked,
+                format!("{}: (solve :expect) NOT CHECKED — {why}", o.file),
             ));
             0
         }
@@ -844,7 +855,7 @@ fn render_cut(r: &ReadOut, o: &Options, cap: u64, root: bool) -> Text {
         count_claims(&mut out, r, o);
         return Text {
             stdout: out.text,
-            stderr: out.stderr,
+            diagnostics: out.stderr,
             code: 0,
             shown: out.shown,
             listed: out.listed,
@@ -853,7 +864,7 @@ fn render_cut(r: &ReadOut, o: &Options, cap: u64, root: bool) -> Text {
     let code = queries(&mut out, r, o).max(solve_claim(&mut out, r, o));
     Text {
         stdout: out.text,
-        stderr: out.stderr,
+        diagnostics: out.stderr,
         code,
         shown: out.shown,
         listed: out.listed,
@@ -906,8 +917,10 @@ fn nogoods_not_computed(d: &Described) -> String {
 
 /// The `note:` a partial run writes.
 fn partial_note(out: &mut Out, o: &Options, why: String) {
-    out.stderr
-        .push(format!("note: {}: partial — {why}", o.file));
+    out.stderr.push(Diagnostic::note(
+        Kind::Partial,
+        format!("{}: partial — {why}", o.file),
+    ));
 }
 
 /// The `lattice` row, and on a flagged program the warning under it: what is
@@ -1410,7 +1423,7 @@ pub fn render_monotone(c: &Checked, o: &Options, limit: u32) -> Text {
     out.row(Row::Work, "1 saturation, root's · 0 facts beyond root");
     Text {
         stdout: out.text,
-        stderr: out.stderr,
+        diagnostics: out.stderr,
         code: 0,
         shown: out.shown,
         listed: out.listed,
@@ -1459,7 +1472,7 @@ pub fn render_root(r: &ReadOut, o: &Options) -> Text {
         out.row(Row::R, "not searched — the run stopped before root's node");
         return Text {
             stdout: out.text,
-            stderr: out.stderr,
+            diagnostics: out.stderr,
             code: 0,
             shown: out.shown,
             listed: out.listed,
@@ -1536,7 +1549,7 @@ pub fn render_root(r: &ReadOut, o: &Options) -> Text {
     let code = queries(&mut out, r, o).max(solve_claim(&mut out, r, o));
     Text {
         stdout: out.text,
-        stderr: out.stderr,
+        diagnostics: out.stderr,
         code,
         shown: out.shown,
         listed: out.listed,
@@ -1553,22 +1566,22 @@ fn licences(l: &[Licence]) -> String {
 /// describe could not check does (`08-read-out.md` § 10).
 fn count_claims(out: &mut Out, r: &ReadOut, o: &Options) {
     let n_q = r.queries.len();
-    let mut notes: Vec<String> = Vec::new();
+    let mut notes: Vec<Diagnostic> = Vec::new();
     for (qi, q) in r.queries.iter().enumerate() {
         let Some(claim) = &q.claim else { continue };
         let label = Row::Query.numbered(qi + 1, n_q);
         let why = claim.lines.first().cloned().unwrap_or_default();
-        notes.push(format!(
-            "note: {}: {label} :expect NOT CHECKED — {why}",
-            o.file
+        notes.push(Diagnostic::note(
+            Kind::ClaimNotChecked,
+            format!("{}: {label} :expect NOT CHECKED — {why}", o.file),
         ));
     }
     let on_queries = notes.len() as u64;
     if let Some(claim) = &r.claim {
         let why = claim.lines.first().cloned().unwrap_or_default();
-        notes.push(format!(
-            "note: {}: (solve :expect) NOT CHECKED — {why}",
-            o.file
+        notes.push(Diagnostic::note(
+            Kind::ClaimNotChecked,
+            format!("{}: (solve :expect) NOT CHECKED — {why}", o.file),
         ));
     }
     if notes.is_empty() {
@@ -2705,15 +2718,17 @@ fn queries(out: &mut Out, r: &ReadOut, o: &Options) -> i32 {
                 for l in claim.lines.iter().skip(1) {
                     out.more(l);
                 }
-                out.stderr
-                    .push(format!("{}: {label} :expect FAILED — {why}", o.file));
+                out.stderr.push(Diagnostic::error(
+                    Kind::ClaimFailed,
+                    format!("{}: {label} :expect FAILED — {why}", o.file),
+                ));
                 code = 1;
             }
             Outcome::NotChecked => {
                 out.row(Row::Expect, format!("NOT CHECKED — {why}"));
-                out.stderr.push(format!(
-                    "note: {}: {label} :expect NOT CHECKED — {why}",
-                    o.file
+                out.stderr.push(Diagnostic::note(
+                    Kind::ClaimNotChecked,
+                    format!("{}: {label} :expect NOT CHECKED — {why}", o.file),
                 ));
             }
         }

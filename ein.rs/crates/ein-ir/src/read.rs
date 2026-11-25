@@ -19,6 +19,8 @@ use std::fmt;
 use std::io::ErrorKind;
 use std::path::Path;
 
+use ein_core::{Diagnostic, Kind, Place};
+
 /// What a program path holds, by its first bytes.
 pub enum Held {
     /// UTF-8 text: a program as written.
@@ -47,6 +49,9 @@ pub struct ReadError {
     /// The OS's reason, where the file could not be read; `None` where it was
     /// read and is neither a container nor UTF-8.
     pub kind: Option<ErrorKind>,
+    /// The first byte that is not UTF-8, where that is why; `None` where the
+    /// file could not be read.
+    pub place: Option<Place>,
 }
 
 impl ReadError {
@@ -54,6 +59,13 @@ impl ReadError {
     /// its own words, `module not found at …`.
     pub fn not_found(&self) -> bool {
         self.kind == Some(ErrorKind::NotFound)
+    }
+
+    /// The refusal as a finding: [`Kind::Unreadable`]
+    /// (`07-diagnostics.md` § 2), its line, and the byte's place where the
+    /// file is not UTF-8.
+    pub fn diagnostic(&self) -> Diagnostic {
+        Diagnostic::error(Kind::Unreadable, self.line.clone()).at(self.place.clone())
     }
 }
 
@@ -93,6 +105,7 @@ pub fn read_program(path: &Path) -> Result<Held, ReadError> {
         ReadError {
             line,
             kind: Some(e.kind()),
+            place: None,
         }
     })?;
     if looks_like_einb(&bytes) {
@@ -102,9 +115,15 @@ pub fn read_program(path: &Path) -> Result<Held, ReadError> {
         Ok(text) => Ok(Held::Text(text)),
         Err(e) => {
             let at = e.utf8_error().valid_up_to();
+            let (line, col) = line_col(e.as_bytes(), at);
             Err(ReadError {
                 line: not_utf8_line(path, e.as_bytes(), at),
                 kind: None,
+                place: Some(Place {
+                    file: path.display().to_string(),
+                    line,
+                    col,
+                }),
             })
         }
     }
@@ -118,13 +137,22 @@ pub fn read_program(path: &Path) -> Result<Held, ReadError> {
 /// bad.ein:2:4: byte 0xff is not UTF-8: a program is UTF-8 text, or a .einb container
 /// ```
 pub fn not_utf8_line(path: &Path, bytes: &[u8], at: usize) -> String {
-    let before = String::from_utf8_lossy(&bytes[..at]);
-    let line = before.matches('\n').count() + 1;
-    let col = before.rsplit('\n').next().unwrap_or("").chars().count() + 1;
+    let (line, col) = line_col(bytes, at);
     format!(
         "{}:{line}:{col}: byte 0x{:02x} is not UTF-8: a program is UTF-8 text, or a .einb container",
         path.display(),
         bytes[at]
+    )
+}
+
+/// The line and the column of byte `at`, as a parse error counts them.
+fn line_col(bytes: &[u8], at: usize) -> (u32, u32) {
+    let before = String::from_utf8_lossy(&bytes[..at]);
+    let line = before.matches('\n').count() + 1;
+    let col = before.rsplit('\n').next().unwrap_or("").chars().count() + 1;
+    (
+        u32::try_from(line).unwrap_or(u32::MAX),
+        u32::try_from(col).unwrap_or(u32::MAX),
     )
 }
 

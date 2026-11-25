@@ -33,7 +33,7 @@ fn load(text: &str) -> Result<(), String> {
     let forms = grammar::parse(&mut ast, text, Some("probe.ein")).map_err(|e| e.to_string())?;
     ein_ir::load(&mut ast, &mut terms, &forms, None)
         .map(|_| ())
-        .map_err(|e| e.0)
+        .map_err(|e| e.to_string())
 }
 
 /// The parser's report on `text`, which must refuse it.

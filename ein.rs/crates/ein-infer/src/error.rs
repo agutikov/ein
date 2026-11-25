@@ -8,6 +8,7 @@
 
 use crate::compile::CompileError;
 use crate::saturator::SaturateError;
+use ein_core::Kind;
 
 #[derive(Debug)]
 pub enum SolveError {
@@ -30,6 +31,23 @@ pub enum SolveError {
     /// fact that is no candidate of H, or one named twice (Q-M1f.400). The
     /// message names the fact; a load error's exit code.
     Refused(String),
+}
+
+impl SolveError {
+    /// **Which of Ein's diagnostics it is**, where it is one: a saved file's
+    /// `(commit …)` that names no node, [`Kind::SavedFile`]
+    /// (`07-diagnostics.md` § 2.29), whose message is the error's `Display`;
+    /// and the clock's abort, [`Kind::Deadline`]. The rest are the engine's
+    /// errors, which no program reaches by its text alone (a plan the compiler
+    /// refuses, `-y`'s spot check, a question the engine does not answer),
+    /// and have none.
+    pub fn kind(&self) -> Option<Kind> {
+        match self {
+            SolveError::Refused(_) => Some(Kind::SavedFile),
+            SolveError::Deadline => Some(Kind::Deadline),
+            _ => None,
+        }
+    }
 }
 
 impl std::fmt::Display for SolveError {

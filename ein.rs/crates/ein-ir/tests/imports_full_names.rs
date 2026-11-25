@@ -30,7 +30,7 @@ fn resolved(modules: &[(&str, &str)], src: &str) -> Result<Vec<String>, String> 
     let forms = parse(&mut ast, src, Some("p.ein")).map_err(|e| e.to_string())?;
     let out = Resolver::new()
         .resolve_imports(&mut ast, &forms, Some(scratch.path()))
-        .map_err(|e| e.0)?;
+        .map_err(|e| e.to_string())?;
     Ok(out
         .iter()
         .map(|&n| {

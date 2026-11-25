@@ -96,6 +96,7 @@ after root.
 | `config.rs`, `numparse.rs` | the typed view of `(config …)`, and the coercion of its values |
 | `text.rs`, `repr.rs`, `printable.rs`, `numfmt.rs` | the one printer of Ein text, the `Value` renderer, its escapes, number formats |
 | `why.rs` | `:why` template substitution |
+| `diagnostic.rs` | a diagnostic as a value: a refusal's or a run's line with its kind, the reference's name for it, its severity and its place ([Q-M2.9](../../decisions/diagnostics/Q-M2.9-a-refusal-is-a-value-with-a-kind-a-place-and-its.md)) |
 | `counters.rs` | the work counters, compiled in by `counters` |
 | `shape.rs` | the KB's shape as one text, a test instrument |
 

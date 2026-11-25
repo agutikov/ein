@@ -57,7 +57,7 @@
 //! conflict: the `open` facts root holds are written beside it, and every
 //! conflict stands (Q-M1f.254).
 
-use ein_core::{FactId, Kb, Symbol, Terms, Value};
+use ein_core::{Diagnostic, FactId, Kb, Kind, Place, Symbol, Terms, Value};
 use ein_ir::{Ast, Node, NodeId};
 use rustc_hash::FxHashSet;
 
@@ -211,12 +211,14 @@ pub(crate) fn obligation_plans(
 // ── The check ──────────────────────────────────────────────────────
 
 /// What [`check`] found: the conflicts, which refuse the program, and the
-/// notes, which do not. Each a line with its position first where the
-/// program writes one, and no prefix.
+/// notes, which do not, each a finding of [`Kind::Mechanisms`]
+/// (`07-diagnostics.md` § 2.26), an error or a note, placed where the
+/// program writes what it is about. Each message is a line with its position
+/// first where the program writes one, and no prefix.
 #[derive(Clone, Default, Debug, PartialEq, Eq)]
 pub struct Report {
-    pub conflicts: Vec<String>,
-    pub notes: Vec<String>,
+    pub conflicts: Vec<Diagnostic>,
+    pub notes: Vec<Diagnostic>,
 }
 
 /// **Could two mechanisms meet in this program?** Read off the loaded
@@ -262,6 +264,42 @@ pub fn may_conflict(kb: &Kb, terms: &Terms, ast: &Ast) -> bool {
         .every_rule()
         .filter_map(|(_, r)| r.assert_.as_ref())
         .any(|a| writes_name(ast, NodeId(a.expr.0), ein_core::terms::CLOSED))
+}
+
+/// **The judgement a load is followed by** (Q-M1f.245), on every command and
+/// for a library caller alike: the loader of `ein-ir` reads no fixpoint, so
+/// the conflicts between a program's hypothesis mechanisms, which are read on
+/// root's, are judged here, after it. A program that cannot declare two
+/// mechanisms ([`may_conflict`]) pays nothing; otherwise `again` loads the
+/// program a second time into the arenas it is handed, or copies `ast`,
+/// `terms` and `kb` into them, and [`check`] saturates that, leaving the
+/// caller's own tables as they were. `Err` holds the conflicts, which refuse
+/// the program, each a line `kb load error: ` is printed before; `Ok` the
+/// notes, which do not, each printed after `note: ` when the command's run
+/// ends (Q-M1f.580). A root that does not saturate, or a plan that does not
+/// compile, judges nothing: the run that reads the program reports it.
+pub fn judge_loaded(
+    ast: &Ast,
+    terms: &Terms,
+    kb: &Kb,
+    again: impl FnOnce(&mut Ast, &mut Terms) -> Option<Kb>,
+) -> Result<Vec<Diagnostic>, Vec<Diagnostic>> {
+    if !may_conflict(kb, terms, ast) {
+        return Ok(Vec::new());
+    }
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let Some(mut kb) = again(&mut ast, &mut terms) else {
+        return Ok(Vec::new());
+    };
+    let Some(report) = check(&ast, &mut terms, &mut kb) else {
+        return Ok(Vec::new());
+    };
+    if report.conflicts.is_empty() {
+        Ok(report.notes)
+    } else {
+        Err(report.conflicts)
+    }
 }
 
 /// Saturate `kb` to root's fixpoint and judge its mechanisms. `kb` is the
@@ -329,11 +367,14 @@ pub fn judge(m: &Mechanisms, kb: &Kb, terms: &Terms, ast: &Ast) -> Report {
     };
     let left_out = |r: Symbol| m.listed.as_ref().is_some_and(|l| !l.contains(&r));
     let mut out = Report::default();
-    let mut conflict = |line: String| {
-        if !out.conflicts.contains(&line) {
-            out.conflicts.push(line);
+    let mut conflict = |place: Option<Place>, line: String| {
+        if !out.conflicts.iter().any(|d| d.message == line) {
+            out.conflicts
+                .push(Diagnostic::error(Kind::Mechanisms, line).at(place));
         }
     };
+    let note =
+        |place: Option<Place>, line: String| Diagnostic::note(Kind::Mechanisms, line).at(place);
     const CONFIGURES: &str = "the two lists and a closure configure the blind enumerator, which \
                               does not run beside an open fact, and one that disagrees with the \
                               open facts root holds is an error";
@@ -349,27 +390,33 @@ pub fn judge(m: &Mechanisms, kb: &Kb, terms: &Terms, ast: &Ast) -> Report {
         let rel = name(o.relation);
         let held = w.open_fact(o.fact);
         if let Some(node) = in_list(&nh, &rel) {
-            conflict(format!(
-                "{}solve: its :no-hypothesis names {rel}, and root holds {held} — {CONFIGURES}: \
-                 drop {rel} from the list",
-                w.at(node),
-            ));
+            conflict(
+                w.place(node),
+                format!(
+                    "{}solve: its :no-hypothesis names {rel}, and root holds {held} — \
+                     {CONFIGURES}: drop {rel} from the list",
+                    w.at(node),
+                ),
+            );
         }
         if let Some((value, listed)) = &hr
             && !listed.iter().any(|(_, n)| *n == rel)
         {
-            conflict(format!(
-                "{}solve: its :hypothesis-relations leaves out {rel}, and root holds {held} — \
-                 {CONFIGURES}, so beside them it names exactly their relations: add {rel} to the \
-                 list, or drop the list",
-                w.at(*value),
-            ));
+            conflict(
+                w.place(*value),
+                format!(
+                    "{}solve: its :hypothesis-relations leaves out {rel}, and root holds {held} — \
+                     {CONFIGURES}, so beside them it names exactly their relations: add {rel} to \
+                     the list, or drop the list",
+                    w.at(*value),
+                ),
+            );
         }
         if m.closed.contains(&o.relation) {
             // Placed where the closure is written, else where what writes the
             // `open` fact is: an obligation's activator, a rule's `:assert`,
             // the program's own `(open …)`.
-            let at = w
+            let node = w
                 .written(w.closure_fact(o.relation))
                 .or_else(|| w.written(Some(o.fact)))
                 .or_else(|| {
@@ -383,14 +430,18 @@ pub fn judge(m: &Mechanisms, kb: &Kb, terms: &Terms, ast: &Ast) -> Report {
                         .iter()
                         .filter(|p| p.relation == Some(o.relation))
                         .find_map(|p| w.assert_of(p.rule))
-                })
-                .unwrap_or_default();
-            conflict(format!(
-                "{at}root holds {held}, and {} says {rel} is closed — {CONFIGURES}, and a closed \
-                 relation is one no commitment extends: drop the closure, or what writes {}",
-                w.closure(o.relation),
-                terms.fact_text(o.fact),
-            ));
+                });
+            let at = node.map_or_else(String::new, |n| w.at(n));
+            conflict(
+                node.and_then(|n| w.place(n)),
+                format!(
+                    "{at}root holds {held}, and {} says {rel} is closed — {CONFIGURES}, and a \
+                     closed relation is one no commitment extends: drop the closure, or what \
+                     writes {}",
+                    w.closure(o.relation),
+                    terms.fact_text(o.fact),
+                ),
+            );
         }
     }
     if !m.open.is_empty()
@@ -398,12 +449,15 @@ pub fn judge(m: &Mechanisms, kb: &Kb, terms: &Terms, ast: &Ast) -> Report {
     {
         for (node, r) in listed {
             if !m.open.iter().any(|o| terms.sym(o.relation) == r) {
-                conflict(format!(
-                    "{}solve: its :hypothesis-relations names {r}, and root holds no open fact of \
-                     {r} — {CONFIGURES}, so beside them it names exactly their relations: drop {r} \
-                     from the list",
-                    w.at(*node),
-                ));
+                conflict(
+                    w.place(*node),
+                    format!(
+                        "{}solve: its :hypothesis-relations names {r}, and root holds no open \
+                         fact of {r} — {CONFIGURES}, so beside them it names exactly their \
+                         relations: drop {r} from the list",
+                        w.at(*node),
+                    ),
+                );
             }
         }
     }
@@ -411,11 +465,15 @@ pub fn judge(m: &Mechanisms, kb: &Kb, terms: &Terms, ast: &Ast) -> Report {
     if let (Some((_, listed)), Some((_, named))) = (&hr, &nh) {
         for (node, r) in named {
             if listed.iter().any(|(_, l)| l == r) {
-                conflict(format!(
-                    "{}solve: its :no-hypothesis names {r}, and its :hypothesis-relations names \
-                     {r} too — the one says guess it, the other never: drop {r} from one",
-                    w.at(*node),
-                ));
+                conflict(
+                    w.place(*node),
+                    format!(
+                        "{}solve: its :no-hypothesis names {r}, and its :hypothesis-relations \
+                         names {r} too — the one says guess it, the other never: drop {r} from \
+                         one",
+                        w.at(*node),
+                    ),
+                );
             }
         }
     }
@@ -425,13 +483,16 @@ pub fn judge(m: &Mechanisms, kb: &Kb, terms: &Terms, ast: &Ast) -> Report {
                 continue;
             };
             if m.closed.contains(&sym) {
-                conflict(format!(
-                    "{}solve: its :hypothesis-relations names {r}, and {} says {r} is closed — a \
-                     listed relation is one the program guesses, and a closed one it never does: \
-                     drop {r} from the list, or the closure",
-                    w.at(*node),
-                    w.closure(sym),
-                ));
+                conflict(
+                    w.place(*node),
+                    format!(
+                        "{}solve: its :hypothesis-relations names {r}, and {} says {r} is closed \
+                         — a listed relation is one the program guesses, and a closed one it \
+                         never does: drop {r} from the list, or the closure",
+                        w.at(*node),
+                        w.closure(sym),
+                    ),
+                );
             }
         }
     }
@@ -452,17 +513,22 @@ pub fn judge(m: &Mechanisms, kb: &Kb, terms: &Terms, ast: &Ast) -> Report {
     // note; beside an obligation it is silent, the obligation judging root
     // alone, which is its use. The conflicts above stand.
     if m.no_search {
-        let at = list(crate::hypgen::NO_SEARCH).map_or(String::new(), |(at, _)| w.at(at));
+        let node = list(crate::hypgen::NO_SEARCH).map(|(at, _)| at);
+        let at = node.map_or(String::new(), |at| w.at(at));
+        let place = node.and_then(|at| w.place(at));
         if h {
             let (one, word) = if m.hypothesis_rules.len() == 1 {
                 ("rule", "proposes")
             } else {
                 ("rules", "propose")
             };
-            out.notes.push(format!(
-                "{at}solve: its :no-search states the lattice is root alone, so {one} {} {word} \
-                 no candidate",
-                rules(),
+            out.notes.push(note(
+                place,
+                format!(
+                    "{at}solve: its :no-search states the lattice is root alone, so {one} {} \
+                     {word} no candidate",
+                    rules(),
+                ),
             ));
         }
         for (key, l) in [
@@ -470,10 +536,13 @@ pub fn judge(m: &Mechanisms, kb: &Kb, terms: &Terms, ast: &Ast) -> Report {
             (crate::hypgen::NO_HYPOTHESIS, &nh),
         ] {
             let Some((value, _)) = l else { continue };
-            out.notes.push(format!(
-                "{}solve: its :{key} filters no candidate — the program states :no-search, \
-                 whose lattice is root alone",
-                w.at(*value),
+            out.notes.push(note(
+                w.place(*value),
+                format!(
+                    "{}solve: its :{key} filters no candidate — the program states :no-search, \
+                     whose lattice is root alone",
+                    w.at(*value),
+                ),
             ));
         }
         return out;
@@ -486,18 +555,24 @@ pub fn judge(m: &Mechanisms, kb: &Kb, terms: &Terms, ast: &Ast) -> Report {
         for (node, r) in named {
             let sym = terms.syms.get(r);
             if hr.is_some() && sym.is_none_or(left_out) {
-                out.notes.push(format!(
-                    "{}solve: its :no-hypothesis names {r}, which its :hypothesis-relations \
-                     already leaves out",
-                    w.at(*node),
+                out.notes.push(note(
+                    w.place(*node),
+                    format!(
+                        "{}solve: its :no-hypothesis names {r}, which its :hypothesis-relations \
+                         already leaves out",
+                        w.at(*node),
+                    ),
                 ));
             } else if let Some(sym) = sym
                 && m.closed.contains(&sym)
             {
-                out.notes.push(format!(
-                    "{}solve: its :no-hypothesis names {r}, which {} already closes",
-                    w.at(*node),
-                    w.closure(sym),
+                out.notes.push(note(
+                    w.place(*node),
+                    format!(
+                        "{}solve: its :no-hypothesis names {r}, which {} already closes",
+                        w.at(*node),
+                        w.closure(sym),
+                    ),
                 ));
             }
         }
@@ -521,15 +596,20 @@ impl Words<'_> {
         }
     }
 
-    /// Where a fact is written, `FILE:LINE:COL: `; `None` for a fact a rule
-    /// derived, or one the program's text does not show.
-    fn written(&self, fact: Option<FactId>) -> Option<String> {
+    /// [`Words::at`]'s position, as a finding's place.
+    fn place(&self, node: NodeId) -> Option<Place> {
+        ein_ir::place(self.ast, self.ast.loc(node))
+    }
+
+    /// The form that writes a fact, which [`Words::at`] places; `None` for a
+    /// fact a rule derived, or one the program's text does not show.
+    fn written(&self, fact: Option<FactId>) -> Option<NodeId> {
         let fact = fact?;
         let prov = self.terms.provs.get(self.kb.primary(fact)?);
         if prov.rule.is_some() {
             return None;
         }
-        self.form_of(fact).map(|node| self.at(node))
+        self.form_of(fact)
     }
 
     /// The form that writes `fact`: the first of the program's forms whose
@@ -622,14 +702,12 @@ impl Words<'_> {
         }
     }
 
-    /// Where rule `rule`'s `:assert` is written, `FILE:LINE:COL: `: a rule
-    /// that concludes a hypothesis.
-    fn assert_of(&self, rule: Symbol) -> Option<String> {
+    /// Rule `rule`'s `:assert`, where it is written, which [`Words::at`]
+    /// places: a rule that concludes a hypothesis.
+    fn assert_of(&self, rule: Symbol) -> Option<NodeId> {
         let r = self.kb.program().hypotheses.get(rule)?;
         let a = r.assert_.as_ref()?;
-        self.ast
-            .loc(NodeId(a.expr.0))
-            .map(|_| self.at(NodeId(a.expr.0)))
+        self.ast.loc(NodeId(a.expr.0)).map(|_| NodeId(a.expr.0))
     }
 
     /// An `open` fact root holds, and what wrote it: `(open (p a)), which

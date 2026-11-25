@@ -504,7 +504,7 @@ fn printed_under(
     };
     let mut kb = match load(&mut ast, &mut terms, &forms, path.parent()) {
         Ok(kb) => kb,
-        Err(e) => return format!("<load> {}", e.0),
+        Err(e) => return format!("<load> {e}"),
     };
     let mut opts = explore::Options::new(mode);
     set(&mut opts);
@@ -535,7 +535,7 @@ fn printed_under(
     format!(
         "{}--- stderr\n{}\n--- exit {}\n--- summary\n{summary}\n",
         t.stdout,
-        t.stderr.join("\n"),
+        t.stderr().join("\n"),
         t.code
     )
 }

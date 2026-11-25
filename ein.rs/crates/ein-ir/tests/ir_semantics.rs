@@ -107,7 +107,7 @@ fn load_macro_names(text: &str) -> Result<Vec<String>, String> {
             .keys()
             .map(|s| terms.sym(s).to_string())
             .collect()),
-        Err(e) => Err(e.0),
+        Err(e) => Err(e.to_string()),
     }
 }
 
@@ -673,7 +673,7 @@ fn a_rule_needs_params_and_a_query_needs_a_kw_pair() {
         "(rule x () :why \"rule x says nothing: it has neither a :match nor an :assert\")",
     );
     let e = ein_ir::load(&mut ast, &mut terms, &forms, None).expect_err("an empty rule");
-    assert_eq!(e.0, "(rule x) missing :match or :assert at None");
+    assert_eq!(e.to_string(), "(rule x) missing :match or :assert at None");
 }
 
 /// `trace-is-shape-pinned-only-inside-itself` — `(trace …)` admits only trace

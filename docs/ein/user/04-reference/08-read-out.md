@@ -538,17 +538,19 @@ timing
 ## 10. Stderr
 
 The shapes of the lines a question writes beside an answer; [`07-diagnostics.md`](07-diagnostics.md) has the exit codes and
-every error's line.
+every error's line. Each line has a **kind**, the last column, as each refusal of `07-diagnostics.md` has one beside
+its section: the name a program that links Ein reads the line by, as a value beside its text.
 
-| line | when | exit |
-|---|---|---|
-| `WARNING: FILE: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)` | first, on a program the static check flags, by every command that answers about a commitment: `ein solve` under every question but `--monotone`, `ein oracle`, `ein test` (once a file), `ein show hyps` and `ein render lattice` (§ 5.1); and, on one it does not, at once, once, where a run that checks first builds a state that holds a hypothesis root does not (§ 5.1) | 0 |
-| `note: FILE: partial — …` | a run the budget, `--region-limit` or `--max-steps` stopped; under `--max-steps`, which saturation needed more firings, and that nothing of R, neither root's standing nor H, is established. Under describe and `--count` stopped by the budget the note says, by default and not only under `-v`, the forecast (the next step's projection, on top of what was spent, against `--region-budget`: the state route's next layer, or the tree and the classes' next step), what the run established and what it did not, and the options: `--region-budget` larger (the state route: at least the spent and projected facts, which takes the next layer), and the other route where the program has one | 0 |
-| `note: FILE: query :expect NOT CHECKED — …` (`query i of n` where there are several) | a query's claim the run could not check, every claim under `--count`, every claim root does not decide under `--no-search`, and every claim of a saved file with a `(commit …)`, whose claims are its program's ([Q-M1f.403](../../../decisions/answer/Q-M1f.403-a-saved-file-with-a-commitment-checks-none.md)) | 0 |
-| `note: FILE: (solve :expect) NOT CHECKED — …` | the solve claim, the same | 0 |
-| `note: FILE:L:C: solve: its :no-hypothesis …`, `… :no-search …` | when the run ends, on every command, after a flagged program's `WARNING`: where root holds no `open` fact, a name another declaration already says; a rule that concludes a hypothesis or a list beside `(solve :no-search)`, which proposes or filters nothing ([`07-diagnostics.md`](07-diagnostics.md), the hypothesis mechanisms) | 0 |
-| `FILE: query :expect FAILED — …`, `FILE: (solve :expect) FAILED — …` | a claim the run refutes | 1 |
-| `** aborted: --max-time S s reached before the question was decided **` | `-T`, between a route's steps or inside a saturation: no answer, so nothing on stdout, no summary, and no file in the answer directory | 2 |
+| line | when | exit | kind |
+|---|---|---|---|
+| `WARNING: FILE: THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF THIS ANSWER (Q-M1f.564)` | first, on a program the static check flags, by every command that answers about a commitment: `ein solve` under every question but `--monotone`, `ein oracle`, `ein test` (once a file), `ein show hyps` and `ein render lattice` (§ 5.1); and, on one it does not, at once, once, where a run that checks first builds a state that holds a hypothesis root does not (§ 5.1) | 0 | `not-monotone` |
+| `note: FILE: partial — …` | a run the budget, `--region-limit` or `--max-steps` stopped; under `--max-steps`, which saturation needed more firings, and that nothing of R, neither root's standing nor H, is established. Under describe and `--count` stopped by the budget the note says, by default and not only under `-v`, the forecast (the next step's projection, on top of what was spent, against `--region-budget`: the state route's next layer, or the tree and the classes' next step), what the run established and what it did not, and the options: `--region-budget` larger (the state route: at least the spent and projected facts, which takes the next layer), and the other route where the program has one | 0 | `partial` |
+| `note: FILE: query :expect NOT CHECKED — …` (`query i of n` where there are several) | a query's claim the run could not check, every claim under `--count`, every claim root does not decide under `--no-search`, and every claim of a saved file with a `(commit …)`, whose claims are its program's ([Q-M1f.403](../../../decisions/answer/Q-M1f.403-a-saved-file-with-a-commitment-checks-none.md)) | 0 | `claim-not-checked` |
+| `note: FILE: (solve :expect) NOT CHECKED — …` | the solve claim, the same | 0 | `claim-not-checked` |
+| `note: FILE:L:C: solve: its :no-hypothesis …`, `… :no-search …` | when the run ends, on every command, after a flagged program's `WARNING`: where root holds no `open` fact, a name another declaration already says; a rule that concludes a hypothesis or a list beside `(solve :no-search)`, which proposes or filters nothing ([`07-diagnostics.md`](07-diagnostics.md), the hypothesis mechanisms) | 0 | `mechanisms` |
+| `warning: FILE was written under different inputs (…)` | a `.einb` container whose inputs moved since it was written, opened anyway, on every command that reads it, when it is loaded ([`09-binary-format.md` § 4.3](../../ein.rs/03-design/09-binary-format.md#43-a-file-not-believed)) | 0 | `stale-container` |
+| `FILE: query :expect FAILED — …`, `FILE: (solve :expect) FAILED — …` | a claim the run refutes | 1 | `claim-failed` |
+| `** aborted: --max-time S s reached before the question was decided **` | `-T`, between a route's steps or inside a saturation: no answer, so nothing on stdout, no summary, and no file in the answer directory | 2 | `deadline` |
 
 ---
 

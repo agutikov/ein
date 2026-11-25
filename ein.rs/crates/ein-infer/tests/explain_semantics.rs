@@ -975,10 +975,10 @@ fn a_files_own_declaration_is_its_own() {
         let err = ein_ir::load(&mut ast, &mut terms, &forms, None)
             .expect_err("one short name, two full names");
         assert!(
-            err.0
+            err.to_string()
                 .contains("'infer-closure' is bound to two full names in the program"),
             "unexpected error: {}",
-            err.0
+            err
         );
     }
 

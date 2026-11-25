@@ -20,7 +20,18 @@ atom, a fact, or, in a pattern, a variable. Its **atom**, in *no atom of the que
 goal. Its **type** and **types** are a declaration's label and labels. Ein has no types, and an object, on these
 pages and in the lines, is any node of the knowledge-base graph.
 
+**Each refusal has a kind**, written beside the section that states it, `**Kind:**` and one short name: the
+vocabulary a program that links Ein reads a refusal by, as a value beside the line and the line's place
+([`04-api.md` § 2.2](../../ein.rs/04-api.md#22-load),
+[Q-M2.9](../../../decisions/diagnostics/Q-M2.9-a-refusal-is-a-value-with-a-kind-a-place-and-its.md)). One kind is
+one section; a line two sections list takes the kind of the section that states the check that makes it, which the
+other names; a section whose lines are the parse's says `parse`. A section that states no refusal, a property of the
+lines (§ 1.1 to § 1.5), a shape with no line (§ 2.6) or an end with none (§ 2.19), has no kind. The lines a run
+writes beside an answer have kinds of their own, in [`08-read-out.md` § 10](08-read-out.md#10-stderr).
+
 ## 1. Parse and load diagnostics
+
+**Kind:** `parse`, every error of the parse's report, whatever its note says.
 
 **A refused file reports every error recovery reaches**, in file order, one line each:
 
@@ -110,9 +121,10 @@ A loader line about a top-level form that carries no position of its own ends in
 kb load error: duplicate rule name 'g' at None
 ```
 
-So do a duplicate rule or macro, a rule missing its `:match` or `:assert`, an import cycle, a bare
-`(import std)`, an import that writes both `:as` and `:symbols`, and a `:symbols` name the module does not provide
-(the fixtures under [`examples/broken/load/`](../../../../examples/broken/load/) whose `.expected` holds `at None`).
+So do a duplicate rule or macro, a rule missing its `:match` or `:assert` (§ 2.32), an import cycle, a bare
+`(import std)`, an import that writes both `:as` and `:symbols` (§ 2.34), and a `:symbols` name the module does not
+provide (§ 2.25) (the fixtures under [`examples/broken/load/`](../../../../examples/broken/load/) whose `.expected`
+holds `at None`).
 A line raised where a position is known carries it: a macro called with the wrong count ends
 `at <file>:<line>:<col>`, and every refusal of § 2 whose table shows a place starts with `<file>:<line>:<col>: `. A
 line about a rule's shape that names the rule and no place, as most of § 2.9's and § 2.15's do, ends in neither.
@@ -122,6 +134,8 @@ than noise in each, and it is the clearest candidate on this page for being **fi
 ([Q-M1a.6](../../../decisions/diagnostics/Q-M1a.6-a-loader-message-about-a-top-level-form-names-no.md)).
 
 ### 1.6 A character that is not ASCII is written only in a string or a comment
+
+**Kind:** `not-ascii`.
 
 A character that is not ASCII is written only inside a string literal, after `:why`, `:source` or `:goal-text`, or
 in a `;` or `#| … |#` comment
@@ -155,6 +169,8 @@ t.ein:1:7: 'é' (U+00E9) is not ASCII: Unicode is allowed only inside a string l
 
 ### 1.7 A text nested past 1 000 parentheses is refused before it is parsed
 
+**Kind:** `nesting-limit`.
+
 A top-level form is at depth 1. One pass over the tokens counts depth before the parse, and a text whose `(` passes
 1 000 is refused with one line at that `(`, and no other:
 
@@ -167,6 +183,8 @@ answered and saved; its saved file loads again, since what the parser reads of i
 ([Q-M1f.185](../../../decisions/engine/Q-M1f.185-a-state-deeper-than-the-parsers-limit.md)).
 
 ## 2. Errors and exit codes
+
+**Kind:** `unreadable`, a file that cannot be read or is neither UTF-8 text nor a container; an imported module's line is § 2.18's, `module-unreadable`; the command line's own refusal has none.
 
 A failure the engine cannot place in a form prints one line and exits non-zero:
 
@@ -218,6 +236,8 @@ nothing, and nothing says so: a program that writes one, or in which a rule coul
 
 ### 2.1 A query's, a solve's and a claim's refusals
 
+**Kind:** `claim`; a row marked †, `parse`; a goal's guard over a form that holds a variable, § 2.9's `rule-shape`. A claim the run refutes or does not check is a line beside the answer, `claim-failed` or `claim-not-checked` ([the read-out's lines](08-read-out.md#10-stderr)).
+
 A `(query …)`, a `(solve …)` and the claims they state are read as the rest of a program is, and a malformed one is
 refused at the parse or at load, in Ein's words. Each row marked † is a parse error at the token, with its line,
 column and repairs ([§ 1](#1-parse-and-load-diagnostics)), because each form takes a fixed set of keywords
@@ -262,6 +282,8 @@ of a state found that the claim does not list, or for `(solve … :expect (false
 
 ### 2.2 What an obligation owes, and its refusals
 
+**Kind:** `obligation`; the shapes of § 2.17, `parse` or `open-shape`.
+
 `open` is the kernel's relation of what a state owes and of its hypotheses
 ([Q-M1f.566](../../../decisions/hypotheses/Q-M1f.566-what-a-state-owes-is-open-r-a-fact-and-open-f.md)). An obligation
 is a rule that concludes what a state owes: its whole `:assert` is `(open R)` or `(open ?R)`, `R` a relation's name
@@ -302,6 +324,8 @@ nothing, `open` being one of the names no declarator binds ([`03-reserved-names.
 
 ### 2.3 `eq` and `absent` at another arity
 
+**Kind:** `parse` where a rule or a goal writes the form; `malformed-primitive` where a macro's expansion does (§ 2.16).
+
 `eq` and `neq` compare two objects, and `absent` is negation as failure over one premise. Written in a rule or a
 goal at any other arity, each is a parse error, with no note: `(eq ?x)` and `(neq ?x)` at their `)`, and
 `(absent (p ?x) (q ?x))` at its second premise. The fixtures are `eq_arity_low`, `eq_arity_high`,
@@ -325,6 +349,8 @@ A relation parameter its activator binds to `eq`, `(?R ?x)` under `(r eq)`, is t
 ([Q-M1f.15](../../../decisions/diagnostics/Q-M1f.15-a-position-in-a-container-names-its-stored.md)).
 
 ### 2.4 An artefact flag's failure
+
+**Kind:** `artefact`.
 
 Seven options name a file or a directory the run will write: `ein solve`'s `--events`, `--json-summary`,
 `--trace`, `--dump-answer` and `--dump-lattice`, `ein oracle`'s `--dump`, and `ein test`'s `--json-report` (with its
@@ -351,6 +377,8 @@ alternative is a distinct exit code, and exit 2 already means a usage error
 ([Q-M1e.22](../../../decisions/cli/Q-M1e.22-a-failed-artefact-write-keeps-the-runs-exit-code.md)).
 
 ### 2.5 The store's own limits
+
+**Kind:** `store-limit`.
 
 The store interns symbols and facts into two id spaces of $2^{30}$ each, and keeps their text and arguments in two arenas
 addressed by a 32-bit start. Reaching any of the four is a load error a reader can act on, never a crash:
@@ -381,6 +409,8 @@ checked.
 
 ### 2.7 The module every program gets cannot be read
 
+**Kind:** `std-core`.
+
 `std.core` is brought into every program by the load, with no import line, from the standard library the load
 resolves ([`04-stdlib/21-core.md`](04-stdlib/21-core.md);
 [Q-M1f.551](../../../decisions/stdlib/Q-M1f.551-std-core-is-loaded-into-every-program.md)). A file may import it as
@@ -401,6 +431,8 @@ names with a `core.ein` of its own is read, and that module is every program's
 
 ### 2.8 `_` and `?_` are refused wherever they are written
 
+**Kind:** `parse`.
+
 A bare `_`, and `?_`, names nothing
 ([Q-M1e2.22](../../../decisions/language/Q-M1e2.22-a-bare-is-reserved-and-refused.md)): wherever it is written — an
 argument, a relation, a guard's operand, a conclusion, a claim — it is a parse error at the `_`, with a note, on every
@@ -419,6 +451,8 @@ one name, matched as any name is, and `:card 1..*` is refused at the parse at `:
 ([Q-M1e2.24](../../../decisions/language/Q-M1e2.24-ein-has-no-numbers-and-no-ranges.md)).
 
 ### 2.9 A rule shape that reads nothing
+
+**Kind:** `rule-shape`, a rule's lines and a goal's alike.
 
 Each shape below would read nothing: no fact could make it hold, or it would hold whatever the facts. The grammar
 refuses three of them at the parse wherever a program writes them — `_`
@@ -479,6 +513,8 @@ on such a variable does ([Q-M1f.34](../../../decisions/language/Q-M1f.34-a-guard
 
 ### 2.10 A form with no `:why`
 
+**Kind:** `missing-why`.
+
 The loader requires a `:why "…"` of every `(relation …)`, `(rule …)` and `(macro …)` it reads, a
 module's and the stdlib's included, and refuses each that carries none, one line per form, `; `-joined with every
 other loader line:
@@ -492,6 +528,8 @@ one, and changes nothing else ([`06-config.md`](06-config.md),
 [Q-M1f.62](../../../decisions/cli/Q-M1f.62-no-require-why-loads-a-program-without-a-why.md)).
 
 ### 2.11 A template reference no reference can reach
+
+**Kind:** `template`.
 
 A template reference, `{?name}` in a `:why` or a `:goal-text`, reads a variable's name up to its first `}`, so it
 names every variable a program writes: `{?isR*}`, `{?_x_}` and `{?a.b}` are filled. `}` is a name character too, so a
@@ -509,6 +547,8 @@ by number, `{?3}`, and is not read ([`14-natural-language.md`](../03-syntax-and-
 
 ### 2.12 A string is natural-language text, and an escape names a character
 
+**Kind:** `parse`.
+
 A string is the value of `:why`, `:source` or `:goal-text` and nothing else
 ([Q-M1e2.23](../../../decisions/language/Q-M1e2.23-a-string-is-natural-language-text-never.md)). Written
 anywhere an argument or a name goes it is a parse error at the string, and a variable written in a fact a parse error at
@@ -525,6 +565,8 @@ holds any other character as itself, a raw newline and any Unicode among them ([
 lexical grammar). The text a program writes reaches every surface that carries it byte for byte.
 
 ### 2.13 A conclusion's variable nothing binds
+
+**Kind:** `unbound-conclusion`.
 
 A rule's `:assert` that writes a variable some way of satisfying its `:match` leaves unbound is refused
 at load ([Q-M1e2.37](../../../decisions/language/Q-M1e2.37-a-conclusions-variable-is-bound-by-every-way.md)), one
@@ -547,6 +589,8 @@ relation, which [§ 2.2](#22-what-an-obligation-owes-and-its-refusals) checks. T
 [`examples/ein-bugs/unbound-assert-var.ein`](../../../../examples/ein-bugs/unbound-assert-var.ein).
 
 ### 2.14 `eq` at another arity
+
+**Kind:** `eq-arity`; where the parameter heads a form written where an argument goes, § 2.22's `object`.
 
 `eq` is the relation of equality, between exactly two objects
 ([Q-M1e2.26](../../../decisions/language/Q-M1e2.26-eq-and-neq-are-the-relations-of-equality-and-non.md)), and the
@@ -572,6 +616,8 @@ arity. `neq` is no name a program can write, so no parameter holds it.
 
 ### 2.15 A nested `(or …)`, a wide `:match` and a goal's relation variable
 
+**Kind:** `no-plan`.
+
 Three shapes no plan can be made of are refused at load, one line each
 ([Q-M1f.72](../../../decisions/diagnostics/Q-M1f.72-a-nested-or-a-wide-match-and-a-goals-relation.md)):
 
@@ -588,6 +634,8 @@ The witness of the first is [`examples/broken/load/nested_or.ein`](../../../../e
 variable is [§ 2.21](#221-a-goal-is-held-to-what-a-rules-match-is-held-to)'s.
 
 ### 2.16 A malformed primitive a macro's expansion writes
+
+**Kind:** `malformed-primitive`.
 
 A macro's body is a template the grammar never reads expanded, and a call takes any premise as an argument, so a
 kernel primitive can reach a rule in a shape the grammar refuses where a rule writes it. The loader holds a rule's and
@@ -626,6 +674,8 @@ flat at any depth, so `(and (r a) (both a))`, `both` writing `(and (p ?x) (q ?x)
 ([§ 2.21](#221-a-goal-is-held-to-what-a-rules-match-is-held-to)).
 
 ### 2.17 Where `open` is written
+
+**Kind:** `open-shape`; a shape refused at the parse, `parse`.
 
 The kernel reads `open` at the head of a written fact, a premise or a conclusion, and it is a name everywhere else
 ([Q-M1f.66](../../../decisions/language/Q-M1f.66-open-is-a-name-and-the-kernel-reads.md)): an argument, a name
@@ -680,6 +730,8 @@ a conjunction, `(open (and …))`, § 2.28's.
 
 ### 2.18 An imported module is read as the program is
 
+**Kind:** `module-unreadable`; a module that does not parse, its parse error's own, `parse`, `not-ascii` or `nesting-limit`.
+
 An imported module on disk, a file-relative one or a `std.*` one under a checkout or `$EIN_STDLIB`, is read as every
 command reads the program it is given, and a module that exists and cannot be read as text is refused with that
 read's line, behind `kb load error: `, naming the path the import resolves to
@@ -717,6 +769,8 @@ has gone is an error, and the process exits 101
 
 ### 2.20 A `(solve …)` list names what the program has
 
+**Kind:** `solve-list`.
+
 The two lists of a `(solve …)`, `:hypothesis-relations` and `:no-hypothesis`, configure the blind enumerator, and so
 the lattice the answer is a region of ([`09-hypotheses.md`](../03-syntax-and-semantics/09-hypotheses.md)). Every name
 one holds is a relation of the program, or the loader refuses the program, one line per name, placed at the name
@@ -746,6 +800,8 @@ and has the rule propose nothing; where no other writer proposes either, the bli
 parameters that no fact activates proposes nothing.
 
 ### 2.21 A goal is held to what a rule's `:match` is held to
+
+**Kind:** `goal`; the checks of § 2.9, § 2.15, § 2.16 and § 2.33 keep their kinds on a goal, `rule-shape`, `no-plan`, `malformed-primitive` and `macro-call`.
 
 A query's `:goal` is a premise, and the loader reads it as it reads a rule's `:match`:
 
@@ -782,6 +838,8 @@ A class of a goal that holds an `(and …)` inside its `(and …)`, which a macr
 premises one by one, as the loader reads them for a claim.
 
 ### 2.22 An object is an atom, or a fact a state could hold
+
+**Kind:** `object`; a shape refused at the parse, `parse`; a connective where a guard, a conclusion or a negation writes an argument, § 2.16's `malformed-primitive`.
 
 *An object is an atom, or a fact a state could hold: a fact of an ordinary relation, or the stored negation of a
 fact a state could hold*
@@ -847,6 +905,8 @@ The three words stay names: `(h absent)`, `(h false)` and `(mk eq)` are facts.
 
 ### 2.23 `not` of a name is the negation of no fact, and a hypothesis rule may read `not`
 
+**Kind:** `negated-name`.
+
 **A conclusion `(not ?x)` is of a variable bound to a fact.** The grammar takes `(not Var)` as a conclusion, as
 `(hypothesis ?h)` then `(not ?h)` writes it, and whether `?h` holds a fact depends on the data. A name has no
 negation: `(not k)` is a parse error as a fact and as a conclusion, and § 2.16 refuses one a macro writes. So the
@@ -893,6 +953,8 @@ what `ein oracle` answers
 
 ### 2.24 A macro's call is no fact
 
+**Kind:** `macro-fact`.
+
 **A macro is called where the loader expands it**: in a rule's `:match` and `:assert`, at any depth,
 and in a query's `:goal` (§ 2.21). There the call is replaced by the macro's body
 ([`11-macros.md`](../03-syntax-and-semantics/11-macros.md)). Nothing else is expanded, so a form headed by a macro's name
@@ -928,6 +990,8 @@ fact of it can be written, by the fourth row, and no premise read.
 
 ### 2.25 An import brings a module's facts
 
+**Kind:** `import-list`.
+
 **Every import brings every declaration and every fact of its module**, with the module's own imports, one copy per
 program, under full names ([`11-macros.md`](../03-syntax-and-semantics/11-macros.md) has imports,
 [Q-M1f.247](../../../decisions/imports/Q-M1f.247-every-import-brings-its-module-whole.md)):
@@ -957,6 +1021,8 @@ program, under full names ([`11-macros.md`](../03-syntax-and-semantics/11-macros
   ([Q-M1f.139](../../../decisions/imports/Q-M1f.139-a-fact-stated-twice-keeps-its-first-statement.md)).
 
 ### 2.26 A program's hypothesis mechanisms do not contradict one another
+
+**Kind:** `mechanisms`, a refusal and a note alike.
 
 Three writers of a hypothesis, `(open F)` ([`09-hypotheses.md`](../03-syntax-and-semantics/09-hypotheses.md)): a
 rule that concludes one, with the `(open …)` facts the program writes; an obligation
@@ -1014,6 +1080,8 @@ so every refused declaration is refused beside it with the same line
 
 ### 2.27 An import is by full name, and a short name names one declaration in a file
 
+**Kind:** `full-name`; a module not found, § 2.18's `module-unreadable`.
+
 Every import brings its module whole (§ 2.25); a name a module declares has one full name, `M.name`, the module's name
 a path from the program file's directory or `std.x`
 ([Q-M1f.231](../../../decisions/imports/Q-M1f.231-every-name-a-module-declares-has-a-full-name.md),
@@ -1048,6 +1116,8 @@ another file writes as a name of its own is not taken. The answer does not depen
 
 ### 2.28 A hypothesis is one fact
 
+**Kind:** `parse` where a rule writes it; `malformed-primitive` where a macro's expansion does (§ 2.16).
+
 A hypothesis is a fact, each a commitment of its own, so `(open …)` holds one
 ([Q-M1f.271](../../../decisions/language/Q-M1f.271-a-hypothesis-is-one-fact.md)): `(open (and …))` is refused,
 at the parse where a program writes it, `and` heading no fact, and at load where a macro's expansion makes it, a
@@ -1063,6 +1133,8 @@ connective where a value goes (§ 2.16), placed at the `open`. A rule concludes 
 `(and (open (p a)) (open (q a)))` loads and proposes both.
 
 ### 2.29 A saved file is its program, its modules and one commitment of H
+
+**Kind:** `saved-file`.
 
 A saved file is one `(program …)`, the `(module …)`s it carries and at most one `(commit …)`, and a load reads it as
 the node of its program's lattice the commitment names
@@ -1094,6 +1166,8 @@ carried where the binary has no standard library to read, which is loaded as car
 
 ### 2.30 A rule's word to the engine
 
+**Kind:** `engine-word`.
+
 A rule states what it concludes under `:assert`, or a word to the engine under `:ein`
 ([`02-syntax.md` § Conclusion forms in `:assert`](02-syntax.md#conclusion-forms-in-assert);
 [Q-M1f.399](../../../decisions/language/Q-M1f.399-a-rule-states-facts-or-a-word-to-the-engine.md)). The grammar takes
@@ -1112,6 +1186,8 @@ is refused as `:ein dead` is. The two are pinned by `ein_word_unknown` and `ein_
 [`examples/broken/load/`](../../../../examples/broken/load/).
 
 ### 2.31 A hypothesis rule is a rule: there is no `hrule` form and no `:hrules`
+
+**Kind:** `parse`.
 
 A rule that concludes `(open F)` states a hypothesis, and it is activated as every rule is, by a fact of its name the
 program writes, or by none where it has no parameter
@@ -1136,6 +1212,79 @@ t.ein:1:8: unexpected `:hrules`: a keyword this form does not take
 
 Written as the rule it is, `(rule guess (?R ?T) :match (is-a ?x ?T) :assert (open (?R ?x)) :why "…")` beside its
 activators `(guess chosen Drink)`, the program loads.
+
+### 2.32 A declaration's name, and a rule's clauses
+
+**Kind:** `declaration`.
+
+A rule, an obligation and a rule that concludes a hypothesis share one name-space, and so do a program's macros; a
+rule writes the clauses it needs; and no declarator binds a name the kernel keeps
+([`03-reserved-names.md`](03-reserved-names.md)). The grammar refuses most of what breaks this at the parse; the
+loader refuses the rest, one line each, `; `-joined with every other loader line, a top-level form ending `at None`
+(§ 1.5):
+
+| the program | the line, behind `kb load error: ` |
+|---|---|
+| a rule named as a rule before it, whichever kind of rule each is | `duplicate rule name 'r' at None` |
+| a macro named as a macro before it | `duplicate macro 'm' at None` |
+| a rule with no `:match`, or with neither an `:assert` nor an `:ein` | `(rule r) missing :match or :assert at None` |
+| a relation, a rule, a macro or an import's alias that binds a name the kernel keeps and the grammar reads as a name, `__closed__` | `relation '__closed__' shadows a reserved kernel name at None` (`rule '…'`, `macro '…'`); `(import m :as __closed__) — alias '__closed__' shadows a reserved kernel name at None` |
+| a module that declares one name twice, with two bodies | `conflicting definitions of 'm.g': same name, different body (at <file>:<line>:<col>)`, placed in the module |
+
+The fixtures are `rule_duplicate_name`, `hrule_duplicate_name`, `macro_duplicate`, `rule_missing_match`,
+`rule_missing_assert` and `rule_half_declarators` in [`examples/broken/load/`](../../../../examples/broken/load/).
+
+### 2.33 A macro's call
+
+**Kind:** `macro-call`.
+
+A macro called in a rule's `:match` or `:assert` is replaced by its body
+([`11-macros.md`](../03-syntax-and-semantics/11-macros.md)), and a call that cannot be is refused, one line, the
+rule named in front:
+
+| the call | the line, behind `kb load error: ` |
+|---|---|
+| with another count of arguments than the macro declares | `(rule x): macro m/2 invoked with 1 args at <file>:<line>:<col>`, placed at the call |
+| of a macro whose expansion goes on past 50 calls deep | `(rule r): macro expansion exceeded depth 50 — a macro likely expands to itself` |
+| of `std.macro`'s `forall` or `unknown` in a `:match`, the program not importing it | `rule 'undefeated': '(forall …)' is a std.macro pattern macro used without importing it — add (import std.macro :symbols (forall)); unexpanded it would silently never match` |
+
+A goal's call is refused with the same lines, `query: its :goal: …` and `query: '(unknown …)' …` (§ 2.21). The
+fixtures are `macro_arity_mismatch` and `unimported_std_macro` in
+[`examples/broken/load/`](../../../../examples/broken/load/).
+
+### 2.34 An import resolves to one module
+
+**Kind:** `import`.
+
+An import names a module by its path from the program file's directory, or `std.x`, and brings it once (§ 2.25,
+§ 2.27). One that cannot is refused, one line, `at None` where the import is a top-level form (§ 1.5):
+
+| the import | the line, behind `kb load error: ` |
+|---|---|
+| a module that imports, through its own imports, a file that imports it | `import cycle: <a> -> <b> -> <a> (at None)`, each file by its resolved path |
+| `(import std)` | `(import std) — bare 'std' is not a module at None` |
+| both `:as` and `:symbols` | `(import m) — :as and :symbols are mutually exclusive at None` |
+| a `std.*` module's import of a module that is not one | `(import m) — a std.* module may import only std.* modules; a file-relative import there resolves under a checkout and not under the embedded copy an installed binary carries, at None` |
+
+The fixtures are `import_cycle`, `import_cycle_b`, `import_bare_std` and `import_as_and_symbols` in
+[`examples/broken/load/`](../../../../examples/broken/load/).
+
+### 2.35 A written derivation does not loop
+
+**Kind:** `derivation-cycle`.
+
+A fact written with `:rule` and `:using` states its derivation, the premises it was derived from
+([`02-syntax.md`](02-syntax.md)). A derivation is a walk down to what was given, so the written ones may not loop,
+and a program whose facts' `:using` lists reach back to the fact they start from is refused, one line, the loop
+named fact by fact:
+
+<!-- output -->
+```text
+kb load error: derivation cycle: (r a b) -> (r c d) -> (r a b)
+```
+
+The fixture is [`examples/broken/load/derivation_cycle.ein`](../../../../examples/broken/load/derivation_cycle.ein).
+A derivation the engine records may loop; only a written one is read at load.
 
 ## See also
 

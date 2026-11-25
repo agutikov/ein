@@ -34,6 +34,7 @@ use lrpar::{LexError, LexParseError, Lexeme, NonStreamingLexer, ParseRepair};
 
 use crate::ast::{Ast, NodeId};
 use ein_core::config::RETIRED;
+use ein_core::{Diagnostic, Kind, Place};
 
 mod build_ast;
 use build_ast as b;
@@ -146,6 +147,11 @@ const LATTICE_KEYWORDS: [&str; 3] = [":hypothesis-relations", ":no-hypothesis", 
 /// One error of a refused file.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SyntaxError {
+    /// Which refusal it is: [`Kind::Parse`], the grammar's, whatever its note
+    /// says; [`Kind::NotAscii`], the lexer's at a character that is not
+    /// ASCII; or [`Kind::NestingLimit`], the count of depth before the parse
+    /// (`07-diagnostics.md` § 1, § 1.6, § 1.7).
+    pub kind: Kind,
     /// 1-based, as a [`Loc`](crate::Loc) counts: lines at `\n`, columns in
     /// characters.
     pub line: u32,
@@ -183,36 +189,54 @@ impl ParseError {
     pub fn position(&self) -> (u32, u32) {
         self.errors.first().map_or((0, 0), |e| (e.line, e.col))
     }
+
+    /// **Each error as a finding** ([`Diagnostic`]): its kind, its place,
+    /// and its message, the lines the report prints for it, `file:line:col:
+    /// what` and then its notes and repairs indented under it, the last
+    /// error's carrying the line that says recovery was cut where it was. The
+    /// report is these messages, one after another, a line break between
+    /// two ([`fmt::Display`]).
+    pub fn diagnostics(&self) -> Vec<Diagnostic> {
+        let n = self.errors.len();
+        self.errors
+            .iter()
+            .enumerate()
+            .map(|(i, e)| {
+                let mut lines = vec![format!("{}:{}:{}: {}", self.file, e.line, e.col, e.what)];
+                for n in &e.notes {
+                    lines.push(format!("  note: {n}"));
+                }
+                for r in &e.repairs {
+                    lines.push(format!("  repair: {r}"));
+                }
+                if e.more_repairs > 0 {
+                    let s = if e.more_repairs == 1 { "" } else { "s" };
+                    lines.push(format!("  and {} more repair{s}", e.more_repairs));
+                }
+                if self.cut && i + 1 == n {
+                    lines.push(format!(
+                        "{}:{}:{}: recovery stopped here, at its budget of {} steps: \
+                         errors after this one are not reported",
+                        self.file, e.line, e.col, RECOVERY_STEP_BUDGET
+                    ));
+                }
+                Diagnostic::error(e.kind, lines.join("\n")).at(Some(Place {
+                    file: self.file.clone(),
+                    line: e.line,
+                    col: e.col,
+                }))
+            })
+            .collect()
+    }
 }
 
 impl fmt::Display for ParseError {
     /// One line an error, `file:line:col: what`, then its notes and repairs
-    /// indented under it, and, where recovery was cut, a last line saying so.
-    /// No trailing newline.
+    /// indented under it, and, where recovery was cut, a last line saying so:
+    /// [`ParseError::diagnostics`]' messages, one after another. No trailing
+    /// newline.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut lines = Vec::new();
-        for e in &self.errors {
-            lines.push(format!("{}:{}:{}: {}", self.file, e.line, e.col, e.what));
-            for n in &e.notes {
-                lines.push(format!("  note: {n}"));
-            }
-            for r in &e.repairs {
-                lines.push(format!("  repair: {r}"));
-            }
-            if e.more_repairs > 0 {
-                let s = if e.more_repairs == 1 { "" } else { "s" };
-                lines.push(format!("  and {} more repair{s}", e.more_repairs));
-            }
-        }
-        if self.cut
-            && let Some(last) = self.errors.last()
-        {
-            lines.push(format!(
-                "{}:{}:{}: recovery stopped here, at its budget of {} steps: \
-                 errors after this one are not reported",
-                self.file, last.line, last.col, RECOVERY_STEP_BUDGET
-            ));
-        }
+        let lines: Vec<String> = self.diagnostics().into_iter().map(|d| d.message).collect();
         f.write_str(&lines.join("\n"))
     }
 }
@@ -272,6 +296,7 @@ fn parse_with(
         return Err(ParseError {
             file,
             errors: vec![SyntaxError {
+                kind: Kind::NestingLimit,
                 line,
                 col,
                 what: format!(
@@ -400,16 +425,20 @@ fn report(
                     at += 1;
                 }
                 let (line, col) = lines.line_col(at);
-                let what = match text[at..].chars().next() {
+                let (kind, what) = match text[at..].chars().next() {
                     // No rule but a string's and the skip rule's comments
                     // matches a character that is not ASCII.
-                    Some(c) if !c.is_ascii() => not_ascii(c),
-                    c => format!(
-                        "no token starts with {}",
-                        shown(&c.map(String::from).unwrap_or_default())
+                    Some(c) if !c.is_ascii() => (Kind::NotAscii, not_ascii(c)),
+                    c => (
+                        Kind::Parse,
+                        format!(
+                            "no token starts with {}",
+                            shown(&c.map(String::from).unwrap_or_default())
+                        ),
                     ),
                 };
                 SyntaxError {
+                    kind,
                     line,
                     col,
                     what,
@@ -444,6 +473,7 @@ fn report(
                 };
                 let ranked = folded(lexer, p.repairs());
                 SyntaxError {
+                    kind: Kind::Parse,
                     line,
                     col,
                     what,

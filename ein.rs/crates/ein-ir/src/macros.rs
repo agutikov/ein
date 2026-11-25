@@ -13,21 +13,32 @@
 
 use std::collections::BTreeMap;
 
-use crate::ast::{Ast, Node, NodeId, loc_repr};
+use ein_core::{Diagnostic, Kind};
+
+use crate::ast::{Ast, Node, NodeId, loc_repr, place};
 
 /// A macro that expands to itself would recurse forever, so expansion is
 /// capped at this depth and refused past it.
 const MAX_EXPANSION_DEPTH: u32 = 50;
 
-/// A malformed invocation — arity mismatch or runaway recursion. The message
-/// is `MacroError`'s; the loader's `({head} {name}): ` prefix is added where
-/// the loader adds it ([03-design/03-data-model.md](../../../../docs/ein/ein.rs/03-design/03-data-model.md)).
+/// A malformed invocation — arity mismatch or runaway recursion: one finding
+/// of [`Kind::MacroCall`] (`07-diagnostics.md` § 2.33), placed at the call
+/// where the line names it. The message is `MacroError`'s; the loader's
+/// `({head} {name}): ` prefix is added where the loader adds it
+/// ([03-design/03-data-model.md](../../../../docs/ein/ein.rs/03-design/03-data-model.md)).
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct MacroError(pub String);
+pub struct MacroError(pub Diagnostic);
+
+impl MacroError {
+    /// The finding, as the one of a list the load's other errors carry.
+    pub fn findings(&self) -> &[Diagnostic] {
+        std::slice::from_ref(&self.0)
+    }
+}
 
 impl std::fmt::Display for MacroError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(&self.0)
+        f.write_str(&self.0.message)
     }
 }
 
@@ -64,7 +75,10 @@ pub struct Macro {
 ///
 /// Errors are **accumulated**, not returned at the first: a load reports every
 /// problem it found, and this is the half of one.
-pub fn collect_macros(ast: &Ast, forms: &[NodeId]) -> Result<BTreeMap<String, Macro>, Vec<String>> {
+pub fn collect_macros(
+    ast: &Ast,
+    forms: &[NodeId],
+) -> Result<BTreeMap<String, Macro>, Vec<Diagnostic>> {
     match read_macros(ast, forms) {
         (out, problems) if problems.is_empty() => Ok(out),
         (_, problems) => Err(problems),
@@ -79,9 +93,9 @@ pub fn collect_macros(ast: &Ast, forms: &[NodeId]) -> Result<BTreeMap<String, Ma
 /// declarations while it does. `collect_macros` is the same reading with the
 /// two halves turned into a `Result`, for the callers that only want to know
 /// whether the program is loadable.
-pub fn read_macros(ast: &Ast, forms: &[NodeId]) -> (BTreeMap<String, Macro>, Vec<String>) {
+pub fn read_macros(ast: &Ast, forms: &[NodeId]) -> (BTreeMap<String, Macro>, Vec<Diagnostic>) {
     let mut out: BTreeMap<String, Macro> = BTreeMap::new();
-    let mut errors: Vec<String> = Vec::new();
+    let mut errors: Vec<Diagnostic> = Vec::new();
     for &form in forms {
         if ast.head_name(form) != Some("macro") {
             continue;
@@ -95,14 +109,25 @@ pub fn read_macros(ast: &Ast, forms: &[NodeId]) -> (BTreeMap<String, Macro>, Vec
         let name = ast
             .atom_name(name)
             .expect("a macro's first argument is its name (ein.y's Macro)");
+        let at = place(ast, ast.loc(form));
         if ein_core::is_reserved(name) {
-            errors.push(format!(
-                "macro '{name}' shadows a reserved kernel name at {loc}"
-            ));
+            errors.push(
+                Diagnostic::error(
+                    Kind::Declaration,
+                    format!("macro '{name}' shadows a reserved kernel name at {loc}"),
+                )
+                .at(at),
+            );
             continue;
         }
         if out.contains_key(name) {
-            errors.push(format!("duplicate macro '{name}' at {loc}"));
+            errors.push(
+                Diagnostic::error(
+                    Kind::Declaration,
+                    format!("duplicate macro '{name}' at {loc}"),
+                )
+                .at(at),
+            );
             continue;
         }
         let params: Vec<String> = ast
@@ -159,9 +184,12 @@ fn expand(
     depth: u32,
 ) -> Result<NodeId, MacroError> {
     if depth > MAX_EXPANSION_DEPTH {
-        return Err(MacroError(format!(
-            "macro expansion exceeded depth {MAX_EXPANSION_DEPTH} — \
-             a macro likely expands to itself"
+        return Err(MacroError(Diagnostic::error(
+            Kind::MacroCall,
+            format!(
+                "macro expansion exceeded depth {MAX_EXPANSION_DEPTH} — \
+                 a macro likely expands to itself"
+            ),
         )));
     }
     match ast.node(node) {
@@ -175,13 +203,19 @@ fn expand(
                 // toward the arity.
                 let actual: Vec<NodeId> = ast.args(args).to_vec();
                 if actual.len() != m.params.len() {
-                    return Err(MacroError(format!(
-                        "macro {}/{} invoked with {} args at {}",
-                        m.name,
-                        m.params.len(),
-                        actual.len(),
-                        loc_repr(ast, ast.loc(node)),
-                    )));
+                    return Err(MacroError(
+                        Diagnostic::error(
+                            Kind::MacroCall,
+                            format!(
+                                "macro {}/{} invoked with {} args at {}",
+                                m.name,
+                                m.params.len(),
+                                actual.len(),
+                                loc_repr(ast, ast.loc(node)),
+                            ),
+                        )
+                        .at(place(ast, ast.loc(node))),
+                    ));
                 }
                 let subst: BTreeMap<&str, NodeId> = m
                     .params
@@ -325,7 +359,7 @@ pub fn unimported_macro_errors(
     rules: &[(String, NodeId)],
     declared: &BTreeMap<String, Macro>,
     stdlib_macros: &[String],
-) -> Vec<String> {
+) -> Vec<Diagnostic> {
     let unimported: Vec<&String> = stdlib_macros
         .iter()
         .filter(|n| !declared.contains_key(*n))
@@ -339,10 +373,15 @@ pub fn unimported_macro_errors(
         concrete_heads(ast, *match_node, &mut heads);
         for head in &unimported {
             if heads.iter().any(|h| h == *head) {
-                out.push(format!(
-                    "{who}: '({head} …)' is a std.macro pattern macro used \
-                     without importing it — add (import std.macro :symbols ({head})); \
-                     unexpanded it would silently never match"
+                out.push(Diagnostic::error(
+                    // The macros' own check, a rule's and a goal's alike
+                    // (§ 2.21 lists a goal's).
+                    Kind::MacroCall,
+                    format!(
+                        "{who}: '({head} …)' is a std.macro pattern macro used \
+                         without importing it — add (import std.macro :symbols ({head})); \
+                         unexpanded it would silently never match"
+                    ),
                 ));
             }
         }
@@ -415,7 +454,19 @@ mod tests {
         ))
         .expect_err("arity mismatch");
         // The position in Ein's spelling (`loc_repr`, Q-M1f.75).
-        assert_eq!(err.0, "macro forall/2 invoked with 1 args at <string>:2:20");
+        assert_eq!(
+            err.to_string(),
+            "macro forall/2 invoked with 1 args at <string>:2:20"
+        );
+        // A finding of § 2.33's kind, placed at the call.
+        assert_eq!(err.0.kind, Kind::MacroCall);
+        assert_eq!(
+            err.0
+                .place
+                .as_ref()
+                .map(|p| (p.file.as_str(), p.line, p.col)),
+            Some(("<string>", 2, 20))
+        );
         // A keyword pair in a call is refused at the parse, at its keyword.
         let refused = parse(
             &mut Ast::new(),
@@ -446,9 +497,11 @@ mod tests {
             expand_src("(macro loop (?a) (loop ?a))\n(rule r () :match (loop x) :assert (done))")
                 .expect_err("runaway");
         assert_eq!(
-            err.0,
+            err.to_string(),
             "macro expansion exceeded depth 50 — a macro likely expands to itself"
         );
+        // The line names no place, and the finding has none.
+        assert_eq!((err.0.kind, err.0.place), (Kind::MacroCall, None));
     }
 
     #[test]
@@ -477,11 +530,14 @@ mod tests {
         let errs = unimported_macro_errors(&ast, &rules, &declared, &stdlib);
         assert_eq!(errs.len(), 1, "{errs:?}");
         assert!(
-            errs[0].starts_with("rule 'undefeated': '(forall …)'"),
+            errs[0]
+                .message
+                .starts_with("rule 'undefeated': '(forall …)'"),
             "{}",
             errs[0]
         );
+        assert_eq!(errs[0].kind, Kind::MacroCall);
         // `p` and `q` are ordinary heads: absence is not an error.
-        assert!(!errs[0].contains("'(p …)'"));
+        assert!(!errs[0].message.contains("'(p …)'"));
     }
 }

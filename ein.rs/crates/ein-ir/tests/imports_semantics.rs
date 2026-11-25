@@ -116,7 +116,7 @@ fn the_import_and_macro_failures_are_byte_identical() {
         let err = Resolver::new()
             .resolve_imports(&mut ast, &forms, Some(&dir))
             .expect_err(&format!("{name} must fail"));
-        assert_eq!(err.0, expected, "{name}");
+        assert_eq!(err.to_string(), expected, "{name}");
     }
 
     // The macro fixture's message is a `MacroError`; the loader prefixes it
@@ -213,7 +213,7 @@ fn module_names_mangle_into_these_file_paths() {
         resolvable += 1;
         let answer = match Resolver::new().resolve_imports(&mut ast, &forms, Some(&base)) {
             Ok(f) => dump_canonical(&ast, &f),
-            Err(e) => e.0,
+            Err(e) => e.to_string(),
         };
         for line in answer
             .replace(root.to_str().expect("utf-8"), "{ROOT}")
@@ -254,7 +254,7 @@ impl Modules {
         let forms = parse(&mut ast, src, Some("<probe>")).map_err(|e| format!("parse: {e}"))?;
         ein_ir::load(&mut ast, &mut terms, &forms, Some(&self.0))
             .map(|_| ())
-            .map_err(|e| e.0)
+            .map_err(|e| e.to_string())
     }
 }
 
@@ -460,9 +460,9 @@ fn a_stdlib_module_may_not_import_a_file_relative_one() {
         .resolve_imports(&mut ast, &forms, None)
         .expect_err("a std module importing a file-relative one is refused");
     assert!(
-        err.0.contains("may import only std.* modules"),
+        err.to_string().contains("may import only std.* modules"),
         "the refusal has to say what is wrong: {}",
-        err.0
+        err
     );
     // The control: the same shape one level out is *fine*, because a puzzle
     // importing a file-relative module is the ordinary case.
@@ -541,14 +541,14 @@ fn an_override_without_the_marker_is_refused_by_name() {
         .resolve_imports(&mut ast, &forms, None)
         .expect_err("a markerless override is refused");
     assert!(
-        err.0.contains("$EIN_STDLIB") && err.0.contains("MANIFEST.sha256"),
+        err.to_string().contains("$EIN_STDLIB") && err.to_string().contains("MANIFEST.sha256"),
         "the refusal names neither the variable nor what is missing: {}",
-        err.0
+        err
     );
     assert!(
-        !err.0.contains("module not found"),
+        !err.to_string().contains("module not found"),
         "still the old message: {}",
-        err.0
+        err
     );
 
     // …and a program that imports nothing from the stdlib is not refused for
@@ -720,7 +720,7 @@ fn resolved(modules: &[(&str, &str)], src: &str) -> Result<Vec<String>, String> 
     let forms = parse(&mut ast, src, Some("<program>")).map_err(|e| e.to_string())?;
     let out = Resolver::new()
         .resolve_imports(&mut ast, &forms, Some(scratch.path()))
-        .map_err(|e| e.0)?;
+        .map_err(|e| e.to_string())?;
     Ok(out
         .iter()
         .map(|&n| {
@@ -1053,7 +1053,7 @@ fn an_import_of_the_module_every_program_gets_is_an_import_like_any_other() {
             true => r.resolve_program(&mut ast, &forms, Some(scratch.path())),
             false => r.resolve_imports(&mut ast, &forms, Some(scratch.path())),
         }
-        .unwrap_or_else(|e| panic!("{src}: {}", e.0));
+        .unwrap_or_else(|e| panic!("{src}: {e}"));
         (
             out.iter()
                 .map(|&n| ein_ir::dump::dump_compact(&ast, n))
@@ -1123,7 +1123,7 @@ fn a_library_with_no_std_core_is_refused_and_one_with_another_is_read() {
             .resolve_program(&mut ast, &forms, None)
             .expect_err("no std.core in the library");
         assert_eq!(
-            err.0,
+            err.to_string(),
             format!(
                 "std.core was not found in $EIN_STDLIB: {} holds no core.ein — every program \
                  gets std.core, and a library $EIN_STDLIB names is where it is read from \
@@ -1162,8 +1162,8 @@ fn a_library_with_no_std_core_is_refused_and_one_with_another_is_read() {
         .resolve_program(&mut ast, &forms, None)
         .expect_err("no marker");
     assert!(
-        err.0.contains("MANIFEST.sha256") && !err.0.contains("was not found"),
+        err.to_string().contains("MANIFEST.sha256") && !err.to_string().contains("was not found"),
         "{}",
-        err.0
+        err.to_string()
     );
 }

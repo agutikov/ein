@@ -54,7 +54,7 @@ fn refusal(witness: &str) -> Option<String> {
     let root = format!("{}/", repo_root().display());
     load(&mut ast, &mut terms, &forms, path.parent())
         .err()
-        .map(|e| format!("kb load error: {}", e.0).replace(&root, ""))
+        .map(|e| format!("kb load error: {e}").replace(&root, ""))
 }
 
 fn ask(path: &Path, mode: Mode) -> Answer {

@@ -13,12 +13,14 @@
 //! --workspace` and whose text is diffed against what ran stands in for a
 //! contract suite.
 //!
-//! Five tests, five different failures:
+//! Six tests, six different failures:
 //!
 //! - the example does not compile → this file does not build;
 //! - the example's numbers move → [`the_worked_example_runs`];
 //! - a verdict arm the page shows is never taken →
 //!   [`the_other_three_verdicts_are_reachable`];
+//! - a refusal is not read by its kind →
+//!   [`the_refusals_are_read_by_their_kind`];
 //! - the page and the example drift apart → [`the_page_quotes_this_file`];
 //! - the page's **prose about this file** drifts →
 //!   [`the_page_quotes_this_files_prose_too`] and
@@ -58,7 +60,7 @@ fn page() -> String {
 // ─── page ───────────────────────────────────────────────────────────
 use std::path::Path;
 
-use ein_core::Terms;
+use ein_core::{Diagnostic, Terms};
 use ein_infer::events::Events;
 use ein_infer::explore::{self, Ask, Mode, Verdict, Which};
 use ein_ir::Ast;
@@ -74,8 +76,24 @@ fn run(path: &Path) -> Result<String, String> {
 
     // 2 — load: parse, expand macros, resolve `(import std.*)` against the
     //     file's directory, and build the KB. `ein_ir::parse` + `ein_ir::load`
-    //     is the same thing in two steps, for a caller that has the text.
-    let mut kb = ein_ir::load_file(&mut ast, &mut terms, path).map_err(|e| e.to_string())?;
+    //     is the same thing in two steps, for a caller that has the text. A
+    //     program the load refuses is a value: each finding has a kind, the
+    //     refusal of `07-diagnostics.md` it is, its place where the line names
+    //     one, and the line `ein solve` prints. The hypothesis mechanisms are
+    //     judged on root's fixpoint after the load, as every command judges
+    //     them, from a second load, and a conflict refuses the program too.
+    let refused = |findings: &[Diagnostic]| {
+        let kinds: Vec<&str> = findings.iter().map(|f| f.kind.name()).collect();
+        format!("refused: {}\n", kinds.join(", "))
+    };
+    let mut kb = match ein_ir::load_file(&mut ast, &mut terms, path) {
+        Ok(kb) => kb,
+        Err(e) => return Ok(refused(e.findings())),
+    };
+    let again = |ast: &mut Ast, terms: &mut Terms| ein_ir::load_file(ast, terms, path).ok();
+    if let Err(conflicts) = ein_infer::mechanisms::judge_loaded(&ast, &terms, &kb, again) {
+        return Ok(refused(&conflicts));
+    }
     let loaded_facts = kb.n_facts();
 
     // 3 — root's derivation, kept for step 5's trace. The run below finds
@@ -183,7 +201,10 @@ trace: 599 steps
 // `Contradiction`, `Ambiguity` and `Open`, on three other files. So the `match`
 // is five arms of which **four** have run. The fifth, `None`, needs a budget no
 // example here sets, and it is in the page because a caller that never sets one
-// still has to name it.
+// still has to name it. `the_refusals_are_read_by_their_kind` takes the two
+// refusals, on a file the parse refuses, one the load refuses and one whose
+// hypothesis mechanisms disagree: `refused: parse`, `refused: declaration` and
+// `refused: mechanisms`.
 // ─── prose ──────────────────────────────────────────────────────────
 
 /// A contradiction, an ambiguity and an **open** state take the other three
@@ -205,6 +226,27 @@ fn the_other_three_verdicts_are_reachable() {
         owing.contains("R is empty: every alive node owes"),
         "{owing}"
     );
+}
+
+/// A refused program is read by its findings' kinds, the refusals the
+/// reference names, and not by its text: a parse's, a load's, and the
+/// mechanisms' judgement after the load, the one a caller that loads alone
+/// would miss.
+#[test]
+fn the_refusals_are_read_by_their_kind() {
+    for (file, want) in [
+        ("examples/broken/unclosed_paren.ein", "refused: parse\n"),
+        (
+            "examples/broken/load/rule_duplicate_name.ein",
+            "refused: declaration\n",
+        ),
+        (
+            "examples/broken/load/no_hypothesis_beside_open.ein",
+            "refused: mechanisms\n",
+        ),
+    ] {
+        assert_eq!(run(&repo_root().join(file)).expect(file), want, "{file}");
+    }
 }
 
 /// **The page quotes this file.** Both texts are the region between the two
@@ -317,7 +359,7 @@ fn the_page_and_the_file_name_the_same_tests() {
         .map(|(name, _)| name.to_string())
         .filter(|n| n.starts_with("the_"))
         .collect();
-    assert_eq!(declared.len(), 5, "{declared:?}");
+    assert_eq!(declared.len(), 6, "{declared:?}");
 
     let page = page();
     let cited: BTreeSet<String> = page

@@ -54,7 +54,7 @@ fn load_error(text: &str) -> String {
     let forms = parse(&mut ast, text, Some("<fixture>")).expect("the fixture parses");
     match load(&mut ast, &mut terms, &forms, None) {
         Ok(_) => panic!("expected a load error, but it loaded"),
-        Err(e) => e.0,
+        Err(e) => e.to_string(),
     }
 }
 
@@ -753,16 +753,16 @@ fn an_override_without_the_marker_is_refused_and_names_the_variable() {
         .resolve_imports(&mut ast, &forms, zebra2.parent())
         .expect_err("an unprovable override is refused");
     assert!(
-        err.0.contains("$EIN_STDLIB")
-            && err.0.contains(&empty.display().to_string())
-            && err.0.contains(MARKER),
+        err.to_string().contains("$EIN_STDLIB")
+            && err.to_string().contains(&empty.display().to_string())
+            && err.to_string().contains(MARKER),
         "the refusal does not name the variable, the path and what is missing: {}",
-        err.0
+        err
     );
     assert!(
-        !err.0.contains("module not found"),
+        !err.to_string().contains("module not found"),
         "still the message that named the module instead of the cause: {}",
-        err.0
+        err
     );
 
     // The same file through the ordinary resolver loads, so the failure above
@@ -894,7 +894,7 @@ fn the_kb_shape_does_not_move_when_the_id_space_is_permuted() {
             let mut terms = Terms::new();
             let base = load_file(&mut Ast::new(), &mut terms, path)
                 .map(|kb| shape(&kb, &terms))
-                .map_err(|e| e.0);
+                .map_err(|e| e.to_string());
 
             let mut shuffled = permuted(&terms);
             let kernel = Terms::new().syms.len();
@@ -907,7 +907,7 @@ fn the_kb_shape_does_not_move_when_the_id_space_is_permuted() {
 
             let again = load_file(&mut Ast::new(), &mut shuffled, path)
                 .map(|kb| shape(&kb, &shuffled))
-                .map_err(|e| e.0);
+                .map_err(|e| e.to_string());
             // `Some(true)` loaded, `Some(false)` rejected, `None` neither.
             let (kind, line) = match (&base, &again) {
                 (Ok(a), Ok(b)) => (

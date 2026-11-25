@@ -2886,7 +2886,7 @@ fn load_error(text: &str) -> String {
     let forms = parse(&mut ast, text, Some("<loader>")).unwrap_or_else(|e| panic!("{text}\n{e}"));
     match load(&mut ast, &mut Terms::new(), &forms, None) {
         Ok(_) => panic!("{text} loads"),
-        Err(e) => e.0,
+        Err(e) => e.to_string(),
     }
 }
 

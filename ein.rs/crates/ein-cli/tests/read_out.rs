@@ -558,10 +558,9 @@ fn count_prints_describes_rows_and_reads_no_state() {
                                 }
                             }
                             let notes = |t: &ein_render::read_out::Text| -> Vec<String> {
-                                t.stderr
-                                    .iter()
+                                t.stderr()
+                                    .into_iter()
                                     .filter(|l| l.contains(": partial — "))
-                                    .cloned()
                                     .collect()
                             };
                             if notes(&ct) != notes(&dt) {

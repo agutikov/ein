@@ -320,10 +320,7 @@ fn run_bounded(
                 Some(Vec::new())
             }
             Err(ein_infer::SolveError::Deadline) => {
-                eprintln!(
-                    "** aborted: --max-time {} s reached before the question was decided **",
-                    max_time.unwrap_or(0.0)
-                );
+                eprintln!("{}", aborted(max_time).line());
                 return 2;
             }
             Err(e) => {
@@ -337,10 +334,7 @@ fn run_bounded(
     let r = match read_out::run_with(&mut kb, &mut terms, &ast, &opts, &mut events) {
         Ok(r) => r,
         Err(ein_infer::SolveError::Deadline) => {
-            eprintln!(
-                "** aborted: --max-time {} s reached before the question was decided **",
-                max_time.unwrap_or(0.0)
-            );
+            eprintln!("{}", aborted(max_time).line());
             return 2;
         }
         // `-y` found a parent path that reaches another state on a monotone
@@ -567,7 +561,7 @@ fn run_monotone(m: &ArgMatches, file: &str) -> i32 {
             )
         );
     }
-    for l in &text.stderr {
+    for l in text.stderr() {
         eprintln!("{l}");
     }
     if summary_path.is_none() && dump.is_none() {
@@ -1200,10 +1194,7 @@ pub fn print(
     stats: bool,
 ) -> (i32, ein_render::read_out::Text) {
     if r.answer.stopped == Some(Stopped::Deadline) {
-        eprintln!(
-            "** aborted: --max-time {} s reached before the question was decided **",
-            max_time.unwrap_or(0.0)
-        );
+        eprintln!("{}", aborted(max_time).line());
         return (2, ein_render::read_out::Text::default());
     }
     let argv = header_argv(command);
@@ -1228,8 +1219,21 @@ pub fn print(
             )
         );
     }
-    for l in &text.stderr {
+    for l in text.stderr() {
         eprintln!("{l}");
     }
     (text.code, text)
+}
+
+/// **The clock's abort** (`-T`), as a diagnostic: [`ein_core::Kind::Deadline`],
+/// printed as its line, `** aborted: --max-time S s reached before the
+/// question was decided **`, on stderr and nowhere else, at exit 2.
+pub(crate) fn aborted(max_time: Option<f64>) -> ein_core::Diagnostic {
+    ein_core::Diagnostic::error(
+        ein_core::Kind::Deadline,
+        format!(
+            "--max-time {} s reached before the question was decided",
+            max_time.unwrap_or(0.0)
+        ),
+    )
 }

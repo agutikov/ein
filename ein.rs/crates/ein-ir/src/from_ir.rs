@@ -15,10 +15,12 @@
 //! frontend and the data model at once, and `ein-core` depends on nothing.
 
 use crate::ast::{Ast, Node, NodeId, loc_repr};
+use crate::grammar::ParseError;
 use crate::imports::Resolver;
 use crate::macros::{self, Macro as IrMacro, MacroError};
 use ein_core::config::{FLAGS, SolverConfig};
 use ein_core::entities::{EngineWord, ExprRef, Loc, Macro, Pattern, Query, Relation, Rule, Solve};
+use ein_core::{Diagnostic, Kind, Place};
 use ein_core::{
     FactId, Kb, Overflow, Program, Prov, ProvId, Symbol, Terms, Value, detect_provenance_cycles,
     is_predicate, is_reserved,
@@ -26,13 +28,56 @@ use ein_core::{
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
-/// The accumulated problems, `; `-joined.
+/// **A load's refusal, as values** (Q-M2.9): its findings, in the order the
+/// loader's passes found them, each a [`Diagnostic`] with its [`Kind`], the
+/// refusal of `07-diagnostics.md` it is, its [`Place`] where the line names
+/// one, and its line; or, where a text did not parse, that text's
+/// [`ParseError`], whole, whose errors are its findings.
+///
+/// What a command prints is its `Display`, behind `kb load error: `: the
+/// findings' lines `; `-joined, or the parse error's report, byte for byte
+/// what the load printed before its findings were values.
 #[derive(Clone, PartialEq, Eq, Debug)]
-pub struct KbLoadError(pub String);
+pub struct KbLoadError {
+    findings: Vec<Diagnostic>,
+    parse: Option<ParseError>,
+}
+
+impl KbLoadError {
+    /// A refusal of these findings.
+    pub fn new(findings: Vec<Diagnostic>) -> Self {
+        KbLoadError {
+            findings,
+            parse: None,
+        }
+    }
+
+    /// A refusal of one finding: `kind`, its line `message`, at `place`.
+    pub fn one(kind: Kind, message: impl Into<String>, place: Option<Place>) -> Self {
+        KbLoadError::new(vec![Diagnostic::error(kind, message).at(place)])
+    }
+
+    /// The findings, each with its kind, its place and its line.
+    pub fn findings(&self) -> &[Diagnostic] {
+        &self.findings
+    }
+
+    /// The parse error, where the program's text, or a module's, did not
+    /// parse.
+    pub fn parse(&self) -> Option<&ParseError> {
+        self.parse.as_ref()
+    }
+}
 
 impl std::fmt::Display for KbLoadError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(&self.0)
+        match &self.parse {
+            Some(p) => write!(f, "{p}"),
+            None => {
+                let lines: Vec<&str> = self.findings.iter().map(|d| d.message.as_str()).collect();
+                f.write_str(&lines.join("; "))
+            }
+        }
     }
 }
 
@@ -40,14 +85,56 @@ impl std::error::Error for KbLoadError {}
 
 impl From<crate::imports::LoadError> for KbLoadError {
     fn from(e: crate::imports::LoadError) -> Self {
-        KbLoadError(e.0)
+        let (findings, parse) = e.into_parts();
+        KbLoadError { findings, parse }
+    }
+}
+
+impl From<ParseError> for KbLoadError {
+    fn from(e: ParseError) -> Self {
+        KbLoadError {
+            findings: e.diagnostics(),
+            parse: Some(e),
+        }
     }
 }
 
 impl From<Overflow> for KbLoadError {
+    /// The store's own limits (`07-diagnostics.md` § 2.5).
     fn from(e: Overflow) -> Self {
-        KbLoadError(e.to_string())
+        KbLoadError::one(Kind::StoreLimit, e.to_string(), None)
     }
+}
+
+/// A refusal of `kind`, its line `message`, at `place`.
+fn refusal(kind: Kind, place: Option<Place>, message: String) -> Diagnostic {
+    Diagnostic::error(kind, message).at(place)
+}
+
+/// Where `node` is written, as a finding's place: the position [`placed`]
+/// writes in front of a line.
+fn at(ast: &Ast, node: NodeId) -> Option<Place> {
+    crate::ast::place(ast, ast.loc(node))
+}
+
+/// [`at`] `node`, or at `outer`: [`placed_or`]'s position.
+fn at_or(ast: &Ast, node: NodeId, outer: NodeId) -> Option<Place> {
+    at(ast, node).or_else(|| at(ast, outer))
+}
+
+/// The first position at or under `node`, in the order it is written:
+/// [`placed_form`]'s.
+fn written_at(ast: &Ast, node: NodeId) -> Option<crate::ast::Loc> {
+    ast.loc(node).or_else(|| match ast.node(node) {
+        Node::SForm { head, .. } => written_at(ast, head)
+            .or_else(|| ast.form_args(node).iter().find_map(|&a| written_at(ast, a))),
+        _ => None,
+    })
+}
+
+/// [`written_at`], as a finding's place.
+fn at_form(ast: &Ast, node: NodeId) -> Option<Place> {
+    crate::ast::place(ast, written_at(ast, node))
 }
 
 /// What a load requires of a program beyond what the grammar does.
@@ -120,13 +207,14 @@ pub fn load_file_with(
     path: &Path,
     opts: &LoadOptions,
 ) -> Result<Kb, KbLoadError> {
-    let text = std::fs::read_to_string(path)
-        .map_err(|e| KbLoadError(format!("{}: {e}", path.display())))?;
+    let text = std::fs::read_to_string(path).map_err(|e| {
+        KbLoadError::one(Kind::Unreadable, format!("{}: {e}", path.display()), None)
+    })?;
     // A program, or a saved file (`crate::saved`).
     crate::saved::load_text(ast, terms, &text, path.to_str(), path.parent(), 0, opts)
         .map(|l| l.kb)
         .map_err(|e| match e {
-            crate::saved::TextError::Parse(e) => KbLoadError(e),
+            crate::saved::TextError::Parse(e) => KbLoadError::from(e),
             crate::saved::TextError::Load(e) => e,
         })
 }
@@ -213,7 +301,7 @@ pub fn load_query_by(
 ) -> Result<Kb, KbLoadError> {
     let mut kb = Kb::new(Program::new());
     kb.program_mut().active_query = active_query;
-    let mut errors: Vec<String> = Vec::new();
+    let mut errors: Vec<Diagnostic> = Vec::new();
 
     // A saved file, its first form its `(program …)`: its program against
     // the modules it carries, with its choices (`crate::saved`). Its
@@ -229,12 +317,16 @@ pub fn load_query_by(
         .iter()
         .find(|&&f| matches!(ast.head_name(f), Some("program" | "module" | "commit")))
     {
-        return Err(KbLoadError(format!(
-            "a program holds a ({} …) at {} — (program …), (module …) and (commit …) are a \
-             saved file's, which opens with its (program …)",
-            ast.head_name(w).unwrap_or(""),
-            loc_repr(ast, ast.loc(w))
-        )));
+        return Err(KbLoadError::one(
+            Kind::SavedFile,
+            format!(
+                "a program holds a ({} …) at {} — (program …), (module …) and (commit …) are a \
+                 saved file's, which opens with its (program …)",
+                ast.head_name(w).unwrap_or(""),
+                loc_repr(ast, ast.loc(w))
+            ),
+            at(ast, w),
+        ));
     }
 
     // Imports resolve up front into one flat, import-free, qualified stream.
@@ -264,9 +356,13 @@ pub fn load_query_by(
             "relation" => relations.push(form),
             "rule" => rules.push(form),
             "macro" => macro_forms.push(form),
-            "import" => errors.push(format!(
-                "unresolved (import …) at {} — internal error",
-                loc_repr(ast, ast.loc(form))
+            "import" => errors.push(refusal(
+                Kind::Import,
+                at(ast, form),
+                format!(
+                    "unresolved (import …) at {} — internal error",
+                    loc_repr(ast, ast.loc(form))
+                ),
             )),
             "query" => query_blocks.push(form),
             "solve" => solve_blocks.push(form),
@@ -282,7 +378,11 @@ pub fn load_query_by(
     // A macro's `:why` is `Macro::why` (`LoadOptions::require_why`).
     if opts.require_why {
         for m in declared_macros.values().filter(|m| m.why.is_none()) {
-            errors.push(missing_why("macro", &m.name));
+            errors.push(refusal(
+                Kind::MissingWhy,
+                None,
+                missing_why("macro", &m.name),
+            ));
         }
     }
     for m in declared_macros.values() {
@@ -359,9 +459,13 @@ pub fn load_query_by(
     // One lattice per program: a second `(solve …)` would be a second R,
     // and a program states one R, which its queries all ask about.
     if solve_blocks.len() > 1 {
-        errors.push(format!(
-            "{} (solve …) forms — a program states its lattice once",
-            solve_blocks.len()
+        errors.push(refusal(
+            Kind::Claim,
+            None,
+            format!(
+                "{} (solve …) forms — a program states its lattice once",
+                solve_blocks.len()
+            ),
         ));
     }
     kb.program_mut().solve = solve_blocks.first().map(|&form| Solve {
@@ -447,13 +551,17 @@ pub fn load_query_by(
     let cycles = detect_provenance_cycles(&kb, terms);
     if let Some(cycle) = cycles.first() {
         let path: Vec<String> = cycle.iter().map(|&f| terms.fact_text(f)).collect();
-        errors.push(format!("derivation cycle: {}", path.join(" -> ")));
+        errors.push(refusal(
+            Kind::DerivationCycle,
+            None,
+            format!("derivation cycle: {}", path.join(" -> ")),
+        ));
     }
 
     if errors.is_empty() {
         Ok(kb)
     } else {
-        Err(KbLoadError(errors.join("; ")))
+        Err(KbLoadError::new(errors))
     }
 }
 
@@ -573,7 +681,7 @@ fn validate_solve(
     ast: &Ast,
     kb: &Kb,
     relations_of: Option<&BTreeSet<String>>,
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) {
     let Some(solve) = kb.program().solve() else {
         return;
@@ -584,7 +692,7 @@ fn validate_solve(
     let claim = match crate::claim::parse(ast, node) {
         Ok(c) => c,
         Err(message) => {
-            errors.push(message);
+            errors.push(refusal(Kind::Claim, None, message));
             return;
         }
     };
@@ -606,11 +714,15 @@ fn validate_solve(
             // facts, so one that lists either can never hold, and is refused.
             if is_predicate(fact.relation) {
                 if reported.insert(fact.relation.to_string()) {
-                    errors.push(format!(
-                        "(solve … :expect …) names {}, which a state never stores — eq and neq \
-                         are computed from their definition, so a region claim, which lists a \
-                         state's facts, holds neither",
-                        fact.relation
+                    errors.push(refusal(
+                        Kind::Claim,
+                        None,
+                        format!(
+                            "(solve … :expect …) names {}, which a state never stores — eq and \
+                             neq are computed from their definition, so a region claim, which \
+                             lists a state's facts, holds neither",
+                            fact.relation
+                        ),
                     ));
                 }
                 continue;
@@ -620,10 +732,14 @@ fn validate_solve(
             // derives.
             let known = relations_of.is_none_or(|k| k.contains(fact.relation));
             if !known && reported.insert(fact.relation.to_string()) {
-                errors.push(format!(
-                    "(solve … :expect …) names {0}, and the program names no relation {0} — \
-                     {CLAIM_RELATION}",
-                    fact.relation
+                errors.push(refusal(
+                    Kind::Claim,
+                    None,
+                    format!(
+                        "(solve … :expect …) names {0}, and the program names no relation {0} — \
+                         {CLAIM_RELATION}",
+                        fact.relation
+                    ),
                 ));
             }
         }
@@ -767,7 +883,7 @@ fn refuse_solve_names(
     ast: &Ast,
     kb: &Kb,
     relations_of: &BTreeSet<String>,
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) {
     /// A list's names with their nodes: a bare name, or a form's head and
     /// its atom arguments. `()` holds none.
@@ -818,10 +934,14 @@ fn refuse_solve_names(
         }
         for (node, name) in names(ast, value) {
             if !known.contains(&name) {
-                errors.push(format!(
-                    "{}solve: its :{list} names {name}, and the program names no \
-                     relation {name} — {RELATION}",
-                    placed_or(ast, node, value),
+                errors.push(refusal(
+                    Kind::SolveList,
+                    at_or(ast, node, value),
+                    format!(
+                        "{}solve: its :{list} names {name}, and the program names no \
+                         relation {name} — {RELATION}",
+                        placed_or(ast, node, value),
+                    ),
                 ));
             }
         }
@@ -866,7 +986,7 @@ fn validate_queries(
     kb: &Kb,
     relations_of: Option<&BTreeSet<String>>,
     unimported: &[String],
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) {
     for query in &kb.program().queries {
         if let Some(text) = string_value(ast, query_keyword(ast, query, "goal-text")) {
@@ -882,7 +1002,7 @@ fn validate_queries(
         if let Some(node) = query_keyword(ast, query, "over")
             && let Err(message) = crate::expect::Over::parse(ast, node)
         {
-            errors.push(message);
+            errors.push(refusal(Kind::Claim, None, message));
         }
         let Some(node) = query_keyword(ast, query, "expect") else {
             continue;
@@ -914,10 +1034,14 @@ fn validate_queries(
                     || is_reserved(fact.relation)
                     || relations_of.is_none_or(|k| k.contains(fact.relation));
                 if !known {
-                    errors.push(format!(
-                        ":expect names {0}, and the program names no relation {0} — \
-                         {CLAIM_RELATION}",
-                        fact.relation
+                    errors.push(refusal(
+                        Kind::Claim,
+                        None,
+                        format!(
+                            ":expect names {0}, and the program names no relation {0} — \
+                             {CLAIM_RELATION}",
+                            fact.relation
+                        ),
                     ));
                 }
             }
@@ -934,11 +1058,15 @@ fn validate_queries(
         for model in expectation.models() {
             for &f in &model.facts {
                 if !atoms.iter().any(|&a| crate::expect::matches(ast, f, a)) {
-                    errors.push(format!(
-                        ":expect lists {}, which no atom of the query's :goal matches — a \
-                         query's claim lists its projection classes; a claim about the state \
-                         is (solve … :expect (region …))'s",
-                        crate::expect::render(ast, f)
+                    errors.push(refusal(
+                        Kind::Claim,
+                        None,
+                        format!(
+                            ":expect lists {}, which no atom of the query's :goal matches — a \
+                             query's claim lists its projection classes; a claim about the \
+                             state is (solve … :expect (region …))'s",
+                            crate::expect::render(ast, f)
+                        ),
                     ));
                 }
             }
@@ -950,9 +1078,10 @@ fn validate_queries(
             class.sort();
             class.dedup();
             if classes.contains(&class) {
-                errors.push(format!(
-                    ":expect lists the class (model {}) twice",
-                    class.join(" ")
+                errors.push(refusal(
+                    Kind::Claim,
+                    None,
+                    format!(":expect lists the class (model {}) twice", class.join(" ")),
                 ));
             } else {
                 classes.push(class);
@@ -975,12 +1104,16 @@ fn refuse_unreachable_references(
     clause: &str,
     template: &str,
     vars: &[String],
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) {
     for v in ein_core::why::unreachable_references(template, vars.iter().map(String::as_str)) {
-        errors.push(format!(
-            "{what}: its {clause} writes {{?{v}}}, a reference to ?{v}, which no reference can \
-             name — a reference reads a variable's name up to its first }}"
+        errors.push(refusal(
+            Kind::Template,
+            None,
+            format!(
+                "{what}: its {clause} writes {{?{v}}}, a reference to ?{v}, which no reference \
+                 can name — a reference reads a variable's name up to its first }}"
+            ),
         ));
     }
 }
@@ -998,7 +1131,7 @@ fn refuse_goal(
     goal: NodeId,
     known: Option<&BTreeSet<String>>,
     unimported: &[String],
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) {
     let n_refused = errors.len();
     refuse_no_fact_holds(ast, "query", &[], ":goal", goal, errors);
@@ -1040,8 +1173,7 @@ pub fn read_goal(
 ) -> Result<Query, crate::saved::TextError> {
     use crate::saved::TextError;
     let wrapped = format!("(query :goal {text})");
-    let forms =
-        crate::parse(ast, &wrapped, Some(name)).map_err(|e| TextError::Parse(e.to_string()))?;
+    let forms = crate::parse(ast, &wrapped, Some(name)).map_err(TextError::Parse)?;
     let one_goal = match forms.as_slice() {
         [form] if ast.head_name(*form) == Some("query") => {
             let args = ast.form_args(*form);
@@ -1053,11 +1185,15 @@ pub fn read_goal(
         _ => None,
     };
     let Some(form) = one_goal else {
-        return Err(TextError::Load(KbLoadError(format!(
-            "{name}: {} is not one goal — it is read as (query :goal …)'s goal, and nothing \
-             stands beside it",
-            ein_core::repr::repr_str(text)
-        ))));
+        return Err(TextError::Load(KbLoadError::one(
+            Kind::Goal,
+            format!(
+                "{name}: {} is not one goal — it is read as (query :goal …)'s goal, and nothing \
+                 stands beside it",
+                ein_core::repr::repr_str(text)
+            ),
+            None,
+        )));
     };
     let program = kb.program();
     let macros: BTreeMap<String, IrMacro> = program
@@ -1076,7 +1212,7 @@ pub fn read_goal(
             (name, ir)
         })
         .collect();
-    let mut errors: Vec<String> = Vec::new();
+    let mut errors: Vec<Diagnostic> = Vec::new();
     let query = expand_goal(ast, form, &macros, &mut errors);
     let goal = query_keyword(ast, &query, "goal").expect("read as (query :goal …)");
     let known: BTreeSet<String> = program
@@ -1090,7 +1226,7 @@ pub fn read_goal(
     if errors.is_empty() {
         Ok(query)
     } else {
-        Err(TextError::Load(KbLoadError(errors.join("; "))))
+        Err(TextError::Load(KbLoadError::new(errors)))
     }
 }
 
@@ -1198,7 +1334,7 @@ fn ingest_macros(
     terms: &mut Terms,
     kb: &mut Kb,
     forms: &[NodeId],
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) -> Result<BTreeMap<String, IrMacro>, Overflow> {
     let (declared, problems) = macros::read_macros(ast, forms);
     errors.extend(problems);
@@ -1238,7 +1374,7 @@ fn ingest_relation(
     kb: &mut Kb,
     form: NodeId,
     opts: &LoadOptions,
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) -> Result<(), Overflow> {
     let loc = loc_repr(ast, ast.loc(form));
     let args = ast.form_args(form).to_vec();
@@ -1256,15 +1392,21 @@ fn ingest_relation(
         .expect("a declaration's first argument is its name (ein.y's Relation)")
         .to_string();
     if opts.require_why && string_value(ast, kw_get(&kw_pairs(ast, &args), "why")).is_none() {
-        errors.push(missing_why("relation", &name));
+        errors.push(refusal(
+            Kind::MissingWhy,
+            None,
+            missing_why("relation", &name),
+        ));
     }
     let signature: Vec<String> = args[1..]
         .iter()
         .filter_map(|&a| ast.atom_name(a).map(str::to_string))
         .collect();
     if !ein_core::binds_no_reserved(&name) {
-        errors.push(format!(
-            "relation '{name}' shadows a reserved kernel name at {loc}"
+        errors.push(refusal(
+            Kind::Declaration,
+            at(ast, form),
+            format!("relation '{name}' shadows a reserved kernel name at {loc}"),
         ));
         return Ok(());
     }
@@ -1330,7 +1472,7 @@ fn ingest_rules(
     forms: &[NodeId],
     declarations: Declarations,
     opts: &LoadOptions,
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) -> Result<(), Overflow> {
     let Declarations {
         macros: declared_macros,
@@ -1349,14 +1491,16 @@ fn ingest_rules(
             .to_string();
         let params_form = args[1];
         if opts.require_why && string_value(ast, kw_get(&kw_pairs(ast, &args), "why")).is_none() {
-            errors.push(missing_why(&head, &name));
+            errors.push(refusal(Kind::MissingWhy, None, missing_why(&head, &name)));
         }
         // A rule named `absent` / `false` / `eq` / `relation` would never
         // fire — the compiler reads those as primitives — so it is rejected
         // rather than registered dead.
         if !ein_core::binds_no_reserved(&name) {
-            errors.push(format!(
-                "{head} '{name}' shadows a reserved kernel name at {loc}"
+            errors.push(refusal(
+                Kind::Declaration,
+                at(ast, form),
+                format!("{head} '{name}' shadows a reserved kernel name at {loc}"),
             ));
             continue;
         }
@@ -1366,7 +1510,11 @@ fn ingest_rules(
             || kb.program().obligations.contains(name_sym)
             || kb.program().hypotheses.contains(name_sym)
         {
-            errors.push(format!("duplicate rule name '{name}' at {loc}"));
+            errors.push(refusal(
+                Kind::Declaration,
+                at(ast, form),
+                format!("duplicate rule name '{name}' at {loc}"),
+            ));
             continue;
         }
         let pairs = kw_pairs(ast, &args);
@@ -1382,8 +1530,10 @@ fn ingest_rules(
             None => kw_get(&pairs, "assert"),
         };
         let (Some(match_node), Some(assert_node)) = (kw_get(&pairs, "match"), concluded) else {
-            errors.push(format!(
-                "({head} {name}) missing :match or :assert at {loc}"
+            errors.push(refusal(
+                Kind::Declaration,
+                at(ast, form),
+                format!("({head} {name}) missing :match or :assert at {loc}"),
             ));
             continue;
         };
@@ -1396,7 +1546,11 @@ fn ingest_rules(
             match expand_pair(ast, match_node, assert_node, declared_macros) {
                 Ok(pair) => pair,
                 Err(e) => {
-                    errors.push(format!("({head} {name}): {e}"));
+                    errors.push(refusal(
+                        e.0.kind,
+                        e.0.place.clone(),
+                        format!("({head} {name}): {e}"),
+                    ));
                     continue;
                 }
             }
@@ -1564,30 +1718,39 @@ fn engine_word(
     head: &str,
     name: &str,
     pairs: &[(String, NodeId)],
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) -> Result<Option<EngineWord>, ()> {
     let Some(node) = kw_get(pairs, "ein") else {
         return Ok(None);
     };
     let who = format!("{}{head} '{name}'", placed(ast, node));
+    let place = at(ast, node);
     let written = ast
         .atom_name(node)
         .expect(":ein takes a name (ein.y's RuleClause)");
     let words = EngineWord::ALL.map(EngineWord::as_str).join(", ");
     if kw_get(pairs, "assert").is_some() {
-        errors.push(format!(
-            "{who}: states :ein {written} beside an :assert — a rule states what it concludes \
-             under :assert, or a word to the engine under :ein, never both: write one rule for \
-             each (the engine's words: {words})"
+        errors.push(refusal(
+            Kind::EngineWord,
+            place,
+            format!(
+                "{who}: states :ein {written} beside an :assert — a rule states what it \
+                 concludes under :assert, or a word to the engine under :ein, never both: write \
+                 one rule for each (the engine's words: {words})"
+            ),
         ));
         return Err(());
     }
     match EngineWord::of(written) {
         Some(word) => Ok(Some(word)),
         None => {
-            errors.push(format!(
-                "{who}: :ein {written} — {written} is no word of the engine's (the engine's \
-                 words: {words})"
+            errors.push(refusal(
+                Kind::EngineWord,
+                place,
+                format!(
+                    "{who}: :ein {written} — {written} is no word of the engine's (the engine's \
+                     words: {words})"
+                ),
             ));
             Err(())
         }
@@ -1641,7 +1804,7 @@ fn refuse_no_fact_holds(
     params: &[&str],
     clause: &str,
     node: NodeId,
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) {
     // The grammar refuses every other shape, so no program reaches them: a
     // wildcard written as a relation, a keyword pair inside a pattern inside
@@ -1800,7 +1963,13 @@ fn refuse_no_fact_holds(
     const GUARD: &str = "a guard compares two values, each a variable, a name, or a fact \
                          that holds no variable";
     for f in walk.out {
-        errors.push(match f {
+        // A goal's relation variable is § 2.15's, the shapes no plan can be
+        // made of; the rest are § 2.9's, a rule's and a goal's alike.
+        let kind = match f {
+            Found::FreeHead(..) if clause == ":goal" => Kind::NoPlan,
+            _ => Kind::RuleShape,
+        };
+        let line = match f {
             Found::FreeHead(form, h) if clause == ":goal" => format!(
                 "{who}: its {clause} writes {} with {} as its relation, which nothing binds — a \
                  relation is named by a name, or by a rule's parameter its activator binds, \
@@ -1833,7 +2002,8 @@ fn refuse_no_fact_holds(
                 dc(guard),
                 dc(arg)
             ),
-        });
+        };
+        errors.push(refusal(kind, None, line));
     }
 }
 
@@ -1877,7 +2047,7 @@ fn refuse_unbound_conclusions(
     params: &[&str],
     match_node: NodeId,
     assert_node: NodeId,
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) {
     /// What a premise binds outside itself.
     fn binds(ast: &Ast, node: NodeId, out: &mut BTreeSet<String>) {
@@ -1964,10 +2134,14 @@ fn refuse_unbound_conclusions(
                 .collect();
             format!(" where its :match holds through {}", arms.join(" or "))
         };
-        errors.push(format!(
-            "{head} '{name}': its :assert writes ?{v}, which no premise or parameter binds{place} \
-             — to conclude it of the objects a relation holds of, bind it with a premise such \
-             as (R ?{v}), or of every name of the program with (eq ?{v} ?{v})"
+        errors.push(refusal(
+            Kind::UnboundConclusion,
+            None,
+            format!(
+                "{head} '{name}': its :assert writes ?{v}, which no premise or parameter \
+                 binds{place} — to conclude it of the objects a relation holds of, bind it with \
+                 a premise such as (R ?{v}), or of every name of the program with (eq ?{v} ?{v})"
+            ),
         ));
     }
 }
@@ -1992,7 +2166,7 @@ fn refuse_nested_disjunctions(
     who: &str,
     clause: &str,
     node: NodeId,
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) {
     fn premise(ast: &Ast, node: NodeId, within: NodeId, out: &mut Vec<(NodeId, NodeId)>) {
         if !matches!(ast.node(node), Node::SForm { .. }) {
@@ -2028,11 +2202,15 @@ fn refuse_nested_disjunctions(
     };
     for (or, within) in found {
         let parent = ast.head_name(within).unwrap_or("");
-        errors.push(format!(
-            "{who}: its {clause} writes {} as a premise of {parent} — an (or …) is a whole \
-             {clause}, each of its premises one way it holds: lift it to the top of the {clause}, \
-             or {split}",
-            crate::dump::dump_compact(ast, or),
+        errors.push(refusal(
+            Kind::NoPlan,
+            None,
+            format!(
+                "{who}: its {clause} writes {} as a premise of {parent} — an (or …) is a whole \
+                 {clause}, each of its premises one way it holds: lift it to the top of the \
+                 {clause}, or {split}",
+                crate::dump::dump_compact(ast, or),
+            ),
         ));
     }
 }
@@ -2087,7 +2265,7 @@ fn refuse_malformed_primitives(
     who: &str,
     clause: &str,
     node: NodeId,
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) {
     let mut walk = Shapes {
         ast,
@@ -2116,7 +2294,7 @@ struct Shapes<'a> {
     ast: &'a Ast,
     who: &'a str,
     clause: &'a str,
-    found: Vec<String>,
+    found: Vec<Diagnostic>,
 }
 
 impl<'a> Shapes<'a> {
@@ -2161,8 +2339,11 @@ impl<'a> Shapes<'a> {
         }
     }
 
-    /// `<place><who>: its <clause> writes <form>, and <what>`.
-    fn refuse(&mut self, node: NodeId, what: String) {
+    /// `<place><who>: its <clause> writes <form>, and <what>`, a finding of
+    /// `kind` placed where [`Shapes::place`] places it: § 2.16's for a
+    /// malformed primitive, § 2.17's where `open` or `absent` stands under
+    /// the other, § 2.22's where what is no value stands where a value goes.
+    fn refuse(&mut self, node: NodeId, kind: Kind, what: String) {
         let line = format!(
             "{}{}: its {} writes {}, and {what}",
             self.place(node),
@@ -2170,7 +2351,8 @@ impl<'a> Shapes<'a> {
             self.clause,
             self.text(node)
         );
-        self.found.push(line);
+        self.found
+            .push(refusal(kind, at_form(self.ast, node), line));
     }
 
     /// `eq` and `neq` compare two values (`ein.y`'s `Guard`).
@@ -2179,6 +2361,7 @@ impl<'a> Shapes<'a> {
         if args.len() != 2 {
             self.refuse(
                 node,
+                Kind::MalformedPrimitive,
                 format!(
                     "{name} takes exactly 2 arguments, not {} — it compares two values, so write \
                      one guard per pair",
@@ -2208,6 +2391,7 @@ impl<'a> Shapes<'a> {
                 if args.len() != 1 {
                     self.refuse(
                         node,
+                        Kind::MalformedPrimitive,
                         format!(
                             "absent takes exactly 1 argument, not {} — negation as failure is \
                              over one premise, so wrap several in an (and …)",
@@ -2222,6 +2406,7 @@ impl<'a> Shapes<'a> {
                 if matches!(self.shape(args[0]), Shape::Form(Some("absent"))) {
                     self.refuse(
                         node,
+                        Kind::OpenShape,
                         "absent directly under absent is refused — absent takes a premise, a \
                          pattern or a conjunction, and (absent (absent P)) is no test a state \
                          makes"
@@ -2262,8 +2447,9 @@ impl<'a> Shapes<'a> {
     /// `(q (and (p ?x)))` would match nothing, in silence, and under an
     /// `(absent …)` hold, so the rule would fire.
     fn arg(&mut self, within: NodeId, node: NodeId) {
-        if let Some(what) = self.no_value(node) {
-            self.refuse(within, what);
+        // A premise pattern's argument is § 2.22's, a connective there too.
+        if let Some((_, what)) = self.no_value(node) {
+            self.refuse(within, Kind::Object, what);
             return;
         }
         match self.shape(node) {
@@ -2283,31 +2469,51 @@ impl<'a> Shapes<'a> {
     /// fact a state could hold*): a
     /// connective, `and`, `or` or `neq`; `eq`, computed and never stored;
     /// `absent`, a premise's test; and `false` with an argument.
-    fn no_value(&self, node: NodeId) -> Option<String> {
+    ///
+    /// The kind is the section that states the line: a connective where a
+    /// value goes is § 2.16's, a malformed primitive, where a guard, a
+    /// conclusion or a negation writes it, and the rest is § 2.22's, the
+    /// value rule's.
+    fn no_value(&self, node: NodeId) -> Option<(Kind, String)> {
         const VALUE: &str = "a value is a name, a variable, or a fact a state could hold, \
                              (relation argument …) or its negation";
         let text = self.text(node);
         match self.shape(node) {
-            Shape::Form(Some(c @ ("and" | "or" | "neq"))) => Some(format!(
-                "{text} is a connective where a value goes — {c} heads no fact, and a value is a \
-                 name, a variable or a fact (relation argument …)"
+            Shape::Form(Some(c @ ("and" | "or" | "neq"))) => Some((
+                Kind::MalformedPrimitive,
+                format!(
+                    "{text} is a connective where a value goes — {c} heads no fact, and a value \
+                     is a name, a variable or a fact (relation argument …)"
+                ),
             )),
-            Shape::Form(Some("eq")) => Some(format!(
-                "{text} is written where a value goes — eq is computed and never stored, and \
-                 {VALUE}"
+            Shape::Form(Some("eq")) => Some((
+                Kind::Object,
+                format!(
+                    "{text} is written where a value goes — eq is computed and never stored, \
+                     and {VALUE}"
+                ),
             )),
-            Shape::Form(Some("false")) if !self.args(node).is_empty() => Some(format!(
-                "{text} is written where a value goes — false takes no argument, and {VALUE}"
+            Shape::Form(Some("false")) if !self.args(node).is_empty() => Some((
+                Kind::Object,
+                format!(
+                    "{text} is written where a value goes — false takes no argument, and {VALUE}"
+                ),
             )),
             _ => None,
         }
     }
 
-    /// `(false k)` written as a premise or a conclusion.
+    /// `(false k)` written as a premise, § 2.22's, or a conclusion, § 2.16's.
     fn false_with_arguments(&mut self, node: NodeId, says: &str) {
         let n = self.args(node).len();
+        let kind = if self.clause == ":assert" {
+            Kind::MalformedPrimitive
+        } else {
+            Kind::Object
+        };
         self.refuse(
             node,
+            kind,
             format!(
                 "false takes no argument, not {n} — (false) {says} the state is impossible, and \
                  names nothing"
@@ -2319,8 +2525,8 @@ impl<'a> Shapes<'a> {
     /// fact, or the stored negation of one; never a connective, and never a
     /// form of `eq`, of `absent` or of `false` with an argument.
     fn term(&mut self, within: NodeId, node: NodeId) {
-        if let Some(what) = self.no_value(node) {
-            self.refuse(within, what);
+        if let Some((kind, what)) = self.no_value(node) {
+            self.refuse(within, kind, what);
             return;
         }
         match self.shape(node) {
@@ -2345,6 +2551,7 @@ impl<'a> Shapes<'a> {
         if args.len() != 1 {
             self.refuse(
                 node,
+                Kind::MalformedPrimitive,
                 format!(
                     "not takes exactly 1 argument, not {} — it is the stored negation of one fact",
                     args.len()
@@ -2356,8 +2563,8 @@ impl<'a> Shapes<'a> {
         match self.shape(p) {
             Shape::Form(Some("eq")) if !value => return self.guard(p, "eq"),
             Shape::Form(Some("eq" | "false")) => {
-                if let Some(what) = self.no_value(p) {
-                    return self.refuse(node, what);
+                if let Some((kind, what)) = self.no_value(p) {
+                    return self.refuse(node, kind, what);
                 }
             }
             _ => {}
@@ -2383,7 +2590,7 @@ impl<'a> Shapes<'a> {
                  failure is (absent …)",
                 self.text(p)
             );
-            self.refuse(node, what);
+            self.refuse(node, Kind::MalformedPrimitive, what);
             return;
         }
         if matches!(self.shape(p), Shape::Form(_)) {
@@ -2412,13 +2619,18 @@ impl<'a> Shapes<'a> {
                 self.who,
                 self.text(node)
             );
-            self.found.push(line);
+            self.found.push(refusal(
+                Kind::MalformedPrimitive,
+                at_form(self.ast, node),
+                line,
+            ));
             return;
         };
         let args = self.args(node);
         match head {
             Some("or") => self.refuse(
                 node,
+                Kind::MalformedPrimitive,
                 "an (or …) is no conclusion — a rule concludes every conclusion it writes, and a \
                  disjunction is a :match's, one way it holds per premise: write one rule per \
                  disjunct"
@@ -2429,6 +2641,7 @@ impl<'a> Shapes<'a> {
             // No fact is of `absent`, so no conclusion is.
             Some("absent") => self.refuse(
                 node,
+                Kind::Object,
                 "absent is negation as failure, a premise's test, and no fact is of it — a \
                  conclusion is a fact (relation argument …); the stored negation of a fact is \
                  (not …)"
@@ -2462,6 +2675,7 @@ impl<'a> Shapes<'a> {
         if args.len() != 1 {
             self.refuse(
                 node,
+                Kind::OpenShape,
                 format!(
                     "open takes exactly 1 argument, not {} — a relation's name, which a state \
                      owes, or a fact, which is a hypothesis",
@@ -2473,6 +2687,7 @@ impl<'a> Shapes<'a> {
         if let Shape::Form(Some(k @ ("open" | "absent"))) = self.shape(args[0]) {
             self.refuse(
                 node,
+                Kind::OpenShape,
                 format!(
                     "{k} directly under open is refused — open takes a relation's name or a \
                      fact a state could hold, and the kernel reads {k} there"
@@ -2497,7 +2712,7 @@ fn refuse_wide_matches(
     clause: &str,
     params: &[&str],
     node: NodeId,
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) {
     let mut vars: BTreeSet<String> = params.iter().map(|p| p.to_string()).collect();
     vars_under(ast, node, &mut vars);
@@ -2511,10 +2726,14 @@ fn refuse_wide_matches(
     } else {
         (", its parameters among them", "a rule", "split the rule")
     };
-    errors.push(format!(
-        "{who}: its {clause} writes {} distinct variables{among}, and {binds} binds at most \
-         {MAX_MATCH_VARIABLES} — {split}",
-        vars.len()
+    errors.push(refusal(
+        Kind::NoPlan,
+        None,
+        format!(
+            "{who}: its {clause} writes {} distinct variables{among}, and {binds} binds at most \
+             {MAX_MATCH_VARIABLES} — {split}",
+            vars.len()
+        ),
     ));
 }
 
@@ -2534,7 +2753,7 @@ fn refuse_goal_relations(
     goal: NodeId,
     known: &BTreeSet<String>,
     unimported: &[String],
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) {
     fn walk(ast: &Ast, node: NodeId, out: &mut Vec<(NodeId, String)>) {
         let Node::SForm { head, .. } = ast.node(node) else {
@@ -2561,11 +2780,15 @@ fn refuse_goal_relations(
         // A `std.macro` call the program did not import has its own line
         // (`macros::unimported_macro_errors`).
         if !known.contains(&name) && !unimported.contains(&name) {
-            errors.push(format!(
-                "{}query: its :goal writes {}, and the program names no relation {name} — \
-                 {CLAIM_RELATION}, so no state holds a fact of {name}",
-                placed_or(ast, node, goal),
-                crate::dump::dump_compact(ast, node),
+            errors.push(refusal(
+                Kind::Goal,
+                at_or(ast, node, goal),
+                format!(
+                    "{}query: its :goal writes {}, and the program names no relation {name} — \
+                     {CLAIM_RELATION}, so no state holds a fact of {name}",
+                    placed_or(ast, node, goal),
+                    crate::dump::dump_compact(ast, node),
+                ),
             ));
         }
     }
@@ -2586,7 +2809,7 @@ fn expand_goal(
     ast: &mut Ast,
     form: NodeId,
     macros: &BTreeMap<String, IrMacro>,
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) -> Query {
     let mut pairs: Vec<ExprRef> = ast.form_args(form).iter().map(|n| ExprRef(n.0)).collect();
     let mut goal_written = None;
@@ -2614,7 +2837,11 @@ fn expand_goal(
                     );
                     goal_written = Some(ExprRef(value.0));
                 }
-                Err(e) => errors.push(format!("query: its :goal: {e}")),
+                Err(e) => errors.push(refusal(
+                    e.0.kind,
+                    e.0.place.clone(),
+                    format!("query: its :goal: {e}"),
+                )),
             }
             // The first `:goal` is the query's (`query_keyword`).
             break;
@@ -2662,7 +2889,7 @@ fn read_relation_places(
     kb: &Kb,
     facts: &[NodeId],
     solve_blocks: &[NodeId],
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) -> RelationPlaces {
     /// A position: a relation's name and an argument's index.
     type Pos = (String, usize);
@@ -2996,7 +3223,7 @@ fn read_relation_places(
         sites: &'a [Site],
         written: &'a BTreeSet<String>,
         facts: &'a [NodeId],
-        errors: &'a mut Vec<String>,
+        errors: &'a mut Vec<Diagnostic>,
     }
 
     /// **A relation parameter that can be bound to `eq` heads a form of
@@ -3279,11 +3506,22 @@ fn read_relation_places(
                              of it"
                         }
                     };
-                    c.errors.push(format!(
-                        "{head} '{rule_name}': its parameter ?{param} heads {}, a form of {n} \
-                         argument{}, and {binds} — {why}",
-                        crate::dump::dump_compact(c.ast, form),
-                        if n == 1 { "" } else { "s" },
+                    // `eq` at another arity is § 2.14's; `false` and
+                    // `absent` where no form of them is one are § 2.22's.
+                    let kind = if w == "eq" {
+                        Kind::EqArity
+                    } else {
+                        Kind::Object
+                    };
+                    c.errors.push(refusal(
+                        kind,
+                        None,
+                        format!(
+                            "{head} '{rule_name}': its parameter ?{param} heads {}, a form of {n} \
+                             argument{}, and {binds} — {why}",
+                            crate::dump::dump_compact(c.ast, form),
+                            if n == 1 { "" } else { "s" },
+                        ),
                     ));
                 }
                 // A value: a fact a state could hold (the value rule,
@@ -3299,11 +3537,15 @@ fn read_relation_places(
                         "false" => "false takes no argument",
                         _ => "absent is negation as failure, a premise's test",
                     };
-                    c.errors.push(format!(
-                        "{head} '{rule_name}': its parameter ?{param} heads {}, written where \
-                         a value goes, and {binds} — {why}, and a value is a name, or a fact a \
-                         state could hold",
-                        crate::dump::dump_compact(c.ast, form),
+                    c.errors.push(refusal(
+                        Kind::Object,
+                        None,
+                        format!(
+                            "{head} '{rule_name}': its parameter ?{param} heads {}, written \
+                             where a value goes, and {binds} — {why}, and a value is a name, or \
+                             a fact a state could hold",
+                            crate::dump::dump_compact(c.ast, form),
+                        ),
                     ));
                 }
             }
@@ -3360,7 +3602,7 @@ fn refuse_negated_names(
     kb: &Kb,
     facts: &[NodeId],
     solve_blocks: &[NodeId],
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) {
     type Pos = (String, usize);
     /// Why a position holds a name.
@@ -3885,13 +4127,18 @@ fn refuse_negated_names(
                 Some(loc) => format!("{}: ", loc_repr(ast, Some(loc))),
                 None => String::new(),
             };
-            errors.push(format!(
-                "{place}{} '{}': its :assert writes {}, and ?{var} can be a name: {how} — not takes \
-                 a pattern (relation argument …) or a variable bound to a fact: it is the stored \
-                 negation of one fact, and a name is no fact; negation as failure is (absent …)",
-                site.head,
-                site.name,
-                crate::dump::dump_compact(ast, node),
+            errors.push(refusal(
+                Kind::NegatedName,
+                crate::ast::place(ast, first_loc(ast, node)),
+                format!(
+                    "{place}{} '{}': its :assert writes {}, and ?{var} can be a name: {how} — not \
+                     takes a pattern (relation argument …) or a variable bound to a fact: it is \
+                     the stored negation of one fact, and a name is no fact; negation as failure \
+                     is (absent …)",
+                    site.head,
+                    site.name,
+                    crate::dump::dump_compact(ast, node),
+                ),
             ));
         }
     }
@@ -3908,7 +4155,7 @@ fn refuse_negated_names(
 /// fact. One line per fact, `; `-joined with the loader's others. A
 /// nested `(box (eq a))` or `(box (eq a b))` is a parse error: `eq` heads no
 /// value.
-fn refuse_eq_facts_of_another_arity(ast: &Ast, facts: &[NodeId], errors: &mut Vec<String>) {
+fn refuse_eq_facts_of_another_arity(ast: &Ast, facts: &[NodeId], errors: &mut Vec<Diagnostic>) {
     let terms_of = |node: NodeId| -> Vec<NodeId> {
         ast.form_args(node)
             .iter()
@@ -3927,11 +4174,15 @@ fn refuse_eq_facts_of_another_arity(ast: &Ast, facts: &[NodeId], errors: &mut Ve
         };
         if sides.len() != 2 {
             let n = sides.len();
-            errors.push(format!(
-                "the fact {} writes eq with {n} argument{} — eq is the relation of equality, which \
-                 holds between exactly two values",
-                crate::dump::dump_compact(ast, f),
-                if n == 1 { "" } else { "s" }
+            errors.push(refusal(
+                Kind::EqArity,
+                None,
+                format!(
+                    "the fact {} writes eq with {n} argument{} — eq is the relation of equality, \
+                     which holds between exactly two values",
+                    crate::dump::dump_compact(ast, f),
+                    if n == 1 { "" } else { "s" }
+                ),
             ));
         }
     }
@@ -3961,7 +4212,7 @@ fn refuse_macro_facts(
     facts: &[NodeId],
     declared: &BTreeMap<String, IrMacro>,
     stdlib_macros: &[String],
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) {
     for &form in relations {
         let Some(&first) = ast.form_args(form).first() else {
@@ -3970,12 +4221,16 @@ fn refuse_macro_facts(
         if let Some(name) = ast.atom_name(first)
             && let Some(m) = declared.get(name)
         {
-            errors.push(format!(
-                "{}relation '{name}': {name} is a macro too, {} — a premise ({name} …) is the \
-                 macro's call, replaced by its body, and a fact ({name} …) is refused, so nothing \
-                 could be of the relation; give one of the two another name",
-                placed_form(ast, form),
-                macro_as_written(ast, m),
+            errors.push(refusal(
+                Kind::MacroFact,
+                at_form(ast, form),
+                format!(
+                    "{}relation '{name}': {name} is a macro too, {} — a premise ({name} …) is the \
+                     macro's call, replaced by its body, and a fact ({name} …) is refused, so \
+                     nothing could be of the relation; give one of the two another name",
+                    placed_form(ast, form),
+                    macro_as_written(ast, m),
+                ),
             ));
         }
     }
@@ -3993,9 +4248,13 @@ fn refuse_macro_facts(
                     crate::dump::dump_compact(ast, call)
                 )
             };
-            errors.push(format!(
-                "{}{subject} — {MACRO_CALL_IS_NO_FACT}",
-                placed_form(ast, call)
+            errors.push(refusal(
+                Kind::MacroFact,
+                at_form(ast, call),
+                format!(
+                    "{}{subject} — {MACRO_CALL_IS_NO_FACT}",
+                    placed_form(ast, call)
+                ),
             ));
         }
     }
@@ -4032,7 +4291,7 @@ fn refuse_macro_claims(
     kb: &Kb,
     declared: &BTreeMap<String, IrMacro>,
     stdlib_macros: &[String],
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) {
     let mut claims: Vec<(&str, NodeId)> = Vec::new();
     for query in &kb.program().queries {
@@ -4047,11 +4306,15 @@ fn refuse_macro_claims(
     }
     for (who, claim) in claims {
         for (call, what) in macro_calls_under(ast, claim, declared, stdlib_macros) {
-            errors.push(format!(
-                "{}{who}: its :expect lists {}, a call of {what} — a claim lists facts, and \
-                 {MACRO_CALL_IS_NO_FACT}",
-                placed_form(ast, call),
-                crate::dump::dump_compact(ast, call),
+            errors.push(refusal(
+                Kind::MacroFact,
+                at_form(ast, call),
+                format!(
+                    "{}{who}: its :expect lists {}, a call of {what} — a claim lists facts, and \
+                     {MACRO_CALL_IS_NO_FACT}",
+                    placed_form(ast, call),
+                    crate::dump::dump_compact(ast, call),
+                ),
             ));
         }
     }
@@ -4285,7 +4548,7 @@ fn validate_open(
     params: &[String],
     match_node: NodeId,
     assert_node: NodeId,
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) -> Opened {
     let conjuncts = ast.conjuncts(assert_node);
     let opens: Vec<NodeId> = conjuncts
@@ -4324,20 +4587,25 @@ fn validate_open(
         return Opened::Hypotheses { rest };
     };
     let who = format!("{}{head} '{name}'", placed(ast, at));
+    let place = self::at(ast, at);
     let shown = if is_var {
         format!("?{rel}")
     } else {
         rel.clone()
     };
     if conjuncts.len() > 1 {
-        errors.push(format!(
-            "{who}: `(open {shown})` stands beside another conclusion — what a state owes is a \
-             rule's whole :assert, which the pass reads at the fixpoint and which concludes no \
-             fact: write one rule for the obligation and one for the rest"
+        errors.push(refusal(
+            Kind::Obligation,
+            place,
+            format!(
+                "{who}: `(open {shown})` stands beside another conclusion — what a state owes is \
+                 a rule's whole :assert, which the pass reads at the fixpoint and which \
+                 concludes no fact: write one rule for the obligation and one for the rest"
+            ),
         ));
         return Opened::Owes;
     }
-    validate_projection(ast, &who, &rel, is_var, match_node, errors);
+    validate_projection(ast, (&who, place), &rel, is_var, match_node, errors);
     Opened::Owes
 }
 
@@ -4351,14 +4619,15 @@ fn placed(ast: &Ast, node: NodeId) -> String {
 }
 
 /// (2) — resolve the witness step out of the rule's own `absent`, or refuse.
-/// `who` is the line's start, the position and the rule.
+/// `who` is the line's start, the position and the rule, with the position as
+/// a finding's place.
 fn validate_projection(
     ast: &Ast,
-    who: &str,
+    (who, place): (&str, Option<Place>),
     rel: &str,
     is_var: bool,
     match_node: NodeId,
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) {
     let shown = if is_var {
         format!("?{rel}")
@@ -4377,17 +4646,25 @@ fn validate_projection(
         })
         .collect();
     if holders.is_empty() {
-        errors.push(format!(
-            "{who}: `(open {shown})` needs an `(absent …)` in :match holding a positive \
-             `{shown}` premise — that premise is the witness the obligation owes"
+        errors.push(refusal(
+            Kind::Obligation,
+            place,
+            format!(
+                "{who}: `(open {shown})` needs an `(absent …)` in :match holding a positive \
+                 `{shown}` premise — that premise is the witness the obligation owes"
+            ),
         ));
         return;
     }
     if holders.len() > 1 {
-        errors.push(format!(
-            "{who}: {} `(absent …)` guards hold a positive `{shown}` premise — which one states \
-             the obligation is not decidable",
-            holders.len()
+        errors.push(refusal(
+            Kind::Obligation,
+            place,
+            format!(
+                "{who}: {} `(absent …)` guards hold a positive `{shown}` premise — which one \
+                 states the obligation is not decidable",
+                holders.len()
+            ),
         ));
         return;
     }
@@ -4414,14 +4691,22 @@ fn validate_projection(
         .collect();
     match witnesses.len() {
         1 => {}
-        0 => errors.push(format!(
-            "{who}: `(open {shown})`'s `{shown}` premise binds no variable of its own, so the \
-             obligation is ground — that is a plain `absent` check and not something a witness \
-             could discharge"
+        0 => errors.push(refusal(
+            Kind::Obligation,
+            place,
+            format!(
+                "{who}: `(open {shown})`'s `{shown}` premise binds no variable of its own, so \
+                 the obligation is ground — that is a plain `absent` check and not something a \
+                 witness could discharge"
+            ),
         )),
-        n => errors.push(format!(
-            "{who}: {n} positive `{shown}` premises each bind a witness variable — a compound \
-             witness has no single slot to branch on"
+        n => errors.push(refusal(
+            Kind::Obligation,
+            place,
+            format!(
+                "{who}: {n} positive `{shown}` premises each bind a witness variable — a \
+                 compound witness has no single slot to branch on"
+            ),
         )),
     }
 }
@@ -4550,19 +4835,24 @@ fn write_open_facts(
     terms: &Terms,
     kb: &mut Kb,
     written: &[(FactId, ProvId, NodeId)],
-    errors: &mut Vec<String>,
+    errors: &mut Vec<Diagnostic>,
 ) {
     for &(id, prov, form) in written {
         let arg = terms.facts.args(id)[0];
         if let Some(name) = arg.as_sym()
             && !kb.program().relations.contains(name)
         {
-            errors.push(format!(
-                "{}(open {}) is written, and {} is neither a fact nor a relation of the program — \
-                 under open a fact is a hypothesis and a relation's name is what a state owes",
-                placed_form(ast, form),
-                terms.sym(name),
-                terms.sym(name),
+            errors.push(refusal(
+                Kind::OpenShape,
+                at_form(ast, form),
+                format!(
+                    "{}(open {}) is written, and {} is neither a fact nor a relation of the \
+                     program — under open a fact is a hypothesis and a relation's name is what a \
+                     state owes",
+                    placed_form(ast, form),
+                    terms.sym(name),
+                    terms.sym(name),
+                ),
             ));
             continue;
         }
@@ -4575,7 +4865,13 @@ fn write_open_facts(
 /// the name `open`. `open` is the kernel's relation, of what a state owes and
 /// of its hypotheses, and no obligation owes it: refused, one line per
 /// activator, placed where it is written.
-fn refuse_open_owed(ast: &Ast, terms: &Terms, kb: &Kb, facts: &[NodeId], errors: &mut Vec<String>) {
+fn refuse_open_owed(
+    ast: &Ast,
+    terms: &Terms,
+    kb: &Kb,
+    facts: &[NodeId],
+    errors: &mut Vec<Diagnostic>,
+) {
     for &form in facts {
         let Some(head) = ast.head_name(form) else {
             continue;
@@ -4606,11 +4902,15 @@ fn refuse_open_owed(ast: &Ast, terms: &Terms, kb: &Kb, facts: &[NodeId], errors:
             .filter(|&a| !matches!(ast.node(a), Node::KwPair { .. }))
             .collect();
         if written.get(i).and_then(|&a| ast.atom_name(a)) == Some("open") {
-            errors.push(format!(
-                "{}{} makes obligation '{head}' owe open — open is the kernel's relation, of \
-                 what a state owes and of its hypotheses, and no obligation owes it",
-                placed_form(ast, form),
-                crate::dump::dump_compact(ast, form),
+            errors.push(refusal(
+                Kind::OpenShape,
+                at_form(ast, form),
+                format!(
+                    "{}{} makes obligation '{head}' owe open — open is the kernel's relation, of \
+                     what a state owes and of its hypotheses, and no obligation owes it",
+                    placed_form(ast, form),
+                    crate::dump::dump_compact(ast, form),
+                ),
             ));
         }
     }
@@ -4782,7 +5082,7 @@ mod tests {
 
     fn err(text: &str) -> String {
         let (_ast, _terms, kb) = load_text(text);
-        kb.expect_err("must fail").0
+        kb.expect_err("must fail").to_string()
     }
 
     fn facts(terms: &Terms, kb: &Kb) -> Vec<String> {
@@ -6414,7 +6714,7 @@ mod tests {
             "(q pp)",
         ] {
             let (_ast, _terms, kb) = load_text(&format!("{pre}{text}"));
-            kb.unwrap_or_else(|e| panic!("{text}: {}", e.0));
+            kb.unwrap_or_else(|e| panic!("{text}: {e}"));
         }
     }
 }

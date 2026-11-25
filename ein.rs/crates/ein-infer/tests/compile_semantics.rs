@@ -69,7 +69,7 @@ fn load_error(text: &str) -> String {
     let forms = parse(&mut ast, text, Some("<fixture>")).expect("the fixture parses");
     ein_ir::load(&mut ast, &mut terms, &forms, None)
         .expect_err("must not load")
-        .0
+        .to_string()
 }
 
 impl Loaded {
@@ -132,7 +132,7 @@ fn config(body: &str) -> Result<SolverConfig, String> {
     let forms = parse(&mut ast, &text, Some("<config>")).expect("the block parses");
     match ein_ir::load(&mut ast, &mut terms, &forms, None) {
         Ok(kb) => Ok(kb.program().config.clone().expect("the block was ingested")),
-        Err(e) => Err(e.0),
+        Err(e) => Err(e.to_string()),
     }
 }
 
@@ -894,7 +894,7 @@ fn no_corpus_program_is_refused_in_the_python_spelling() {
         let kb = match ein_ir::load_file(&mut ast, &mut terms, &path) {
             Ok(kb) => kb,
             Err(e) => {
-                refusals.push(e.0);
+                refusals.push(e.to_string());
                 continue;
             }
         };

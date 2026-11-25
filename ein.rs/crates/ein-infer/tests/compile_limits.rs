@@ -68,7 +68,7 @@ fn one_variable_past_the_ceiling_is_refused_at_load() {
     let forms = parse(&mut ast, &text, Some("<wide>")).expect("the fixture parses");
     let err = load(&mut ast, &mut terms, &forms, None)
         .expect_err("past the ceiling")
-        .0;
+        .to_string();
     // The point of the bound is a message, not a limit: it has to say what to
     // do.
     assert_eq!(

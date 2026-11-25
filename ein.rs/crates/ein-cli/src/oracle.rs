@@ -98,10 +98,14 @@ pub fn run(m: &ArgMatches) -> i32 {
     let outcome = match region::compute(&mut kb, &mut terms, &ast, &opts, &mut on_projection) {
         Ok(o) => o,
         Err(ein_infer::SolveError::Deadline) => {
-            eprintln!(
-                "** aborted: --max-time {} s reached before the cube was done **",
-                max_time.unwrap_or(0.0)
+            let abort = ein_core::Diagnostic::error(
+                ein_core::Kind::Deadline,
+                format!(
+                    "--max-time {} s reached before the cube was done",
+                    max_time.unwrap_or(0.0)
+                ),
             );
+            eprintln!("{}", abort.line());
             return 2;
         }
         Err(e) => {

@@ -394,7 +394,7 @@ pub fn run_loaded(
         Op::Load => {
             return Some(match kb {
                 Ok(kb) => ein_core::shape(&kb, terms),
-                Err(e) => format!("<refused> {}", e.0),
+                Err(e) => format!("<refused> {e}"),
             });
         }
         Op::Dot(view) => match kb {
@@ -673,7 +673,7 @@ fn region_op(
             Ok(format!(
                 "{}--- stderr\n{}\n--- exit {}\n",
                 text.stdout,
-                text.stderr.join("\n"),
+                text.stderr().join("\n"),
                 text.code
             ))
         }
@@ -910,19 +910,25 @@ fn ir_op(ast: &mut Ast, forms: &[ein_ir::NodeId], base: Option<&Path>, mode: &st
         "resolve" => r
             .resolve_imports(ast, forms, base)
             .map(|f| dump_canonical(ast, &f))
-            .map_err(|e| e.0),
+            .map_err(|e| e.to_string()),
         "expand" => r
             .resolve_imports(ast, forms, base)
-            .map_err(|e| e.0)
+            .map_err(|e| e.to_string())
             .and_then(|f| {
                 // One macro reading, the loader's: a program the loader
                 // refuses is refused here too, with the same sentences, and
                 // never rendered as the expansion of whichever duplicate
                 // came first.
-                let macros = collect_macros(ast, &f).map_err(|problems| problems.join("; "))?;
+                let macros = collect_macros(ast, &f).map_err(|problems| {
+                    problems
+                        .iter()
+                        .map(|d| d.message.as_str())
+                        .collect::<Vec<_>>()
+                        .join("; ")
+                })?;
                 expand_rule_clauses(ast, &f, &macros)
                     .map(|x| dump_canonical(ast, &x))
-                    .map_err(|e| e.0)
+                    .map_err(|e| e.to_string())
             }),
         other => unreachable!("unknown ir mode {other}"),
     };

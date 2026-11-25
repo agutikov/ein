@@ -85,7 +85,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 
 use ein_core::prov::{NafArg, NafRef};
-use ein_core::{FactId, Kb, Symbol, Terms, Value};
+use ein_core::{Diagnostic, FactId, Kb, Kind, Symbol, Terms, Value};
 use ein_ir::Ast;
 use rustc_hash::{FxHashMap, FxHashSet};
 
@@ -115,10 +115,18 @@ pub const WARNING: &str = "THIS PROGRAM IS NOT MONOTONE: NOTHING IS CLAIMED OF T
 pub const WARNING_MORE: &str = "IT IS NOT CLAIMED TO BE RIGHT, SOUND OR COMPLETE (Q-M1f.564).\n\
                                 THE `lattice` ROWS BELOW NAME THE SITES.";
 
+/// The warning a command that answers about a commitment says of a flagged
+/// program, before anything else: a [`Diagnostic`] of
+/// [`Kind::NotMonotone`], `FILE: ` and [`WARNING`] its message.
+pub fn warning(file: &str) -> Diagnostic {
+    Diagnostic::warning(Kind::NotMonotone, format!("{file}: {WARNING} (Q-M1f.564)"))
+}
+
 /// The one stderr line a command that answers about a commitment writes on a
-/// flagged program, before any other: `WARNING: FILE: ` and [`WARNING`].
+/// flagged program, before any other: `WARNING: FILE: ` and [`WARNING`],
+/// [`warning`]'s line.
 pub fn warning_line(file: &str) -> String {
-    format!("WARNING: {file}: {WARNING} (Q-M1f.564)")
+    warning(file).line()
 }
 
 /// What a site's rule concludes, as the warning names it.

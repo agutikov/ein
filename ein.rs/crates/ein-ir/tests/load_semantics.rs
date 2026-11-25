@@ -46,7 +46,7 @@ fn load_shape(path: &Path) -> Answer {
         Ok(kb) => Answer::Ok(shape(&kb, &terms)),
         Err(e) => Answer::Err {
             kind: "KBLoadError",
-            msg: e.0,
+            msg: e.to_string(),
         },
     }
 }
@@ -240,7 +240,7 @@ fn load_shape_text(text: &str) -> Answer {
         Ok(kb) => Answer::Ok(shape(&kb, &terms)),
         Err(e) => Answer::Err {
             kind: "KBLoadError",
-            msg: e.0,
+            msg: e.to_string(),
         },
     }
 }
@@ -311,7 +311,7 @@ fn load_text_with(text: &str, require_why: bool) -> Result<String, String> {
     let opts = ein_ir::LoadOptions { require_why };
     ein_ir::load_with(&mut ast, &mut terms, &forms, None, &opts)
         .map(|kb| shape(&kb, &terms))
-        .map_err(|e| e.0)
+        .map_err(|e| e.to_string())
 }
 
 /// The line the loader refuses a form with.
@@ -403,7 +403,7 @@ fn a_macro_needs_a_why_only_where_its_parser_reads_one() {
         let opts = ein_ir::LoadOptions { require_why: true };
         ein_ir::load_with(&mut ast, &mut terms, &forms, None, &opts)
             .map(|_| ())
-            .map_err(|e| e.0)
+            .map_err(|e| e.to_string())
     };
     let with = "(macro owns (?p ?x) (has ?p ?x) :why \"{?p} owns {?x}\")";
     let without = "(macro owns (?p ?x) (has ?p ?x))";
@@ -424,9 +424,9 @@ fn the_default_requires_a_why_and_false_loads_without() {
     let refused = ein_ir::load(&mut ast, &mut terms, &forms, None)
         .expect_err("the default refuses a relation with no :why");
     assert!(
-        refused.0.contains("relation 'p' has no :why"),
+        refused.to_string().contains("relation 'p' has no :why"),
         "{}",
-        refused.0
+        refused.to_string()
     );
     assert!(load_text_with(text, false).is_ok());
 }
@@ -471,7 +471,7 @@ fn require_why_decides_loading_only() {
                 let opts = ein_ir::LoadOptions { require_why };
                 ein_ir::load_with(&mut ast, &mut terms, &forms, path.parent(), &opts)
                     .map(|kb| shape(&kb, &terms))
-                    .map_err(|e| e.0)
+                    .map_err(|e| e.to_string())
             };
             let rel = path.strip_prefix(repo_root()).unwrap_or(path).display();
             let Ok(without) = load(false) else {

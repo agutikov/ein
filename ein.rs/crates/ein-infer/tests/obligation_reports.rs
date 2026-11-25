@@ -279,7 +279,8 @@ fn the_closed_and_owing_corner_is_a_conflict() {
     let (ast, mut terms, mut kb) = load(owing);
     let report = ein_infer::mechanisms::check(&ast, &mut terms, &mut kb).expect("root saturates");
     assert_eq!(report.conflicts.len(), 1, "{:?}", report.conflicts);
-    let line = &report.conflicts[0];
+    let line = &report.conflicts[0].message;
+    assert_eq!(report.conflicts[0].kind, ein_core::Kind::Mechanisms);
     for want in [
         "root holds (open r), which obligation 'total-owed' writes",
         "and (__closed__ r), which rule 'infer-closure' derives, says r is closed",

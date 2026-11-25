@@ -865,7 +865,12 @@ fn no_firing_meets_an_unbound_variable() {
         let forms = reparsed(&mut ast, i, &text);
         match ein_ir::load(&mut ast, &mut ein_core::Terms::new(), &forms, None) {
             Ok(_) => loaded += 1,
-            Err(e) if e.0.contains("which no premise or parameter binds") => refused += 1,
+            Err(e)
+                if e.to_string()
+                    .contains("which no premise or parameter binds") =>
+            {
+                refused += 1
+            }
             Err(_) => continue,
         }
         if let Some(why) = unbound_conclusion(&text) {

@@ -30,7 +30,7 @@ pub mod read;
 pub mod saved;
 pub mod stdlib;
 
-pub use ast::{ArgSpan, Ast, FileId, Loc, Node, NodeId, SymId, loc_repr, node_repr};
+pub use ast::{ArgSpan, Ast, FileId, Loc, Node, NodeId, SymId, loc_repr, node_repr, place};
 pub use dump::{dump_canonical, dump_compact, dump_pretty};
 pub use from_ir::{
     KbLoadError, LoadOptions, MAX_MATCH_VARIABLES, WHY_REQUIRED_OF, load, load_file,

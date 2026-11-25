@@ -660,7 +660,7 @@ pub fn program_section(
         }
         None => ein_ir::resolve_imports(ast, forms, base_dir),
     }
-    .map_err(|e| EinbError::Program(e.0))?;
+    .map_err(|e| EinbError::Program(e.into()))?;
     let text = ein_ir::dump_canonical(ast, &resolved);
     // Only the file names provenance can name: the rebuilt registries' own
     // `Loc`s point into the canonical text and are not preserved.
@@ -746,11 +746,11 @@ pub fn load_program(
     load: &ein_ir::LoadOptions,
     name: &str,
 ) -> Result<(Kb, Vec<NodeId>)> {
-    let forms = ein_ir::parse(ast, section.text, Some(name))
-        .map_err(|e| EinbError::Program(e.to_string()))?;
+    let forms =
+        ein_ir::parse(ast, section.text, Some(name)).map_err(|e| EinbError::Program(e.into()))?;
     let resolver = ein_ir::Resolver::new();
     let mut kb = ein_ir::from_ir::load_query_by(&resolver, ast, terms, &forms, None, query, load)
-        .map_err(|e| EinbError::Program(e.0))?;
+        .map_err(EinbError::Program)?;
     // What the load read: the stored program, resolved and import-flattened,
     // and the one module it holds no form of, the module every program gets
     // (Q-M1f.551), which a state saved from the container carries

@@ -15,7 +15,10 @@ both directions. So the example compiles, runs and prints the output shown, unde
 
 ## 1. The crates
 
-The crates are not published to a registry. A program depends on them by path, from a checkout:
+The crates are not published to a registry. A program depends on them by path, from a checkout, and names the
+parser runtime `ein-ir` is built against, the patched `lrpar` under `ein.rs/vendor/lrpar/`: a `[patch]` applies only
+in the root manifest of the workspace being built, so the engine's own does not reach a program outside it, and
+without it the published `lrpar` is resolved and `ein-ir` does not compile against it:
 
 ```toml
 [dependencies]
@@ -24,6 +27,9 @@ ein-ir     = { path = "../ein/ein.rs/crates/ein-ir" }
 ein-infer  = { path = "../ein/ein.rs/crates/ein-infer" }
 ein-render = { path = "../ein/ein.rs/crates/ein-render" }   # optional
 ein-einb   = { path = "../ein/ein.rs/crates/ein-einb" }     # optional
+
+[patch.crates-io]
+lrpar = { path = "../ein/ein.rs/vendor/lrpar" }
 ```
 
 Six crates ship and two are dev-only (`ein-corpus`, `ein-narration`, both `publish = false`). They stack linearly up
@@ -49,7 +55,7 @@ the engine is synchronous and `Send`, and `--jobs N` is a `rayon` pool built ins
 | step | entry | crate |
 |---|---|---|
 | 1. arenas | `Ast::new()`, `Terms::new()` | `ein-ir`, `ein-core` |
-| 2. load | `ein_ir::load_file(&mut ast, &mut terms, path)`, or `ein_ir::parse` then `ein_ir::load` | `ein-ir` |
+| 2. load | `ein_ir::load_file(&mut ast, &mut terms, path)`, or `ein_ir::parse` then `ein_ir::load`; then `ein_infer::mechanisms::judge_loaded` | `ein-ir`, `ein-infer` |
 | 3. saturate *(optional)* | `ein_infer::region::root_firings`, or `Saturator::new(&mut session)` and `.saturate(…)` | `ein-infer` |
 | 4. ask | `ein_infer::read_out::run(&mut kb, &mut terms, &ast, &opts)`, or `ein_infer::explore::run` for the answer without its states read | `ein-infer` |
 | 5. read | `ReadOut` (`answer`, `states`, `queries`); `ein_render::trace::region::of_read_out` for the trace | `ein-infer`, `ein-render` |
@@ -76,10 +82,22 @@ walking up from the executable, then the copy compiled in; `ein --version` print
 ([`03-design/02-shared-assets.md`](03-design/02-shared-assets.md)).
 
 For a caller that already has the text, `ein_ir::parse(&mut ast, text, filename)` returns the top-level forms and
-`ein_ir::load(&mut ast, &mut terms, &forms, base_dir)` builds the KB. Both errors are structured values, not strings
-to parse again: `ParseError` carries every error recovery reached, each with its line, column, notes and ranked
-repairs ([`03-design/04-ir-frontend.md`](03-design/04-ir-frontend.md)), and `KbLoadError` the accumulated problems. That is what
-linking gives a caller that the binary does not: the CLI hands back an exit code and lines of text.
+`ein_ir::load(&mut ast, &mut terms, &forms, base_dir)` builds the KB, and `ein_ir::saved::load_text` does both, a
+saved file too, as every command does. **A refusal is a value**, not a string to parse again
+([Q-M2.9](../../decisions/diagnostics/Q-M2.9-a-refusal-is-a-value-with-a-kind-a-place-and-its.md)):
+`ParseError` carries every error recovery reached, each with its kind, line, column, notes and ranked repairs
+([`03-design/04-ir-frontend.md`](03-design/04-ir-frontend.md)); `KbLoadError` its findings, `findings()`, each an
+`ein_core::Diagnostic` with its `kind`, the refusal of
+[`07-diagnostics.md`](../user/04-reference/07-diagnostics.md) it is, its `place` where the line names one, and its
+`message`, the line the binary prints, and, where the text did not parse, the parse's error, `parse()`; a text's
+load, `saved::TextError`, is one or the other. `Display` prints what the binary prints after `kb load error: `.
+
+**The load is followed by a judgement the binary makes on every command**: two of the program's hypothesis
+mechanisms that disagree with the `open` facts root holds refuse it, and that reads root's fixpoint, which the load
+does not compute. `ein_infer::mechanisms::judge_loaded(&ast, &terms, &kb, again)` makes it, `again` loading the
+program a second time, or copying it, into the arenas it is handed: `Err` holds the conflicts, findings of the kind
+`mechanisms`, and `Ok` the notes. A caller that skips it answers a program `ein solve` refuses. That is what linking
+gives a caller that the binary does not: the CLI hands back an exit code and lines of text.
 
 ### 2.3 Saturate (optional)
 
@@ -154,7 +172,7 @@ root's derivation, then each listed state's from its first minimal commitment, t
 ```rust
 use std::path::Path;
 
-use ein_core::Terms;
+use ein_core::{Diagnostic, Terms};
 use ein_infer::events::Events;
 use ein_infer::explore::{self, Ask, Mode, Verdict, Which};
 use ein_ir::Ast;
@@ -170,8 +188,24 @@ fn run(path: &Path) -> Result<String, String> {
 
     // 2 — load: parse, expand macros, resolve `(import std.*)` against the
     //     file's directory, and build the KB. `ein_ir::parse` + `ein_ir::load`
-    //     is the same thing in two steps, for a caller that has the text.
-    let mut kb = ein_ir::load_file(&mut ast, &mut terms, path).map_err(|e| e.to_string())?;
+    //     is the same thing in two steps, for a caller that has the text. A
+    //     program the load refuses is a value: each finding has a kind, the
+    //     refusal of `07-diagnostics.md` it is, its place where the line names
+    //     one, and the line `ein solve` prints. The hypothesis mechanisms are
+    //     judged on root's fixpoint after the load, as every command judges
+    //     them, from a second load, and a conflict refuses the program too.
+    let refused = |findings: &[Diagnostic]| {
+        let kinds: Vec<&str> = findings.iter().map(|f| f.kind.name()).collect();
+        format!("refused: {}\n", kinds.join(", "))
+    };
+    let mut kb = match ein_ir::load_file(&mut ast, &mut terms, path) {
+        Ok(kb) => kb,
+        Err(e) => return Ok(refused(e.findings())),
+    };
+    let again = |ast: &mut Ast, terms: &mut Terms| ein_ir::load_file(ast, terms, path).ok();
+    if let Err(conflicts) = ein_infer::mechanisms::judge_loaded(&ast, &terms, &kb, again) {
+        return Ok(refused(&conflicts));
+    }
     let loaded_facts = kb.n_facts();
 
     // 3 — root's derivation, kept for step 5's trace. The run below finds
@@ -276,7 +310,10 @@ The counts above are asserted by `the_worked_example_runs`, which takes the
 `Contradiction`, `Ambiguity` and `Open`, on three other files. So the `match`
 is five arms of which **four** have run. The fifth, `None`, needs a budget no
 example here sets, and it is in the page because a caller that never sets one
-still has to name it.
+still has to name it. `the_refusals_are_read_by_their_kind` takes the two
+refusals, on a file the parse refuses, one the load refuses and one whose
+hypothesis mechanisms disagree: `refused: parse`, `refused: declaration` and
+`refused: mechanisms`.
 <!-- prose -->
 
 ## 4. Caching a loaded KB: `.einb`

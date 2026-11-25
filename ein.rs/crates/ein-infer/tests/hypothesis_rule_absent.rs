@@ -126,7 +126,7 @@ fn load_text(name: &str, text: &str) -> (Ast, Terms, Kb) {
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let forms = parse(&mut ast, text, Some(name)).unwrap_or_else(|e| panic!("{name}: {e}"));
-    let kb = load(&mut ast, &mut terms, &forms, None).unwrap_or_else(|e| panic!("{name}: {}", e.0));
+    let kb = load(&mut ast, &mut terms, &forms, None).unwrap_or_else(|e| panic!("{name}: {e}"));
     (ast, terms, kb)
 }
 

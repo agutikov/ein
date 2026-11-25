@@ -18,3 +18,4 @@ What a refusal prints: where its line places the fault, how it words it, and the
 - [Q-M1f.121](Q-M1f.121-a-goals-relation-variable-is-refused-with.md) — A goal's relation variable is refused with the goal's line at every depth
 - [Q-M1f.580](Q-M1f.580-a-loads-and-a-runs-warnings-are-printed-when.md) — A load's and a run's warnings are printed when the command's run ends
 - [Q-M1f.670](Q-M1f.670-a-conflict-with-an-open-fact-the-program-writes.md) — A conflict with an `open` fact the program writes names where it is written
+- [Q-M2.9](Q-M2.9-a-refusal-is-a-value-with-a-kind-a-place-and-its.md) — A refusal is a value with a kind, a place and its line

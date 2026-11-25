@@ -145,8 +145,9 @@ pub enum EinbError {
     Compressed,
     /// Re-interning the file's tables overflowed the 30-bit id space.
     Overflow(ein_core::Overflow),
-    /// `PROGRAM` did not parse, or did not load.
-    Program(String),
+    /// `PROGRAM` did not parse, or did not load: the load's refusal, its
+    /// findings with their kinds, or the parse's error.
+    Program(ein_ir::KbLoadError),
     /// The file disagrees with itself: re-interning entry *i* did not yield
     /// the id the file says it has.
     NotInjective(&'static str),

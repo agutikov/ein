@@ -55,7 +55,7 @@ fn answer_with(body: &str, query: &str, mode: Mode, budget: Option<u64>) -> Resu
     let mut ast = Ast::new();
     let mut terms = Terms::new();
     let forms = ein_ir::parse(&mut ast, &src, None).map_err(|e| e.to_string())?;
-    let mut kb = ein_ir::load(&mut ast, &mut terms, &forms, None).map_err(|e| e.0)?;
+    let mut kb = ein_ir::load(&mut ast, &mut terms, &forms, None).map_err(|e| e.to_string())?;
     let mut opts = explore::Options::new(mode);
     if let Some(b) = budget {
         opts.budget = b;

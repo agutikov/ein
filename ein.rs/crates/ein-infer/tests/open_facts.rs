@@ -46,7 +46,7 @@ fn refused(text: &str) -> String {
     match parse(&mut ast, text, Some("<test>")) {
         Err(e) => e.to_string(),
         Ok(forms) => match load(&mut ast, &mut terms, &forms, None) {
-            Err(e) => e.0,
+            Err(e) => e.to_string(),
             Ok(_) => panic!("loads: {text}"),
         },
     }

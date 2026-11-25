@@ -399,6 +399,17 @@ pub fn loc_repr(ast: &Ast, loc: Option<Loc>) -> String {
     }
 }
 
+/// A position as a diagnostic's [`ein_core::Place`]: the file as
+/// [`loc_repr`] names it, and the line and the column; `None` where the
+/// parser kept none, as `loc_repr` writes `None`.
+pub fn place(ast: &Ast, loc: Option<Loc>) -> Option<ein_core::Place> {
+    loc.map(|l| ein_core::Place {
+        file: ast.file(l.file).to_string(),
+        line: l.line,
+        col: l.col,
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

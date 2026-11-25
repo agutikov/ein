@@ -50,6 +50,8 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
+use ein_core::{Diagnostic, Kind, Place};
+
 use crate::ast::{Ast, Loc, Node, NodeId, loc_repr};
 use crate::grammar::{ParseError, parse};
 use crate::read;
@@ -75,14 +77,51 @@ const DECLARATORS: [&str; 3] = ["rule", "relation", "macro"];
 /// `load_query_with`) reads every other head as a fact's relation.
 const DIRECTIVES: [&str; 5] = ["query", "solve", "config", "trace", "import"];
 
-/// A load-time failure. The message is output, byte for byte — the
-/// `examples/broken/load/*.expected` fixtures are the gate.
+/// A load-time failure of the resolver: one finding, a refusal with its kind
+/// and its place where the line names one, or a module's parse error, whole.
+/// The message is output, byte for byte — the
+/// `examples/broken/load/*.expected` fixtures are the gate. The resolver
+/// stops at its first failure, so a refusal of its own is one finding.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct LoadError(pub String);
+pub struct LoadError {
+    findings: Vec<Diagnostic>,
+    parse: Option<ParseError>,
+}
+
+impl LoadError {
+    /// A refusal of `kind`, its line `message`, at `place`.
+    pub fn new(kind: Kind, message: impl Into<String>, place: Option<Place>) -> Self {
+        LoadError {
+            findings: vec![Diagnostic::error(kind, message).at(place)],
+            parse: None,
+        }
+    }
+
+    /// The findings: the refusal's one, or each error of a module's parse.
+    pub fn findings(&self) -> &[Diagnostic] {
+        &self.findings
+    }
+
+    /// A module's parse error, where its text did not parse.
+    pub fn parse(&self) -> Option<&ParseError> {
+        self.parse.as_ref()
+    }
+
+    /// The parts, for the load's error to carry.
+    pub(crate) fn into_parts(self) -> (Vec<Diagnostic>, Option<ParseError>) {
+        (self.findings, self.parse)
+    }
+}
 
 impl std::fmt::Display for LoadError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(&self.0)
+        match &self.parse {
+            Some(p) => write!(f, "{p}"),
+            None => {
+                let lines: Vec<&str> = self.findings.iter().map(|d| d.message.as_str()).collect();
+                f.write_str(&lines.join("; "))
+            }
+        }
     }
 }
 
@@ -92,7 +131,10 @@ impl From<ParseError> for LoadError {
     /// A module that does not parse surfaces as its own parse error; the
     /// loader lets it through rather than wrapping it.
     fn from(e: ParseError) -> Self {
-        LoadError(e.to_string())
+        LoadError {
+            findings: e.diagnostics(),
+            parse: Some(e),
+        }
     }
 }
 
@@ -108,8 +150,9 @@ enum Unread {
     /// No file is there: `module not found at …`.
     Missing,
     /// A file is there and cannot be read as text: the line
-    /// [`read::read_program`] gives it, naming its path.
-    Refused(String),
+    /// [`read::read_program`] gives it, naming its path, and its place where
+    /// it has one.
+    Refused(String, Option<Place>),
 }
 
 /// Import resolution with an explicit stdlib source.
@@ -320,10 +363,10 @@ impl Resolver {
                 let text = match read::read_program(&path) {
                     Ok(read::Held::Text(text)) => Ok(text),
                     Ok(read::Held::Container(_)) => {
-                        Err(Unread::Refused(read::container_module_line(&path)))
+                        Err(Unread::Refused(read::container_module_line(&path), None))
                     }
                     Err(e) if e.not_found() => Err(Unread::Missing),
-                    Err(e) => Err(Unread::Refused(e.line)),
+                    Err(e) => Err(Unread::Refused(e.line, e.place)),
                 };
                 (display, text)
             }
@@ -570,12 +613,16 @@ impl Resolver {
             let own_import = i == 0 && ast.loc(form).is_none() && first_loc(ast, form).is_none();
             let is_std = module.split(MODULE_SEP).next() == Some(STDLIB_ALIAS);
             if files[i].is_std && !is_std {
-                return Err(LoadError(format!(
-                    "(import {}) — a std.* module may import only std.* modules; \
-                     a file-relative import there resolves under a checkout and \
-                     not under the embedded copy an installed binary carries, at {loc}",
-                    spec.module
-                )));
+                return Err(LoadError::new(
+                    Kind::Import,
+                    format!(
+                        "(import {}) — a std.* module may import only std.* modules; \
+                         a file-relative import there resolves under a checkout and \
+                         not under the embedded copy an installed binary carries, at {loc}",
+                        spec.module
+                    ),
+                    crate::ast::place(ast, ast.loc(form)),
+                ));
             }
             let j = match by_name.get(&module) {
                 Some(&j) => {
@@ -584,41 +631,52 @@ impl Resolver {
                             chain.iter().map(|&c| files[c].key.clone()).collect();
                         keys.push(files[j].key.clone());
                         let from = keys.iter().position(|k| *k == files[j].key).unwrap_or(0);
-                        return Err(LoadError(format!(
-                            "import cycle: {} (at {loc})",
-                            keys[from..].join(" -> ")
-                        )));
+                        return Err(LoadError::new(
+                            Kind::Import,
+                            format!("import cycle: {} (at {loc})", keys[from..].join(" -> ")),
+                            crate::ast::place(ast, ast.loc(form)),
+                        ));
                     }
                     j
                 }
                 None => {
-                    let (key, text) =
-                        self.locate(&spec.module, &module, base_dir, &loc)
-                            .map_err(|e| {
-                                // No import line to place the line at, but the
-                                // line that says the library has none.
-                                if own_import && module == CORE && !e.0.starts_with(CORE_MISSING) {
-                                    LoadError(format!(
-                                        "{CORE}, the module every program gets, cannot be read: {}",
-                                        e.0
-                                    ))
-                                } else {
-                                    e
-                                }
-                            })?;
+                    let (key, text) = self.locate(&spec.module, &module, base_dir, &loc).map_err(
+                        |e| {
+                            // No import line to place the line at, but the
+                            // line that says the library has none.
+                            if own_import
+                                && module == CORE
+                                && !e.to_string().starts_with(CORE_MISSING)
+                            {
+                                LoadError::new(
+                                    Kind::StdCore,
+                                    format!(
+                                        "{CORE}, the module every program gets, cannot be read: {e}"
+                                    ),
+                                    None,
+                                )
+                            } else {
+                                e
+                            }
+                        },
+                    )?;
                     let parsed = parse(ast, &text, Some(&key))?;
                     self.read_log.borrow_mut().push((module.clone(), text));
                     let file = File::new(Some(module.clone()), key, parsed, ast, is_std);
                     if let Some((short, decl)) =
                         file.declared.iter().find(|(n, _)| n.contains(MODULE_SEP))
                     {
-                        return Err(LoadError(format!(
-                            "{}: {module} declares '{short}', a name with a dot — a module's \
-                             declared name holds no dot, so that a full name such as \
-                             {module}.x reads one way (Q-M1f.241)",
-                            first_loc(ast, *decl)
-                                .map_or_else(|| file.key.clone(), |l| loc_repr(ast, Some(l)))
-                        )));
+                        return Err(LoadError::new(
+                            Kind::FullName,
+                            format!(
+                                "{}: {module} declares '{short}', a name with a dot — a module's \
+                                 declared name holds no dot, so that a full name such as \
+                                 {module}.x reads one way (Q-M1f.241)",
+                                first_loc(ast, *decl)
+                                    .map_or_else(|| file.key.clone(), |l| loc_repr(ast, Some(l)))
+                            ),
+                            at(ast, *decl),
+                        ));
                     }
                     files.push(file);
                     let j = files.len() - 1;
@@ -650,11 +708,15 @@ impl Resolver {
         if let Some(c) = &self.carried {
             return match c.modules.get(module) {
                 Some(text) => Ok((carried_name(module, &c.file), text.clone())),
-                None => Err(LoadError(format!(
-                    "(import {written}) — {} carries no module {module}, and a saved file \
-                     reads no other file ({loc})",
-                    c.file
-                ))),
+                None => Err(LoadError::new(
+                    Kind::SavedFile,
+                    format!(
+                        "(import {written}) — {} carries no module {module}, and a saved file \
+                         reads no other file ({loc})",
+                        c.file
+                    ),
+                    None,
+                )),
             };
         }
         let segments: Vec<&str> = module.split(MODULE_SEP).collect();
@@ -665,15 +727,23 @@ impl Resolver {
             // stdlib has no business being refused for the shape of a variable
             // it never reads.
             if let Some(why) = self.stdlib.problem() {
-                return Err(LoadError(format!("(import {written}) — {why} ({loc})")));
+                return Err(LoadError::new(
+                    Kind::StdCore,
+                    format!("(import {written}) — {why} ({loc})"),
+                    None,
+                ));
             }
             (self.stdlib_root(), segments[1..].to_vec())
         } else {
             let Some(dir) = base_dir else {
-                return Err(LoadError(format!(
-                    "(import {written}) — file-relative import needs a base directory \
-                     (load from a file path) at {loc}"
-                )));
+                return Err(LoadError::new(
+                    Kind::Import,
+                    format!(
+                        "(import {written}) — file-relative import needs a base directory \
+                         (load from a file path) at {loc}"
+                    ),
+                    None,
+                ));
             };
             (Root::Dir(dir.to_path_buf()), segments.clone())
         };
@@ -686,19 +756,28 @@ impl Resolver {
                 if module == CORE
                     && let stdlib::Source::Override(dir) = &self.stdlib =>
             {
-                return Err(LoadError(format!(
-                    "{CORE_MISSING}: {} holds no core.ein — every program gets {CORE}, and a \
-                     library $EIN_STDLIB names is where it is read from (Q-M1f.551): write \
-                     core.ein there, or unset $EIN_STDLIB to use the checkout or the embedded copy",
-                    dir.display()
-                )));
+                return Err(LoadError::new(
+                    Kind::StdCore,
+                    format!(
+                        "{CORE_MISSING}: {} holds no core.ein — every program gets {CORE}, and a \
+                         library $EIN_STDLIB names is where it is read from (Q-M1f.551): write \
+                         core.ein there, or unset $EIN_STDLIB to use the checkout or the embedded \
+                         copy",
+                        dir.display()
+                    ),
+                    None,
+                ));
             }
             Err(Unread::Missing) => {
-                return Err(LoadError(format!(
-                    "(import {written}) — module not found at {display} ({loc})"
-                )));
+                return Err(LoadError::new(
+                    Kind::ModuleUnreadable,
+                    format!("(import {written}) — module not found at {display} ({loc})"),
+                    None,
+                ));
             }
-            Err(Unread::Refused(line)) => return Err(LoadError(line)),
+            Err(Unread::Refused(line, place)) => {
+                return Err(LoadError::new(Kind::ModuleUnreadable, line, place));
+            }
         };
         let key = std::fs::canonicalize(&display)
             .ok()
@@ -740,13 +819,17 @@ impl Resolver {
                     && by_name.contains_key(prefix)
                 {
                     let decl = file.declared[short];
-                    return Err(LoadError(format!(
-                        "{}: the program declares '{short}', a full name of {prefix}, \
-                         which the program imports — a declaration's full name is its own \
-                         file's, and a full name of {prefix} is one {prefix} declares \
-                         (Q-M1f.239)",
-                        place(ast, decl)
-                    )));
+                    return Err(LoadError::new(
+                        Kind::FullName,
+                        format!(
+                            "{}: the program declares '{short}', a full name of {prefix}, \
+                             which the program imports — a declaration's full name is its own \
+                             file's, and a full name of {prefix} is one {prefix} declares \
+                             (Q-M1f.239)",
+                            place(ast, decl)
+                        ),
+                        at(ast, decl),
+                    ));
                 }
             }
             for (form, spec, j) in &file.imports {
@@ -760,12 +843,16 @@ impl Resolver {
                             .map(String::as_str)
                             .collect();
                         if !missing.is_empty() {
-                            return Err(LoadError(format!(
-                                "(import {} :symbols …) — not provided by the module: {} at {}",
-                                spec.module,
-                                missing.into_iter().collect::<Vec<_>>().join(", "),
-                                loc_repr(ast, ast.loc(*form))
-                            )));
+                            return Err(LoadError::new(
+                                Kind::ImportList,
+                                format!(
+                                    "(import {} :symbols …) — not provided by the module: {} at {}",
+                                    spec.module,
+                                    missing.into_iter().collect::<Vec<_>>().join(", "),
+                                    loc_repr(ast, ast.loc(*form))
+                                ),
+                                crate::ast::place(ast, ast.loc(*form)),
+                            ));
                         }
                         for s in symbols {
                             let full = if m.declared.contains_key(s) {
@@ -786,12 +873,16 @@ impl Resolver {
                         let alias = spec.alias.clone().unwrap_or_else(|| m_name.clone());
                         match t.aliases.get(&alias) {
                             Some(&k) if k != *j => {
-                                return Err(LoadError(format!(
-                                    "{}: '{alias}' prefixes two modules in one file, {} and \
-                                     {m_name} — one short name names one thing in a file",
-                                    place(ast, *form),
-                                    files[k].name.as_deref().unwrap_or("")
-                                )));
+                                return Err(LoadError::new(
+                                    Kind::FullName,
+                                    format!(
+                                        "{}: '{alias}' prefixes two modules in one file, {} and \
+                                         {m_name} — one short name names one thing in a file",
+                                        place(ast, *form),
+                                        files[k].name.as_deref().unwrap_or("")
+                                    ),
+                                    at(ast, *form),
+                                ));
                             }
                             _ => {
                                 t.aliases.insert(alias, *j);
@@ -859,12 +950,16 @@ impl Resolver {
                         }
                         n.clone()
                     } else if self.exists(prefix, base_dir) {
-                        return Err(LoadError(format!(
-                            "{}: '{n}' is a full name of {prefix}, which no import of the \
-                             program brings — a module enters a program by an import of it: \
-                             write (import {prefix} …) (Q-M1f.238)",
-                            place(ast, node)
-                        )));
+                        return Err(LoadError::new(
+                            Kind::FullName,
+                            format!(
+                                "{}: '{n}' is a full name of {prefix}, which no import of the \
+                                 program brings — a module enters a program by an import of it: \
+                                 write (import {prefix} …) (Q-M1f.238)",
+                                place(ast, node)
+                            ),
+                            at(ast, node),
+                        ));
                     } else {
                         n.clone()
                     }
@@ -919,12 +1014,16 @@ impl Resolver {
             if let Some((prefix, _)) = n.rsplit_once(MODULE_SEP)
                 && self.exists(prefix, base_dir)
             {
-                return Err(LoadError(format!(
-                    "{}: '{n}' is a full name of {prefix}, which no import of the program \
-                     brings — a module enters a program by an import of it: write (import \
-                     {prefix} …) (Q-M1f.238)",
-                    place(ast, node)
-                )));
+                return Err(LoadError::new(
+                    Kind::FullName,
+                    format!(
+                        "{}: '{n}' is a full name of {prefix}, which no import of the program \
+                         brings — a module enters a program by an import of it: write (import \
+                         {prefix} …) (Q-M1f.238)",
+                        place(ast, node)
+                    ),
+                    at(ast, node),
+                ));
             }
         }
         Ok(names_core)
@@ -952,16 +1051,20 @@ fn bind(
     match t.names.get(short) {
         Some(prev) if *prev != full => {
             let own = file.declared.contains_key(short);
-            Err(LoadError(format!(
-                "{}: '{short}' is bound to two full names in {}, {prev}{} and {full} — one short \
-                 name names one declaration in a file: list it from one module, or write the \
-                 other by its full name",
-                place(ast, form),
-                file.name
-                    .as_deref()
-                    .map_or_else(|| "the program".to_string(), str::to_string),
-                if own { " (its own declaration)" } else { "" }
-            )))
+            Err(LoadError::new(
+                Kind::FullName,
+                format!(
+                    "{}: '{short}' is bound to two full names in {}, {prev}{} and {full} — one \
+                     short name names one declaration in a file: list it from one module, or \
+                     write the other by its full name",
+                    place(ast, form),
+                    file.name
+                        .as_deref()
+                        .map_or_else(|| "the program".to_string(), str::to_string),
+                    if own { " (its own declaration)" } else { "" }
+                ),
+                at(ast, form),
+            ))
         }
         _ => {
             t.names.insert(short.to_string(), full);
@@ -971,11 +1074,15 @@ fn bind(
 }
 
 fn names_nothing(ast: &Ast, node: NodeId, n: &str, module: &str, short: &str) -> LoadError {
-    LoadError(format!(
-        "{}: '{n}' names nothing: {module} declares no '{short}' — a prefixed name is a full \
-         name of a declaration of the module it names (Q-M1f.251)",
-        place(ast, node)
-    ))
+    LoadError::new(
+        Kind::FullName,
+        format!(
+            "{}: '{n}' names nothing: {module} declares no '{short}' — a prefixed name is a full \
+             name of a declaration of the module it names (Q-M1f.251)",
+            place(ast, node)
+        ),
+        at(ast, node),
+    )
 }
 
 /// Where a node is written, or `None`.
@@ -983,21 +1090,32 @@ fn place(ast: &Ast, node: NodeId) -> String {
     loc_repr(ast, first_loc(ast, node))
 }
 
+/// [`place`], as a diagnostic's.
+fn at(ast: &Ast, node: NodeId) -> Option<Place> {
+    crate::ast::place(ast, first_loc(ast, node))
+}
+
 /// A module's canonical name: its segments, none empty and none holding a
 /// `/` (Q-M1f.252), and not `std` alone.
 fn canonical(module: &str, loc: &str) -> Result<String, LoadError> {
     let segments: Vec<&str> = module.split(MODULE_SEP).collect();
     if segments.len() == 1 && segments[0] == STDLIB_ALIAS {
-        return Err(LoadError(format!(
-            "(import {module}) — bare '{STDLIB_ALIAS}' is not a module at {loc}"
-        )));
+        return Err(LoadError::new(
+            Kind::Import,
+            format!("(import {module}) — bare '{STDLIB_ALIAS}' is not a module at {loc}"),
+            None,
+        ));
     }
     if segments.iter().any(|s| s.is_empty() || s.contains('/')) {
-        return Err(LoadError(format!(
-            "(import {module}) — a module's name is its path from the program's directory, a \
-             name per directory joined by dots, none empty and none holding a '/': no '..', no \
-             path (Q-M1f.252) at {loc}"
-        )));
+        return Err(LoadError::new(
+            Kind::FullName,
+            format!(
+                "(import {module}) — a module's name is its path from the program's directory, a \
+                 name per directory joined by dots, none empty and none holding a '/': no '..', \
+                 no path (Q-M1f.252) at {loc}"
+            ),
+            None,
+        ));
     }
     Ok(module.to_string())
 }
@@ -1119,9 +1237,11 @@ fn import_spec(ast: &Ast, form: NodeId) -> Result<ImportSpec, LoadError> {
     let as_value = kws.get("as").copied();
     let symbols_value = kws.get("symbols").copied();
     if as_value.is_some() && symbols_value.is_some() {
-        return Err(LoadError(format!(
-            "(import {module}) — :as and :symbols are mutually exclusive at {loc}"
-        )));
+        return Err(LoadError::new(
+            Kind::Import,
+            format!("(import {module}) — :as and :symbols are mutually exclusive at {loc}"),
+            crate::ast::place(ast, ast.loc(form)),
+        ));
     }
     let alias = match as_value {
         // An alias binds a name, so it may not be a reserved one (Q-M1f.7):
@@ -1131,10 +1251,14 @@ fn import_spec(ast: &Ast, form: NodeId) -> Result<ImportSpec, LoadError> {
             .expect(":as takes a name (ein.y's ImportClause)")
         {
             name if !ein_core::binds_no_reserved(name) => {
-                return Err(LoadError(format!(
-                    "(import {module} :as {name}) — alias '{name}' shadows a reserved kernel \
-                     name at {loc}"
-                )));
+                return Err(LoadError::new(
+                    Kind::Declaration,
+                    format!(
+                        "(import {module} :as {name}) — alias '{name}' shadows a reserved \
+                         kernel name at {loc}"
+                    ),
+                    crate::ast::place(ast, ast.loc(form)),
+                ));
             }
             name => Some(name.to_string()),
         },
@@ -1311,10 +1435,14 @@ fn dedup_declarations(ast: &Ast, forms: &[NodeId]) -> Result<Vec<NodeId>, LoadEr
             }
             Some(&prev) if ast.eq_nodes(prev, f) => {}
             Some(_) => {
-                return Err(LoadError(format!(
-                    "conflicting definitions of '{name}': same name, different body (at {})",
-                    loc_repr(ast, first_loc(ast, f))
-                )));
+                return Err(LoadError::new(
+                    Kind::Declaration,
+                    format!(
+                        "conflicting definitions of '{name}': same name, different body (at {})",
+                        loc_repr(ast, first_loc(ast, f))
+                    ),
+                    at(ast, f),
+                ));
             }
         }
     }

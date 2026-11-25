@@ -41,8 +41,9 @@ use ein_core::{Kb, Sources, Terms};
 use crate::ast::{Ast, Node, NodeId, loc_repr};
 use crate::dump::dump_compact;
 use crate::from_ir::{KbLoadError, LoadOptions, load_query_by};
-use crate::grammar::{opens_saved, parse};
+use crate::grammar::{ParseError, opens_saved, parse};
 use crate::imports::Resolver;
+use ein_core::{Diagnostic, Kind};
 
 /// The format's name, which its first line names.
 pub const FORMAT: &str = "ein-saved/1";
@@ -106,18 +107,30 @@ pub struct Saved {
     pub commit: Option<Vec<String>>,
 }
 
-/// Why a file's text did not load: a parse error, printed as the parser
-/// prints it, or a load error, which a command prints after `kb load error: `.
+/// Why a file's text did not load: a parse error, the parser's value, printed
+/// as the parser prints it, or a load error, which a command prints after
+/// `kb load error: `.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TextError {
-    Parse(String),
+    Parse(ParseError),
     Load(KbLoadError),
+}
+
+impl TextError {
+    /// The refusal's findings, each with its kind, its place and its line:
+    /// the parse error's errors, or the load's findings.
+    pub fn findings(&self) -> Vec<Diagnostic> {
+        match self {
+            TextError::Parse(e) => e.diagnostics(),
+            TextError::Load(e) => e.findings().to_vec(),
+        }
+    }
 }
 
 impl std::fmt::Display for TextError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            TextError::Parse(e) => f.write_str(e),
+            TextError::Parse(e) => write!(f, "{e}"),
             TextError::Load(e) => write!(f, "kb load error: {e}"),
         }
     }
@@ -138,18 +151,22 @@ pub fn split(text: &str, name: Option<&str>) -> Result<Option<Saved>, TextError>
         return Ok(None);
     }
     let mut ast = Ast::new();
-    let forms = parse(&mut ast, text, name).map_err(|e| TextError::Parse(e.to_string()))?;
+    let forms = parse(&mut ast, text, name).map_err(TextError::Parse)?;
     split_forms(&ast, &forms).map(Some)
 }
 
 /// A saved file's parts, read off its parsed top-level forms ([`split`]).
 fn split_forms(ast: &Ast, forms: &[NodeId]) -> Result<Saved, TextError> {
     let shape = |at: NodeId, what: &str| {
-        TextError::Load(KbLoadError(format!(
-            "{what} at {} — a saved file is one (program …), then the (module …)s it carries, \
-             each once, then at most one (commit …), and nothing else",
-            loc_repr(ast, ast.loc(at))
-        )))
+        TextError::Load(KbLoadError::one(
+            Kind::SavedFile,
+            format!(
+                "{what} at {} — a saved file is one (program …), then the (module …)s it \
+                 carries, each once, then at most one (commit …), and nothing else",
+                loc_repr(ast, ast.loc(at))
+            ),
+            crate::ast::place(ast, ast.loc(at)),
+        ))
     };
     let mut saved = Saved {
         program: String::new(),
@@ -230,7 +247,7 @@ pub fn load_text(
 ) -> Result<Loaded, TextError> {
     let t = std::time::Instant::now();
     let Some(saved) = split(text, name)? else {
-        let forms = parse(ast, text, name).map_err(|e| TextError::Parse(e.to_string()))?;
+        let forms = parse(ast, text, name).map_err(TextError::Parse)?;
         let parse_time = t.elapsed();
         let resolver = Resolver::new();
         let mut kb = load_query_by(&resolver, ast, terms, &forms, base_dir, query, opts)
@@ -264,7 +281,7 @@ pub(crate) fn load_forms(
     opts: &LoadOptions,
 ) -> Result<Kb, KbLoadError> {
     let into = |e: TextError| match e {
-        TextError::Parse(e) => KbLoadError(e),
+        TextError::Parse(e) => KbLoadError::from(e),
         TextError::Load(e) => e,
     };
     let saved = split_forms(ast, forms).map_err(into)?;
@@ -291,8 +308,7 @@ fn load_saved(
 ) -> Result<Loaded, TextError> {
     let t = std::time::Instant::now();
     let file = name.unwrap_or("<string>");
-    let forms = parse(ast, &saved.program, Some(&program_name(name)))
-        .map_err(|e| TextError::Parse(e.to_string()))?;
+    let forms = parse(ast, &saved.program, Some(&program_name(name))).map_err(TextError::Parse)?;
     let parse_time = t.elapsed();
     let resolver = Resolver::carrying(file, &saved.modules);
     let mut kb =
@@ -316,8 +332,9 @@ fn load_saved(
 /// command that draws a program as written reads (`ein render program`).
 pub fn parse_text(ast: &mut Ast, text: &str, name: Option<&str>) -> Result<Vec<NodeId>, TextError> {
     match split(text, name)? {
-        None => parse(ast, text, name).map_err(|e| TextError::Parse(e.to_string())),
-        Some(saved) => parse(ast, &saved.program, Some(&program_name(name)))
-            .map_err(|e| TextError::Parse(e.to_string())),
+        None => parse(ast, text, name).map_err(TextError::Parse),
+        Some(saved) => {
+            parse(ast, &saved.program, Some(&program_name(name))).map_err(TextError::Parse)
+        }
     }
 }

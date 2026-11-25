@@ -175,17 +175,18 @@ pub fn load_held(
     }
 }
 
-/// **What the load noticed and did not refuse**: each line as
-/// `note: <line>`, kept for [`say_notes`], on every command, since every
-/// command that loads a program loads it through [`load_held`]: the
-/// hypothesis mechanisms' notes (Q-M1f.242). A command may load one file
-/// several times, once a query and once a question, and each line carries
-/// its file and position, so a line is kept the first time the process
-/// meets it and never again. No answer and no exit code moves.
-fn keep_notes(notes: &[String]) {
+/// **What the load noticed and did not refuse**: each note's line,
+/// `note: <message>` ([`ein_core::Diagnostic::line`]), kept for
+/// [`say_notes`], on every command, since every command that loads a program
+/// loads it through [`load_held`]: the hypothesis mechanisms' notes
+/// (Q-M1f.242). A command may load one file several times, once a query and
+/// once a question, and each line carries its file and position, so a line
+/// is kept the first time the process meets it and never again. No answer
+/// and no exit code moves.
+fn keep_notes(notes: &[ein_core::Diagnostic]) {
     let mut w = NOTES.lock().unwrap_or_else(|e| e.into_inner());
     for note in notes {
-        let line = format!("note: {note}");
+        let line = note.line();
         if !w.said.contains(&line) {
             w.said.push(line.clone());
             w.pending.push(line);
@@ -225,39 +226,27 @@ pub fn say_notes() {
 /// filters no candidate, or a name another declaration already says, is one
 /// `note:` line, as [`keep_notes`] keeps the loader's, and moves nothing.
 ///
-/// Derived closures and derived obligation activators exist only at root's
-/// fixpoint, so the judgement reads root: [`ein_infer::mechanisms::check`]
-/// saturates a second load of the program, `again`, and leaves the
-/// command's own tables as they were. A program that cannot declare two
-/// mechanisms ([`ein_infer::mechanisms::may_conflict`]) pays nothing; one
-/// whose root does not saturate is the command's to report.
+/// The judgement is the library's, [`ein_infer::mechanisms::judge_loaded`]:
+/// derived closures and derived obligation activators exist only at root's
+/// fixpoint, so it saturates a second load of the program, `again`, and
+/// leaves the command's own tables as they were.
 fn judge_mechanisms(
     ast: &Ast,
     terms: &Terms,
     kb: &Kb,
     again: impl FnOnce(&mut Ast, &mut Terms) -> Option<Kb>,
 ) -> Result<(), String> {
-    if !ein_infer::mechanisms::may_conflict(kb, terms, ast) {
-        return Ok(());
-    }
-    let mut ast = Ast::new();
-    let mut terms = Terms::new();
-    let Some(mut kb) = again(&mut ast, &mut terms) else {
-        return Ok(());
-    };
-    let Some(report) = ein_infer::mechanisms::check(&ast, &mut terms, &mut kb) else {
-        return Ok(());
-    };
-    if !report.conflicts.is_empty() {
-        return Err(report
-            .conflicts
+    match ein_infer::mechanisms::judge_loaded(ast, terms, kb, again) {
+        Ok(notes) => {
+            keep_notes(&notes);
+            Ok(())
+        }
+        Err(conflicts) => Err(conflicts
             .iter()
-            .map(|l| format!("kb load error: {l}"))
+            .map(|d| format!("kb load error: {d}"))
             .collect::<Vec<_>>()
-            .join("\n"));
+            .join("\n")),
     }
-    keep_notes(&report.notes);
-    Ok(())
 }
 
 /// Parse what [`read_program`] read, without loading it: a text as written,
@@ -275,12 +264,8 @@ pub fn parse_held(ast: &mut Ast, path: &Path, held: Held) -> Result<Vec<NodeId>,
             let text =
                 ein_einb::program_of(&bytes, true).map_err(|e| format!("kb load error: {e}"))?;
             let name = ein_einb::program_name(Some(&path.display().to_string()));
-            ein_ir::parse(ast, &text, Some(&name)).map_err(|e| {
-                format!(
-                    "kb load error: {}",
-                    ein_einb::EinbError::Program(e.to_string())
-                )
-            })
+            ein_ir::parse(ast, &text, Some(&name))
+                .map_err(|e| format!("kb load error: {}", ein_einb::EinbError::Program(e.into())))
         }
         #[cfg(not(feature = "einb"))]
         Held::Container(_) => Err(no_einb_line(path)),
@@ -364,15 +349,21 @@ fn open_einb(
     })?;
     match opened.freshness {
         ein_einb::Freshness::Fresh => {}
-        why => eprintln!(
-            "warning: {} was written under different inputs ({why:?}){}",
-            path.display(),
-            if opened.derived_dropped {
-                " — its derived state was dropped and the program re-loaded"
-            } else {
-                ""
-            }
-        ),
+        why => {
+            let stale = ein_core::Diagnostic::warning(
+                ein_core::Kind::StaleContainer,
+                format!(
+                    "{} was written under different inputs ({why:?}){}",
+                    path.display(),
+                    if opened.derived_dropped {
+                        " — its derived state was dropped and the program re-loaded"
+                    } else {
+                        ""
+                    }
+                ),
+            );
+            eprintln!("{}", stale.line());
+        }
     }
     *ast = opened.ast;
     Ok(Loaded {
