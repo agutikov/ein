@@ -4,9 +4,10 @@
 //! and the kernel judges it, in a loop. This crate is EinAf's code; its
 //! documentation is [`docs/einaf/`](../../docs/einaf/README.md).
 //!
-//! What exists so far is [`kernel`], the one module that calls Ein's library:
-//! it loads a program, asks it a question about its answer, the region R, and
-//! reads off which of the seven outcomes the run is. Nothing else in the
-//! crate names an `ein_*` item.
+//! What exists so far is [`kernel`], the one module that calls Ein's library,
+//! through one door, the bounded call [`kernel::call`]: a program and the
+//! questions asked of it go in, and one [`kernel::Feedback`] a question comes
+//! out, with its outcome, one of seven. Nothing else in the crate names an
+//! `ein_*` item.
 
 pub mod kernel;

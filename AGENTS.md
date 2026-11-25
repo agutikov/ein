@@ -359,16 +359,22 @@ says Ein; `c/`, `nl2smt/` and `docs/lib/` are outside both projects.
   `einaf/target/`, and its manifest copies the engine's `[patch.crates-io]`
   for `lrpar` and the `gate` profile, which a manifest outside the workspace
   does not inherit; its `Cargo.lock` was started from the engine's.
-  **`einaf::kernel` is the one module that calls Ein's library**: it loads a
-  program as `ein solve` does, the hypothesis mechanisms' judgement included,
-  asks one of `ein solve`'s questions on a copy of the load, and reads which
-  of **the seven outcomes** the run is (invalid, flagged, not decided,
-  inconsistent, incomplete, several, one), with the reading it was taken
-  under, the part of R *one* and *several* are counted over
-  ([`01-outcomes.md`](docs/einaf/01-outcomes.md)). Its tests are a step of the
-  gate after Ein's: one test an outcome, the command, and every corpus
-  program that is not `slow` under every question, held to its group, its
-  exit, its claims and the engine's static check.
+  **`einaf::kernel` is the one module that calls Ein's library, through one
+  door, the bounded call `einaf::kernel::call`**: it loads a program as `ein
+  solve` does, the hypothesis mechanisms' judgement included, asks each of
+  `ein solve`'s questions on a copy of the load with the clock, the cap on a
+  saturation's firings, the budget and the limit set, catches a panic, and
+  returns one **feedback object** a question, `einaf-feedback/1`
+  ([`03-feedback.md`](docs/einaf/03-feedback.md)), whose outcome is one of
+  **the seven** (invalid, flagged, not decided, inconsistent, incomplete,
+  several, one) under each reading, the part of R *one* and *several* are
+  counted over ([`01-outcomes.md`](docs/einaf/01-outcomes.md)). Its tests are
+  a step of the gate after Ein's: one test an outcome, the command, every
+  refused fixture, and every corpus program that is not `slow` under every
+  question, held to its group, its exit, its claims and the engine's static
+  check, and under each question its entry declares to what `ein solve
+  --json-summary` says of the same run, by the binary the gate built
+  (`ein.rs/target/gate/ein`, or `$EIN_BIN`).
 - **`utils/`** — the scripts; [`utils/README.md`](utils/README.md) is the
   catalogue — one line per script in its group (*renderers*, *checks*, **the
   measurement set**), and the **censuses**, each kept beside the tool that
@@ -844,6 +850,7 @@ cargo test … -p ein-infer --features counters --test arith_batch   # the calcu
 cargo test --manifest-path ein.rs/Cargo.toml --profile gate --workspace   # the tests alone, as the gate builds them
 cargo test --manifest-path einaf/Cargo.toml --profile gate   # EinAf's tests, the gate's step after Ein's (--nocapture: the corpus's count of each outcome)
 einaf/target/release/einaf outcome FILE [--single|--maximal|--minimal|--count|--no-search]   # a program's outcome under one question, per reading; ./build.sh --einaf builds it
+einaf/target/release/einaf feedback FILE [QUESTION] [--region-budget N] [--region-limit N] [--max-steps N] [-T S]   # the same call's feedback object, einaf-feedback/1, as JSON
 EIN_TEST_JOBS=1   cargo test … --profile gate --workspace    # the corpus sweeps one unit at a time; the verdicts are the default's
 EIN_TEST_UNITS=u.tsv EIN_TEST_JOBS=1 cargo test … --test id_order_invariance   # every unit's cost and peak memory, one line each
 EIN_CORPUS_SLOW=1 EIN_TEST_SHARD=2/4 cargo test … --test corpus_cores   # one shard of a nightly step

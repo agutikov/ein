@@ -1,0 +1,10 @@
+;;; the rule of grow.ein, with two hypothesis mechanisms declared, so that
+;;; the load's judgement saturates root, which has no fixpoint
+(relation num N :why "{?3} is a number")
+(rule grow ()
+  :match (num ?x)
+  :assert (num (s ?x))
+  :why "the successor of a number is a number")
+(num zero)
+(query :goal (num ?x) :goal-text "{?x}")
+(solve :no-search :hypothesis-relations (num))

@@ -30,6 +30,13 @@ ein-core   = { path = "../ein.rs/crates/ein-core" }
 ein-ir     = { path = "../ein.rs/crates/ein-ir" }
 ein-infer  = { path = "../ein.rs/crates/ein-infer" }
 ein-render = { path = "../ein.rs/crates/ein-render" }
+# The feedback object as JSON, `einaf-feedback/1`, written and read back
+# (`einaf::kernel::Feedback`), at the versions the engine's lock file has.
+serde      = { version = "1", features = ["derive"] }
+serde_json = "1"
+# A program's and a state's digests, SHA-256, as `ein --version` takes the
+# library's manifest's.
+sha2       = "0.10"
 
 [dev-dependencies]
 # The corpus manifest, its worker pool and the repository's root, as the

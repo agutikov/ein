@@ -8,15 +8,21 @@
 //! *Not decided* is never read as one of the four answers after it.
 //!
 //! [The outcomes](../../../docs/einaf/01-outcomes.md) is this module's page: each outcome, what it
-//! is read from, and the test that holds the reading.
+//! is read from, and the test that holds the reading. The function is
+//! private: a reading is a part of the feedback object,
+//! [`super::Feedback::outcome`].
 
 use ein_infer::explore::{Stopped, Verdict};
 use ein_infer::read_out::ReadOut;
+use serde::{Deserialize, Serialize};
 
-use super::{Answered, Part, Question, Run};
+use super::program::{Answered, Run};
+use super::{Part, Question};
 
-/// What the kernel says of a program under one question.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+/// What the kernel says of a program under one question. In the object's
+/// JSON, its name in kebab case: `not-decided`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub enum Outcome {
     /// Refused at the read, the parse, the load, or at a firing: no answer
     /// exists.
@@ -73,11 +79,10 @@ impl Outcome {
     }
 }
 
-/// An outcome, with the question it is of and the reading it was taken
-/// under, and the kernel's words for why.
-#[derive(Clone, Debug, PartialEq, Eq)]
+/// **An outcome, with the reading it was taken under**, and the kernel's
+/// words for why: one entry of the object's `outcome`.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Reading {
-    pub question: Question,
     /// The part of R *one* and *several* were counted over.
     pub part: Part,
     pub outcome: Outcome,
@@ -85,22 +90,21 @@ pub struct Reading {
     pub why: String,
 }
 
-/// **The outcome of `run` under the reading `part`**, or `None` where the
-/// run's question cannot be read over that part ([`Question::readings`]).
-pub fn outcome(run: &Run, part: Part) -> Option<Reading> {
-    if !run.question.readings().contains(&part) {
-        return None;
-    }
-    let (outcome, why) = read(run, part);
-    Some(Reading {
-        question: run.question,
-        part,
-        outcome,
-        why,
-    })
+/// **The outcome of `run` under each reading its question gives**
+/// ([`Question::readings`]), in their order.
+pub(crate) fn readings(run: &Run) -> Vec<Reading> {
+    run.question
+        .readings()
+        .into_iter()
+        .map(|part| {
+            let (outcome, why) = read(run, part);
+            Reading { part, outcome, why }
+        })
+        .collect()
 }
 
 fn read(run: &Run, part: Part) -> (Outcome, String) {
+    debug_assert!(run.question.readings().contains(&part));
     let r: &ReadOut = match &run.answered {
         // A refusal, read off its findings: their kinds name it, and the
         // first one's line says it.
@@ -153,6 +157,12 @@ fn read(run: &Run, part: Part) -> (Outcome, String) {
                 }
             ),
         };
+        if run.cube_skipped {
+            return (
+                Outcome::Flagged,
+                format!("{why}; the cube its question needs was not computed"),
+            );
+        }
         return (Outcome::Flagged, why);
     }
     // A bound stopped the run first, whatever the question.

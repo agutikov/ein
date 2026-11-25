@@ -5,15 +5,18 @@ natural language, and Ein's kernel judges it, in a loop, until the program says 
 is the one Ein prints. It is an application of Ein and a project of its own: it reads Ein and links Ein's
 implementation, ein.rs, as a library, and nothing of Ein reads, links or names it.
 
-What it holds today is the first thing the loop has to know of the kernel: **which of seven outcomes a program has
-under a question about its answer** ([the outcomes](01-outcomes.md)), read off the values the library hands back,
-and the list of what the kernel guarantees of those values, each beside the test of Ein's that holds it
-([the kernel's invariants](02-kernel-invariants.md)).
+What it holds today is what the loop has to know of the kernel: **which of seven outcomes a program has under a
+question about its answer** ([the outcomes](01-outcomes.md)), read off the values the library hands back; the list
+of what the kernel guarantees of those values, each beside the test of Ein's that holds it ([the kernel's
+invariants](02-kernel-invariants.md)); and **the feedback object**, one value for what the kernel found of one
+program under one question, which a bounded call of the kernel returns and every later reader of the kernel reads
+([the feedback object](03-feedback.md)).
 
 | page | what |
 |---|---|
 | [01-outcomes.md](01-outcomes.md) | the seven outcomes: each, what it is read from, the test that holds the reading; the questions and the readings |
 | [02-kernel-invariants.md](02-kernel-invariants.md) | what the kernel guarantees of an answer, each with the test or the decision of Ein's that holds it |
+| [03-feedback.md](03-feedback.md) | the bounded call, and the feedback object it returns, `einaf-feedback/1`, key by key; what the bounds do not stop |
 
 ## What it depends on
 
@@ -22,8 +25,10 @@ the engine's workspace depends on them: `ein-core`, `ein-ir` to load, `ein-infer
 read-out. Its tests read the corpus through `ein-corpus`, the engine's test helper, which reads
 [`corpus/corpus.toml`](../../corpus/corpus.toml) and runs a sweep on the engine's worker pool.
 
-**One module calls the library**, `einaf::kernel` ([`einaf/src/kernel/`](../../einaf/src/kernel/mod.rs)): it loads
-a program, asks it a question and reads the outcome; nothing else in the package names an item of Ein's crates.
+**One module calls the library**, `einaf::kernel` ([`einaf/src/kernel/`](../../einaf/src/kernel/mod.rs)), through
+one function, the bounded call `einaf::kernel::call`: it loads a program, asks it each question under the kernel's
+bounds and returns one feedback object a question; nothing else in the package names an item of Ein's crates. Its
+JSON is written by `serde_json`, and its digests are SHA-256, by `sha2`.
 
 ## The package
 
@@ -48,16 +53,23 @@ cargo build --release --manifest-path einaf/Cargo.toml        # einaf/target/rel
 cargo test --manifest-path einaf/Cargo.toml --profile gate     # EinAf's tests, a step of the gate after Ein's
 ```
 
-The tests are three files under [`einaf/tests/`](../../einaf/tests/):
-[`outcomes.rs`](../../einaf/tests/outcomes.rs), one test an outcome, on a program that has it;
+The tests are four files under [`einaf/tests/`](../../einaf/tests/), each running programs through the bounded call:
+[`outcomes.rs`](../../einaf/tests/outcomes.rs), one test an outcome, on a program that has it, and the programs
+whose saturation has no fixpoint, EinAf's own fixtures under [`einaf/tests/fixtures/`](../../einaf/tests/fixtures/);
 [`corpus.rs`](../../einaf/tests/corpus.rs), every corpus program that is not `slow` asked every question, each outcome
-held to what the corpus says of the program (`--nocapture` prints the count of each outcome under each reading); and
-[`cli.rs`](../../einaf/tests/cli.rs), the command.
+held to what the corpus says of the program, every object read back as itself through JSON, and each question the
+program's entry declares held to what `ein solve --json-summary` says of the same run (`--nocapture` prints the count
+of each outcome under each reading, and of the runs compared); [`refused.rs`](../../einaf/tests/refused.rs), every
+refused fixture under `examples/broken/`; and [`cli.rs`](../../einaf/tests/cli.rs), the command.
+
+`corpus.rs` runs the `ein` binary the gate built, `ein.rs/target/gate/ein`, which the gate's step before EinAf's
+builds, or the one `$EIN_BIN` names; without one it fails, naming the command that builds it.
 
 ## The command
 
-`einaf outcome FILE [QUESTION]` loads a program, asks it one question as `ein solve` would, and prints the outcome
-under each reading the question gives, with what it was read from. Every outcome exits 0; a usage error exits 2.
+`einaf outcome FILE [QUESTION]` makes one bounded call, one question, and prints the outcome under each reading the
+question gives, with what it was read from, off the feedback object. `einaf feedback FILE [QUESTION]` prints the
+object itself, as JSON. Every outcome exits 0; a usage error exits 2, and a fault of the kernel's 1.
 
 <!-- output -->
 ```text
@@ -67,5 +79,5 @@ einaf outcome · examples/zebra2.ein --single
 ```
 
 The questions are `ein solve`'s: none for a description of R, `--single`, `--minimal` or `--maximal` with or without
-`--single`, `--count` and `--no-search`; the bounds are `--region-budget`, `--region-limit` and `-T`; `--read-out`
-prints `ein solve`'s read-out of the same run after the outcome. `einaf --help` lists them.
+`--single`, `--count` and `--no-search`; the bounds are `--region-budget`, `--region-limit`, `--max-steps` and `-T`.
+`einaf --help` lists them.

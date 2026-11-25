@@ -6,30 +6,34 @@ a question is one of `ein solve`'s ([the command line § 4](../ein/user/04-refer
 and **the outcome is of the question**, not of the program: the same program can be *one* under one question and
 *not decided* under another, and the function says which question it was asked.
 
-The function is [`einaf::kernel::outcome`](../../einaf/src/kernel/outcome.rs). It reads the library's values, the
-load's result and the read-out of the run, and nothing of what `ein solve` prints: a refusal by its findings' kinds,
-and a run's error by its kind, never by an error's text. The load's notes, which refuse nothing, are kept beside the
-program (`Program::notes`).
+The function is [`einaf/src/kernel/outcome.rs`](../../einaf/src/kernel/outcome.rs)'s, and its result is the
+feedback object's `outcome`, one entry a reading ([the feedback object](03-feedback.md)). It reads the library's
+values, the load's result and the read-out of the run, and nothing of what `ein solve` prints: a refusal by its
+findings' kinds, and a run's error by its kind, never by an error's text. The load's notes, which refuse nothing, are
+the object's last diagnostics.
 
 ## 1. The seven
 
 | outcome | what the kernel says | read from the library | for a reader of the binary | held by |
 |---|---|---|---|---|
 | **invalid** | the program was refused, at the read, the parse or the load: no answer exists | the refusal's findings, each a diagnostic of the kernel (`ein_core::Diagnostic`) with its kind, the refusal of [`07-diagnostics.md`](../ein/user/04-reference/07-diagnostics.md#2-errors-and-exit-codes) it is, its place and its line, and the parser's value (`ein_ir::ParseError`) where a parse refused it; the judgement of the hypothesis mechanisms, `ein_infer::mechanisms::judge_loaded`, is among the load's refusals, its findings of the kind `mechanisms`; a saved file's choice that names no node, by the run error's kind, `saved-file` | a summary with no answer, its `diagnostics` the findings; the message on stderr; exit 1, which a refuted claim also gives | `invalid_is_read_off_the_refusal` |
-| **flagged** | the program is not monotone: an answer is computed and nothing is claimed of it ([Q-M1f.564](../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)) | the answer's monotonicity: a site of the static check, or a hypothesis found in flight, or the warning | `monotonicity.warning`, `monotonicity.sites` | `flagged_is_read_before_any_answer` |
-| **not decided** | a bound stopped the run before the question was decided, or the question does not decide it | the answer's `stopped`: the facts budget, the cube's limit, the cap on one saturation's firings (`--max-steps`), the clock; or the clock's error, which hands back no answer, read by its kind, `deadline`; or `--no-search` on a root that is alive | `region.exhausted false` and `region.stopped.why` `budget`, `limit` or `steps`, `verdict.word null`; under `-T`, exit 2 and a summary with no answer whose diagnostic is `deadline` | `not_decided_is_a_run_a_bound_stopped` |
+| **flagged** | the program is not monotone: an answer is computed and nothing is claimed of it ([Q-M1f.564](../decisions/answer/Q-M1f.564-a-non-monotone-program-loads-with-a-warning.md)) | the answer's monotonicity: a site of the static check, or a hypothesis found in flight, or the warning; a question that needs the cube is asked under a limit of 0, so that the static check is read and the cube not computed ([the feedback object § 1](03-feedback.md#1-the-bounded-call)) | `monotonicity.warning`, `monotonicity.sites` | `flagged_is_read_before_any_answer` |
+| **not decided** | a bound stopped the run before the question was decided, or the question does not decide it | the answer's `stopped`: the facts budget, the cube's limit, the cap on one saturation's firings (`--max-steps`), the clock; or the clock's error, which hands back no answer, read by its kind, `deadline`; or `--no-search` on a root that is alive. The bounds are set on every call, the load's judgement under them too | `region.exhausted false` and `region.stopped.why` `budget`, `limit` or `steps`, `verdict.word null`; under `-T`, exit 2 and a summary with no answer whose diagnostic is `deadline` | `not_decided_is_a_run_a_bound_stopped` |
 | **inconsistent** | R is empty and every node is dead | `Contradiction`; a description exhausted with no state and no node alive; a dead root under `--no-search` | `verdict.word "Contradiction"`, `region.empty "dead"` | `inconsistent_is_an_empty_r_every_node_dead` |
 | **incomplete** | R is empty and every alive node owes an obligation the program states | `Open`; a description exhausted with no state and a node alive | `verdict.word "Open"`, `region.empty "owing"` | `incomplete_is_an_empty_r_every_alive_node_owing` |
 | **several** | the part of R the reading counts holds two states or more | `Ambiguity`, with the two states that decided it; a description or a line exhausted with two states or more in the part | `verdict.word "Ambiguity"`; `region.k_s`, `region.maximal.states` with `region.exhausted true` | `several_and_one_are_read_over_a_part` |
 | **one** | the part of R the reading counts is one state | `Solution`; a description or a line exhausted with one state in the part | `verdict.word "Solution"`; `region.k_s 1` with `region.exhausted true` | `one_is_one_state` |
 
 The tests are [`einaf/tests/outcomes.rs`](../../einaf/tests/outcomes.rs)'s, each on a corpus program that has the
-outcome. [`einaf/tests/corpus.rs`](../../einaf/tests/corpus.rs) holds the reading over the corpus: every program
-that is not `slow`, every question, one outcome a reading; a `parse-negative` entry is invalid at the parse and a
-`load-negative` one at the parse or the load; a program the engine's static check flags is flagged under every
-question and nothing else; a program is invalid exactly where `ein solve` exits non-zero and refutes no claim;
-questions that read one part of R agree wherever both decided it; and a claim the program states, where the kernel
-holds it, allows the outcome over the claim's part. No value of a flagged program's answer is asserted.
+outcome, through the bounded call. [`einaf/tests/corpus.rs`](../../einaf/tests/corpus.rs) holds the reading over the
+corpus: every program that is not `slow`, every question, one outcome a reading; a `parse-negative` or `load-negative`
+entry is invalid under every question, a `parse-negative` one with the parse's kinds alone; a program the engine's
+static check flags (its sites under `--no-search`) is flagged under every question and nothing else; a program is
+invalid exactly where `ein solve` exits non-zero and refutes no claim; questions that read one part of R agree
+wherever both decided it; and a claim the program states, where the kernel holds it, allows the outcome over the
+claim's part. And under each question the program's entry declares, the outcome is the one `ein solve --json-summary`
+gives the same run ([the feedback object § 3](03-feedback.md#3-held-by)). No value of a flagged program's answer is
+asserted.
 
 The four answers, *inconsistent*, *incomplete*, *several* and *one*, are the kernel's four verdict words
 ([embedding the crates § 2.5](../ein/ein.rs/04-api.md#25-read)), and *not decided* is the fifth arm of the same

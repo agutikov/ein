@@ -1,23 +1,27 @@
 //! `einaf`: EinAf's command.
 //!
-//! One subcommand so far, `einaf outcome FILE`, which loads a program, asks
-//! it one question about its answer as `ein solve` would, and prints the
-//! outcome under each reading the question gives. Every outcome exits 0; a
-//! usage error exits 2, and an engine error 1.
+//! Two subcommands, each one bounded call of the kernel,
+//! [`einaf::kernel::call`], on one program and one question:
+//! `einaf outcome FILE` prints the outcome under each reading the question
+//! gives, and `einaf feedback FILE` prints the whole feedback object as
+//! JSON. The outcome is read off the object. Every outcome exits 0; a usage
+//! error exits 2, and a fault of the kernel's 1.
 
 use std::path::Path;
 use std::process::ExitCode;
 use std::time::Duration;
 
-use einaf::kernel::{Bounds, Part, Program, Question, Run, outcome};
+use einaf::kernel::{Bounds, Feedback, Part, Question, Source, call};
 
 const USAGE: &str = "\
-usage: einaf outcome FILE [QUESTION] [--region-budget N] [--region-limit N]
-                         [--max-steps N] [-T SECONDS] [--read-out]
+usage: einaf outcome FILE [QUESTION] [BOUNDS]
+       einaf feedback FILE [QUESTION] [BOUNDS]
 
-The outcome of an Ein program under one question about its answer, R: invalid,
-flagged, not decided, inconsistent, incomplete, several or one, under each
-reading the question gives (the part of R one and several are counted over).
+outcome   the outcome of an Ein program under one question about its answer, R:
+          invalid, flagged, not decided, inconsistent, incomplete, several or
+          one, under each reading the question gives (the part of R one and
+          several are counted over)
+feedback  the feedback object of the same call, einaf-feedback/1, as JSON
 
 QUESTION, as `ein solve` asks it (none: describe all of R):
   --single               is R one state?
@@ -27,22 +31,23 @@ QUESTION, as `ein solve` asks it (none: describe all of R):
   --count                R's two counts
   --no-search            root alone; R is not searched
 
+BOUNDS, each set on every call:
   --region-budget N      the facts budget, 1048576 by default
   --region-limit N       the largest cube a flagged program gets, 16 by default
   --max-steps N          the firings one saturation may take, 1048576 by default
-  -T, --max-time SECONDS the wall clock
-  --read-out             also print `ein solve`'s read-out of the run
+  -T, --max-time SECONDS the wall clock, none by default
 ";
 
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
     match args.first().map(String::as_str) {
-        Some("outcome") => outcome_command(&args[1..]),
+        Some("outcome") => command(&args[1..], Print::Outcome),
+        Some("feedback") => command(&args[1..], Print::Feedback),
         Some("-h" | "--help") => {
             print!("{USAGE}");
             ExitCode::SUCCESS
         }
-        _ => usage_error("expected a subcommand, `outcome`"),
+        _ => usage_error("expected a subcommand, `outcome` or `feedback`"),
     }
 }
 
@@ -51,18 +56,23 @@ fn usage_error(why: &str) -> ExitCode {
     ExitCode::from(2)
 }
 
-/// What `einaf outcome` was asked.
+/// What a subcommand prints of the object.
+#[derive(Clone, Copy)]
+enum Print {
+    Outcome,
+    Feedback,
+}
+
+/// What a subcommand was asked.
 struct Asked {
     file: String,
     question: Question,
     bounds: Bounds,
-    read_out: bool,
 }
 
 fn parse(args: &[String]) -> Result<Asked, String> {
     let mut file = None;
-    let (mut single, mut part, mut count, mut no_search, mut read_out) =
-        (false, None, false, false, false);
+    let (mut single, mut part, mut count, mut no_search) = (false, None, false, false);
     let mut bounds = Bounds::default();
     let mut it = args.iter();
     while let Some(a) = it.next() {
@@ -75,7 +85,6 @@ fn parse(args: &[String]) -> Result<Asked, String> {
             "--minimal" => part = Some(Part::Minimal),
             "--count" => count = true,
             "--no-search" => no_search = true,
-            "--read-out" => read_out = true,
             "--region-budget" => {
                 let v = it.next().ok_or("--region-budget takes a number")?;
                 bounds.budget = v
@@ -103,6 +112,9 @@ fn parse(args: &[String]) -> Result<Asked, String> {
                 let s: f64 = v
                     .parse()
                     .map_err(|_| format!("-T {v}: not a number of seconds"))?;
+                if !s.is_finite() {
+                    return Err(format!("-T {v}: not a number of seconds"));
+                }
                 bounds.clock = Some(Duration::from_secs_f64(s.max(0.0)));
             }
             s if s.starts_with('-') => return Err(format!("unknown option {s}")),
@@ -129,53 +141,58 @@ fn parse(args: &[String]) -> Result<Asked, String> {
         file,
         question,
         bounds,
-        read_out,
     })
 }
 
-fn outcome_command(args: &[String]) -> ExitCode {
+fn command(args: &[String], print: Print) -> ExitCode {
     let asked = match parse(args) {
         Ok(a) => a,
         Err(why) => return usage_error(&why),
     };
-    let run = match Program::load_file(Path::new(&asked.file)) {
-        Ok(program) => match program.ask(asked.question, asked.bounds) {
-            Ok(run) => run,
-            Err(e) => {
-                eprintln!("error: the engine failed: {e}");
-                return ExitCode::from(1);
-            }
-        },
-        Err(refusal) => {
-            let shown = refusal.message.clone();
-            let run = Run::refused(asked.question, refusal);
-            print_readings(&asked, &run);
-            eprintln!("{shown}");
-            return ExitCode::SUCCESS;
-        }
-    };
-    print_readings(&asked, &run);
-    if asked.read_out
-        && let Some(text) = run.read_out_text(&asked.file, asked.bounds.budget)
-    {
-        println!();
-        print!("{text}");
+    let f = call(
+        Source::File(Path::new(&asked.file)),
+        &[asked.question],
+        asked.bounds,
+    )
+    .pop()
+    .expect("one object a question");
+    match print {
+        Print::Feedback => println!("{}", f.to_json()),
+        Print::Outcome => print_outcome(&asked, &f),
+    }
+    if let Some(fault) = &f.fault {
+        eprintln!(
+            "error: the kernel failed ({}): {}",
+            fault.kind, fault.message
+        );
+        return ExitCode::from(1);
     }
     ExitCode::SUCCESS
 }
 
-fn print_readings(asked: &Asked, run: &Run) {
+/// The outcome under each reading, a line each, read off the object; an
+/// invalid program's findings on stderr, as `ein solve` prints them.
+fn print_outcome(asked: &Asked, f: &Feedback) {
     match asked.question {
         Question::Describe => println!("einaf outcome · {}", asked.file),
         q => println!("einaf outcome · {} {}", asked.file, q.flags()),
     }
-    for part in asked.question.readings() {
-        let r = outcome(run, part).expect("a reading the question gives");
+    for r in f.outcome.iter().flatten() {
         println!(
             "  {:<13} {:<23} {}",
             r.outcome.word(),
             r.part.words(),
             r.why
         );
+    }
+    let invalid = f
+        .outcome
+        .iter()
+        .flatten()
+        .any(|r| r.outcome == einaf::kernel::Outcome::Invalid);
+    if invalid {
+        for d in &f.diagnostics {
+            eprintln!("{}", d.message);
+        }
     }
 }

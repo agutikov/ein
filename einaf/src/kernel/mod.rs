@@ -1,44 +1,63 @@
 //! **The kernel as EinAf reads it**: the one module of EinAf that calls Ein's
-//! library, `ein-ir` to load, `ein-infer` to ask, `ein-render` to print.
+//! library, `ein-ir` to load, `ein-infer` to ask, `ein-render` to read what
+//! a run says beside its answer.
 //!
-//! A program is loaded once ([`Program::load_file`], [`Program::load_text`])
-//! and asked any number of questions about its answer, the region R
-//! ([`Program::ask`]), each on a copy of the load, as `ein solve` asks one
-//! question of a fresh load. A load the kernel refuses is a [`Refusal`], and
-//! [`Run::refused`] makes it a run like any other, so that every question has
-//! an [`outcome`] whatever the program is.
+//! **One door, the bounded call** ([`call`]): a program and the questions
+//! asked of it go in, and one [`Feedback`] for each question comes out,
+//! whatever the program is. The program is loaded once, as `ein solve`
+//! loads it: the text parsed and loaded against the program file's
+//! directory, then the judgement of the hypothesis mechanisms,
+//! `ein_infer::mechanisms::judge_loaded`, which refuses what the binary
+//! refuses. Each question is `ein solve`'s ([`Question`]), asked of a copy of
+//! the load. Every saturation the call computes, the judgement's among them,
+//! is under the call's [`Bounds`]: the clock and the cap on one saturation's
+//! firings, which the kernel reads inside a saturation, and the facts budget
+//! and the cube's limit, which its routes read. A run a bound stopped is an
+//! object whose outcome is *not decided*. A panic of the kernel's is caught
+//! here and is the object's `fault`, never an outcome of the program.
 //!
-//! The load is the one `ein solve` makes: the text parsed and loaded against
-//! the program file's directory, then the judgement of the hypothesis
-//! mechanisms, `ein_infer::mechanisms::judge_loaded`, which refuses what the
-//! binary refuses. The question is `ein solve`'s ([`Question`]), at its
-//! default bounds unless told otherwise ([`Bounds`]).
+//! **Everything is read off values**: a refusal by its findings, the
+//! kernel's diagnostics, each with its kind and its place; a run's error by
+//! its kind (`SolveError::kind`); the answer by the read-out's fields. No
+//! part of the object is read back from text the kernel printed.
 //!
-//! **A refusal is read off values**: its findings are the kernel's
-//! diagnostics, each with its kind, its place and its line
-//! ([`Refusal::findings`]), and a run's error by its kind
-//! (`SolveError::kind`), never by its text.
+//! Nothing else in EinAf names an item of Ein's crates, and nothing here
+//! calls them but through [`call`].
 
+mod feedback;
 mod outcome;
+mod program;
 
-pub use outcome::{Outcome, Reading, outcome};
+pub use feedback::{
+    Asked, ClaimPart, ClassPart, Core, ExpectPart, Fault, Feedback, Finding, Flagged, KernelId,
+    Owed, Owing, Place, ProgramId, QueryPart, Readings, SCHEMA, Site, StatePart, Stop, Word, Work,
+};
+pub use outcome::{Outcome, Reading};
 
+use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::Path;
 use std::time::{Duration, Instant};
 
-use ein_core::{Diagnostic, Kb, Kind, Terms};
 use ein_infer::explore::{self, Ask, Mode, Which};
-use ein_infer::read_out::ReadOut;
-use ein_ir::Ast;
+use serde::{Deserialize, Serialize};
 
 /// The default facts budget of a question, `--region-budget`'s default:
 /// 2²⁰ facts beyond root, summed over every fixpoint the run computes.
 pub const DEFAULT_BUDGET: u64 = ein_infer::downset::DEFAULT_BUDGET;
 
+/// The default limit of the cube, `--region-limit`'s default: the largest
+/// count of candidates whose whole cube a program the static check flags
+/// gets.
+pub const DEFAULT_LIMIT: u32 = ein_infer::region::DEFAULT_LIMIT;
+
+/// The default cap on the firings of one saturation, `--max-steps`' default.
+pub const DEFAULT_MAX_STEPS: u64 = explore::DEFAULT_MAX_STEPS;
+
 /// A part of R, as `ein solve` names it: all of it, or one of its two lines.
 /// *One* and *several* are counted over a part, and the part is the
 /// **reading** an outcome is taken under.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub enum Part {
     /// Every state of R.
     All,
@@ -96,6 +115,18 @@ pub enum Question {
 }
 
 impl Question {
+    /// Every question EinAf asks, in this order.
+    pub const ALL: [Question; 8] = [
+        Question::Describe,
+        Question::Single(Part::All),
+        Question::Single(Part::Minimal),
+        Question::Single(Part::Maximal),
+        Question::Line(Part::Minimal),
+        Question::Line(Part::Maximal),
+        Question::Count,
+        Question::NoSearch,
+    ];
+
     /// The question as `ein solve`'s flags, `describe` for the bare run.
     pub fn flags(self) -> String {
         match self {
@@ -112,6 +143,21 @@ impl Question {
         }
     }
 
+    /// The flags `ein solve` takes for this question, one an argument; none
+    /// for a description.
+    pub fn argv(self) -> Vec<&'static str> {
+        match self {
+            Question::Describe | Question::Line(Part::All) => Vec::new(),
+            Question::Single(p) => [p.flag(), "--single"]
+                .into_iter()
+                .filter(|s| !s.is_empty())
+                .collect(),
+            Question::Line(p) => vec![p.flag()],
+            Question::Count => vec!["--count"],
+            Question::NoSearch => vec!["--no-search"],
+        }
+    }
+
     /// **The readings this question's answer can be taken under**: the parts
     /// of R over which *one* and *several* can be counted from it. A
     /// description lists every state of R with its lines, so it gives all
@@ -124,6 +170,18 @@ impl Question {
             Question::Single(p) | Question::Line(p) => vec![p],
             Question::Count | Question::NoSearch => vec![Part::All],
         }
+    }
+
+    /// **Whether the question needs the cube on a program the static check
+    /// flags**: every question but `--single` over all of R or its minimal
+    /// line, which stop when decided, and `--no-search`, which reads root
+    /// alone. A description, `--count`, a line and `--maximal --single` read
+    /// every node of a flagged program's cube up to the limit.
+    pub fn needs_the_cube(self) -> bool {
+        !matches!(
+            self,
+            Question::Single(Part::All | Part::Minimal) | Question::NoSearch
+        )
     }
 
     fn mode(self) -> Mode {
@@ -148,17 +206,10 @@ impl Question {
     }
 }
 
-/// The default limit of the cube, `--region-limit`'s default: the largest
-/// count of candidates whose whole cube a program the static check flags
-/// gets.
-pub const DEFAULT_LIMIT: u32 = ein_infer::region::DEFAULT_LIMIT;
-
-/// The default cap on the firings of one saturation, `--max-steps`' default.
-pub const DEFAULT_MAX_STEPS: u64 = explore::DEFAULT_MAX_STEPS;
-
-/// What may stop a run before it decides its question: `--region-budget`,
-/// `--region-limit`, `--max-steps` and `-T`. None changes an answer; a run a bound stops is
-/// *not decided*.
+/// What may stop a call before it decides its question: `--region-budget`,
+/// `--region-limit`, `--max-steps` and `-T`. None changes an answer; a run a
+/// bound stops is *not decided*. All four are set on every call, and each is
+/// a key of the object's `asked`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Bounds {
     /// Facts beyond root, summed over every fixpoint the run computes.
@@ -166,10 +217,11 @@ pub struct Bounds {
     /// The largest count of candidates whose whole cube a program the static
     /// check flags gets; a monotone program never reads it.
     pub limit: u32,
-    /// The firings one saturation may take, root's included; past it the run
-    /// is *not decided*. `None` is no cap.
+    /// The firings one saturation may take, root's and the judgement's
+    /// included; past it the run is *not decided*. `None` is no cap.
     pub max_steps: Option<u64>,
-    /// The wall clock, from the moment the question is asked.
+    /// The wall clock: the load's judgement from the moment the call starts,
+    /// and each question from the moment it is asked. `None` is no clock.
     pub clock: Option<Duration>,
 }
 
@@ -184,427 +236,153 @@ impl Default for Bounds {
     }
 }
 
-/// Where a program was refused.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-pub enum Stage {
-    /// The file could not be read as text.
-    Read,
-    /// The parse.
-    Parse,
-    /// The load, the judgement of the hypothesis mechanisms among it.
-    Load,
-    /// The run, at a firing whose conclusion no fact can hold.
-    Run,
+/// A program handed to the kernel.
+#[derive(Clone, Copy, Debug)]
+pub enum Source<'a> {
+    /// A file, read as `ein solve` reads it, its local imports found from
+    /// its directory and its messages naming it as given.
+    File(&'a Path),
+    /// A text: `name` is what its messages name it by, and `base_dir` where
+    /// its local imports are found.
+    Text {
+        text: &'a str,
+        name: &'a str,
+        base_dir: Option<&'a Path>,
+    },
 }
 
-impl Stage {
-    pub fn words(self) -> &'static str {
-        match self {
-            Stage::Read => "at the read",
-            Stage::Parse => "at the parse",
-            Stage::Load => "at the load",
-            Stage::Run => "at the run",
-        }
-    }
-}
-
-/// **A program the kernel refused**: its findings, as the kernel's values,
-/// and the message it refused it with, as `ein solve` prints it on stderr.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Refusal {
-    pub stage: Stage,
-    pub message: String,
-    /// The refusal's findings, each with its kind, the refusal of Ein's
-    /// reference it is, its place where the line names one, and its line.
-    /// Empty only for a run's error the kernel names no kind for.
-    pub findings: Vec<Diagnostic>,
-    /// The parse error as the parser's value, every error with its place,
-    /// notes and repairs, where the refusal was a parse's: the program's, or
-    /// a module's it imports.
-    pub parse: Option<ein_ir::ParseError>,
-}
-
-impl Refusal {
-    /// The kinds of its findings, in order, each once.
-    pub fn kinds(&self) -> Vec<Kind> {
-        let mut out: Vec<Kind> = Vec::new();
-        for d in &self.findings {
-            if !out.contains(&d.kind) {
-                out.push(d.kind);
-            }
-        }
-        out
-    }
-}
-
-/// A failure of the engine that is none of the outcomes: a question the
-/// engine says it cannot answer, or a check of its own that failed. No
-/// program should reach one.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct EngineError(pub String);
-
-impl std::fmt::Display for EngineError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(&self.0)
-    }
-}
-
-/// A program as one load left it. Every question is asked of a copy, so the
-/// load is made once.
-#[derive(Clone)]
-pub struct Program {
-    ast: Ast,
-    terms: Terms,
-    kb: Kb,
-    /// What the judgement of the mechanisms noted and did not refuse.
-    notes: Vec<Diagnostic>,
-}
-
-impl Program {
-    /// Read and load the program at `path`, as `ein solve` does: a module
-    /// the program imports by a local name is found from the file's
-    /// directory.
-    pub fn load_file(path: &Path) -> Result<Program, Refusal> {
-        let text = match ein_ir::read::read_program(path) {
-            Ok(ein_ir::read::Held::Text(text)) => text,
-            Ok(ein_ir::read::Held::Container(_)) => {
-                let message = format!(
-                    "{} is a .einb container: EinAf reads a program as text",
-                    path.display()
-                );
-                return Err(Refusal {
-                    stage: Stage::Read,
-                    findings: vec![Diagnostic::error(Kind::Unreadable, message.clone())],
-                    message,
-                    parse: None,
-                });
-            }
-            Err(e) => {
-                return Err(Refusal {
-                    stage: Stage::Read,
-                    findings: vec![e.diagnostic()],
-                    message: e.line,
-                    parse: None,
-                });
-            }
-        };
-        let name = path.display().to_string();
-        Program::load_text(&text, &name, path.parent())
-    }
-
-    /// Load a program from its text: `name` is what a message names it by,
-    /// and `base_dir` where its local imports are found.
-    pub fn load_text(text: &str, name: &str, base_dir: Option<&Path>) -> Result<Program, Refusal> {
-        let mut ast = Ast::new();
-        let mut terms = Terms::new();
-        let loaded = ein_ir::saved::load_text(
-            &mut ast,
-            &mut terms,
+/// **The bounded call**: load `source` once, ask it each of `questions` on a
+/// copy of the load, within `bounds`, and return one [`Feedback`] for each,
+/// in their order.
+///
+/// It returns whatever the program is: a refused program is an object whose
+/// outcome is *invalid* under every question; a run a bound stopped, *not
+/// decided*; a panic of the kernel's, at the load or in a question, is the
+/// object's `fault` with no outcome, and the other questions are still
+/// asked.
+pub fn call(source: Source<'_>, questions: &[Question], bounds: Bounds) -> Vec<Feedback> {
+    let kernel = kernel_id();
+    let t0 = Instant::now();
+    let name = match source {
+        Source::File(path) => path.display().to_string(),
+        Source::Text { name, .. } => name.to_string(),
+    };
+    let loaded = catch_unwind(AssertUnwindSafe(|| match source {
+        Source::File(path) => program::load_file(path, bounds, t0),
+        Source::Text {
             text,
-            Some(name),
+            name,
             base_dir,
-            0,
-            &ein_ir::LoadOptions::default(),
-        )
-        .map_err(refusal_of_load)?;
-        let mut program = Program {
-            ast,
-            terms,
-            kb: loaded.kb,
-            notes: Vec::new(),
-        };
-        program.notes = program.judge_mechanisms()?;
-        Ok(program)
-    }
-
-    /// **The hypothesis mechanisms judged on root's fixpoint**, the step
-    /// after the load every command of Ein takes,
-    /// `ein_infer::mechanisms::judge_loaded`, on a copy of the load: its
-    /// conflicts refuse the program, each a finding of the kind
-    /// `mechanisms`, and its notes are kept ([`Program::notes`]).
-    fn judge_mechanisms(&self) -> Result<Vec<Diagnostic>, Refusal> {
-        ein_infer::mechanisms::judge_loaded(&self.ast, &self.terms, &self.kb, |ast, terms| {
-            *ast = self.ast.clone();
-            *terms = self.terms.clone();
-            Some(self.kb.clone())
-        })
-        .map_err(|conflicts| Refusal {
-            stage: Stage::Load,
-            message: conflicts
-                .iter()
-                .map(|d| format!("kb load error: {d}"))
-                .collect::<Vec<_>>()
-                .join("\n"),
-            findings: conflicts,
-            parse: None,
-        })
-    }
-
-    /// What the load noted and did not refuse: the judgement of the
-    /// mechanisms' notes, each a diagnostic of the kind `mechanisms`, which
-    /// `ein solve` prints as `note:` lines when its run ends.
-    pub fn notes(&self) -> &[Diagnostic] {
-        &self.notes
-    }
-
-    /// Ask `question` of a copy of this program, within `bounds`.
-    pub fn ask(&self, question: Question, bounds: Bounds) -> Result<Run, EngineError> {
-        let mut copy = self.clone();
-        let mut opts = explore::Options::new(question.mode());
-        opts.budget = bounds.budget;
-        opts.limit = bounds.limit;
-        opts.no_search = question == Question::NoSearch;
-        opts.max_steps = bounds.max_steps;
-        opts.deadline = bounds.clock.map(|c| Instant::now() + c);
-        let answered =
-            match ein_infer::read_out::run(&mut copy.kb, &mut copy.terms, &copy.ast, &opts) {
-                Ok(r) => Answered::Read(Box::new(r)),
-                Err(e) => answered_of(e)?,
+        } => program::load_text(text, name, base_dir, bounds, t0),
+    }));
+    let load_us = t0.elapsed().as_micros() as u64;
+    let loaded = match loaded {
+        Ok(l) => l,
+        Err(payload) => {
+            let identity = program::Identity {
+                digest: None,
+                of: None,
             };
-        Ok(Run { question, answered })
-    }
-
-    /// **Whether the engine's static check flags the program as not
-    /// monotone**: `ein solve --monotone`, root's fixpoint and the check, on
-    /// a copy. A run can find a program not monotone too, in flight; this is
-    /// the check alone.
-    pub fn statically_flagged(&self) -> Result<bool, EngineError> {
-        let mut copy = self.clone();
-        let checked = ein_infer::explore::check_monotone(
-            &mut copy.kb,
-            &mut copy.terms,
-            &copy.ast,
-            &mut ein_infer::Events::off(),
-        )
-        .map_err(|e| EngineError(e.to_string()))?;
-        Ok(!checked.monotonicity.is_monotone())
-    }
-
-    /// The claims the program states, by their shapes.
-    pub fn claims(&self) -> Claims {
-        let program = self.kb.program();
-        let solve = program.solve().and_then(|s| {
-            let node = ein_infer::solve_value(&self.ast, s, "expect")?;
-            Some(match ein_ir::claim::parse(&self.ast, node) {
-                Ok(ein_ir::claim::Claim::False) => SolveClaim::False,
-                Ok(ein_ir::claim::Claim::Region(r)) => SolveClaim::Region {
-                    states: r.models.len(),
-                    owing: !r.owing.is_empty(),
-                },
-                Err(_) => SolveClaim::Unread,
-            })
-        });
-        // The queries a run answers, which are those with a goal, in the
-        // order the program writes them: what `ReadOut::queries` holds.
-        let queries = program
-            .queries
-            .iter()
-            .filter(|q| ein_infer::query_value(&self.ast, q, "goal").is_some())
-            .map(|q| {
-                let expect = ein_infer::query_value(&self.ast, q, "expect")?;
-                let over = ein_infer::query_value(&self.ast, q, "over")
-                    .and_then(|n| ein_ir::expect::Over::parse(&self.ast, n).ok())
-                    .unwrap_or_default();
-                Some(QueryClaim {
-                    over: match over {
-                        ein_ir::expect::Over::All => Part::All,
-                        ein_ir::expect::Over::Minimal => Part::Minimal,
-                        ein_ir::expect::Over::Maximal => Part::Maximal,
-                    },
-                    classes: ein_ir::expect::parse(&self.ast, expect).models().len(),
-                })
-            })
-            .collect();
-        Claims { solve, queries }
-    }
-}
-
-/// **What a refused load says**, from the load's error, as values: its
-/// findings, each with its kind and its place, and the parse's value where a
-/// parse refused it, the program's or a module's.
-fn refusal_of_load(e: ein_ir::saved::TextError) -> Refusal {
-    let findings = e.findings();
-    match e {
-        ein_ir::saved::TextError::Parse(p) => Refusal {
-            stage: Stage::Parse,
-            message: p.to_string(),
-            findings,
-            parse: Some(p),
-        },
-        ein_ir::saved::TextError::Load(k) => Refusal {
-            stage: Stage::Load,
-            message: format!("kb load error: {k}"),
-            findings,
-            parse: k.parse().cloned(),
-        },
-    }
-}
-
-/// A run's error, as one of the outcomes' inputs or as the engine's: read
-/// by its kind, `SolveError::kind`, where the kernel names one, the clock's
-/// (`deadline`) and a saved file's choice that names no node (`saved-file`,
-/// the load's exit under `ein solve`); and by its variant where it names
-/// none.
-fn answered_of(e: ein_infer::SolveError) -> Result<Answered, EngineError> {
-    use ein_infer::SaturateError as S;
-    use ein_infer::SolveError as E;
-    match e.kind() {
-        Some(Kind::Deadline) => return Ok(Answered::Clock),
-        Some(kind) => {
-            let message = e.to_string();
-            return Ok(Answered::Refused(Refusal {
-                stage: Stage::Load,
-                findings: vec![Diagnostic::error(kind, message.clone())],
-                message,
-                parse: None,
-            }));
-        }
-        None => {}
-    }
-    match e {
-        // A conclusion no fact can hold, met at a firing, and a rule that
-        // does not compile: the program refused at its run. The kernel names
-        // no kind for either, which no program it loads should reach.
-        E::Saturate(S::Fire(ein_infer::FireError::NotAFact(m))) => Ok(Answered::Refused(Refusal {
-            stage: Stage::Run,
-            message: m,
-            findings: Vec::new(),
-            parse: None,
-        })),
-        E::Saturate(S::Compile(c)) | E::Compile(c) => Ok(Answered::Refused(Refusal {
-            stage: Stage::Run,
-            message: c.to_string(),
-            findings: Vec::new(),
-            parse: None,
-        })),
-        other => Err(EngineError(other.to_string())),
-    }
-}
-
-/// The claims a program states, by their shapes: what each says of R.
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
-pub struct Claims {
-    /// The `(solve … :expect …)`.
-    pub solve: Option<SolveClaim>,
-    /// Each query's `:expect`, one entry a query that has a goal, in the
-    /// order the program writes them, `None` for a query that states none.
-    pub queries: Vec<Option<QueryClaim>>,
-}
-
-/// What the kernel's own check of a claim found on a run, `:expect`'s three
-/// outcomes.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-pub enum Checked {
-    /// The claim holds, on a run that exhausted what it is about.
-    Held,
-    /// The claim is false.
-    Failed,
-    /// The run did not decide it.
-    NotChecked,
-}
-
-impl Checked {
-    fn of(report: &ein_infer::Report) -> Checked {
-        match report.outcome {
-            ein_infer::Outcome::Held => Checked::Held,
-            ein_infer::Outcome::Failed => Checked::Failed,
-            ein_infer::Outcome::NotChecked => Checked::NotChecked,
-        }
-    }
-}
-
-/// The kernel's check of each claim a program states, on one run: aligned
-/// with [`Claims`].
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
-pub struct ClaimsChecked {
-    pub solve: Option<Checked>,
-    pub queries: Vec<Option<Checked>>,
-}
-
-/// A `(solve … :expect …)`, by its shape.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum SolveClaim {
-    /// `(false)`: every node is dead.
-    False,
-    /// `(region …)`: R's states one to one, or, with `(owing …)`, R empty
-    /// with these alive nodes owing.
-    Region { states: usize, owing: bool },
-    /// A claim the library could not read.
-    Unread,
-}
-
-/// A query's `:expect`, by its shape: the part of R its classes are over,
-/// and how many it lists, `(false)` listing none.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct QueryClaim {
-    pub over: Part,
-    pub classes: usize,
-}
-
-/// What the kernel handed back for one question.
-#[derive(Debug)]
-pub enum Answered {
-    /// The program was refused.
-    Refused(Refusal),
-    /// The clock ran out inside the run, which hands back nothing.
-    Clock,
-    /// The read-out: the answer, its states and each query's classes.
-    Read(Box<ReadOut>),
-}
-
-/// One question asked of one program, and what came back.
-#[derive(Debug)]
-pub struct Run {
-    pub question: Question,
-    pub answered: Answered,
-}
-
-impl Run {
-    /// A question asked of a program the kernel refused: there is no answer,
-    /// and every question's outcome is *invalid*.
-    pub fn refused(question: Question, refusal: Refusal) -> Run {
-        Run {
-            question,
-            answered: Answered::Refused(refusal),
-        }
-    }
-
-    /// The kernel's own check of each claim the program states, on this run;
-    /// `None` where the run has no read-out.
-    pub fn claims_checked(&self) -> Option<ClaimsChecked> {
-        let Answered::Read(r) = &self.answered else {
-            return None;
-        };
-        Some(ClaimsChecked {
-            solve: r.claim.as_ref().map(Checked::of),
-            queries: r
-                .queries
+            let shared = feedback::Shared {
+                identity: &identity,
+                name: &name,
+                kernel: &kernel,
+                bounds,
+                load_us,
+                notes: &[],
+            };
+            let message = panic_message(payload.as_ref());
+            return questions
                 .iter()
-                .map(|q| q.claim.as_ref().map(Checked::of))
-                .collect(),
+                .map(|&q| feedback::faulted(&shared, q, 0, "panic", message.clone()))
+                .collect();
+        }
+    };
+    let notes: &[ein_core::Diagnostic] = match &loaded.program {
+        Ok(p) => &p.notes,
+        Err(_) => &[],
+    };
+    let shared = feedback::Shared {
+        identity: &loaded.identity,
+        name: &loaded.name,
+        kernel: &kernel,
+        bounds,
+        load_us,
+        notes,
+    };
+    questions
+        .iter()
+        .map(|&question| {
+            let t = Instant::now();
+            let asked = catch_unwind(AssertUnwindSafe(|| {
+                let run = match &loaded.program {
+                    Ok(p) => p.ask(question, bounds)?,
+                    Err(r) => program::Run::refused(question, r.clone()),
+                };
+                Ok::<_, program::EngineError>(feedback::build(
+                    &shared,
+                    &run,
+                    t.elapsed().as_micros() as u64,
+                ))
+            }));
+            let ask_us = t.elapsed().as_micros() as u64;
+            match asked {
+                Ok(Ok(mut f)) => {
+                    f.work.ask_us = ask_us;
+                    f
+                }
+                Ok(Err(program::EngineError(m))) => {
+                    feedback::faulted(&shared, question, ask_us, "engine", m)
+                }
+                Err(payload) => feedback::faulted(
+                    &shared,
+                    question,
+                    ask_us,
+                    "panic",
+                    panic_message(payload.as_ref()),
+                ),
+            }
         })
-    }
+        .collect()
+}
 
-    /// The program's file and run, read in full: `ein solve`'s read-out as
-    /// it prints it to stdout, for a person reading beside the outcome.
-    pub fn read_out_text(&self, file: &str, budget: u64) -> Option<String> {
-        let Answered::Read(r) = &self.answered else {
-            return None;
-        };
-        let argv = match self.question {
-            Question::Describe => String::new(),
-            q => q.flags(),
-        };
-        let text = ein_render::read_out::render(
-            r,
-            &ein_render::read_out::Options {
-                command: "solve",
-                argv: &argv,
-                file,
-                budget,
-                uncut: false,
-            },
-        );
-        Some(text.stdout)
+/// A panic's message, where its payload is text.
+fn panic_message(payload: &(dyn std::any::Any + Send)) -> String {
+    if let Some(s) = payload.downcast_ref::<&str>() {
+        s.to_string()
+    } else if let Some(s) = payload.downcast_ref::<String>() {
+        s.clone()
+    } else {
+        "a panic with no message".to_string()
+    }
+}
+
+/// **Which kernel this is**: the three things `ein --version` prints that a
+/// record needs, each taken as the binary takes it. The version is the
+/// engine's workspace version, read from its manifest when EinAf is built:
+/// no crate EinAf links says it. The commit is the record's to set.
+fn kernel_id() -> KernelId {
+    let manifest = include_str!("../../../ein.rs/Cargo.toml");
+    let version = manifest
+        .split("[workspace.package]")
+        .nth(1)
+        .and_then(|rest| {
+            rest.lines()
+                .take_while(|l| !l.starts_with('['))
+                .find_map(|l| {
+                    let l = l.trim();
+                    let v = l.strip_prefix("version")?.trim().strip_prefix('=')?;
+                    Some(v.trim().trim_matches('"').to_string())
+                })
+        })
+        .unwrap_or_default();
+    let stdlib = ein_ir::stdlib::resolve_default()
+        .read(ein_ir::stdlib::MARKER)
+        .map(|text| program::sha256(text.as_bytes()));
+    KernelId {
+        version,
+        protocol: ein_infer::events::SCHEMA.to_string(),
+        stdlib,
+        commit: None,
     }
 }

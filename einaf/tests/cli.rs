@@ -1,5 +1,5 @@
-//! **`einaf outcome`**, the command: one line a reading, every outcome exits
-//! 0, a usage error 2.
+//! **`einaf outcome` and `einaf feedback`**, the command: one line a
+//! reading, or the object as JSON; every outcome exits 0, a usage error 2.
 
 use std::process::Command;
 
@@ -76,4 +76,36 @@ fn a_usage_error_exits_two() {
     assert!(err.starts_with("error: "), "{err}");
     let (code, _, _) = einaf(&["solve"]);
     assert_eq!(code, 2);
+    let (code, _, _) = einaf(&["feedback", "examples/zebra2.ein", "--max-steps", "0"]);
+    assert_eq!(code, 2);
+}
+
+/// **`einaf feedback` prints the object**, `einaf-feedback/1`, which reads
+/// back as itself, with the bounds it was asked under; `einaf outcome` reads
+/// the same object's outcome.
+#[test]
+fn the_feedback_command_prints_the_object() {
+    let (code, out, err) = einaf(&["feedback", "examples/zebra2.ein", "--single", "-T", "60"]);
+    assert_eq!(code, 0, "{err}");
+    let f = einaf::kernel::Feedback::from_json(&out).expect("the object");
+    assert_eq!(f.schema, einaf::kernel::SCHEMA);
+    assert_eq!(f.asked.question, "--single");
+    assert_eq!(f.asked.clock_us, Some(60_000_000));
+    assert_eq!(f.asked.max_steps, Some(einaf::kernel::DEFAULT_MAX_STEPS));
+    let r = f
+        .outcome_over(einaf::kernel::Part::All)
+        .expect("its reading");
+    assert_eq!(r.outcome, einaf::kernel::Outcome::One);
+
+    // A refused program: an object, invalid, its findings the diagnostics.
+    let (code, out, _) = einaf(&["feedback", "examples/broken/unclosed_paren.ein"]);
+    assert_eq!(code, 0);
+    let f = einaf::kernel::Feedback::from_json(&out).expect("the object");
+    assert!(
+        f.outcome
+            .iter()
+            .flatten()
+            .all(|r| r.outcome == einaf::kernel::Outcome::Invalid)
+    );
+    assert_eq!(f.diagnostics[0].kind, "parse");
 }
