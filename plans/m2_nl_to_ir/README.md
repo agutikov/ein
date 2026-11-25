@@ -4,19 +4,19 @@
 estimates; **Level B at ~8 weeks**, Level C at ~19, Level D at the end plus
 [M5](../m5_presentation/README.md). See § How deep this plan is.
 **Status:** **started 2026-11-25** on the user's word, *"start plans/m2_nl_to_ir from plans analysis"*, by an
-analysis of this plan against the project: [`analysis/`](analysis/README.md). **No stage has run.** Everything
-below is as written at the reshape of 2026-08-23, around the research plan [`EinAf.md`](EinAf.md), against the
-engine M1a shipped; the analysis says what of it holds today (the research plan and the phases do; no stage file
-can run as written) and [the ledger](open_questions.md) holds the questions it raised for the user, Q-M2.8 to
-Q-M2.11. The folder keeps its name — *NL → IR* is Level B of this milestone, and the links into `m2_nl_to_ir/`
-are many.
-**Depends on:** M1a — the kernel,
-shipped. M1d for one word:
-[Q-M1d.6](../../docs/decisions/answer/Q-M1d.6-contradiction-is-said-only-where-no-node-is.md)
-is the engine saying *Contradiction* where the research plan's Stage A
-forbids it to (§ A1 — *`unknown` must never silently become `false`,
-`ambiguous`, or `contradiction`*); [P2.1](p2.1_kernel_as_instrumentation/README.md)
-says what M2 does until that lands.
+analysis of this plan against the project: [`analysis/`](analysis/README.md). The user answered its questions the
+same day ([the ledger](open_questions.md) holds each ruling), stated the core idea
+([below](#the-core-idea-the-user-2026-11-25)) and said *"do not start phases now"*: **no stage has run, and no
+phase starts until the user says so.** Everything below is as written at the reshape of 2026-08-23, around the
+research plan [`EinAf.md`](EinAf.md), against the engine M1a shipped; the analysis says what of it holds today (the
+research plan and the phases do; no stage file can run as written), and **where a ruling in the ledger differs from
+a sentence below, the ruling stands**: the harness is Rust, the model is local and is `qwen3.5:4b`, EinAf lives in
+`einaf/`, `docs/einaf/` and the plan's other trees, the kernel grows a machine surface for diagnostics, and a
+flagged program is an outcome of its own. The folder keeps its name — *NL → IR* is Level B of this milestone, and
+the links into `m2_nl_to_ir/` are many.
+**Depends on:** the kernel as it stands after M1f's close, the user's ruling on
+[Q-M2.1](open_questions.md#q-m21--when-is-the-kernel-frozen). Whether the answer's words wait for
+[M1p](../m1p_ein_to_natural_language/README.md) is [Q-M2.12](open_questions.md#q-m212--what-prints-the-answer).
 **Blocks:** [M5](../m5_presentation/README.md) — the paper is Stage P of the
 research plan and M5 is where it is written; Stage O's result and Stage Q's
 artifact are [P2.10](p2.10_result_artifact_demo/README.md)'s and feed it.
@@ -228,6 +228,38 @@ M5):
    analysis; the records released; the paper ([M5](../m5_presentation/README.md));
    one command that runs the demo in § Stage Q.
 
+## The core idea (the user, 2026-11-25)
+
+The user, 2026-11-25, with the answers to this milestone's questions:
+
+> The core idea is to enrich the reasoning steps with solver so the LLM that synthesize problem formalization
+> (facts+ontology+theory) checks if it's formalization works, ideally the final test problem answer must be short
+> and must be produced by ein program NL output, and we experiment with some kind of replacing chain of thought
+> with chain of formal reasonings; On one hand ein works like a tool for LLM, on other hand it works like filter
+> of thoughts
+
+Kept as stated. It names as the core what the note of 2026-11-11, the next section, proposed. Read against the
+plan above, the coordinator's reading, which the user may correct:
+
+- **The formalizer checks its own work with the solver.** What the model writes is the formalization, facts with
+  an ontology and a theory, and the kernel's reply is how it finds out whether the formalization works. That is
+  the loop of the research plan, said from the model's side.
+- **The answer is Ein's, and short.** The plan scores an answer the pipeline extracts; the statement asks that the
+  final answer of a test problem be what the Ein program prints in natural language. What a program prints today,
+  and what stands between that and a short answer, is
+  [Q-M2.12](open_questions.md#q-m212--what-prints-the-answer); Ein to natural language is
+  [M1p](../m1p_ein_to_natural_language/README.md)'s.
+- **The experiment is a chain of formal reasoning in place of a chain of thought.** In the research plan's terms
+  the comparison is with B1, the model reasoning in text
+  ([`EinAf.md` § Stage D](EinAf.md#stage-d--establish-baselines)); the arms that reason through Ein are the other
+  side.
+- **Two roles for Ein.** *A filter of thoughts* is the plan's loop: a harness runs the kernel on each program, and
+  one the kernel does not pass is never an answer. *A tool for the LLM* is not in the plan: the model decides when
+  to ask. Whether both are arms, and how a tool's calls are budgeted, is
+  [Q-M2.13](open_questions.md#q-m213--who-calls-the-kernel).
+
+No phase or stage is changed by it yet: the re-plan takes it as its frame.
+
 ## The reasoning as a program (the user's idea, 2026-11-11)
 
 The user, 2026-11-11:
@@ -265,18 +297,29 @@ as a second domain beside the puzzles ([P2.7](p2.7_failure_scaling_generalizatio
 
 ## Open questions
 
-[`open_questions.md`](open_questions.md). The old set — Q7–Q11, and Q-M2.5–Q-M2.7,
-which were Q23–Q25 here until those ids were found to be the root ledger's — names in each entry the stage that
-decides it; **Q10 is
-re-homed to Stage L** and **Q7 leaves the research question** (the NL
-explanation side is M5's demo, not the loop's). Four new ones arrived with the
-reshape, as `Q-M2.<n>`: when the kernel is frozen for an experiment
-([Q-M2.1](open_questions.md#q-m21--when-is-the-kernel-frozen)), whether the
-model must be local ([Q-M2.2](open_questions.md#q-m22--must-the-model-be-local)),
-what the unit of faithfulness is where there is no gold theory
-([Q-M2.3](open_questions.md#q-m23--what-is-the-unit-of-faithfulness-without-a-gold-theory)),
-and whether the fixed point is syntactic or semantic
-([Q-M2.4](open_questions.md#q-m24--is-the-fixed-point-syntactic-or-semantic)).
+[`open_questions.md`](open_questions.md), the open questions first and the user's rulings after them.
+
+**Ruled by the user, 2026-11-25:** the kernel M2 reads is the one M1f left
+([Q-M2.1](open_questions.md#q-m21--when-is-the-kernel-frozen)); the model is local
+([Q-M2.2](open_questions.md#q-m22--must-the-model-be-local)) and is `qwen3.5:4b`
+([Q-M2.5](open_questions.md#q-m25--local-model-choice)); the harness is Rust
+([Q-M2.7](open_questions.md#q-m27--what-language-is-the-frontend-written-in)); EinAf lives in `einaf/`,
+`docs/einaf/` and the plan's other trees ([Q-M2.8](open_questions.md#q-m28--where-does-einaf-live)); the kernel
+grows a machine surface for diagnostics, in its own terms
+([Q-M2.9](open_questions.md#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics)); a flagged program is
+an outcome of its own ([Q-M2.11](open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop)).
+
+**Open:** what *certified unique* means on R, which the user decides after experiments
+([Q-M2.10](open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r)); what prints the answer,
+and whether that waits for M1p ([Q-M2.12](open_questions.md#q-m212--what-prints-the-answer)); who calls the
+kernel, the harness or the model ([Q-M2.13](open_questions.md#q-m213--who-calls-the-kernel)); and the questions a
+stage decides: Q8, by experiment, its form settled (an alternative is a hypothesis, `(open F)`); Q9; Q11;
+[Q-M2.3](open_questions.md#q-m23--what-is-the-unit-of-faithfulness-without-a-gold-theory), the unit of
+faithfulness where there is no gold theory;
+[Q-M2.4](open_questions.md#q-m24--is-the-fixed-point-syntactic-or-semantic), the fixed point; and Q-M2.6, one
+GBNF or many. **Q10 is re-homed to Stage L**, and **Q7 stays outside the research question** but for the answer's
+own words, which are Q-M2.12. Q-M2.5 to Q-M2.7 were Q23 to Q25 here until those ids were found to be the root
+ledger's.
 
 ## Connections
 
@@ -309,8 +352,8 @@ and whether the fixed point is syntactic or semantic
   (formal-language shaped, not M2-gated).
 - [`docs/ein/ein.rs/04-api.md`](../../docs/ein/ein.rs/04-api.md) — what a Rust loop links;
   [`docs/ein/user/01-install.md`](../../docs/ein/user/01-install.md), `--json-summary`
-  (`ein-summary/1`) and [`--events`](../../docs/ein/ein.rs/05-events.md)
-  (`ein-events/1`) — what a Python one drives; Q-M2.7 chooses.
+  (`ein-summary/2`) and [`--events`](../../docs/ein/ein.rs/05-events.md)
+  (`ein-events/1`) — what a caller of the binary drives. Q-M2.7 is ruled: Rust, the crates.
 - M1f S1f.6.20 — word problems as hand-written Ein programs over the calculator theory: the first
   instances of § The reasoning as a program, and candidates for the benchmark once it has run.
 - [M20](../m20_gui/README.md) — displays whatever the loop records; not a

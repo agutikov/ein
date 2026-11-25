@@ -381,9 +381,11 @@ paragraph, no register count, no measurement (the user's rule).
   [`plans/m2_nl_to_ir/analysis/`](plans/m2_nl_to_ir/analysis/README.md). Its
   stage files describe the engine M1a shipped and **none runs as written**: the
   analysis and the six audits beside it are the worklist of the re-plan, and
-  the questions that wait for the user first are Q-M2.8 to Q-M2.11 of
-  [its ledger](plans/m2_nl_to_ir/open_questions.md) (where EinAf lives under
-  the project/process rule is the first). M1f, the structure of the hypothesis
+  [its ledger](plans/m2_nl_to_ir/open_questions.md) holds the user's rulings
+  (the harness is Rust; the model is local, `qwen3.5:4b`; EinAf lives in
+  `einaf/`, `docs/einaf/` and the plan's other trees, none of which exists
+  yet; the kernel grows a machine surface for diagnostics) and what is open.
+  **No phase of it starts until the user says so.** M1f, the structure of the hypothesis
   set and the documentation, is closed on the user's word and its plans deleted
   (`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation`): its
   answers are decisions under `docs/decisions/`, its rulings about the process

@@ -10,6 +10,10 @@ about the project in the tree or by running the binary, and each reporting in th
 what each stage needs and its state today; conflicts with standing rules; open questions; dependencies; estimates
 and counts). The reports are kept whole beside this page; the claims this page leans on hardest were run again by
 the coordinator (§ 2's table) and agreed.
+**After it:** the user answered the questions the same day and § 7 is rewritten to what was ruled and what is
+open; the host was checked again on the user's word, [`host.md`](host.md), and the two sentences of § 3 about the
+host are corrected from it. §§ 1 to 6 otherwise read as taken, so *open* there means open when the analysis was
+written: [the ledger](../open_questions.md) says what is open now.
 
 | audit | covers | stale | found true |
 |---|---|---:|---:|
@@ -133,8 +137,11 @@ Each cell is a summary; the audit named in the heading has the evidence, claim b
 - **Smaller since**: the Zebra text exists (`nl2smt/puzzles/zebra.txt`, with a clue-dropped and a contradictory
   edit; there is no `examples/zebra.txt`); the walkthrough has a sentence-to-fact table; sixteen word problems
   carry each sentence as `:source`.
-- **The host**: an RTX 4060 Laptop GPU with 8 GB, 31 GB of RAM, Docker and Compose, `ollama` installed, no
-  `llama-server`, no model file. Q23's working answer, a 30B model, does not fit that GPU.
+- **The host** (checked again, [`host.md`](host.md)): an RTX 4060 Laptop GPU with 8 GB, 31 GB of RAM, Docker and
+  Compose with the GPU's devices listed. `qwen3.5:4b`, the model the user then chose, is in ollama's system store
+  as a GGUF file, which the audits did not look in. `llama-server` was installed after the audits and does not
+  start (it needs OpenSSL 4); ollama 0.35.1 does not honour a GBNF grammar; and neither runtime has a GPU backend
+  installed, so a model runs on the CPU. Q23's working answer, a 30B model, did not fit that GPU and is gone.
 
 ### P2.3 — the benchmark ([audit](audit_p2.3.md))
 
@@ -218,7 +225,8 @@ The ladder, level by level:
   [M1h](../../m1h_beyond_word_problems/README.md)'s P1h.1 plans a timeline and a causal theory as stdlib modules.
 - **P2.8.** Its dependency is false: [M10](../../m10_external_benchmarks/README.md) has run no stage, so there
   are no installed systems and no runner to reuse; hand-written encodings exist for one target of five. On this
-  host `z3`, `cvc5` and `souffle` are installed; `swipl`, `clingo` and `lean` are not. `nl2smt/` is a second
+  host `z3`, `cvc5`, `souffle`, and since the audits `swipl` and `clingo`, are installed; `lean` is not
+  ([`host.md`](host.md)). `nl2smt/` is a second
   NL-to-SMT route the plan does not know.
 - **P2.9.** **The kernel half of the formal account is largely written**:
   [`docs/ein/reasoning/`](../../../docs/ein/reasoning/README.md) states Ein as mathematics, true of any
@@ -294,40 +302,62 @@ These are the conflicts that are not a matter of re-aiming a sentence. Each is a
 
 Nothing else of the plan is edited: the stage files read as they did.
 
-## 7. What is the user's, and what the re-plan takes by default
+## 7. What the user ruled, what is open, and what the re-plan takes by default
 
-**The user's** (each in [the ledger](../open_questions.md), with its options and a recommendation):
+**The user, 2026-11-25**, on the questions this analysis raised and on four older ones. Each ruling is in
+[the ledger](../open_questions.md) in the user's words, with what it is read to mean:
 
-| Q | the question | recommended |
+| Q | the question | the user | what it changes |
+|---|---|---|---|
+| [Q-M2.8](../open_questions.md#q-m28--where-does-einaf-live) | where EinAf lives | *"./einaf/, ./docs/einaf/, etc..."* | the plan's own trees stand, in this repository; by default each is external to both the project and the process, as `nl2smt/` and `docs/lib/` are |
+| [Q-M2.9](../open_questions.md#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics) | a machine surface for diagnostics | *"(b)"* | the kernel grows it in its own terms; F23's D-18 and L-125 are P2.1's; the feedback object is the harness's |
+| [Q-M2.11](../open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop) | a flagged program | *"(a)"* | an outcome of its own, never certified, fed back with its sites; canonical programs are never flagged |
+| [Q-M2.7](../open_questions.md#q-m27--what-language-is-the-frontend-written-in) | the loop's language | *"Rust"* | the harness links the crates and has the canonical dump; S2.1.3 has nothing left to decide; the Python paths of P2.2 and P2.5 go |
+| [Q-M2.2](../open_questions.md#q-m22--must-the-model-be-local) | must the model be local | *"yes"* | local; the hosted replication arm is not in the plan |
+| [Q-M2.5](../open_questions.md#q-m25--local-model-choice) | which model | *"Qweb3.5:4b"* | `qwen3.5:4b`, 4.2B parameters, a 2.47 GiB GGUF in ollama's store ([`host.md`](host.md)) |
+| [Q-M2.1](../open_questions.md#q-m21--when-is-the-kernel-frozen) | when the kernel is frozen | *"use current state - after M1f closed"* | the instrument is the kernel M1f left; each record still names its commit |
+| [Q8](../open_questions.md#q8--ambiguous-parses) | ambiguous parses | *"there is no `hrule` anymore, rules emitting open facts replaced them"* | the form is a hypothesis, `(open F)`; the experiment between the two strategies stays S2.4.5's |
+
+**Open:**
+
+| Q | the question | who |
 |---|---|---|
-| [Q-M2.8](../open_questions.md#q-m28--where-does-einaf-live) | where EinAf lives: its harness, prompts, grammars, benchmark, records and pages | one tree external to both, as `nl2smt/` and `c/` are |
-| [Q-M2.9](../open_questions.md#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics) | does the kernel grow a machine surface for diagnostics, or does the harness read stderr | the kernel grows it in its own terms (F23's D-18 and L-125 taken up); the feedback object is the harness's, built over `ein-summary/2` |
-| [Q-M2.10](../open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r) | what *Ein certifies a unique model* means on R | `--single` answers `Solution`, decided, on an unflagged program; the maximal line reported beside it |
-| [Q-M2.11](../open_questions.md#q-m211--what-is-a-flagged-program-to-the-loop) | what a flagged program is to the loop | an outcome of its own, never certified, fed back with its sites; canonical programs are never flagged |
-| [Q-M2.2](../open_questions.md#q-m22--must-the-model-be-local), [Q-M2.5](../open_questions.md#q-m25--local-model-choice) | local or hosted, and which model | open as before, with one new fact: the host's GPU has 8 GB |
-| [Q-M2.7](../open_questions.md#q-m27--what-language-is-the-frontend-written-in) | the loop's language | open as before; both columns grew, and a Python loop has no canonical dump to read |
+| [Q-M2.10](../open_questions.md#q-m210--what-does-ein-certifies-a-unique-model-mean-on-r) | what *Ein certifies a unique model* means on R | the user, after experiments: *"it depends on problem shape, lets make experiments and then decide"*. Until then every record carries each reading |
+| [Q-M2.12](../open_questions.md#q-m212--what-prints-the-answer) | what prints the answer | the user. The answer is to be Ein's own natural-language output, and today a number reads `(n z 3)`: whether the part of M1p an answer needs runs first |
+| [Q-M2.13](../open_questions.md#q-m213--who-calls-the-kernel) | who calls the kernel, the harness (a filter) or the model (a tool) | the re-plan of P2.4 and S2.5.2; the coordinator reads both as arms |
+
+**The frame of the re-plan is the user's statement of the core idea**, given with the answers and kept verbatim in
+[the README](../README.md#the-core-idea-the-user-2026-11-25): the model checks its formalization with the solver;
+the final answer is short and is the Ein program's own natural-language output; the experiment replaces a chain of
+thought with a chain of formal reasoning; Ein is a tool for the model and a filter of its thoughts. It names as
+the core what the note of 2026-11-11, [the reasoning as a
+program](../README.md#the-reasoning-as-a-program-the-users-idea-2026-11-11), proposed, which is therefore placed.
+
+**No phase starts until the user says so** (the user, 2026-11-25: *"do not start phases now"*).
 
 **Defaults the re-plan takes, each recorded and revisable:**
 
 1. Every stage file is re-aimed at today's kernel, the audits' tables being the worklist; estimates and dates
    used as status go.
-2. **The stage files are rewritten a phase at a time, as each starts**: P2.1 to P2.3 now, P2.4 and P2.5 once
-   P2.1's object exists. P2.1 shrinks to three things: A1's outcomes on `ein-summary/2`'s keys with the seventh;
-   the feedback object and what the kernel owes it (Q-M2.9); the boundary (Q-M2.7).
+2. **The stage files are rewritten a phase at a time, as each starts.** P2.1 shrinks to two things: A1's outcomes
+   on `ein-summary/2`'s keys, with the flagged program as the seventh (Q-M2.11); and the kernel's machine surface
+   for diagnostics with the harness's feedback object over it (Q-M2.9). Its third, the boundary, is ruled
+   (Q-M2.7).
 3. The benchmark keeps the research plan's three classes as each instance's gold class, splits *ambiguous* by
    F26's table (a quantity, a reading) as metadata, and states the gold as `:expect` claims that `ein test`
    checks. The word problems are its second domain from the start.
-4. [M1p](../../m1p_ein_to_natural_language/README.md) owns Ein to natural language; the three texts that give it
-   to M2 are aligned.
+4. [M1p](../../m1p_ein_to_natural_language/README.md) owns Ein to natural language, and M2 reads what it makes:
+   the answer's words are Ein's (Q-M2.12). The three texts that give the direction to M2 are aligned.
 5. A kernel finding goes to the wrong-answer register or the phase's findings page; the kernel is changed inside
-   M2 only where a question above rules so.
+   M2 only where a ruling says so, which today is Q-M2.9.
 6. P2.8 states its dependency on M10's S10.2 and S10.3 as work not done; the order is decided at the Level C
    gate. P2.9 does not wait for M5's venue: its kernel half cites `docs/ein/reasoning/` and does not restate it.
 7. The plan cites the followups and plans that are on its ground (§ 4).
-8. An answer about Ein lands in `docs/decisions/` under its id; an answer about EinAf or about the work stays in
-   the ledger.
-
-**Not yet placed**: the user's idea of 2026-11-11, [the reasoning as a
-program](../README.md#the-reasoning-as-a-program-the-users-idea-2026-11-11). One fact bears on it now: since
-`:why` is required on every relation and rule, a program the formalizer writes carries its own explanation or
-does not load.
+8. An answer about Ein lands in `docs/decisions/` under its id, with the change that makes it true; an answer
+   about EinAf or about the work stays in the ledger.
+9. The harness is a Cargo package of its own under `einaf/`, depending on the engine's crates by path and outside
+   the engine's workspace, so that nothing under `ein.rs/` names it.
+10. The model is served by `llama-server` over the GGUF file that `qwen3.5:4b` names, which keeps GBNF: ollama
+    does not take a grammar ([`host.md`](host.md)). The first stage that creates a tree of EinAf names it as
+    external in `AGENTS.md` and in the release-voice check, and rewrites the root README's sentence that the loop
+    is not in this repository.

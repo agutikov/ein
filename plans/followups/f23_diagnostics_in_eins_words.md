@@ -4,6 +4,12 @@
 
 **What it owns.** The diagnostics and spellings that M1e2 found and did not fix, and two labels the ruling named no owner for (D-12, D-13). None of them changes an answer: each is a line an error path prints, a label, or a page or record that no longer says what holds. They are kept here so that whoever next touches an error path finds them in one place. D-14 came later, from M1f's P1f.6 (2026-11-14), and D-15 to D-19 were handed over by that phase's close (2026-11-15). D-20 to D-22 came from M1f's documentation phase, P1f.20, at its close (2026-11-17); D-20 is **the user's call**: it changes no answer, but rewording an option or a JSON key changes a surface. D-23 and D-24 came from M1f's nested-facts phase, P1f.22, at its close (2026-11-18); D-24 was **the user's call**, ruled and fixed the same day. Three more came at M1f's close (2026-11-25), on the user's word (*"hand over all remain open findings to followups and then close M1f"*), under the milestone's ids, each left as is by the call its row records: L-124, L-125 and L-134 ([§ Handed over by M1f, 2026-11-25](#handed-over-by-m1f-2026-11-25)).
 
+**Taken up.** D-18 and L-125, a load's and a run's lines that reach stderr and no machine surface, are
+[M2](../m2_nl_to_ir/README.md)'s by the user's ruling of 2026-11-25 on
+[Q-M2.9](../m2_nl_to_ir/open_questions.md#q-m29--does-the-kernel-grow-a-machine-surface-for-diagnostics), *"(b)"*:
+the kernel grows a machine surface for its diagnostics, in its own terms. Its first phase carries them when it is
+re-planned; until that change lands the two rows stay here as they are.
+
 **Trigger.** Any of these:
 - a release, which shows these lines to a user;
 - M5's presentation work;
