@@ -164,7 +164,11 @@ fn sweep() -> &'static [Found] {
                             .expect("an object"),
                     };
                     let summary = tmp.join(format!("{i:04}-{k}.json"));
-                    let mut args: Vec<String> = vec!["solve".to_string(), e.path.clone()];
+                    // The binary is handed the path the kernel is, so a line
+                    // that names the program or one of its modules names it
+                    // the same way in both.
+                    let mut args: Vec<String> =
+                        vec!["solve".to_string(), path.display().to_string()];
                     args.extend(q.argv().iter().map(|s| s.to_string()));
                     args.extend(extra.iter().cloned());
                     args.extend(["--json-summary".to_string(), summary.display().to_string()]);
@@ -198,7 +202,7 @@ fn sweep() -> &'static [Found] {
                     ] {
                         *held.entry(part).or_default() += usize::from(present);
                     }
-                    compared.push((label, agree(&f, q, code, s.as_ref(), &root)));
+                    compared.push((label, agree(&f, q, code, s.as_ref())));
                 }
                 Found {
                     path: e.path.clone(),
@@ -219,15 +223,9 @@ fn sweep() -> &'static [Found] {
     })
 }
 
-/// A path as the binary names it, run from the repository's root: the
-/// program's as given, a module's as the import resolves it, absolute.
-fn local(text: &str, root: &Path) -> String {
-    text.replace(&format!("{}/", root.display()), "")
-}
-
 /// **What the object says against what the binary's summary says**, as a
 /// list of disagreements.
-fn agree(f: &Feedback, q: Question, code: i32, s: Option<&J>, root: &Path) -> Vec<String> {
+fn agree(f: &Feedback, q: Question, code: i32, s: Option<&J>) -> Vec<String> {
     let mut bad = Vec::new();
     if let Some(fault) = &f.fault {
         return vec![format!("the kernel faulted: {fault:?}")];
@@ -236,8 +234,9 @@ fn agree(f: &Feedback, q: Question, code: i32, s: Option<&J>, root: &Path) -> Ve
     let Some(s) = s else {
         return vec![format!("ein exits {code} and writes no summary")];
     };
-    // The diagnostics, one for one: kind, severity, message and place, the
-    // paths as the binary names them.
+    // The diagnostics, one for one: kind, severity, message and place, each
+    // path as it is written, the program's as both were handed it and a
+    // module's as its import resolves it from there.
     let theirs: Vec<Said> = s["diagnostics"]
         .as_array()
         .into_iter()
@@ -246,10 +245,10 @@ fn agree(f: &Feedback, q: Question, code: i32, s: Option<&J>, root: &Path) -> Ve
             (
                 d["kind"].as_str().unwrap_or("").to_string(),
                 d["severity"].as_str().unwrap_or("").to_string(),
-                local(d["message"].as_str().unwrap_or(""), root),
+                d["message"].as_str().unwrap_or("").to_string(),
                 (!d["place"].is_null()).then(|| {
                     (
-                        local(d["place"]["file"].as_str().unwrap_or(""), root),
+                        d["place"]["file"].as_str().unwrap_or("").to_string(),
                         d["place"]["line"].as_u64().unwrap_or(0),
                         d["place"]["col"].as_u64().unwrap_or(0),
                     )
@@ -264,10 +263,10 @@ fn agree(f: &Feedback, q: Question, code: i32, s: Option<&J>, root: &Path) -> Ve
             (
                 d.kind.clone(),
                 d.severity.clone(),
-                local(&d.message, root),
+                d.message.clone(),
                 d.place
                     .as_ref()
-                    .map(|p| (local(&p.file, root), u64::from(p.line), u64::from(p.col))),
+                    .map(|p| (p.file.clone(), u64::from(p.line), u64::from(p.col))),
             )
         })
         .collect();
