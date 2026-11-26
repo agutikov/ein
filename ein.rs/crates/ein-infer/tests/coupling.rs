@@ -72,6 +72,15 @@ const Z2: &str = "examples/zebra2.ein";
 /// The instances every run reads, `slow` or not.
 const INSTANCES: [&str; 3] = ["examples/zebra.ein", Z2, L02];
 
+/// The programs whose root pair layer is past the default budget where a
+/// describe of them is not, which no sweep of the structure reads:
+/// `pair_layer.rs`' `PAST_THE_BUDGET`, which holds the list exact.
+const PAST_THE_BUDGET: [&str; 3] = [
+    "examples/zebra3.1.ein",
+    "examples/zebra3.2.ein",
+    "examples/zebra3.3.ein",
+];
+
 /// Every corpus file and regression witness, once; the `slow` entries that are
 /// not [`INSTANCES`] where `slow_too` only.
 fn files(slow_too: bool) -> Vec<PathBuf> {
@@ -88,6 +97,7 @@ fn files(slow_too: bool) -> Vec<PathBuf> {
     files.sort();
     files.dedup();
     files.retain(|f| slow_too || !slow.contains(f));
+    files.retain(|f| !PAST_THE_BUDGET.iter().any(|p| repo_root().join(p) == *f));
     files
 }
 

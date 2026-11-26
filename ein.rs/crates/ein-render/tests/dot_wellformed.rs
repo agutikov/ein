@@ -749,6 +749,15 @@ fn sweep_structure(path: &std::path::Path) -> StructureSweep {
     out
 }
 
+/// The programs whose root pair layer is past the default budget where a
+/// describe of them is not, which no sweep of the structure reads:
+/// `ein-infer`'s `pair_layer.rs`, `PAST_THE_BUDGET`, which holds the list exact.
+const PAST_THE_BUDGET: [&str; 3] = [
+    "examples/zebra3.1.ein",
+    "examples/zebra3.2.ein",
+    "examples/zebra3.3.ein",
+];
+
 /// **Graphviz accepts every graph `ein render h-space` writes**, of every
 /// corpus program that searches: the exclusion graph, the cover, the
 /// questions' hypergraph and its edges read one application back, each one
@@ -782,6 +791,7 @@ fn graphviz_accepts_the_structure_graphs_of_every_program_that_searches() {
             slow || !(under_tests(f.strip_prefix(&root).unwrap_or(f))
                 || slow_entries.contains(&rel(f)))
         })
+        .filter(|f| !PAST_THE_BUDGET.contains(&rel(f).as_str()))
         .collect();
     let found = ein_corpus::pool::map(
         "dot_wellformed",

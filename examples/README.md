@@ -112,6 +112,7 @@ ein-einb/tests/open_budget.rs
 ein-einb/tests/roundtrip.rs
 ein-infer/tests/acceptance.rs
 ein-infer/tests/agenda.rs
+ein-infer/tests/alive_invariant.rs
 ein-infer/tests/coupling.rs
 ein-infer/tests/cover.rs
 ein-infer/tests/debts_rules.rs

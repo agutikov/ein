@@ -146,6 +146,10 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 ///   under a stored negation: the arguments of the double negations, each
 ///   listed where it is first written, and the one name by which a denial
 ///   differs from the fact beside it.
+/// - `zebra3.2.ein` writes a description's verb phrase and noun only inside
+///   the description, `(the Coffee (is drunk in) House)`: `drunk`, `in`,
+///   `Man` and the rest are names no top-level fact holds as an argument, and
+///   its hypotheses are `std.slots`' obligations, which propose none of them.
 /// - a name the program writes first in a tuple is a relation of the
 ///   program, which the names index holds through the registry
 ///   (Q-M1f.522), so it is no seed: `syntax/wrappers.ein`'s `r`, an argument
@@ -159,7 +163,7 @@ fn reached(a: &explore::Answer) -> Vec<Vec<FactId>> {
 /// another arity) and the loader's refusals (a premise that is no form, a
 /// relation variable no parameter binds, a relation parameter bound to a
 /// fact).
-const SEEDED: [(&str, &[&str]); 154] = [
+const SEEDED: [(&str, &[&str]); 155] = [
     (
         "examples/arith/int.ein",
         &[
@@ -466,6 +470,19 @@ const SEEDED: [(&str, &[&str]); 154] = [
             "`a`, in (ontology (relation r T T) (is-a a T))",
             "`b`, in (facts (r a b))",
             "`c`, in (reasoning (r b c))",
+        ],
+    ),
+    (
+        "examples/zebra3.2.ein",
+        &[
+            "`Man`, in (same Spaniard (the Dog (is owned by) Man))",
+            "`Smoker`, in (same (the Old_Gold Smoker) (the Snail (is owned by) Man))",
+            "`by`, in (same Spaniard (the Dog (is owned by) Man))",
+            "`drunk`, in (same (the Coffee (is drunk in) House) (the Green House))",
+            "`in`, in (same (the Englishman (lives in) House) (the Red House))",
+            "`kept`, in (next-to (the Kools (are smoked in) House) (the Horse (is kept in) House))",
+            "`owned`, in (same Spaniard (the Dog (is owned by) Man))",
+            "`smoked`, in (same (the Kools (are smoked in) House) (the Yellow House))",
         ],
     ),
     (

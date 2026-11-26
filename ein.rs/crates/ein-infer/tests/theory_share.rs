@@ -320,6 +320,15 @@ const INSTANCES: [&str; 3] = [
     "examples/lattice/02_genuine_3set_death.ein",
 ];
 
+/// The programs whose root pair layer is past the default budget where a
+/// describe of them is not, which no sweep of the structure reads:
+/// `pair_layer.rs`' `PAST_THE_BUDGET`, which holds the list exact.
+const PAST_THE_BUDGET: [&str; 3] = [
+    "examples/zebra3.1.ein",
+    "examples/zebra3.2.ein",
+    "examples/zebra3.3.ein",
+];
+
 /// Every corpus file and regression witness but the `slow` entries that are
 /// not [`INSTANCES`], once.
 fn files() -> Vec<PathBuf> {
@@ -336,6 +345,7 @@ fn files() -> Vec<PathBuf> {
     files.sort();
     files.dedup();
     files.retain(|f| !slow.contains(f));
+    files.retain(|f| !PAST_THE_BUDGET.iter().any(|p| repo_root().join(p) == *f));
     files
 }
 

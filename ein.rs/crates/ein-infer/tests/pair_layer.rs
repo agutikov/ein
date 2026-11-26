@@ -63,6 +63,22 @@ const INSTANCES: [&str; 3] = [
     "examples/lattice/02_genuine_3set_death.ein",
 ];
 
+/// **The programs whose root pair layer is past the default budget where a
+/// describe of them is not**: the three literal encodings of the Zebra puzzle
+/// over `std.slots`, whose states carry the text's verbs, descriptions or
+/// adjectives beside the link. Whole, root's layer takes 1 733 960, 1 380 168
+/// and 2 052 718 facts against `zebra.ein`'s 705 808 (`ein render h-space FILE
+/// --region-budget 8388608`). A check past the default budget is dropped for
+/// the program, not run past it: no sweep of the structure reads these three
+/// (`coupling.rs`, `cover.rs`, `theory_share.rs` and `ein-render`'s
+/// `dot_wellformed.rs` leave them out), and this one holds the list exact, each
+/// named layer stopped at the default budget where its describe is not.
+const PAST_THE_BUDGET: [&str; 3] = [
+    "examples/zebra3.1.ein",
+    "examples/zebra3.2.ein",
+    "examples/zebra3.3.ein",
+];
+
 /// Every corpus file and regression witness, once; the `slow` entries that are
 /// not [`INSTANCES`] where `slow_too` only.
 fn files(slow_too: bool) -> Vec<PathBuf> {
@@ -249,8 +265,16 @@ fn the_excluded_pairs_are_the_pairs_of_n() {
         flagged += usize::from(h.flagged);
         dead_roots += usize::from(h.root_dead);
         alone += usize::from(h.dead_alone > 0 && !h.root_dead);
-        if h.stopped {
+        let named = PAST_THE_BUDGET.contains(&rel_of(file).as_str());
+        if h.stopped && !named {
             stopped.push(rel_of(file));
+        }
+        if named && !h.stopped {
+            failures.push(format!(
+                "{}: PAST_THE_BUDGET names it, and its layer is whole at the default \
+                 budget: drop it from the list",
+                rel_of(file)
+            ));
         }
     }
     assert!(
