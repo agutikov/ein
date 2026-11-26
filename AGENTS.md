@@ -372,7 +372,14 @@ says Ein; `c/`, `nl2smt/` and `docs/lib/` are outside both projects.
   `einaf::kernel::forms` reads a program's forms, loaded and asked nothing,
   which `einaf::contract` puts each in a category of the **formalization
   contract** ([`04-contract.md`](docs/einaf/04-contract.md)), whose worked
-  programs, each step of each text, are `einaf/contract/`. Its tests are
+  programs, each step of each text, are `einaf/contract/`; and
+  `einaf::kernel::parse`, a parse with no load. **The model runs in EinAf's
+  process**: `einaf::model`, one trait, the binding (`llama-cpp-2`, behind
+  the features `llama` and `cuda`, off by default, so the gate builds no
+  llama.cpp and needs no model) and replay, which answers a request from a
+  record; the chat template rendered by EinAf, every call's envelope, the
+  prompts versioned under `einaf/prompts/`
+  ([`05-model.md`](docs/einaf/05-model.md)). Its tests are
   a step of the gate after Ein's: one test an outcome, the command, every
   refused fixture, and every corpus program that is not `slow` under every
   question, held to its group, its exit, its claims and the engine's static
@@ -862,6 +869,9 @@ cargo test --manifest-path ein.rs/Cargo.toml --profile gate --workspace   # the 
 cargo test --manifest-path einaf/Cargo.toml --profile gate   # EinAf's tests, the gate's step after Ein's (--nocapture: the corpus's count of each outcome)
 einaf/target/release/einaf outcome FILE [--single|--maximal|--minimal|--count|--no-search]   # a program's outcome under one question, per reading; ./build.sh --einaf builds it
 einaf/target/release/einaf feedback FILE [QUESTION] [--region-budget N] [--region-limit N] [--max-steps N] [-T S]   # the same call's feedback object, einaf-feedback/1, as JSON
+CMAKE_CUDA_ARCHITECTURES=89 cargo build --release --features cuda --manifest-path einaf/Cargo.toml   # EinAf with the model's runtime, on the GPU
+einaf/target/release/einaf generate --model GGUF REQUEST.json…   # one call a request, a record line each; --replay RECORD.jsonl answers from a record, no model
+einaf/target/release/einaf probe run --plan PLAN.jsonl --out OUT.jsonl (--model GGUF | --replay RECORD.jsonl) [--only PREFIX]   # the probe of Ein written with no grammar
 EIN_TEST_JOBS=1   cargo test … --profile gate --workspace    # the corpus sweeps one unit at a time; the verdicts are the default's
 EIN_TEST_UNITS=u.tsv EIN_TEST_JOBS=1 cargo test … --test id_order_invariance   # every unit's cost and peak memory, one line each
 EIN_CORPUS_SLOW=1 EIN_TEST_SHARD=2/4 cargo test … --test corpus_cores   # one shard of a nightly step
