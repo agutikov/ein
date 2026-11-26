@@ -201,6 +201,18 @@ the tree they left, and one out of that review's close:
 - **M15 — An Ein MCP server** ([m15_mcp_server/](m15_mcp_server/README.md)) —
   planned 2026-11-12 on the user's one-line note; a placeholder that lists
   what would have to be decided and designs nothing.
+- **M14 — Ein server** ([m14_ein_server/](m14_ein_server/README.md)) —
+  created 2026-11-27 on the user's instruction: Ein as a server that holds
+  programs as databases, its rule libraries loaded once, and answers
+  saturation, R under limits, H step by step, a program's found properties,
+  parts of states and the models found; for M15 and M17. Nothing designed.
+- **M17 — Formalizing a text that does not fit into the model's context**
+  ([m17_long_text_formalization/](m17_long_text_formalization/README.md)) —
+  created 2026-11-27 on the user's instruction (named M20 in it; M20 is the
+  GUI's, and the user gave it M17): a text split into chapters, each
+  formalized and loaded into M14's server, merged, its conflicts found, the
+  chapters before summarized for the next, like an attention window. Nothing
+  designed.
 
 The followups in [`followups/`](followups/README.md) park the
 research-level threads (self-modification F2/F5/F6, formal
@@ -322,8 +334,12 @@ plans/
 ├── m12_rules_as_data/                rules as data — planned 2026-11-12
 │   ├── README.md                     (the user's instruction verbatim; the sources pulled together)
 │   └── rule_census.md                P12.1's results: shapes, groupings, connections
+├── m14_ein_server/                   Ein as a server — created 2026-11-27
+│   └── README.md                     (the user's instruction verbatim; each line against what ships; what would have to be decided)
 ├── m15_mcp_server/                   an Ein MCP server — planned 2026-11-12
 │   └── README.md                     (a placeholder: what would have to be decided)
+├── m17_long_text_formalization/      a text longer than the model's context — created 2026-11-27
+│   └── README.md                     (the user's instruction verbatim; each line against what exists; what would have to be decided)
 ├── m20_gui/                          the GUI — Tauri 2 + React + Monaco + Cytoscape
 │   └── README.md                     (was m1b_gui)
 ├── m3_smt_integration/               (deleted 2026-08-18 — dropped; see git history)
@@ -378,7 +394,9 @@ Stage files have a stable shape:
 | [M5](m5_presentation/README.md)         | placeholder README only | parked — paper + talk after M2 (was M2b) | TBD |
 | [M10](m10_external_benchmarks/README.md) | **full** — 5 stage files, no phase level | queued behind M1a — the same problems through Z3, CVC5, SWI-Prolog, Soufflé, Clingo and Lean (was M1c's P1c.2) | ~2.5 weeks |
 | [M12](m12_rules_as_data/README.md)      | README + the census's results page | **planned** 2026-11-12 on the user's instruction, not started as a milestone. Rules as data: the sources pulled together, nothing designed. Its first phase, the census of rules, ran 2026-11-12 ([`rule_census.md`](m12_rules_as_data/rule_census.md)); later phases are the user's to define | — |
+| [M14](m14_ein_server/README.md)         | README only | **created** 2026-11-27 on the user's instruction, not started: Ein as a server, programs held as databases, for M15 and M17. Nothing designed | — |
 | [M15](m15_mcp_server/README.md)         | placeholder README only | **planned** 2026-11-12 on the user's one-line note, not started: an Ein MCP server. Nothing designed | — |
+| [M17](m17_long_text_formalization/README.md) | README only | **created** 2026-11-27 on the user's instruction (named M20 in it, given M17 by the user), not started: a text longer than the model's context, formalized chapter by chapter into M14's server, merged, its conflicts found. Nothing designed | — |
 | [M20](m20_gui/README.md)                | README + stack decision | parked — depends on M1a, blocks nothing; Tauri stack settled 2026-08-18 (was M1b) | TBD |
 | ~~M3 — SMT integration~~                | *(deleted 2026-08-18 — dropped; see git history)* | **dropped** | — |
 | [followups](followups/README.md)        | theme files only | parking lot | unscheduled |

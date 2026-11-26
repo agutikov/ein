@@ -543,6 +543,9 @@ paragraph, no register count, no measurement (the user's rule).
   [M12](plans/m12_rules_as_data/README.md), rules as data (its
   `rule_census.md` tables are written by `utils/rule_census.py --page`);
   [M15](plans/m15_mcp_server/README.md);
+  [M14](plans/m14_ein_server/README.md), Ein as a server, programs held as
+  databases; [M17](plans/m17_long_text_formalization/README.md), a text longer
+  than the model's context formalized chapter by chapter into that server;
   [M1k](plans/m1k_notations_as_facts/README.md), other notations read as Ein
   facts: a labelled graph as a knowledge base (P1k.10, from M1f's P1f.30) and
   S-expressions as facts (P1k.20); [M1n](plans/m1n_non_monotone_programs/README.md),
