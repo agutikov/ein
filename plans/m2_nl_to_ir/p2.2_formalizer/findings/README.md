@@ -30,3 +30,4 @@ topic; what is closed goes with the phase's folder.
 | [L-M2.20](einaf/L-M2.20-the-check-s-narration-of-a-runaway-root-grows-with-the-square-of-its-firings.md) | The check's narration of a runaway root grows with the square of its firings | `einaf` | closed (S2.2.5, `8c2037b0`), as far as memory |
 | [L-M2.21](model/L-M2.21-the-model-s-zebra-answer-query-asks-one-person-both-questions.md) | The model's Zebra answer query asks one person both questions | `model` | open |
 | [L-M2.22](model/L-M2.22-a-fixed-text-scored-right-can-rest-on-a-contradiction-of-the-model-s-own.md) | A fixed text scored right can rest on a contradiction, or a missing row, of the model's own making | `model` | open |
+| [L-M2.23](model/L-M2.23-the-model-s-zebra-program-dies-of-two-faults-not-of-ten-houses.md) | The model's Zebra program dies of two faults, not of *ten houses for five places* | `model` | closed (the phase report, the records corrected) |

@@ -233,7 +233,8 @@ coloured house as a house of its own (`GreenHouse`, `RedHouse`, five more house 
 **Step 2** selects the right theory, spelled right: `(slot-partition same-house instance type Attribute House)`, two
 `slot-spatial` lines, `includes` of the verbs into `same-house`, `symmetric`; the kinds it adds are `Person`, `Thing`,
 `Smoker`, `Drinker`, `Owner`, `Color` and `House`, and only `Person`, `Thing` and `House` have members. **Root is dead
-at step 2**: ten houses for five places, the core naming `(instance GreenHouse House)` with its sentence, *Coffee is
+at step 2**: eleven houses for five places and four kinds with no member, either fault alone deadly (L-M2.23, found by
+the phase report's re-runs), the core naming `(instance GreenHouse House)` with its sentence, *Coffee is
 drunk in the green house.*, refuted by `std.slots.slot-no-fill` (E-125). **Step 3** writes the read-back over the kinds
 with no members (`selection-inactive` 5, E-123) and `(solve :no-search)` beside the obligations it selected, which
 leaves H empty (`mechanism-not-the-one-stated`). The complete program is *inconsistent* under both questions.

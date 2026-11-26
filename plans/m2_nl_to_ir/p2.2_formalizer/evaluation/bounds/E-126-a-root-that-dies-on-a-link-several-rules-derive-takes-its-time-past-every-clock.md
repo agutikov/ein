@@ -11,7 +11,7 @@ case at root under every question
 **The model's Zebra program, dead at root, takes 72 seconds under `--single`, and the clock does not stop it.** The
 program the model wrote through the three steps for the Zebra puzzle (S2.2.4's, made again by S2.2.5 byte for byte)
 selects `std.slots`' partition and `std.algebra`'s `includes`, `symmetric`, `converse`, `top` and `meet` over the
-link `same-house`, and names ten houses for five places, so root dies (`std.slots.slot-no-fill`, the core naming
+link `same-house`, and names eleven houses for five places beside four kinds with no member (L-M2.23), so root dies (`std.slots.slot-no-fill`, the core naming
 *Coffee is drunk in the green house.*, E-125). `ein solve program.ein --single -T 5` returns after 72 s, *Contradiction*,
 its timing table saying *route 73 453 ms: root, H and every node visited: 1 saturation*; the same program with
 `(config :record-alternative-justifications false)` added returns in 63 ms. `zebra3.1.ein`, the target shape, which

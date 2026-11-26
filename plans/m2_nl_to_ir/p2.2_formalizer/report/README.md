@@ -744,12 +744,12 @@ four kinds with no member (`slot-no-fill` at every place) and step 1's coloured 
 (`slot-no-room`, the Norwegian in two houses); less both it is alive. The core's *Coffee is drunk in the green
 house.* is one house's sentence of eleven, taken by the core search; with the lever (Q-M2.34) the core names *The
 Norwegian lives next to the blue house.* What it changes: the loop's repair is two faults and the query's variable,
-not one; E-125 holds, its Zebra row's reading does not. **Not written into the ledgers**: this commit is the report
-alone, so the finding's file, its index line, a line on E-125 and the page's row are the coordinator's to change;
-E-128 and Q-M2.35 stay free.
+not one; E-125 holds, its Zebra row's reading does not. Filed as [L-M2.23](../findings/model/L-M2.23-the-model-s-zebra-program-dies-of-two-faults-not-of-ten-houses.md),
+closed by the correction of every record that said *ten houses* (the stages' records and reports, the phase README's
+row, E-125, E-126 and `03-feedback.md` § 4), with a line on E-125; E-128 and Q-M2.35 stay free.
 
-**Of the model and EinAf**: L-M2.5 to L-M2.22 in [the phase's findings](../findings/README.md); with this report's
-L-M2.23, the next free id is L-M2.24.
+**Of the model and EinAf**: L-M2.5 to L-M2.23 in [the phase's findings](../findings/README.md); the next free id is
+L-M2.24.
 
 | | findings |
 |---|---|

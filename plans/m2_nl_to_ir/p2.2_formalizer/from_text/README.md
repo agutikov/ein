@@ -21,8 +21,8 @@ the plan was committed before its first generation (`261d4768`). **The tables ar
   Zebra puzzle's steps by hand print *The Norwegian drinks water. The Japanese owns the zebra.*; and a recorded run of
   the model replays step by step from 15.5 KB of slim calls. The formatters' module is built and tested alone by
   `rustc`.
-- **The minimal goal is not met** (Q-M2.17): on the Zebra puzzle the model's program is dead at step 2, ten houses for
-  five places, and `einaf from-text` prints *The statements contradict each other.*, the core naming *Coffee is drunk
+- **The minimal goal is not met** (Q-M2.17): on the Zebra puzzle the model's program is dead at step 2, eleven houses for
+  five places and four kinds with no member, either fault alone deadly (L-M2.23), and `einaf from-text` prints *The statements contradict each other.*, the core naming *Coffee is drunk
   in the green house.*: the program S2.2.4 recorded, call for call, the requests being the same. Its answer query
   asks one person both questions (L-M2.21), so a right grid would have printed the undetermined text too. The puzzle
   less its fifteenth clue is dead the same way; with *The Norwegian drinks milk.* added it is dead on a contradiction
@@ -133,7 +133,8 @@ code; every table is the replay's ([`tables.md`](tables.md), [`analyse.py`](anal
 
 **The minimal goal is not met**: the one shot, the pinned model, the theory selected from the library, prints the
 unsatisfiable text, not the two names. **Where the run stopped**: at step 2, where the model's ontology names a house
-for each coloured house beside the five numbered ones, ten houses for `std.slots`' five places, and root is dead;
+for each coloured house beside the five numbered ones and a middle house, eleven houses for `std.slots`' five places,
+with *next to* read as *in*, and four kinds with no member, and root is dead of either fault alone (L-M2.23);
 the description's core names *(instance GreenHouse House)* with its sentence, *Coffee is drunk in the green house.*,
 refuted by `std.slots.slot-no-fill` (E-125). Step 3 selects the read-back over kinds with no members
 (`selection-inactive` 5) and writes `(solve :no-search)` beside the obligations (`mechanism-not-the-one-stated`).
