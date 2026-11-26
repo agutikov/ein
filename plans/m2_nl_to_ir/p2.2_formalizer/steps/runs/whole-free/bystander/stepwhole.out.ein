@@ -1,0 +1,50 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples.")
+(has Carol (n z 9) Apple :source "Carol has 9 apples.")
+(gave Bob 2 Apple Alice :source "Bob gave 2 apples to Alice.")
+
+;; How many apples does Carol have?
+(query :goal (has Carol ?n Apple) :goal-text "Carol has {?n} apples.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, and what the theory reads the
+;; verbs into, and the kinds.
+
+(relation has Person Number Apple :why "a {?3} has a {?4} of {?5}s")
+(relation gave Person Number Apple Person :why "a {?3} gave a {?4} of {?5}s to a {?6}")
+
+;; The kinds, and their place.
+(type Apple T)
+(type Number T)
+(type Person T)
+
+;; The memberships, the kinds and the facts the text speaks of and never states.
+(instance Bob Person)
+(instance Carol Person)
+(instance Alice Person)
+(instance Apple Apple)
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (sub diff-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; missing: the subtraction of apples given, read back as the remaining count
+(rule giving-asks-the-difference ()
+  :match  (and (has ?giver ?start Apple) (gave ?giver ?given Apple ?receiver))
+  :assert (sub ?start ?given)
+  :why    "{?giver} had {?start} and gave {?given}: ask {?start} less {?given}")
+
+;; missing: the difference, read back as the remaining count
+(rule giving-is-the-difference ()
+  :match  (and (has ?giver ?start Apple) (gave ?giver ?given Apple ?receiver) (diff-of ?start ?given ?rem z))
+  :assert (has ?receiver ?rem Apple)
+  :why    "{?start} less {?given} is {?rem}, so {?receiver} has {?rem} apples")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

@@ -15,7 +15,8 @@ E-104 to E-113, filed by [S2.2.0a](../s2.2.0a_zebra_formulations.md) on 2026-11-
 [S2.2.1](../s2.2.1_contract.md) the same day from the steps by hand of
 [the contract](../../../../docs/einaf/04-contract.md#7-the-steps-by-hand); E-117 to E-119, filed by
 [S2.2.2](../s2.2.2_model_runtime.md) the same day from [its probe of Ein written by the model with no grammar](../model_runtime/README.md);
-E-120 to E-122, filed by [S2.2.3](../s2.2.3_gbnf.md) the same day from [its grammars of Ein](../grammars/README.md).
+E-120 to E-122, filed by [S2.2.3](../s2.2.3_gbnf.md) the same day from [its grammars of Ein](../grammars/README.md);
+E-123 to E-125, filed by [S2.2.4](../s2.2.4_passes.md) the same day from [its runs of the steps](../steps/README.md).
 
 | id | title | kind | topic | status | owner |
 |---|---|---|---|---|---|
@@ -38,3 +39,6 @@ E-120 to E-122, filed by [S2.2.3](../s2.2.3_gbnf.md) the same day from [its gram
 | [E-120](language/E-120-a-string-glued-to-a-block-comment-is-refused-where-a-name-glued-to-one-is-not.md) | A string glued to a block comment is refused, where a name glued to one is a name and a comment | weakness | `language` | open | none |
 | [E-121](language/E-121-the-banked-table-of-refused-shapes-misses-two-of-the-lexer-s-token-ends.md) | The parser's banked table of refused shapes, with the corpus, misses two of the lexer's token ends | gap | `language` | open | none |
 | [E-122](language/E-122-ein-s-syntax-is-context-free-but-for-two-refusals.md) | Ein's syntax, its lexer included, is a context-free language but for two refusals, and a second reader takes it exactly | strength | `language` | standing (a strength) | — |
+| [E-123](diagnostics/E-123-no-value-says-whether-a-selecting-fact-was-taken-up.md) | No value says whether a selecting fact was taken up, and an unused one is silent whatever the reason | gap | `diagnostics` | open | none |
+| [E-124](answer/E-124-one-state-may-answer-a-question-of-one-value-with-a-row-a-pass.md) | One state may answer a question of one value with a row for each pass of a rule that reads what it concludes | limit | `answer` | open | none; Q-M2.10 and S2.5.3's answer rule read it |
+| [E-125](diagnostics/E-125-a-dead-root-s-core-names-the-sentence-the-model-misread.md) | A dead root's core names the sentence the model misread, and the rule that found it | strength | `diagnostics` | standing (a strength) | — |

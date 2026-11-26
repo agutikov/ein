@@ -1,0 +1,17 @@
+bystander: steps mode, grammar off, whole
+  step 1     4643 prompt tokens, 168 generated (end-of-turn), 6 forms; at root not decided; H from blind (0); 0 findings
+  step 2     11622 prompt tokens, 127 generated (end-of-turn), 5 forms; at root not decided; H from blind (0); 0 findings
+  step 3     12384 prompt tokens, 233 generated (end-of-turn), 3 forms; at root not decided; H from no-search (0); 0 findings; 2 markers
+  complete, --no-search: not decided
+    Carol has (n z 1) apples.
+    Carol has (n z 3) apples.
+    Carol has (n z 5) apples.
+    Carol has (n z 7) apples.
+    Carol has (n z 9) apples.
+  complete, --single: one
+    Carol has (n z 1) apples.
+    Carol has (n z 3) apples.
+    Carol has (n z 5) apples.
+    Carol has (n z 7) apples.
+    Carol has (n z 9) apples.
+  findings: none

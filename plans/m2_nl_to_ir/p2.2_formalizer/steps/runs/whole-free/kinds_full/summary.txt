@@ -1,0 +1,7 @@
+kinds_full: whole mode, grammar off, whole
+  step whole 11711 prompt tokens, 556 generated (end-of-turn), 19 forms; at root not decided; H from no-search (0); 11 findings; 1 markers
+  complete, --no-search: not decided
+    They have (n z 8) apples together.
+  complete, --single: one
+    They have (n z 8) apples together.
+  findings: answer-in-template 1, source-not-a-sentence 4, undeclared 6

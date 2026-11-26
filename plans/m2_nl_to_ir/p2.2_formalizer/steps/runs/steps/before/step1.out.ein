@@ -1,0 +1,10 @@
+;; The statements, in the text's own words.
+(gave Bob Alice (n z 2) Apple :source "Bob gave Alice 2 apples.")
+(has Bob (n z 5) Apple :source "Now Bob has 5.")
+
+;; How many apples did Bob have before?
+(query :goal (has Bob ?n Apple) :goal-text "Bob had {?n} apples before.")
+
+;; The ontology, partial.
+(relation gave Person Person Number Thing :why "a {?3} gave a {?4} a {?5} of {?6}s")
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")

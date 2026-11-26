@@ -1,0 +1,70 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples.")
+(has Alice (n z 4) Apple :source "Alice has 4 apples.")
+(gave Bob (n z 2) Alice :source "He gave 2 to Alice.")
+
+;; How many apples does Bob have? How many does Alice have? How many apples do they have together?
+(query
+  :goal (and (has Bob ?b Apple) (has Alice ?a Apple) (have-together ?t Apple))
+  :goal-text "{?b} apples does Bob have. {?a} apples does Alice have. They have {?t} apples together.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, and what the theory reads the verbs into, and the kinds.
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation give Person Number Person :why "a {?3} gave a {?4} to a {?5}")
+(relation have-together Person Number Thing :why "a {?3} and a {?4} have a {?5} together")
+
+;; The kinds, and their place.
+(type Apple Thing)
+
+;; What kind of thing each name is: step 1's memberships.
+(instance Bob Person :source "Bob has 5 apples.")
+(instance Alice Person :source "Alice has 4 apples.")
+(instance Apple Thing :source "Bob has 5 apples.")
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (sub diff-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; missing: what Bob has after giving 2 is his original count minus 2, asked of the calculator
+(rule bob-gives-asks-the-difference ()
+  :match  (and (has Bob ?b Apple) (gave Bob ?g Alice))
+  :assert (sub ?b ?g)
+  :why    "Bob has {?b} and gave {?g}: ask {?b} less {?g}")
+
+;; missing: what Alice has after receiving 2 is her original count plus 2, asked of the calculator
+(rule alice-receives-asks-the-sum ()
+  :match  (and (has Alice ?a Apple) (gave Bob ?g Alice))
+  :assert (add ?a ?g)
+  :why    "Alice has {?a} and received {?g}: ask {?a} plus {?g}")
+
+;; missing: what they have together is Bob's new count plus Alice's count, asked of the calculator
+(rule together-asks-the-sum ()
+  :match  (and (has Bob ?b Apple) (has Alice ?a Apple))
+  :assert (add ?b ?a)
+  :why    "Bob has {?b} and Alice has {?a}: ask {?b} plus {?a}")
+
+;; missing: the results, read back as what they have
+(rule bob-has-the-result ()
+  :match  (and (has Bob ?b Apple) (sub ?b ?g ?d z))
+  :assert (has Bob ?d Apple)
+  :why    "{?b} less {?g} is {?d}, so Bob has {?d} apples")
+
+(rule alice-has-the-result ()
+  :match  (and (has Alice ?a Apple) (add ?a ?g ?s))
+  :assert (has Alice ?s Apple)
+  :why    "{?a} plus {?g} is {?s}, so Alice has {?s} apples")
+
+(rule together-has-the-result ()
+  :match  (and (has Bob ?b Apple) (has Alice ?a Apple) (add ?b ?a ?t))
+  :assert (have-together ?t Apple)
+  :why    "{?b} plus {?a} is {?t}, so they have {?t} apples together")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

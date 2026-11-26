@@ -1,0 +1,11 @@
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples, Alice has 8.")
+(has Alice (n z 8) :source "Bob has 5 apples, Alice has 8.")
+(holds Box (n z 3) :source "A box holds 3.")
+
+;; How many boxes do they need?
+(query :goal (need-boxes Bob Alice ?n) :goal-text "They need {?n} boxes.")
+
+;; The ontology, partial.
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation holds Thing Number :why "a {?3} holds a {?4}")

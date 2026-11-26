@@ -1,0 +1,10 @@
+;; The statements, in the text's own words.
+(is-older-than Ann Bob :source "Ann is older than Bob.")
+(is-older-than Bob Cy  :source "Bob is older than Cy.")
+
+;; Who is the youngest?
+(query :goal (is-youngest ?who) :goal-text "{?who} is the youngest.")
+
+;; The ontology, partial.
+(relation is-older-than Person Person :why "a {?3} is older than a {?4}")
+(relation is-youngest Person :why "{?3} is the youngest")

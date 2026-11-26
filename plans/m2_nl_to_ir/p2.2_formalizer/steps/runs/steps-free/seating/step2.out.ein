@@ -1,0 +1,37 @@
+;; The ontology, whole: step 1's declarations, completed with the theory's
+;; relations (passive verbs, pairs, kinds).
+
+(relation instance    T T          :why "{?3} is a {?4}")
+(relation type        T T          :why "{?3} is a kind of {?4}")
+(relation sits        Person Chair :why "a {?3} sits in a {?4}")
+(relation next-to     Attribute Attribute :why "a {?3} is next to a {?4}")
+(relation chair-and-chair  Chair Chair  :why "a {?3} and a {?4}")
+(relation person-and-chair  Person Chair  :why "a {?3} and a {?4}")
+
+;; The kinds, and their place.
+(type Attribute T)
+(type Chair     Attribute)
+(type Person    Attribute)
+
+;; What kind of thing each name is: step 1's memberships.
+(instance Ann    Person :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Bob    Person :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Cy     Person :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance First  Chair  :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Middle Chair  :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Third  Chair  :source "Ann, Bob and Cy sit in a row of three chairs.")
+
+;; The row the text speaks of and never states.
+(next-to First Middle)
+(next-to Middle Third)
+
+;; The theory: properties of relations and things in places.
+(import std.algebra :symbols (symmetric includes converse top meet))
+(import std.slots)
+
+;; A verb of one chair is a part of next-to.
+(includes sits next-to)
+
+;; The classes of next-to are the chairs, each holding one value of every
+;; kind, and a chair names its class; its obligations write the hypotheses.
+(slot-partition next-to instance type Attribute Chair)

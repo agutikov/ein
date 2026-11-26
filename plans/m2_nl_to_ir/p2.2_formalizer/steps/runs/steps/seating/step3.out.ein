@@ -1,0 +1,6 @@
+;; The read-back that makes the answer query answerable. Where a value is,
+;; in the verb of its kind: a person sits in the chair it shares.
+(top  person-and-chair instance Person Chair)
+(meet next-to person-and-chair sits)
+
+;; The hypothesis mechanism: the obligations of the theory step 2 selected.

@@ -1,0 +1,14 @@
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples.")
+(has Alice (n z 4) Apple :source "Alice has 4 apples.")
+(gave Bob (n z 2) Alice :source "He gave 2 to Alice.")
+
+;; How many apples does Bob have? How many does Alice have? How many apples do they have together?
+(query
+  :goal (and (has Bob ?b Apple) (has Alice ?a Apple) (sum-of ?b ?a ?t))
+  :goal-text "{?b} apples does Bob have. {?a} apples does Alice have. {?t} apples do they have together.")
+
+;; The ontology, partial.
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation gave Person Number Person :why "a {?3} gave a {?4} to a {?5}")
+(relation sum-of Number Number Number :why "a {?3} plus a {?4} is a {?5}")

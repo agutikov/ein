@@ -1,0 +1,5 @@
+boxes13: whole mode, grammar off, whole
+  step whole 11705 prompt tokens, 644 generated (end-of-turn), 22 forms; at root not decided; H from no-search (0); 10 findings; 2 markers
+  complete, --no-search: not decided
+  complete, --single: one
+  findings: name-not-listed 1, source-not-a-sentence 4, undeclared 2, wrong-count 3

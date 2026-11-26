@@ -1,0 +1,54 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples.")
+(gave Bob (n z 7) Alice Apple :source "He gave 7 to Alice.")
+
+;; How many apples does Bob have?
+(query :goal (has Bob ?n Apple) :goal-text "Bob has {?n} apples.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, and what the theory reads the
+;; verbs into, and the kinds.
+
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation gave Person Number Person Thing :why "a {?3} gave a {?4} of {?5}s to a {?6}")
+
+;; The kinds, and their place.
+(type Thing T)
+(type Apple Thing)
+(type Number T)
+
+;; What kind of thing each name is: step 1's memberships.
+(instance Bob Person :source "Bob has 5 apples.")
+(instance Alice Person :source "He gave 7 to Alice.")
+(instance Apple Thing :source "Bob has 5 apples.")
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (sub diff-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; missing: the apples Bob had are the ones he gave away plus what remains,
+;; but the text implies we start with 5 and give 7, which is a subtraction
+;; problem where the result is negative or zero depending on interpretation.
+;; However, the question asks "How many apples does Bob have?" after giving 7.
+;; If he started with 5 and gave 7, he has 5 - 7 = -2.
+;; The rule below computes the difference.
+
+(rule apples-asks-the-difference ()
+  :match  (and (has ?giver ?start ?thing) (gave ?giver ?given ?receiver ?thing))
+  :assert (sub ?start ?given)
+  :why    "{?giver} had {?start} and gave {?given}: ask {?start} less {?given}")
+
+(rule apples-is-the-difference ()
+  :match  (and (has ?giver ?start ?thing) (gave ?giver ?given ?receiver ?thing)
+              (diff-of ?start ?given ?d z))
+  :assert (has ?giver ?d ?thing)
+  :why    "{?start} less {?given} is {?d}, so {?giver} has {?d} {?thing}s")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

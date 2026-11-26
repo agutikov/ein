@@ -1,0 +1,9 @@
+boxes12: steps mode, grammar on, whole
+  step 1     4640 prompt tokens, 192 generated (end-of-turn), 7 forms; at root not decided; H from blind (56); 1 findings
+  step 2     11643 prompt tokens, 229 generated (end-of-turn), 6 forms; at root not decided; H from blind (272); 1 findings
+  step 3     12490 prompt tokens, 12288 generated (max-tokens), does not parse: step 3:10:1: unexpected end of input
+  repair: Insert `)`, Insert `)`, Insert `)`; 2 markers
+  stopped: step 3's output does not parse, or is empty
+  complete, --no-search: not decided
+  complete, --single: several
+  findings: mechanism-not-stated 1, wrong-count 1

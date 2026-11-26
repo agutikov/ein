@@ -1,0 +1,31 @@
+;; The ontology, whole: step 1's declarations, completed with the kinds and
+;; their place, and the facts the text speaks of and never states.
+
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation has Person Number Thing Thing :why "a {?3} has a {?4} of {?5}s")
+(relation gave Person Number Thing Person :why "a {?3} gave a {?4} of {?5}s to a {?6}")
+(relation instance T T :why "{?3} is a {?4}")
+(relation type T T :why "{?3} is a kind of {?4}")
+(type Number T)
+(type Thing T)
+(type Apple T)
+(type Box T)
+
+;; The kinds and their place.
+(instance Bob Person :source "Bob has 5 apples.")
+(instance Alice Person :source "Alice has 7 apples.")
+(instance Carol Person :source "Carol has 9 apples.")
+(instance 5 Number :source "Bob has 5 apples.")
+(instance 7 Number :source "Alice has 7 apples.")
+(instance 9 Number :source "Carol has 9 apples.")
+(instance 3 Number :source "Carol has 9 apples and a box that holds 3.")
+(instance Apple Thing :source "Bob has 5 apples.")
+(instance Box Thing :source "Carol has 9 apples and a box that holds 3.")
+
+;; The facts the text speaks of and never states: Bob gave 2 apples to Alice.
+(gave Bob (n z 2) Apple Alice)
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (sub diff-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))

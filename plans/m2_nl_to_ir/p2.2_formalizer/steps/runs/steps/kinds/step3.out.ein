@@ -1,0 +1,8 @@
+;; missing: the sum, read back as what they have together
+(rule together-is-the-sum ()
+  :match  (and (has ?p1 ?n1 ?t1) (has ?p2 ?n2 ?t2) (sum-of ?n1 ?n2 ?s))
+  :assert (and (has ?p1 ?s ?t1) (has ?p2 ?s ?t2))
+  :why    "{?n1} and {?n2} make {?s}, so {?p1} and {?p2} have {?s} together")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

@@ -20,7 +20,7 @@ hand; this page is what it finds of the kernel, kept for the iteration of Ein th
 - **One file an entry**, `<topic>/E-<n>-<slug>.md`, under the topic it is about: its id and its bold sentence as
   the title; its kind, its status (open, or closed and by what; a strength stands), where it was filed and its
   owner; then the cells of its row, each a section, as they were written. This page is the index. **The ids are one
-  sequence for the milestone and its phases**, and the next free id is **E-123**.
+  sequence for the milestone and its phases**, and the next free id is **E-126**.
 - **An entry filed by a phase lives in the phase's `evaluation/`** (every phase's folder has one) until the phase
   closes. Then, if it is open or a strength, it moves here under the same topic; a closed one goes with the phase's
   folder, where `git log` keeps it.
@@ -192,7 +192,8 @@ One line a phase whose `evaluation/` holds entries, so that every id is found fr
   thirteen it closed went with its folder (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`):
   E-62, E-64, E-65, E-67, E-74, E-76 to E-79, E-88, E-90, E-99 (as far as *faster than the square*, the rest E-102)
   and E-101.
-- **E-104 to E-122 are P2.2's**, in [its evaluation](../p2.2_formalizer/evaluation/README.md): E-104 to E-113 filed
+- **E-104 to E-125 are P2.2's**, in [its evaluation](../p2.2_formalizer/evaluation/README.md): E-104 to E-113 filed
   by S2.2.0a on the Zebra encodings, E-114 to E-116 by S2.2.1 on the steps by hand, E-117 to E-119 by S2.2.2 on its
-  probe of Ein written by the model with no grammar, E-120 to E-122 by S2.2.3 on its grammars of Ein.
+  probe of Ein written by the model with no grammar, E-120 to E-122 by S2.2.3 on its grammars of Ein, E-123 to E-125
+  by S2.2.4 on its runs of the steps.
 - P2.3 to P2.10: none yet.

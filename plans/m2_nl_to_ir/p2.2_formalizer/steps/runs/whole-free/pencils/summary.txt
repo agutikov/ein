@@ -1,0 +1,5 @@
+pencils: whole mode, grammar off, whole
+  step whole 11735 prompt tokens, 1293 generated (end-of-turn), 35 forms; at root inconsistent; H from no-search (0); 29 findings; 6 markers
+  complete, --no-search: inconsistent
+  complete, --single: inconsistent
+  findings: name-not-listed 2, number-as-name 6, undeclared 21

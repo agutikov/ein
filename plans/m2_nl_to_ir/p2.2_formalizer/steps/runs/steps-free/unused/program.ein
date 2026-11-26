@@ -1,0 +1,62 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples.")
+(has Alice (n z 7) Apple :source "Alice has 7 apples.")
+(has Carol (n z 9) Apple :source "Carol has 9 apples.")
+(has Carol (n z 3) Box :source "Carol has 9 apples and a box that holds 3.")
+(gave Bob (n z 2) Apple Alice :source "Bob gave 2 apples to Alice.")
+
+;; How many apples does Bob have?
+(query :goal (has Bob ?n Apple) :goal-text "Bob has {?n} apples.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, completed with the kinds and
+;; their place, and the facts the text speaks of and never states.
+
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation has Person Number Thing Thing :why "a {?3} has a {?4} of {?5}s")
+(relation gave Person Number Thing Person :why "a {?3} gave a {?4} of {?5}s to a {?6}")
+(relation instance T T :why "{?3} is a {?4}")
+(relation type T T :why "{?3} is a kind of {?4}")
+(type Number T)
+(type Thing T)
+(type Apple T)
+(type Box T)
+
+;; The kinds and their place.
+(instance Bob Person :source "Bob has 5 apples.")
+(instance Alice Person :source "Alice has 7 apples.")
+(instance Carol Person :source "Carol has 9 apples.")
+(instance 5 Number :source "Bob has 5 apples.")
+(instance 7 Number :source "Alice has 7 apples.")
+(instance 9 Number :source "Carol has 9 apples.")
+(instance 3 Number :source "Carol has 9 apples and a box that holds 3.")
+(instance Apple Thing :source "Bob has 5 apples.")
+(instance Box Thing :source "Carol has 9 apples and a box that holds 3.")
+
+;; The facts the text speaks of and never states: Bob gave 2 apples to Alice.
+(gave Bob (n z 2) Apple Alice)
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (sub diff-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; missing: the count Bob has left, asked of the calculator
+(rule bob-asks-the-difference ()
+  :match  (and (has Bob ?a) (gave Bob ?b ?who) (has ?who ?c ?thing))
+  :assert (sub ?a ?b)
+  :why    "Bob has {?a} and gave {?b} to {?who}: ask {?a} less {?b}")
+
+;; missing: the difference, read back as what Bob has left
+(rule bob-is-the-difference ()
+  :match  (and (has Bob ?a) (gave Bob ?b ?who) (has ?who ?c ?thing) (diff-of ?a ?b ?d z))
+  :assert (has Bob ?d ?thing)
+  :why    "{?a} less {?b} is {?d}, so Bob has {?d} {?thing}s left")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

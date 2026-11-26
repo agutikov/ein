@@ -1,0 +1,5 @@
+youngest: whole mode, grammar off, whole
+  step whole 11693 prompt tokens, 557 generated (end-of-turn), 15 forms; at root not decided; H from no-search (0); 2 findings; 2 markers
+  complete, --no-search: not decided
+  complete, --single: one
+  findings: wrong-count 2

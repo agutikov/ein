@@ -1,0 +1,87 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has-school A School :source "A school has 12 boxes of pencils, 144 pencils in each.")
+(has-boxes School 12 Box :source "A school has 12 boxes of pencils, 144 pencils in each.")
+(has-pencil-in-box Box 144 Pencil :source "A school has 12 boxes of pencils, 144 pencils in each.")
+(go-to-office Pencil 250 Office :source "250 pencils go to the office.")
+
+;; How many pencils does each class get, and how many are left over?
+(query :goal (and (each-class-gets Class ?n Pencil) (left-over Pencil ?r))
+  :goal-text "Each class gets {?n} pencils and {?r} are left over.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, and what the theory reads the
+;; verbs into, and the kinds.
+
+(relation has-school School School :why "a School has a School")
+(relation has-boxes School Number Box :why "a School has a Number of Boxes")
+(relation has-pencil-in-box Box Number Pencil :why "a Box has a Number of Pencils")
+(relation go-to-office Pencil Number Office :why "Pencils go to an Office")
+(relation each-class-gets Class Number Pencil :why "a Class gets a Number of Pencils")
+(relation left-over Pencil Number :why "Pencils are left over")
+
+;; The kinds, and their place.
+(type School T)
+(type Number T)
+(type Box T)
+(type Pencil T)
+(type Class T)
+(type Office T)
+
+;; What kind of thing each name is: step 1's memberships.
+(instance A School :source "A school has 12 boxes of pencils, 144 pencils in each.")
+(instance School School :source "A school has 12 boxes of pencils, 144 pencils in each.")
+(instance 12 Number :source "A school has 12 boxes of pencils, 144 pencils in each.")
+(instance Box Box :source "A school has 12 boxes of pencils, 144 pencils in each.")
+(instance 144 Number :source "A school has 12 boxes of pencils, 144 pencils in each.")
+(instance Pencil Pencil :source "250 pencils go to the office.")
+(instance 250 Number :source "250 pencils go to the office.")
+(instance Office Office :source "250 pencils go to the office.")
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (mul product-of div quot-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; missing: total pencils in school is boxes times pencils per box, asked of the calculator
+(rule total-asks-the-product ()
+  :match  (and (has-boxes ?s ?b ?box) (has-pencil-in-box ?box ?p ?pen))
+  :assert (mul ?b ?p)
+  :why    "{?s} has {?b} boxes of {?p} pencils: ask {?b} times {?p}")
+
+;; missing: total pencils in school, read back as total pencils
+(rule total-is-the-product ()
+  :match  (and (has-boxes ?s ?b ?box) (has-pencil-in-box ?box ?p ?pen) (product-of ?b ?p ?t))
+  :assert (has-pencil-in-school ?s ?t)
+  :why    "{?b} boxes of {?p} pencils make {?t} pencils")
+
+;; missing: pencils left over is total minus office, asked of the calculator
+(rule left-asks-the-difference ()
+  :match  (and (has-pencil-in-school ?s ?t) (go-to-office ?pen ?o ?off))
+  :assert (sub ?t ?o)
+  :why    "{?s} has {?t} pencils; {?pen} go to {?off}: ask {?t} less {?o}")
+
+;; missing: pencils left over, read back as left over
+(rule left-is-the-difference ()
+  :match  (and (has-pencil-in-school ?s ?t) (go-to-office ?pen ?o ?off) (diff-of ?t ?o ?l z))
+  :assert (left-over ?pen ?l)
+  :why    "{?t} less {?o} is {?l}, so {?pen} are left over")
+
+;; missing: each class gets is total divided by classes, asked of the calculator
+(rule each-asks-the-quotient ()
+  :match  (and (has-pencil-in-school ?s ?t) (each-class-gets ?c ?cl ?pen))
+  :assert (div ?t ?cl)
+  :why    "{?s} has {?t} pencils among {?cl} classes: ask {?t} divided by {?cl}")
+
+;; missing: each class gets and left over, read back as each class gets and left over
+(rule each-is-the-quotient ()
+  :match  (and (has-pencil-in-school ?s ?t) (each-class-gets ?c ?cl ?pen) (quot-of ?t ?cl ?q ?r))
+  :assert (each-class-gets ?c ?q ?r)
+  :why    "{?t} among {?cl} is {?q} each and {?r} left")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

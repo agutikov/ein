@@ -1,0 +1,40 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples.")
+(has Alice (n z 4) Apple :source "Alice has 4 apples.")
+(gave Bob (n z 2) Alice :source "He gave 2 to Alice.")
+
+;; How many apples does Bob have? How many does Alice have? How many apples do they have together?
+(query
+  :goal (and (has Bob ?b Apple) (has Alice ?a Apple) (sum-of ?b ?a ?t))
+  :goal-text "{?b} apples does Bob have. {?a} apples does Alice have. {?t} apples do they have together.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, complete as it stands.
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation gave Person Number Person :why "a {?3} gave a {?4} to a {?5}")
+(relation sum-of Number Number Number :why "a {?3} plus a {?4} is a {?5}")
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (sub diff-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; missing: the subtraction of apples given, asked of the calculator
+(rule giving-asks-the-difference ()
+  :match  (and (has ?giver ?n ?thing) (gave ?giver ?k ?receiver))
+  :assert (sub ?n ?k)
+  :why    "{?giver} has {?n} and gave {?k}: ask {?n} less {?k}")
+
+;; missing: the remainder, read back as what the giver has left
+(rule giving-is-the-difference ()
+  :match  (and (has ?giver ?n ?thing) (gave ?giver ?k ?receiver) (diff-of ?n ?k ?d z))
+  :assert (has ?giver ?d ?thing)
+  :why    "{?n} less {?k} is {?d}, so {?giver} has {?d} left")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

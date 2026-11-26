@@ -37,7 +37,7 @@ about the harness is the second kind.
 |---|---|---|
 | [Q7](answer/Q7-llm-as-surface-generator.md) | Is the surface generator (NL output) allowed to be an LLM? | **outside the research question**, parked with its working answer; the answer's own words are ruled, [Q-M2.12](answer/Q-M2.12-what-prints-the-answer.md) |
 | [Q8](formalizer/Q8-ambiguous-parses.md) | Where do ambiguous NL parses go — branched on the IR, or rejected? | [S2.4.5](../p2.4_loop/s2.4.5_alternatives_as_hypotheses.md), by experiment; the form is settled, a hypothesis `(open F)` (the user, 2026-11-25) |
-| [Q9](formalizer/Q9-ontology-provenance.md) | Per-puzzle declared ontology vs ontology inferred from text | [S2.2.4](../p2.2_formalizer/s2.2.4_passes.md) — reframed as theory *selection* |
+| [Q9](formalizer/Q9-ontology-provenance.md) | Per-puzzle declared ontology vs ontology inferred from text | [S2.2.4](../p2.2_formalizer/s2.2.4_passes.md) — reframed as theory *selection*; its default, for the user's review: B with C in the main arms (the text's vocabulary, the catalogue's theories), A the escape hatch |
 | [Q10](formalizer/Q10-direct-llm-constraint.md) | When is direct LLM → constraint emission acceptable (skip the IR)? | [P2.8](../p2.8_representations/README.md) — Stage L is this question asked properly |
 | [Q11](formalizer/Q11-link-grammar-value.md) | Does link-grammar enrich LLM input usefully, or is it dead weight? | [S2.6.4](../p2.6_ablations/s2.6.4_representation_ablations.md), by experiment |
 | [Q-M2.3](answer/Q-M2.3-what-is-the-unit-of-faithfulness-without-a-gold-theory.md) | What is the unit of faithfulness without a gold theory? | [S2.4.4](../p2.4_loop/s2.4.4_faithfulness.md) |
@@ -91,8 +91,8 @@ same topic, and what is ruled goes with the phase's folder, where `git log` keep
 | phase | its questions |
 |---|---|
 | P2.1 | none: Q-M2.18 to Q-M2.21, raised by its report, moved here open at its close, 2026-11-26, its folder deleted (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`) |
-| [P2.2](../p2.2_formalizer/README.md) | Q-M2.22, raised by the re-plan to the user's steps, Q-M2.23 and Q-M2.24, raised by S2.2.0a, Q-M2.25 and Q-M2.26, raised by S2.2.1, Q-M2.27, raised by S2.2.2, Q-M2.28 and Q-M2.29, raised by S2.2.3, and Q-M2.30, raised by S2.2.3's amendment: [its open questions](../p2.2_formalizer/open_questions/README.md) |
+| [P2.2](../p2.2_formalizer/README.md) | Q-M2.22, raised by the re-plan to the user's steps, Q-M2.23 and Q-M2.24, raised by S2.2.0a, Q-M2.25 and Q-M2.26, raised by S2.2.1, Q-M2.27, raised by S2.2.2, Q-M2.28 and Q-M2.29, raised by S2.2.3, Q-M2.30, raised by S2.2.3's amendment, and Q-M2.31 and Q-M2.32, raised by S2.2.4: [its open questions](../p2.2_formalizer/open_questions/README.md) |
 | [P2.2b](../p2.2b_guided_thinking/README.md) | none yet: planned, not started; its design questions, each with its default, are in [its README](../p2.2b_guided_thinking/README.md#design-questions-each-with-its-default) |
 | [P2.3](../p2.3_benchmark/README.md) to [P2.10](../p2.10_result_artifact_demo/README.md) | none yet |
 
-**The next free id is Q-M2.31.**
+**The next free id is Q-M2.33.**

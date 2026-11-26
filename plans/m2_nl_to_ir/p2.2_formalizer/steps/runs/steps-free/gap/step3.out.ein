@@ -1,0 +1,8 @@
+;; missing: the sum, read back as what they have together
+(rule together-is-the-sum ()
+  :match  (and (sum-of ?a ?b ?s))
+  :assert (sum-of ?a ?b ?s)
+  :why    "{?a} plus {?b} is {?s}")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

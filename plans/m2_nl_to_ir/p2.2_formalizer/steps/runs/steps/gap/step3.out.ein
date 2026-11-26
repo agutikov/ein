@@ -1,0 +1,14 @@
+;; missing: the sum of the two quantities, asked of the calculator
+(rule apples-asks-the-sum ()
+  :match  (and (has ?p ?a ?t) (gave ?p ?b ?r))
+  :assert (add ?a ?b)
+  :why    "{?p} has {?a} and gave {?b}: ask {?a} plus {?b}")
+
+;; missing: the sum, read back as what they have together
+(rule apples-is-the-sum ()
+  :match  (and (has ?p ?a ?t) (gave ?p ?b ?r) (sum-of ?a ?b ?s))
+  :assert (has (sum-of ?a ?b ?s) ?t ?r)
+  :why    "{?a} and {?b} make {?s}, which they have together")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

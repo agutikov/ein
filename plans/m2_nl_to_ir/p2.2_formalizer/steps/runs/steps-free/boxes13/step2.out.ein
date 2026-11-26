@@ -1,0 +1,23 @@
+;; The ontology, whole: step 1's declarations, complete as it stands.
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation holds Thing Number :why "a {?3} holds a {?4}")
+(relation need-boxes Person Person Number :why "a {?3} and a {?4} need a {?5} boxes")
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; A request (add X Y) is answered by (sum-of X Y S): a rule states the
+;; request and another reads the result back.
+(rule total-asks-the-sum ()
+  :match  (and (has Bob ?a) (has Alice ?b))
+  :assert (add ?a ?b)
+  :why    "Bob has {?a} and Alice {?b}: ask {?a} plus {?b}")
+(rule total-is-the-sum ()
+  :match  (and (has Bob ?a) (has Alice ?b) (sum-of ?a ?b ?s))
+  :assert (need-boxes Bob Alice ?s)
+  :why    "{?a} and {?b} make {?s} apples: they need {?s} boxes")
+
+(query :goal (need-boxes Bob Alice ?n) :goal-text "They need {?n} boxes.")
+(solve :no-search)

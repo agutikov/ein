@@ -1,0 +1,5 @@
+seating: whole mode, grammar on, whole
+  step whole 11720 prompt tokens, 623 generated (end-of-turn), 33 forms; at root inconsistent; H from stuck (0); 5 findings
+  complete, --no-search: inconsistent
+  complete, --single: inconsistent
+  findings: selection-inactive 2, undeclared 3

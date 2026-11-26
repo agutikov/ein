@@ -1,0 +1,14 @@
+;; missing: the subtraction of apples given, asked of the calculator
+(rule giving-asks-the-difference ()
+  :match  (and (has ?giver ?n ?thing) (gave ?giver ?k ?receiver))
+  :assert (sub ?n ?k)
+  :why    "{?giver} has {?n} and gave {?k}: ask {?n} less {?k}")
+
+;; missing: the remainder, read back as what the giver has left
+(rule giving-is-the-difference ()
+  :match  (and (has ?giver ?n ?thing) (gave ?giver ?k ?receiver) (diff-of ?n ?k ?d z))
+  :assert (has ?giver ?d ?thing)
+  :why    "{?n} less {?k} is {?d}, so {?giver} has {?d} left")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

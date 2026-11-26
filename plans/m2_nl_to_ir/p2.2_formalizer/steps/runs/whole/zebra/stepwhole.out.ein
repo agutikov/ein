@@ -1,0 +1,1087 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(instance House-1 House)
+(instance House-2 House)
+(instance House-3 House)
+(instance House-4 House)
+(instance House-5 House)
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-5 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+(source-instance House-1 :source "The Norwegian lives in the first house.")
+
+(source-instance

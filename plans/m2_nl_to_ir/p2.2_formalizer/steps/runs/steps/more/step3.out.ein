@@ -1,0 +1,8 @@
+;; missing: the difference, read back as the surplus of the one with more
+(rule more-is-the-difference ()
+  :match  (and (has ?who-more ?a ?thing) (has ?who-less ?b ?thing) (sub ?a ?b))
+  :assert (has ?who-more (sub ?a ?b) ?thing)
+  :why    "{?who-more} has {?a} and {?who-less} has {?b}: {?who-more} has {?a} less {?b}, so {?who-more} has more")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

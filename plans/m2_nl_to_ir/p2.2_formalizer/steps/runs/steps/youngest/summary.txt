@@ -1,0 +1,7 @@
+youngest: steps mode, grammar on, whole
+  step 1     4628 prompt tokens, 127 generated (end-of-turn), 5 forms; at root not decided; H from blind (7); 0 findings
+  step 2     11571 prompt tokens, 12288 generated (max-tokens), 13 forms; at root not decided; H from blind (1103); 4 findings
+  step 3     24508 prompt tokens, 254 generated (end-of-turn), 9 forms; at root not decided; H from no-search (0); 4 findings
+  complete, --no-search: not decided
+  complete, --single: one
+  findings: undeclared 4

@@ -1,0 +1,44 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(is-older-than Ann Bob :source "Ann is older than Bob.")
+(is-older-than Bob Cy  :source "Bob is older than Cy.")
+
+;; Who is the youngest?
+(query :goal (is-older-than ?y Ann) :goal-text "{?y} is the youngest.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, and what the theory reads the
+;; verbs into, and the kinds.
+
+(relation instance    T T          :why "{?3} is a {?4}")
+(relation type        T T          :why "{?3} is a kind of {?4}")
+(relation is-older-than Person Person :why "a {?3} is older than a {?4}")
+
+;; What kind of thing each name is: step 1's memberships.
+(instance Ann Person :source "Ann is older than Bob.")
+(instance Bob Person :source "Bob is older than Cy.")
+(instance Cy Person  :source "Bob is older than Cy.")
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (sub diff-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; missing: an age younger by some years is the other age less those years, asked of the calculator
+(rule younger-asks-the-difference ()
+  :match  (and (is-older-than ?o ?k ?y) (is-older-than ?y ?k ?o))
+  :assert (sub ?o ?k)
+  :why    "{?o} is older than {?y} by {?k}: ask {?o} less {?k}")
+
+;; missing: the difference, read back as the youngest one's age
+(rule youngest-is-the-difference ()
+  :match  (and (is-older-than ?o ?k ?y) (is-older-than ?y ?k ?o) (diff-of ?o ?k ?d z))
+  :assert (is-older-than ?y ?d)
+  :why    "{?o} is older than {?y} by {?k}, so {?y} is {?d} years old")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

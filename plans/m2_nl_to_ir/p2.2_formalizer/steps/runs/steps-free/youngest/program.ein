@@ -1,0 +1,77 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(is-older-than Ann Bob :source "Ann is older than Bob.")
+(is-older-than Bob Cy  :source "Bob is older than Cy.")
+
+;; Who is the youngest?
+(query :goal (is-youngest ?who) :goal-text "{?who} is the youngest.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, completed with the theory's
+;; relations and kinds.
+
+(relation is-older-than Person Person :why "a {?3} is older than a {?4}")
+(relation is-youngest Person :why "{?3} is the youngest")
+(relation is-younger-than Person Person :why "a {?3} is younger than a {?4}")
+(relation is-older-than-or-equal Person Person :why "a {?3} is older than or equal to a {?4}")
+(relation is-younger-than-or-equal Person Person :why "a {?3} is younger than or equal to a {?4}")
+
+;; The kinds.
+(type Person Attribute)
+
+;; What kind of thing each name is: step 1's memberships.
+(instance Ann Person :source "Ann is older than Bob.")
+(instance Bob Person :source "Bob is older than Cy.")
+(instance Cy Person :source "Bob is older than Cy.")
+
+;; The theory: the ordering of persons, from the library.
+(import std.algebra :symbols (symmetric converse top meet))
+(import std.math.decimal-arith :symbols (cmp cmp-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; Ann is older than Bob, Bob is older than Cy.
+(is-older-than Ann Bob)
+(is-older-than Bob Cy)
+
+;; The ordering is transitive.
+(transitive is-older-than)
+
+;; The ordering is asymmetric: if A is older than B, B is not older than A.
+(converse is-older-than is-younger-than)
+
+;; Ann is older than Cy (transitivity).
+(meet is-older-than is-older-than is-younger-than)
+
+;; Ann is older than or equal to Cy.
+(top is-older-than-or-equal instance Person Person)
+
+;; Ann is older than Bob, so Ann is not younger than Bob.
+(functional is-younger-than)
+
+;; Ann is older than Cy, so Ann is not younger than Cy.
+(injective is-younger-than)
+
+;; The youngest is the one who is not older than anyone.
+;; This is derived from the fact that Ann is older than Bob and Cy,
+;; and Bob is older than Cy. Thus, Cy is the youngest.
+;; We need a rule to find the youngest.
+(rule youngest-is-not-older-than-anyone ()
+  :match  (and (person ?p) (absent (is-older-than ?p ?q)))
+  :assert (is-youngest ?p)
+  :why    "{?p} is the youngest.")
+
+(query :goal (is-youngest ?who) :goal-text "{?who} is the youngest.")
+(solve :no-search)
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; The read-back that makes the answer query answerable.
+;; The youngest is the one who is not older than anyone.
+;; We need a rule to find the youngest.
+(rule youngest-is-not-older-than-anyone ()
+  :match  (and (person ?p) (absent (is-older-than ?p ?q)))
+  :assert (is-youngest ?p)
+  :why    "{?p} is the youngest.")

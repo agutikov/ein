@@ -15,6 +15,11 @@
 
 Confirmed by S2.2.2, 2026-11-26, on the first programs a model wrote with no grammar: `library.off.bob1` and `library.off.more` of [the probe's record](../../p2.2_formalizer/model_runtime/README.md) conclude `has-more`, which they never declare, and load; the contract's check, not the kernel, is what would say so. And a name of two words written with a space is two arguments: the model's step 1 of the Zebra puzzle (`step1.off.zebra`) writes `(owns Old Gold snails)` and `(drinks Lucky Strike orange)` beside `(relation owns Person Thing …)`, two facts at a count no declaration has, which load in silence: no rule and no query of the program reads them.
 
+Confirmed by S2.2.4, 2026-11-26, under the steps' grammars and in one call: the contract's check finds a fact or a
+pattern of a relation the program does not declare, or at another count, in 4 of the 16 complete programs of the
+steps and 10 of the 15 of the one call, both under a grammar ([S2.2.4's record](../../p2.2_formalizer/steps/README.md), `undeclared` and
+`wrong-count`); every one loaded.
+
 ## What it costs the application
 
 a model's misspelt relation or dropped argument is no diagnostic: the first rung of the feedback ladder has little to say

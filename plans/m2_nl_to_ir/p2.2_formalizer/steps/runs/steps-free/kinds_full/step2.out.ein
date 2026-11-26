@@ -1,0 +1,8 @@
+;; The ontology, whole: step 1's, complete as it stands.
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation sum-of-apples Person Person Number :why "a {?3} and a {?4} have a {?5} apples together")
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))

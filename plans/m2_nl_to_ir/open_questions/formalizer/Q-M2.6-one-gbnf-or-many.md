@@ -59,3 +59,13 @@ parser's second reader. Each is carried inside the fence the prompt asks for, be
 **What would have reversed it**, by S2.2.3's terms: the probe finding no error a step's grammar removes and the whole
 one does not (it found three kinds), or a step's grammar costing more to build a call than it saves (under a
 millisecond). Neither held. Left open for the user.
+
+**What S2.2.4's runs measured** (2026-11-26, [its report § 9](../../p2.2_formalizer/steps/README.md#9-with-no-grammar)),
+the steps under their grammars against the same requests with no grammar, qwen3.5:4b, thinking off, greedy: a step's
+grammar changed a generation only where it refused a token (6 of 16 texts' three steps byte for byte the free runs');
+where it refused, it kept out of the programs 11 activating facts under a name the import does not list, 7 `:source`
+that are no sentence and 3 second answer queries, and four programs from a refusal (14 load against 11); and it sent
+7 of 49 calls into a loop to the budget that the free runs did not enter
+([L-M2.19](../../p2.2_formalizer/findings/model/L-M2.19-a-grammar-s-refusal-sends-greedy-decoding-into-a-loop-it-does-not-enter-free.md)).
+The answers were the same with and without. The whole grammar's root, in one call, refused a token in 2 calls of 16.
+The default, *many*, stands.

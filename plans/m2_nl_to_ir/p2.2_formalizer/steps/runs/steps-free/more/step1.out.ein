@@ -1,0 +1,11 @@
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples.")
+(has Alice (n z 12) Apple :source "Alice has 12 apples.")
+
+;; Who has more apples, and by how many?
+(query
+  :goal (and (has ?who-more (n ?diff) Apple) (gt (n ?who-more 1) (n ?who-less 1)))
+  :goal-text "{?who-more} has more apples, and by {?diff}.")
+
+;; The ontology, partial.
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")

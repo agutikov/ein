@@ -1,0 +1,5 @@
+more: whole mode, grammar on, whole
+  step whole 11704 prompt tokens, 113 generated (end-of-turn), 3 forms; at root invalid; H from none (0); 0 findings
+  complete, --no-search: invalid
+  complete, --single: invalid
+  findings: none

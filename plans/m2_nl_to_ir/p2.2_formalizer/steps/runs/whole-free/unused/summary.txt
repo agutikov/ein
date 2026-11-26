@@ -1,0 +1,11 @@
+unused: whole mode, grammar off, whole
+  step whole 11721 prompt tokens, 694 generated (end-of-turn), 25 forms; at root not decided; H from no-search (0); 4 findings; 2 markers
+  complete, --no-search: not decided
+    Bob has (n z 1) apples.
+    Bob has (n z 3) apples.
+    Bob has (n z 5) apples.
+  complete, --single: one
+    Bob has (n z 1) apples.
+    Bob has (n z 3) apples.
+    Bob has (n z 5) apples.
+  findings: source-not-a-sentence 4

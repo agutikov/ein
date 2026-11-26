@@ -1,0 +1,29 @@
+# L-M2.17 — An output the budget cuts under a grammar does not parse, and ends the run
+
+**Status:** open
+**Found:** by S2.2.4, 2026-11-26, in its runs of the steps with the model (`7aaefe6f`)
+**Owner:** [S2.2.5](../../s2.2.5_from_text.md), whose command reads a step's output; and the loop,
+[P2.4](../../../p2.4_loop/README.md)
+
+## What
+
+**A grammar holds every token to a text that can still become a program; it does not end one at the budget.** A
+generation that repeats a form, a premise or a comment until its budget of generated tokens stops mid-form, inside
+the fence, and what it wrote does not parse: *unexpected end of input, repair: Insert `)`*. The stage's plan said a
+reply that does not parse under a grammar is a bug of the grammar; these are not: every token was the grammar's, and
+the text is a prefix of one it allows. In S2.2.4's runs under the steps' grammars: `boxes12`'s step 3 (a rule whose
+`:match` repeats `(sum-of ?a ?b ?t)` and a numeral to the budget) and the one call on the Zebra puzzle (the fact
+`(source-instance House-1 :source "The Norwegian lives in the first house.")` written 718 times from the output's ninth line
+to the budget of 12 288, after five memberships of the houses). A step's output that does not parse ends the run ([`einaf::formalize`](../../../../../einaf/src/formalize.rs)),
+and where it is step 3's, the program of steps 1 and 2 is the complete one.
+
+## Evidence
+
+[S2.2.4's record](../../steps/README.md): `runs/steps/boxes12/step3.out.ein` and `runs/whole/zebra/stepwhole.out.ein`,
+each 12 288 tokens, the stop `max-tokens`, the parse's one error at the text's end.
+
+## What it costs
+
+A call's whole budget, and the forms the output did write before the loop: a reader that took the output up to its
+last complete form would have them, a program less the loop's last form. No reader does today; it is a choice of
+the command's, which S2.2.5 makes, recorded as a default.

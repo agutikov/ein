@@ -1,0 +1,6 @@
+zebra: whole mode, grammar off, whole
+  step whole 11852 prompt tokens, 12288 generated (max-tokens), does not parse: step whole:9:9: unexpected `"There are five houses."`: a string
+  note: "There are five houses." is a string, and a string is natural-language text, written only after :why, :source or :goal-text: write a name bare
+  repair: Delete `"There are five houses."`
+  repair: Insert `:source`
+  stopped: the output does not parse, or is empty

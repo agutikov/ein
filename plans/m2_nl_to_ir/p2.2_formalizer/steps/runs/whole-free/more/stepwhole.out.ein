@@ -1,0 +1,9 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has Bob (n z 5) :source "Bob has 5 apples.")
+(has Alice (n z 12) :source "Alice has 12 apples.")
+
+;; Who has more apples, and by how many?
+(query :goal (and (has-more Alice Bob ?d) (has-more Bob Alice z))
+  :goal-text "{?d} is the difference.")

@@ -29,3 +29,10 @@ count), on step 2's program as on every step's.
 
 **What bears on it.** How often a model's step 2 writes a fact its own declarations do not match, which S2.2.4's runs
 of step 2 measure; the cost of a call, which the speeds put at the prompt's evaluation and the generation alone.
+
+**What S2.2.4's runs measured** ([its report](../../steps/README.md), the condition `steps`): with the default, step
+2's ontology open in its grammar and the check after it, three of the sixteen texts' step 2 wrote facts of a relation
+its own declarations do not have: 14 memberships and kinds, `(instance Ann Person …)` and `(type Person Attribute)`
+with no `instance` or `type` declared (`youngest`, `boxes13`, `pencils`), each found by the check (`undeclared`, from
+step 1's reading of a fact) and loaded by the kernel in silence. The other thirteen declared every relation their step
+2 wrote. The default stands.

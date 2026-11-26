@@ -1,0 +1,19 @@
+;; The statements, in the text's own words.
+
+(instance Ann Chair :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Bob Chair :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Cy Chair :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance First Chair :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Middle Chair :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Third Chair :source "Ann, Bob and Cy sit in a row of three chairs.")
+
+(sits Ann Bob :source "Ann sits next to Bob.")
+(sits Cy First :source "Cy does not sit in the first chair.")
+(sits Bob Middle :source "Bob does not sit in the middle chair.")
+
+;; Who sits in the first chair?
+(query :goal (sits ?who First) :goal-text "{?who} sits in the first chair.")
+
+;; The ontology, partial.
+
+(relation sits Person Chair :why "a {?3} sits in a {?4}")

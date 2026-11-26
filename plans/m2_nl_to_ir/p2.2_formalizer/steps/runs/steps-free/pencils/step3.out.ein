@@ -1,0 +1,22 @@
+;; The read-back that makes the answer query answerable.
+;; A school has boxes of pencils: the school has the boxes, and the boxes
+;; have the pencils.
+(top has instance)
+(meet has has)
+
+;; Pencils go to the office: the pencils go to the office, and the office
+;; receives the pencils (inverse of go-to-office).
+(top go-to-office inverse-of-office)
+(meet go-to-office inverse-of-office)
+
+;; Pencils are shared among classes: the pencils are shared among the classes,
+;; and the classes receive the pencils (inverse of shared).
+(top shared inverse-of-shared)
+(meet shared inverse-of-shared)
+
+;; There are pencils: the pencils exist, and the count refers to them.
+(top count inverse-of-count)
+(meet count inverse-of-count)
+
+;; The hypothesis mechanism: the calculator's division rule provides the
+;; quotient and remainder.

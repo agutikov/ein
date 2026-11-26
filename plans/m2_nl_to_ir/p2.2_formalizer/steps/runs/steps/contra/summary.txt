@@ -1,0 +1,9 @@
+contra: steps mode, grammar on, whole
+  step 1     4636 prompt tokens, 142 generated (end-of-turn), 5 forms; at root not decided; H from blind (0); 0 findings
+  step 2     11589 prompt tokens, 122 generated (end-of-turn), 5 forms; at root not decided; H from blind (0); 0 findings
+  step 3     12351 prompt tokens, 218 generated (end-of-turn), 3 forms; at root not decided; H from no-search (0); 0 findings; 2 markers
+  complete, --no-search: not decided
+    Bob has (n z 5) apples.
+  complete, --single: one
+    Bob has (n z 5) apples.
+  findings: none

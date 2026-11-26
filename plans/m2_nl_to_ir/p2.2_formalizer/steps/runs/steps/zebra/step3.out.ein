@@ -1,0 +1,27 @@
+;; The read-back that makes the answer query answerable. Where a value is,
+;; in the verb of its kind: a person lives in the house it shares, owns
+;; what it owns, drinks what it drinks, smokes what it smokes, and is
+;; a member of the house it shares.
+(top  smoker-and-house instance Smoker House)
+(top  drinker-and-house instance Drinker House)
+(top  owner-and-house instance Owner House)
+(top  color-and-house instance Color House)
+(top  thing-and-house instance Thing House)
+(meet same-house smoker-and-house smokes)
+(meet same-house drinker-and-house drinks)
+(meet same-house owner-and-house owns)
+(meet same-house color-and-house lives-in)
+(meet same-house thing-and-house has)
+
+;; A verb and its passive are converses, and a verb of a person goes through
+;; the house the person lives in: a person smokes what is smoked in their
+;; house, drinks what is drunk in their house, owns what they own, and lives
+;; in the house they share.
+(converse smokes smoker-and-house)
+(converse drinks drinker-and-house)
+(converse owns owner-and-house)
+(converse lives-in smoker-and-house)
+
+;; The hypothesis mechanism: the obligations of the theory step 2 selected.
+;; The program states no other mechanism.
+(solve :no-search)

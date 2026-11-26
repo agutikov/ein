@@ -1,0 +1,12 @@
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple)
+(has Bob (n z 2) Pear)
+(has Alice (n z 3) Apple)
+(has Alice (n z 4) Pear)
+
+;; How many apples do they have together?
+(query :goal (sum-of-apples Bob Alice ?n) :goal-text "They have {?n} apples together.")
+
+;; The ontology, partial.
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation sum-of-apples Person Person Number :why "a {?3} and a {?4} have a {?5} apples together")

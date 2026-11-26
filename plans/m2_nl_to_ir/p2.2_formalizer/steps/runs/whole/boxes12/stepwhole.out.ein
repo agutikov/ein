@@ -1,0 +1,61 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples.")
+(has Alice (n z 7) Apple :source "Alice has 7.")
+(holds Box (n z 3) :source "A box holds 3.")
+
+;; How many boxes do they need?
+(query :goal (need-boxes Bob Alice ?n) :goal-text "They need {?n} boxes.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, and what the theory reads the
+;; verbs into, and the kinds.
+
+(relation has Person Number Thing :why "a {?3} has a {?4} of a {?5}s")
+(relation holds Thing Number :why "a {?3} holds {?4}")
+(relation need-boxes Person Person Number :why "a {?3} and a {?4} need {?5} boxes")
+
+;; The kinds, and their place.
+(type Apple Thing)
+(type Box Thing)
+
+;; What kind of thing each name is: step 1's memberships.
+(instance Bob Person)
+(instance Alice Person)
+(instance Box Box)
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (div quot-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; missing: the total number of apples is the sum of what Bob has and what Alice has
+(rule apples-asks-the-sum ()
+  :match  (and (has Bob ?a) (has Alice ?b))
+  :assert (add ?a ?b)
+  :why    "Bob has {?a} and Alice {?b}: ask {?a} plus {?b}")
+
+;; missing: the total number of apples is the sum of what Bob has and what Alice has, read back
+(rule apples-is-the-sum ()
+  :match  (and (has Bob ?a) (has Alice ?b) (add ?a ?b ?t))
+  :assert (has Bob ?t)
+  :why    "{?a} plus {?b} is {?t}, so they have {?t} apples")
+
+;; missing: the number of boxes needed is the total apples divided by what a box holds
+(rule boxes-asks-the-quotient ()
+  :match  (and (has Bob ?t) (holds Box ?h))
+  :assert (div ?t ?h)
+  :why    "They have {?t} apples and a box holds {?h}: ask {?t} divided by {?h}")
+
+;; missing: the quotient, read back as the number of boxes needed
+(rule boxes-is-the-quotient ()
+  :match  (and (has Bob ?t) (holds Box ?h) (quot-of ?t ?h ?n ?r))
+  :assert (need-boxes Bob Alice ?n)
+  :why    "{?t} divided by {?h} is {?n} with {?r} left, so they need {?n} boxes")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

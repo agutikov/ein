@@ -1,6 +1,6 @@
 # L-M2.6 — The bounded call returns no writer of H
 
-**Status:** open
+**Status:** closed by S2.2.4 (`7aaefe6f`): `einaf::kernel::root` returns the writer of H, and a run of the steps records it
 **Found:** by S2.2.1, 2026-11-26, writing the contract's tests of the steps by hand
 **Owner:** the stage that builds the record or the contract's check, S2.2.4 or S2.2.5 (the record's field), with
 [E-39](../../../evaluation/hypotheses/E-39-the-answer-does-not-say-who-wrote-the-candidates.md) the kernel's side
@@ -25,3 +25,14 @@ feedback object's schema stays as it was.
 A record of a model's run cannot hold the writer until `einaf::kernel` returns it: either a key of the feedback
 object (one more saturation of root a call, under the call's bounds) or a value of the library's read-out (a change
 of Ein's API, which Q-M2.16 allows as a feature).
+
+## How it was closed
+
+`einaf::kernel::root` builds root and H as `ein show hyps` builds them (`ein_infer::structure::hypotheses_with`, a
+public function of Ein's), under the call's bounds through `ein_infer::saturator::bounded`, and returns the writer of
+H the kernel reports, H's size, whether root is dead and the static check's verdict, with root's narration, every
+`fire` and `owe` line, as values; root is saturated a second time beside the bounded call, which is the price the
+finding named. No file of Ein changed and the feedback object's schema is unchanged: a run of the steps keeps the
+writer beside each step's feedback (`steps[].judged.root.writer`). EinAf's test
+`the_writer_of_h_the_kernel_module_reads_is_ein_show_hyps` holds it to `ein show hyps` on the 21 programs of
+`einaf/contract/`; the contract's other tests still read the candidates' texts off the binary.

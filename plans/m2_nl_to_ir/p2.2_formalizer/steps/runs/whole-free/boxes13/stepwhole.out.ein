@@ -1,0 +1,53 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples.")
+(has Alice (n z 8) Apple :source "Alice has 8.")
+(holds Box (n z 3) :source "A box holds 3.")
+
+;; How many boxes do they need?
+(query :goal (need-boxes Bob Alice ?n) :goal-text "They need {?n} boxes.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, and what the theory reads the
+;; verbs into, and the kinds.
+
+(relation instance    T T          :why "{?3} is a {?4}")
+(relation type        T T          :why "{?3} is a kind of {?4}")
+(relation has         Person Number :why "a {?3} has a {?4}")
+(relation holds       Thing Number :why "a {?3} holds a {?4}")
+(relation need-boxes Person Person :why "a {?3} and a {?4} need a {?5} boxes")
+
+;; The kinds, and their place.
+(type Number T)
+(type Apple T)
+(type Box T)
+(type Person T)
+
+;; What kind of thing each name is: step 1's memberships.
+(instance Bob Person :source "Bob has 5 apples.")
+(instance Alice Person :source "Alice has 8.")
+(instance Box Box :source "A box holds 3.")
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (div quot-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; missing: the total apples needed, asked of the calculator
+(rule total-apples-asks-the-sum ()
+  :match  (and (has ?p1 ?a) (has ?p2 ?b))
+  :assert (add ?a ?b)
+  :why    "{?p1} has {?a} and {?p2} has {?b}: ask {?a} plus {?b}")
+
+;; missing: the total apples, read back as the number of boxes
+(rule total-apples-is-the-quotient ()
+  :match  (and (has ?p1 ?a) (has ?p2 ?b) (add ?a ?b ?total) (holds ?box ?cap))
+  :assert (div ?total ?cap)
+  :why    "{?a} and {?b} make {?total}. {?box} holds {?cap}. {?total} divided by {?cap} is the number of boxes")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

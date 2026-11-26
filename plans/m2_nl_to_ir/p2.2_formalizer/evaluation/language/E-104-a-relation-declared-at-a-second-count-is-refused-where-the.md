@@ -26,6 +26,12 @@ declared-at-two-counts.ein` exits 0 with the one class `(likes Ann Tea)`; `ein s
 declared-at-two-counts-with-an-import.ein`, the same file and `(import std.algebra)`, exits 1 with the line above.
 `ein-cli/tests/declared_counts.rs`, which holds the decision, has no import in its programs.
 
+Confirmed by S2.2.4, 2026-11-26, at one count: the model's `unused`, step 1, declares `(relation has Person Number
+Thing …)` and `(relation has Person Number Box …)`, two label lists at one count; step 1's program, with no import,
+loads; step 2's, which imports the calculator, is refused, *conflicting definitions of 'has': same name, different
+body* ([S2.2.4's record](../../steps/README.md), `runs/steps/unused/`). The de-duplication is keyed on the name alone,
+whatever the count.
+
 ## What it costs the application
 
 `examples/zebra3.2.ein` writes `the` at two counts, `(the Red House)` and `(the Coffee (is drunk in) House)`, and

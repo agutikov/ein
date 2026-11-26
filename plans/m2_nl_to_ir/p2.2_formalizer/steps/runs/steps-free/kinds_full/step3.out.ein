@@ -1,0 +1,14 @@
+;; missing: the sum of apples, asked of the calculator
+(rule apples-asks-the-sum ()
+  :match  (and (has ?p1 ?n1 Apple) (has ?p2 ?n2 Apple))
+  :assert (add ?n1 ?n2)
+  :why    "{?p1} has {?n1} and {?p2} has {?n2}: ask {?n1} plus {?n2}")
+
+;; missing: the sum, read back as the total apples
+(rule apples-is-the-sum ()
+  :match  (and (has ?p1 ?n1 Apple) (has ?p2 ?n2 Apple) (sum-of-apples ?p1 ?p2 ?s))
+  :assert (sum-of ?n1 ?n2 ?s)
+  :why    "{?n1} plus {?n2} is {?s}, so {?p1} and {?p2} have {?s} apples together")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

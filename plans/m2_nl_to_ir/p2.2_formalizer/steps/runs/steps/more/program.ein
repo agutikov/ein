@@ -1,0 +1,31 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples.")
+(has Alice (n z 12) Apple :source "Alice has 12 apples.")
+
+;; Who has more apples, and by how many?
+(query
+  :goal (and (has ?who-more (n ?diff) Apple) (gt (n ?who-more 1) (n ?who-less 1)))
+  :goal-text "{?who-more} has more apples, and by {?diff}.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's, complete as it stands.
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (sub diff-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; missing: the difference, read back as the surplus of the one with more
+(rule more-is-the-difference ()
+  :match  (and (has ?who-more ?a ?thing) (has ?who-less ?b ?thing) (sub ?a ?b))
+  :assert (has ?who-more (sub ?a ?b) ?thing)
+  :why    "{?who-more} has {?a} and {?who-less} has {?b}: {?who-more} has {?a} less {?b}, so {?who-more} has more")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

@@ -1,0 +1,5 @@
+bystander: whole mode, grammar on, whole
+  step whole 11708 prompt tokens, 558 generated (end-of-turn), 19 forms; at root inconsistent; H from no-search (0); 8 findings; 2 markers
+  complete, --no-search: inconsistent
+  complete, --single: inconsistent
+  findings: number-as-name 1, undeclared 7

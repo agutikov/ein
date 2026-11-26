@@ -1,0 +1,7 @@
+kinds: steps mode, grammar off, whole
+  step 1     4637 prompt tokens, 155 generated (end-of-turn), 5 forms; at root not decided; H from blind (0); 3 findings
+  step 2     11603 prompt tokens, 123 generated (end-of-turn), 5 forms; at root invalid; H from none (0); 0 findings
+  step 3     12365 prompt tokens, 106 generated (end-of-turn), 1 forms; at root invalid; H from none (0); 0 findings; 1 markers
+  complete, --no-search: invalid
+  complete, --single: invalid
+  findings: none

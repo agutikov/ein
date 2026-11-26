@@ -1,0 +1,12 @@
+;; missing: the remainder of the subtraction, read back as what Bob has left
+(rule giving-asks-the-difference ()
+  :match  (and (gave ?giver ?k ?receiver) (has ?giver ?a ?thing))
+  :assert (sub ?a ?k)
+  :why    "{?giver} had {?a} and gave {?k} to {?receiver}: ask {?a} less {?k}")
+(rule giving-is-the-difference ()
+  :match  (and (gave ?giver ?k ?receiver) (has ?giver ?a ?thing) (diff-of ?a ?k ?d z))
+  :assert (has ?giver ?d ?thing)
+  :why    "{?a} less {?k} is {?d}, so {?giver} has {?d} {?thing}s left")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

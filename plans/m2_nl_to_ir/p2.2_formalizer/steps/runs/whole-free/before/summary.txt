@@ -1,0 +1,11 @@
+before: whole mode, grammar off, whole
+  step whole 11702 prompt tokens, 497 generated (end-of-turn), 11 forms; at root not decided; H from no-search (0); 0 findings; 2 markers
+  complete, --no-search: not decided
+    Bob had (n z 1) apples before.
+    Bob had (n z 3) apples before.
+    Bob had (n z 5) apples before.
+  complete, --single: one
+    Bob had (n z 1) apples before.
+    Bob had (n z 3) apples before.
+    Bob had (n z 5) apples before.
+  findings: none

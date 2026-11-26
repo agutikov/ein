@@ -1,0 +1,5 @@
+kinds: whole mode, grammar off, whole
+  step whole 11702 prompt tokens, 483 generated (end-of-turn), 11 forms; at root not decided; H from no-search (0); 3 findings; 1 markers
+  complete, --no-search: not decided
+  complete, --single: one
+  findings: answer-in-template 1, source-not-a-sentence 2

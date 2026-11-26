@@ -1,0 +1,51 @@
+;; ---- the whole program, in one call
+
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples.")
+(has Bob (n z 2) Pear  :source "Bob has 2 pears.")
+(has Alice (n z 3) Apple :source "Alice has 3 apples.")
+(has Alice (n z 4) Pear  :source "Alice has 4 pears.")
+
+;; How many apples do they have together?
+(query :goal (have-together (n z 8) Apple) :goal-text "They have (n z 8) apples together.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, and what the theory reads the
+;; verbs into, and the kinds.
+
+(relation has     Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation have-together Number Thing :why "they have {?3} of {?4}s together")
+
+;; The kinds, and their place.
+(type Apple Thing)
+(type Pear  Thing)
+
+;; What kind of thing each name is: step 1's memberships.
+(instance Bob Person)
+(instance Alice Person)
+(instance Apple Thing)
+(instance Pear  Thing)
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; missing: a request (add X Y) is answered by (sum-of X Y S): a rule states
+;; the request and another reads the result back.
+(rule apples-asks-the-sum ()
+  :match  (and (has Bob ?a Apple) (has Alice ?b Apple))
+  :assert (add ?a ?b)
+  :why    "Bob has {?a} and Alice {?b}: ask {?a} plus {?b}")
+(rule apples-is-the-sum ()
+  :match  (and (has Bob ?a Apple) (has Alice ?b Apple) (sum-of ?a ?b ?s))
+  :assert (have-together ?s Apple)
+  :why    "{?a} and {?b} make {?s}")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

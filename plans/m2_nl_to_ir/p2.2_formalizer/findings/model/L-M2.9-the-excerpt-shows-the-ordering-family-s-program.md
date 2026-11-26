@@ -1,6 +1,6 @@
 # L-M2.9 — The excerpt v1 shows the ordering family's program, so the probe's `youngest` runs break the family rule
 
-**Status:** open
+**Status:** closed by S2.2.4 (`7aaefe6f`): the steps' excerpt, v2, shows a family no text of the phase is of
 **Found:** by S2.2.2, 2026-11-26, reading the first output of the probe's `library.off.youngest` after the plan was
 committed (`1be58a36`)
 **Owner:** [S2.2.4](../../s2.2.4_passes.md), which builds the prompts on the excerpt
@@ -25,3 +25,10 @@ memberships `(person …)` it reads left out, so the answer query has no row.
 
 Four runs of the probe are not measurements under the family rule. The excerpt's next version illustrates its
 forms with a text of no family the probe or the benchmark asks about.
+
+## How it was closed
+
+`einaf/prompts/ein-excerpt.v2.md`, which every request of the steps holds, illustrates facts, rules and the
+library with a kinship (`is-parent-of`, `is-grandparent-of`, an ancestor by `includes` and `transitive`) and the
+calculator with a product of rows and seats: no family of the phase's texts or of the benchmark's eight. The probe's
+four `youngest` runs stay as recorded, under v1, reported apart.

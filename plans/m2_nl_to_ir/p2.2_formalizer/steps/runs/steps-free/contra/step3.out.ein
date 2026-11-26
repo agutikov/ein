@@ -1,0 +1,13 @@
+;; missing: the amount left after giving is the initial amount less the given amount, asked of the calculator
+(rule giving-asks-the-difference ()
+  :match  (and (has ?who ?a ?thing) (gave ?who ?k ?to))
+  :assert (sub ?a ?k)
+  :why    "{?who} had {?a} and gave {?k}: ask {?a} less {?k}")
+;; missing: the difference, read back as what remains
+(rule giving-is-the-difference ()
+  :match  (and (has ?who ?a ?thing) (gave ?who ?k ?to) (diff-of ?a ?k ?d z))
+  :assert (has ?who ?d ?thing)
+  :why    "{?a} less {?k} is {?d}, so {?who} has {?d} left")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

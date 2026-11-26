@@ -1,0 +1,7 @@
+pencils: steps mode, grammar on, whole
+  step 1     4670 prompt tokens, 304 generated (end-of-turn), 10 forms; at root not decided; H from blind (215); 1 findings
+  step 2     11785 prompt tokens, 406 generated (end-of-turn), 19 forms; at root not decided; H from blind (3232); 5 findings
+  step 3     12795 prompt tokens, 12288 generated (max-tokens), 0 forms; at root not decided; H from blind (3232); 6 findings
+  complete, --no-search: not decided
+  complete, --single: several
+  findings: mechanism-not-stated 1, number-as-name 2, undeclared 3

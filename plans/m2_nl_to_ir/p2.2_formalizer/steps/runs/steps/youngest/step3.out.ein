@@ -1,0 +1,22 @@
+;; The read-back that makes the answer query answerable.
+;; Ann is older than Bob, Bob is older than Cy.
+;; Ann is older than Cy (transitivity).
+;; Cy is younger than Ann (converse).
+;; Cy is younger than Bob (converse).
+;; Ann is older than or equal to Cy.
+;; Bob is older than or equal to Cy.
+;; Ann is older than or equal to Bob.
+;; Cy is younger than or equal to Ann.
+;; Cy is younger than or equal to Bob.
+;; Ann is the youngest.
+(top is-older-than instance Person Person)
+(meet is-older-than is-youngest Person)
+(converse is-youngest is-younger-than)
+(converse is-younger-than is-older-than)
+(top is-younger-than-or-equal instance Person Person)
+(meet is-younger-than-or-equal is-youngest Person)
+(top is-older-than-or-equal instance Person Person)
+(meet is-older-than-or-equal is-youngest Person)
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

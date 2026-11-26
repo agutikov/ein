@@ -1,0 +1,14 @@
+;; missing: the count Bob has left, asked of the calculator
+(rule bob-asks-the-difference ()
+  :match  (and (has Bob ?a) (gave Bob ?b ?who) (has ?who ?c ?thing))
+  :assert (sub ?a ?b)
+  :why    "Bob has {?a} and gave {?b} to {?who}: ask {?a} less {?b}")
+
+;; missing: the difference, read back as what Bob has left
+(rule bob-is-the-difference ()
+  :match  (and (has Bob ?a) (gave Bob ?b ?who) (has ?who ?c ?thing) (diff-of ?a ?b ?d z))
+  :assert (has Bob ?d ?thing)
+  :why    "{?a} less {?b} is {?d}, so Bob has {?d} {?thing}s left")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

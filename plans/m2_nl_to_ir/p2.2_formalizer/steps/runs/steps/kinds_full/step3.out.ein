@@ -1,0 +1,8 @@
+;; missing: the sum, read back as what they have together
+(rule together-is-the-sum ()
+  :match  (and (has Bob ?a Apple) (has Alice ?b Apple) (sum-of ?a ?b ?s))
+  :assert (has (n z 2) ?s Apple)
+  :why    "{?a} and {?b} make {?s}, so they have {?s} apples together")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

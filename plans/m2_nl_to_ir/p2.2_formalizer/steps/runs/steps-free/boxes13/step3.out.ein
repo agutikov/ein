@@ -1,0 +1,2 @@
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

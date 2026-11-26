@@ -1,0 +1,7 @@
+seating: steps mode, grammar on, whole
+  step 1     4655 prompt tokens, 243 generated (end-of-turn), 11 forms; at root not decided; H from blind (27); 6 findings
+  step 2     11714 prompt tokens, 454 generated (end-of-turn), 21 forms; at root inconsistent; H from obligations (0); 3 findings
+  step 3     12837 prompt tokens, 76 generated (end-of-turn), 2 forms; at root inconsistent; H from obligations (0); 3 findings
+  complete, --no-search: inconsistent
+  complete, --single: inconsistent
+  findings: rewritten 3

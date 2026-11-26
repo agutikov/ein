@@ -1,0 +1,5 @@
+gap: whole mode, grammar on, whole
+  step whole 11702 prompt tokens, 683 generated (end-of-turn), 20 forms; at root not decided; H from no-search (0); 4 findings; 2 markers
+  complete, --no-search: not decided
+  complete, --single: one
+  findings: wrong-count 4

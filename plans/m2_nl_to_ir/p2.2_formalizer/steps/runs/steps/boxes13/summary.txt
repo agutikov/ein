@@ -1,0 +1,8 @@
+boxes13: steps mode, grammar on, whole
+  step 1     4640 prompt tokens, 164 generated (end-of-turn), 6 forms; at root invalid; H from none (0); 0 findings
+  step 2     11615 prompt tokens, 736 generated (end-of-turn), 13 forms; at root not decided; H from blind (306); 8 findings; 1 markers
+  step 2b    12840 prompt tokens, 12288 generated (max-tokens), 0 forms; at root not decided; H from blind (306); 8 findings; 1 markers
+  step 3     25300 prompt tokens, 12288 generated (max-tokens), 0 forms; at root not decided; H from blind (306); 9 findings
+  complete, --no-search: not decided
+  complete, --single: several
+  findings: mechanism-not-stated 1, undeclared 7, wrong-count 1

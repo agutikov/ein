@@ -1,0 +1,7 @@
+;; The read-back that makes the answer query answerable.
+;; The youngest is the one who is not older than anyone.
+;; We need a rule to find the youngest.
+(rule youngest-is-not-older-than-anyone ()
+  :match  (and (person ?p) (absent (is-older-than ?p ?q)))
+  :assert (is-youngest ?p)
+  :why    "{?p} is the youngest.")

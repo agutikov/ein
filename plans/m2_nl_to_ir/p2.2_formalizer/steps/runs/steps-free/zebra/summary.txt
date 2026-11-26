@@ -1,0 +1,7 @@
+zebra: steps mode, grammar off, whole
+  step 1     4787 prompt tokens, 1032 generated (end-of-turn), 53 forms; at root not decided; H from blind (7840); 0 findings
+  step 2     12627 prompt tokens, 1160 generated (end-of-turn), 69 forms; at root inconsistent; H from stuck (0); 0 findings
+  step 3     13869 prompt tokens, 308 generated (end-of-turn), 15 forms; at root inconsistent; H from no-search (0); 6 findings
+  complete, --no-search: inconsistent
+  complete, --single: inconsistent
+  findings: mechanism-not-the-one-stated 1, selection-inactive 5

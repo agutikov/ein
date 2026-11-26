@@ -1,0 +1,7 @@
+gap_fact: steps mode, grammar off, whole
+  step 1     4656 prompt tokens, 241 generated (end-of-turn), 7 forms; at root not decided; H from blind (0); 0 findings
+  step 2     11708 prompt tokens, 148 generated (end-of-turn), 6 forms; at root not decided; H from blind (0); 1 findings
+  step 3     12471 prompt tokens, 220 generated (end-of-turn), 3 forms; at root not decided; H from no-search (0); 1 findings; 2 markers
+  complete, --no-search: not decided
+  complete, --single: one
+  findings: name-not-listed 1

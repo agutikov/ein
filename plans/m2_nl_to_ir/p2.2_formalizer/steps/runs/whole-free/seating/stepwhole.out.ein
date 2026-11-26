@@ -1,0 +1,65 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(instance Ann Chair)
+(instance Bob  Chair)
+(instance Cy   Chair)
+(same-chair Ann Bob :source "Ann sits next to Bob.")
+(not (same-chair Cy First) :source "Cy does not sit in the first chair.")
+(not (same-chair Bob Middle) :source "Bob does not sit in the middle chair.")
+
+;; Who sits in the first chair?
+(query :goal (same-chair ?who First) :goal-text "{?who} sits in the first chair.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, and what the theory reads the
+;; verbs into, and the kinds.
+
+(relation instance T T :why "{?3} is a {?4}")
+(relation same-chair Attribute Attribute :why "a {?3} and a {?4} are in the same chair")
+(relation chair-and-chair Attribute Attribute :why "a {?3} and a {?4}")
+(relation first-chair  Attribute Attribute :why "a {?3} is the first chair")
+(relation middle-chair Attribute Attribute :why "a {?3} is the middle chair")
+
+;; The kinds, and their place.
+(type Chair Attribute)
+(type First  Attribute)
+(type Middle Attribute)
+
+;; What kind of thing each name is: step 1's memberships.
+(instance Ann  Chair)
+(instance Bob  Chair)
+(instance Cy   Chair)
+(instance First Chair)
+(instance Middle Chair)
+
+;; The row the text speaks of and never states.
+(same-chair Ann First)
+(same-chair Bob Middle)
+(same-chair Cy Last)
+
+;; The theory: things in places, from the library.
+(import std.algebra :symbols (symmetric includes top meet))
+(import std.slots)
+
+;; A verb of one chair is a part of same-chair, a verb of a neighbour a part
+;; of next-to.
+(includes same-chair chair-and-chair)
+(includes first-chair chair-and-chair)
+(includes middle-chair chair-and-chair)
+
+;; The classes of same-chair are the chairs, each holding one value of every
+;; kind, and a chair names its class; its obligations write the hypotheses.
+(slot-partition same-chair instance type Attribute Chair)
+(slot-spatial same-chair first-chair instance Chair)
+(slot-spatial same-chair middle-chair instance Chair)
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; The read-back that makes the answer query answerable. Where a value is,
+;; in the verb of its kind: a person sits in the chair it shares.
+(top chair-and-chair instance Chair Chair)
+(meet same-chair chair-and-chair same-chair)
+
+;; The hypothesis mechanism: the obligations of the theory step 2 selected.

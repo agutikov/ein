@@ -1,0 +1,13 @@
+;; missing: the number Bob had before is the number he has now less the number he gave away, asked of the calculator
+(rule before-asks-the-difference ()
+  :match  (and (has ?who ?now ?thing) (gave ?who ?giver ?given ?thing))
+  :assert (sub ?now ?given)
+  :why    "{?who} has {?now} and gave {?given}: ask {?now} less {?given}")
+;; missing: the difference, read back as what Bob had before
+(rule before-is-the-difference ()
+  :match  (and (has ?who ?now ?thing) (gave ?who ?giver ?given ?thing) (diff-of ?now ?given ?d z))
+  :assert (has ?who ?d ?thing)
+  :why    "{?now} less {?given} is {?d}, so {?who} had {?d} before")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

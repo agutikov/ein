@@ -1,0 +1,13 @@
+;; missing: the number of apples Carol has is the number she started with minus the number Bob gave her, asked of the calculator
+(rule carol-has-asks-the-difference ()
+  :match  (and (has Carol ?c ?t) (gave Bob ?g ?t ?a) (neq ?c ?a))
+  :assert (sub ?c ?g)
+  :why    "Carol has {?c} and Bob gave {?g}: ask {?c} less {?g}")
+;; missing: the difference, read back as Carol's new count
+(rule carol-has-is-the-difference ()
+  :match  (and (has Carol ?c ?t) (gave Bob ?g ?t ?a) (diff-of ?c ?g ?d z))
+  :assert (has Carol ?d ?t)
+  :why    "{?c} less {?g} is {?d}, so Carol has {?d} now")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

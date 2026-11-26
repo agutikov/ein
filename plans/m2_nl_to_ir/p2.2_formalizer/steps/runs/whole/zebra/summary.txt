@@ -1,0 +1,4 @@
+zebra: whole mode, grammar on, whole
+  step whole 11852 prompt tokens, 12288 generated (max-tokens), does not parse: step whole:1088:1: unexpected end of input
+  repair: Insert `)`
+  stopped: the output does not parse, or is empty

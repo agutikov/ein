@@ -1,0 +1,53 @@
+;; ---- the whole program, in one call
+
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples.")
+(gave Bob (n z 2) Alice Apple :source "He gave 2 to Alice.")
+
+;; How many apples do they have together?
+(query :goal (have-together Bob Alice (n ?s) Apple) :goal-text "They have {?s} apples together.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, and what the theory reads the
+;; verbs into, and the kinds.
+
+(relation instance    T T          :why "{?3} is a {?4}")
+(relation type        T T          :why "{?3} is a kind of {?4}")
+(relation has         Person Number :why "a {?3} has a {?4} of {?5}s")
+(relation have-together Person Person Number :why "a {?3} and a {?4} have a {?5} of {?6}s together")
+(relation gave        Person Number Person :why "a {?3} gave a {?4} to a {?5}")
+
+;; The kinds, and their place.
+(type Apple T)
+(type Number T)
+(type Person T)
+
+;; What kind of thing each name is: step 1's memberships.
+(instance Bob Person :source "Bob has 5 apples.")
+(instance Alice Person :source "He gave 2 to Alice.")
+(instance Apple T :source "Bob has 5 apples.")
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; missing: what they have together is the sum of what each has, asked of the calculator
+(rule together-asks-the-sum ()
+  :match  (and (have-together ?p1 ?p2 ?n) (has ?p1 ?n1) (has ?p2 ?n2))
+  :assert (add ?n1 ?n2)
+  :why    "{?p1} has {?n1} and {?p2} has {?n2}: ask {?n1} plus {?n2}")
+
+;; missing: the sum, read back as what they have together
+(rule together-is-the-sum ()
+  :match  (and (have-together ?p1 ?p2 ?n) (has ?p1 ?n1) (has ?p2 ?n2) (sum-of ?n1 ?n2 ?s))
+  :assert (have-together ?p1 ?p2 ?s)
+  :why    "{?n1} plus {?n2} is {?s}, so {?p1} and {?p2} have {?s} together")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

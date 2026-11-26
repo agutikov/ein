@@ -1,0 +1,66 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+
+(instance Ann Chair :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Bob Chair :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Cy Chair :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance First Chair :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Middle Chair :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Third Chair :source "Ann, Bob and Cy sit in a row of three chairs.")
+
+(sits Ann Bob :source "Ann sits next to Bob.")
+(sits Cy First :source "Cy does not sit in the first chair.")
+(sits Bob Middle :source "Bob does not sit in the middle chair.")
+
+;; Who sits in the first chair?
+(query :goal (sits ?who First) :goal-text "{?who} sits in the first chair.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, completed with the theory's
+;; relations (passive verbs, pairs, kinds).
+
+(relation instance    T T          :why "{?3} is a {?4}")
+(relation type        T T          :why "{?3} is a kind of {?4}")
+(relation sits        Person Chair :why "a {?3} sits in a {?4}")
+(relation next-to     Attribute Attribute :why "a {?3} is next to a {?4}")
+(relation chair-and-chair  Chair Chair  :why "a {?3} and a {?4}")
+(relation person-and-chair  Person Chair  :why "a {?3} and a {?4}")
+
+;; The kinds, and their place.
+(type Attribute T)
+(type Chair     Attribute)
+(type Person    Attribute)
+
+;; What kind of thing each name is: step 1's memberships.
+(instance Ann    Person :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Bob    Person :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Cy     Person :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance First  Chair  :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Middle Chair  :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Third  Chair  :source "Ann, Bob and Cy sit in a row of three chairs.")
+
+;; The row the text speaks of and never states.
+(next-to First Middle)
+(next-to Middle Third)
+
+;; The theory: properties of relations and things in places.
+(import std.algebra :symbols (symmetric includes converse top meet))
+(import std.slots)
+
+;; A verb of one chair is a part of next-to.
+(includes sits next-to)
+
+;; The classes of next-to are the chairs, each holding one value of every
+;; kind, and a chair names its class; its obligations write the hypotheses.
+(slot-partition next-to instance type Attribute Chair)
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; The read-back that makes the answer query answerable. Where a value is,
+;; in the verb of its kind: a person sits in the chair it shares.
+(top  person-and-chair instance Person Chair)
+(meet next-to person-and-chair sits)
+
+;; The hypothesis mechanism: the obligations of the theory step 2 selected.
