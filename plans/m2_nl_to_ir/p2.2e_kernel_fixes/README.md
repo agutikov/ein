@@ -3,8 +3,9 @@
 **Status:** **planned 2026-11-27** on the user's word, *"Ok I agree, do it"*, to the routing of P2.2's results at
 its close (the two bugs of Ein that P2.2 filed with no owner, fixed in a short phase before the benchmark is
 built). **Started 2026-11-27** on the user's word, *"start p2.2e"*: its stages run one by one, each in a subagent
-that commits its work, S2.2e.1 to S2.2e.3 and S2.2e.4's second half; S2.2e.4's first half waits for the user's
-ruling of [Q-M2.24](../open_questions/kernel/Q-M2.24-does-ein-hold-that-an-answer-does-not-depend-on-the-order.md).
+that commits its work, S2.2e.1 to S2.2e.4; S2.2e.4's first half to the user's ruling of
+[Q-M2.24](../open_questions/kernel/Q-M2.24-does-ein-hold-that-an-answer-does-not-depend-on-the-order.md), the same
+day: a guarantee Ein states, and no test for now.
 The phase stops at its end with a report for the user's review, and is not closed until the user says so.
 **Depends on:** the kernel as it stands; [P2.2](../p2.2_formalizer/README.md), closed, for the probes that hold
 the evidence ([`zebra_formulations/probes/`](../p2.2_formalizer/zebra_formulations/probes/README.md)) and the
@@ -46,12 +47,12 @@ against the same wrong count. And a fix after a split is frozen changes content 
 | [S2.2e.1](s2.2e.1_declared_again_under_an_import.md) | A relation declared again, under an import | a program that imports loads its relation's second declaration as a program that does not; the imports pass's de-duplication held to Q-M1f.447; the test of the decision with an import in its programs; the diagnostics page's row saying what is still refused |
 | [S2.2e.2](s2.2e.2_slots_neighbours.md) | `std.slots`: two neighbours do not share a place | the pruning rules as their page states them; held by an invariance, the under-determined Zebra puzzle answered alike over `std.slots` and over `std.bijection`; a program under `tests/stdlib/slots/` for the case; every corpus answer that moves re-stated, with why |
 | [S2.2e.3](s2.2e.3_clock_and_a_dead_root.md) | The clock, and a root that dies | where root's time goes on the model's Zebra program, and the clock read there, so that `-T` returns *not decided* within its bound; the answer of a run the clock does not stop unchanged |
-| [S2.2e.4](s2.2e.4_order_and_table_rows.md) | Two small ones: the order of a program's forms, and two rows of the table | on the user's ruling of Q-M2.24, a test that holds every corpus program's answer under another order of its forms, with its decision; the two shapes the banked table of refused shapes lacks |
+| [S2.2e.4](s2.2e.4_order_and_table_rows.md) | Two small ones: the order of a program's forms, and two rows of the table | on the user's ruling of Q-M2.24 (2026-11-27), the decision that an answer does not depend on the order of a program's forms, a guarantee, and its row of the determinism page, no test; the two shapes the banked table of refused shapes lacks |
 
 ### Order
 
 S2.2e.1 and S2.2e.2 do not wait for each other; S2.2e.2 is the one P2.3 waits for. S2.2e.3 is independent of
-both. S2.2e.4 runs only on the user's word for its first half.
+both. S2.2e.4's first half is the user's ruling of Q-M2.24, written down.
 
 **Each stage is a change of Ein and runs Ein's gate**: `./run_tests.sh` on the batch's last commit, the nightly
 where a stage changes what the nightly alone reads, the generated files of the library and its pages re-run with
@@ -99,7 +100,8 @@ Each is the plan's, recorded so that the user can correct it; none is a ruling.
    and what the smallest core costs stays [F22](../../followups/f22_exact_core_past_the_cap.md)'s.
 3. **S2.2e.4's first half waits for the user's word** on
    [Q-M2.24](../open_questions/kernel/Q-M2.24-does-ein-hold-that-an-answer-does-not-depend-on-the-order.md); its
-   second half, two rows of a test's table, is taken with the phase.
+   second half, two rows of a test's table, is taken with the phase. *Resolved 2026-11-27*: the user ruled it, a
+   guarantee stated with no test for now.
 4. **Nothing goes upstream and no syntax changes**: a string glued to a block comment
    ([E-120](../evaluation/language/E-120-a-string-glued-to-a-block-comment-is-refused-where-a-name-glued-to-one-is-not.md))
    is the lexer's and waits for the iteration of Ein.

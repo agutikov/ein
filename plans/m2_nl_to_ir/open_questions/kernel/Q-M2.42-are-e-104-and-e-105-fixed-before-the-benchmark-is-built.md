@@ -33,5 +33,5 @@ own count would say 32, and a fix after the splits are frozen changes content th
 
 **What bears on it.** [Q-M2.34](Q-M2.34-does-einaf-s-kernel-call-set-the-lever-that-keeps-one-justification.md):
 with the lever set by EinAf's call, E-126's cost to the application goes without a change of the kernel;
-[Q-M2.24](Q-M2.24-does-ein-hold-that-an-answer-does-not-depend-on-the-order.md), a test and a decision the same
-phase can write.
+[Q-M2.24](Q-M2.24-does-ein-hold-that-an-answer-does-not-depend-on-the-order.md), ruled 2026-11-27: a decision
+the same phase writes, and no test.

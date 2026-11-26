@@ -539,7 +539,7 @@ the missing file's line. Each holds a default the phase took ([its defaults](def
 
 **Open, and raised by P2.2**, the milestone's since the phase's close, 2026-11-27, each with the default the phase
 took ([its defaults](defaults/p2.2.md)): Q-M2.22 to Q-M2.34, by its stages (what a faithfulness event is and what a
-`:source` quotes, Q-M2.22, Q-M2.25, Q-M2.26; the library and the kernel, Q-M2.23, Q-M2.24, Q-M2.34; the decoding and
+`:source` quotes, Q-M2.22, Q-M2.25, Q-M2.26; the library and the kernel, Q-M2.23, Q-M2.34, and Q-M2.24, ruled 2026-11-27 (an answer does not depend on the order of a program's forms: a guarantee Ein states); the decoding and
 the grammars, Q-M2.27 to Q-M2.31; B2's mode, Q-M2.32; an answer of several rows, Q-M2.33); and Q-M2.35 to Q-M2.42, by
 [the analysis of the phase](p2.2_formalizer/report/ANALYSIS.md) and the routing of its results (a query a question,
 the cut of the steps, where a library's descriptions live, the target shape's abbreviation, the minimal goal's
