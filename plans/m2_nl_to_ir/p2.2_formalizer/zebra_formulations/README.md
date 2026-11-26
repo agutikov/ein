@@ -200,9 +200,11 @@ The search is the theory's: the four `std.slots` encodings search alike (112 can
 saturations to describe R, 9 to decide `--single`), the two over projections alike (56 candidates, 21 dead alone,
 120 and 124 saturations), and the vocabulary of the facts moves only what each state carries: the literal ones carry
 their verbs, descriptions or adjectives beside the link, and read the answer back into the questions' words, which
-doubles the facts (E-111). `ein render h-space FILE`, the structure of H, reads `zebra`'s pairs whole and stops at
-the default budget on `zebra3.1`, `zebra3.2` and `zebra3.3` (its `whole` row,
-[`renderings/`](renderings/)`*.h-space.txt`). The corpus cost of each `zebra3.n` entry, its runs together, is
+doubles the facts (E-111). `ein render h-space FILE`, the structure of H, reads `zebra`'s pairs whole (705 808 facts)
+and stops at the default budget on `zebra3.1`, `zebra3.2` and `zebra3.3` (its `whole` row,
+[`renderings/`](renderings/)`*.h-space.txt`), whose pair layers take 1 733 960, 1 380 168 and 2 052 718 facts whole
+(`--region-budget 8388608`): Ein's sweeps of the structure leave the three out by name (`pair_layer.rs`'
+`PAST_THE_BUDGET`). The corpus cost of each `zebra3.n` entry, its runs together, is
 533, 791, 713 and 179 ms (`utils/bench_env.sh --cores PT python3 utils/corpus_cost.py -k examples/zebra3`), none
 slow.
 

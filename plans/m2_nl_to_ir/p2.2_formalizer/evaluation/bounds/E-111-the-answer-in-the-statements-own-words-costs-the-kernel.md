@@ -13,7 +13,9 @@ way: `zebra.ein` 34 060 facts beyond root to describe R, `zebra3.2` 60 418, `zeb
 The literal encodings carry the verbs, the descriptions or the adjectives through every state, and read the answer
 back into the questions' verbs, which writes a link between two values `std.slots` keeps off its rectangle
 (`(drinks Norwegian Water)` included into `same-house`). `ein render h-space` reads `zebra`'s pairs whole at the
-default budget and stops on the three literal ones. `zebra2` and `zebra3.4`, five projections, take 5 411 and 5 600.
+default budget, in 705 808 facts, and stops on the three literal ones, whose layers take 1 733 960, 1 380 168 and
+2 052 718 facts whole (`--region-budget 8388608`); Ein's sweeps of the structure leave the three out by name
+(`ein-infer/tests/pair_layer.rs`' `PAST_THE_BUDGET`, `343edaf6`). `zebra2` and `zebra3.4`, five projections, take 5 411 and 5 600.
 
 ## Evidence
 
