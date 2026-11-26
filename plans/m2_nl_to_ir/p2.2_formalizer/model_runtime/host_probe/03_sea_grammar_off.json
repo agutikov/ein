@@ -1,0 +1,29 @@
+{
+ "prompt": {
+  "kind": "chat",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Write three sentences about the sea."
+   }
+  ],
+  "tools": []
+ },
+ "thinking": false,
+ "grammar": {
+  "text": "root ::= \"(youngest \" (\"Ann\" | \"Bob\" | \"Cy\") \")\"",
+  "root": "root",
+  "start": {
+   "at": "first"
+  }
+ },
+ "sampler": [
+  {
+   "sampler": "greedy"
+  }
+ ],
+ "seed": 1,
+ "max_tokens": 2048,
+ "logprobs": null,
+ "keep": null
+}

@@ -1,0 +1,34 @@
+{
+ "prompt": {
+  "kind": "chat",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Use the ein_solve tool on the program \"(older Ann Bob)\"."
+   }
+  ],
+  "tools": [
+   {
+    "name": "ein_solve",
+    "description": "Run an Ein program through the kernel and return what it answers",
+    "parameters": [
+     {
+      "name": "program",
+      "description": "the Ein program's text"
+     }
+    ]
+   }
+  ]
+ },
+ "thinking": false,
+ "grammar": null,
+ "sampler": [
+  {
+   "sampler": "greedy"
+  }
+ ],
+ "seed": 1,
+ "max_tokens": 2048,
+ "logprobs": null,
+ "keep": null
+}

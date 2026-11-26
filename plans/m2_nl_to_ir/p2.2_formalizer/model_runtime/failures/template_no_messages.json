@@ -1,0 +1,18 @@
+{
+ "prompt": {
+  "kind": "chat",
+  "messages": [],
+  "tools": []
+ },
+ "thinking": false,
+ "grammar": null,
+ "sampler": [
+  {
+   "sampler": "greedy"
+  }
+ ],
+ "seed": 1,
+ "max_tokens": 2048,
+ "logprobs": 3,
+ "keep": null
+}

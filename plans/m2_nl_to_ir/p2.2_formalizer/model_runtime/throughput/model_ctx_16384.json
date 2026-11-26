@@ -1,0 +1,30 @@
+{
+  "context": {
+    "device_free_mib_at_load": 7685,
+    "device_free_mib_loaded": 4077,
+    "device_total_mib": 7857,
+    "flash_attention": "auto",
+    "n_batch": 2048,
+    "n_ctx": 16384,
+    "n_ubatch": 512
+  },
+  "model": {
+    "architecture": "qwen35",
+    "layers": 32,
+    "parameters": 4205751296,
+    "quantization": "Q4_K_M",
+    "sha256": "sha256:a9d0a3e1d8c91732a3812becd31f8d4a8ff57414903f226306069f0437e2ac50",
+    "size_label": "4.2B",
+    "trained_context": 262144,
+    "vocabulary": 248320
+  },
+  "runtime": {
+    "backend": "CUDA0",
+    "binding": "llama-cpp-2",
+    "binding_version": "0.1.161",
+    "device": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "gpu_layers": 32,
+    "llama_cpp": "d81235049384534c167caea52b85a694f6103d14"
+  },
+  "template_sha256": "sha256:a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715"
+}

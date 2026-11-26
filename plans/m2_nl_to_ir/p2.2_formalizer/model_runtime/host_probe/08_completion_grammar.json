@@ -1,0 +1,23 @@
+{
+ "prompt": {
+  "kind": "text",
+  "text": "(youngest "
+ },
+ "thinking": false,
+ "grammar": {
+  "text": "root ::= (\"Ann\" | \"Bob\" | \"Cy\") \")\"",
+  "root": "root",
+  "start": {
+   "at": "first"
+  }
+ },
+ "sampler": [
+  {
+   "sampler": "greedy"
+  }
+ ],
+ "seed": 1,
+ "max_tokens": 16,
+ "logprobs": 3,
+ "keep": null
+}

@@ -1,0 +1,23 @@
+{
+ "prompt": {
+  "kind": "chat",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Ann is older than Bob. Bob is older than Cy. Who is the youngest? Answer with one name."
+   }
+  ],
+  "tools": []
+ },
+ "thinking": true,
+ "grammar": null,
+ "sampler": [
+  {
+   "sampler": "greedy"
+  }
+ ],
+ "seed": 1,
+ "max_tokens": 2048,
+ "logprobs": null,
+ "keep": null
+}

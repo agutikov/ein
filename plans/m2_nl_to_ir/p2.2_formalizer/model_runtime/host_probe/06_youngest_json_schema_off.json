@@ -1,0 +1,29 @@
+{
+ "prompt": {
+  "kind": "chat",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Ann is older than Bob. Bob is older than Cy. Who is the youngest? Answer with one name."
+   }
+  ],
+  "tools": []
+ },
+ "thinking": false,
+ "grammar": {
+  "text": "char ::= [^\"\\\\\\x7F\\x00-\\x1F] | [\\\\] ([\"\\\\bfnrt] | \"u\" [0-9a-fA-F]{4})\nroot ::= \"{\" space youngest-kv space \"}\"\nspace ::= | \" \" | \"\\n\"{1,2} [ \\t]{0,20}\nstring ::= \"\\\"\" char* \"\\\"\"\nyoungest-kv ::= \"\\\"youngest\\\"\" space \":\" space string\n",
+  "root": "root",
+  "start": {
+   "at": "first"
+  }
+ },
+ "sampler": [
+  {
+   "sampler": "greedy"
+  }
+ ],
+ "seed": 1,
+ "max_tokens": 256,
+ "logprobs": null,
+ "keep": null
+}

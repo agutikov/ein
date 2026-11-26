@@ -13,7 +13,8 @@ phase's folder.
 E-104 to E-113, filed by [S2.2.0a](../s2.2.0a_zebra_formulations.md) on 2026-11-26 from
 [its analysis of the six Zebra encodings](../zebra_formulations/README.md); E-114 to E-116, filed by
 [S2.2.1](../s2.2.1_contract.md) the same day from the steps by hand of
-[the contract](../../../../docs/einaf/04-contract.md#7-the-steps-by-hand).
+[the contract](../../../../docs/einaf/04-contract.md#7-the-steps-by-hand); E-117 to E-119, filed by
+[S2.2.2](../s2.2.2_model_runtime.md) the same day from [its probe of Ein written by the model with no grammar](../model_runtime/README.md).
 
 | id | title | kind | topic | status | owner |
 |---|---|---|---|---|---|
@@ -30,3 +31,6 @@ E-104 to E-113, filed by [S2.2.0a](../s2.2.0a_zebra_formulations.md) on 2026-11-
 | [E-114](hypotheses/E-114-a-partial-program-s-h-is-set-by-its-relations-count-of-places.md) | A partial program's H is set by its relations' count of places, not by what it states | weakness | `hypotheses` | open | none |
 | [E-115](stdlib/E-115-a-stored-negation-of-a-verb-does-not-reach-the-link-it-is-read-into.md) | A stored negation of a verb does not reach the link the verb is read into | gap | `stdlib` | open | none; Q-M2.23 bears on it |
 | [E-116](answer/E-116-a-query-with-no-row-does-not-say-which-of-its-premises-matched.md) | A query with no row does not say which of its premises matched nothing | gap | `answer` | open | none |
+| [E-117](diagnostics/E-117-a-fence-around-a-program-is-the-parse-s-only-error-with-its-repair.md) | A fence around a program is the parse's only error, each fence line named with the repair that deletes it | strength | `diagnostics` | standing (a strength) | — |
+| [E-118](stdlib/E-118-a-numeral-written-with-two-digits-in-one-place-is-refuted-as-a-contradiction.md) | A numeral written with two digits in one place makes root dead, and the outcome reads as a contradiction | weakness | `stdlib` | open | none |
+| [E-119](natural-language/E-119-a-relation-s-why-that-names-an-arrow-its-declaration-lacks-loads.md) | A relation's `:why` that names an arrow its declaration does not have loads, and prints the reference as text | weakness | `natural-language` | open | none; the design, § 2.11 |

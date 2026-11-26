@@ -1,0 +1,17 @@
+── bench environment ─────────────────────────────────────
+  date            2026-11-26T06:59:37+04:00
+  host            Linux 7.3.4-3-MANJARO x86_64
+  cpu             Intel(R) Core(TM) i9-14900HX
+  pinned to       cpu0,2,4,6,8,10,12,14 — 8 cpu(s), 8 physical core(s), all P
+  core spec       --cores P
+  governor        powersave (epp balance_performance)
+  turbo           on (no_turbo=0)
+  cur / max MHz   800 / 5600
+  power           AC (ACAD online=1); BAT1 Full 100 %
+  loadavg         2.06 1.46 1.79
+  perf_paranoid   2 (2 = user-space samples only, enough for a self-time table)
+  git             1be58a36
+──────────────────────────────────────────────────────────
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 7857 MiB):
+  Device 0: NVIDIA GeForce RTX 4060 Laptop GPU, compute capability 8.9, VMM: yes, VRAM: 7857 MiB
+einaf: qwen35 4.2B (sha256:a9d0a3e1d8c91732a3812becd31f8d4a8ff57414903f226306069f0437e2ac50), 32 layers on CUDA0 (NVIDIA GeForce RTX 4060 Laptop GPU), a context of 65536 tokens

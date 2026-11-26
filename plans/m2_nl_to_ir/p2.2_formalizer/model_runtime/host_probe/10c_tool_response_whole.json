@@ -1,0 +1,42 @@
+{
+ "prompt": {
+  "kind": "chat",
+  "messages": [
+   {
+    "role": "user",
+    "content": "Use the ein_solve tool on the program \"(older Ann Bob)\"."
+   },
+   {
+    "role": "assistant",
+    "content": "<tool_call>\n<function=ein_solve>\n<parameter=program>\n(older Ann Bob)\n</parameter>\n</function>\n</tool_call>"
+   },
+   {
+    "role": "tool",
+    "content": "einaf outcome: one. The program loads; root holds (older Ann Bob)."
+   }
+  ],
+  "tools": [
+   {
+    "name": "ein_solve",
+    "description": "Run an Ein program through the kernel and return what it answers",
+    "parameters": [
+     {
+      "name": "program",
+      "description": "the Ein program's text"
+     }
+    ]
+   }
+  ]
+ },
+ "thinking": false,
+ "grammar": null,
+ "sampler": [
+  {
+   "sampler": "greedy"
+  }
+ ],
+ "seed": 1,
+ "max_tokens": 2048,
+ "logprobs": null,
+ "keep": null
+}

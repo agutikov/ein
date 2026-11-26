@@ -13,6 +13,8 @@
 
 `ein solve examples/broken/load/rule_duplicate_name.ein --json-summary F`: one `declaration` finding, `place` `null`
 
+Confirmed by S2.2.2, 2026-11-26: the refusals a model's first programs met most at the load, `unbound-conclusion` (the probe's `library.off.gap`, `.bystander`, `.boxes12`), name the rule and the variable and have no place, where `full-name` and a parse error have their line and column ([the probe's record](../../p2.2_formalizer/model_runtime/README.md)).
+
 ## What it costs the application
 
 the model is told which declaration, not where
