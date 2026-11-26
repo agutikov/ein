@@ -10,7 +10,9 @@ the user's question about the one `?who` and the word *"propose solutions for th
 same file"*: what to do about each issue, as proposals. [§ 10](#10-the-model-solves-the-puzzle-and-cannot-state-it)
 was added after them, on the user's question whether Ein interferes with a reasoning that was right, and
 [§ 11](#11-the-three-steps-against-the-one-call-and-how-the-steps-are-cut) on the user's question about the three
-steps against one call and a strict split of them.
+steps against one call and a strict split of them. [§ 12](#12-what-a-library-says-of-its-rules-to-whoever-selects-them)
+was added on 2026-11-27, on the user's note that a library should carry a description of its rules for whoever
+selects them.
 
 ## Summary
 
@@ -51,6 +53,12 @@ to achieve with the model is not.**
   one time a step did revise it the program kept both versions; the *partial* theory writes an import's list a
   step before its uses. **A strict split was not investigated**; proposal 25 measures it, and the steps by hand
   cut strictly here load at every cut but one.
+- **What a library says of its rules** ([§ 12](#12-what-a-library-says-of-its-rules-to-whoever-selects-them)): the
+  user's ranking of the rules by how hard they are to understand is the model's record, rule for rule (`converse`
+  four written and four wrong, `compose` never, `top` and `meet` a copied shape). The catalogue does describe each
+  rule, but by what it derives, not by what it is for or what its arguments need; those words are EinAf's, not the
+  library's; and the modules given beside the library, shown with no description, were imported by no run.
+  Proposal 26: a rule described for its use, by the library, with a first draft for the eight rules.
 
 ## 1. The goals, and the verdict on each
 
@@ -292,6 +300,11 @@ step 2 that are step 1's, and the tokens generated in calls that ran to the budg
 is offered); `ein solve` on the model's seating program, as written and less the three memberships step 2
 restated; `einaf outcome --no-search` and `ein show hyps` on four of the steps by hand cut into three strict
 parts, and `ein solve --single` on the Zebra one whole. Scratch files, not kept; nothing was run with the model.
+
+**For § 12.** Read: `einaf catalogue` and `einaf catalogue --generated` as a prompt shows them; the rules and
+their comments in `stdlib/algebra.ein` and `stdlib/slots.ein`; the reference's pages on the relation algebra and
+the slots; `einaf::catalogue::Given::text`; the selecting facts of the model's and the hand's Zebra and seating
+programs, counted by `grep`. Nothing was run with the model, and § 12.3's draft is checked by nothing.
 
 ## 8. The one `?who` for two questions
 
@@ -887,3 +900,144 @@ two cuts beside the two the phase has:
 seating's stale memberships, the mechanism's contradiction and the missing `compose`, and it does not touch what
 step 1 gets wrong in the statements, which is most of the Zebra puzzle's distance. The two-step cut tests whether
 anything but taking the statements out first matters.
+
+## 12. What a library says of its rules to whoever selects them
+
+**The user's words** (2026-11-27), kept as stated:
+
+> Probably stdlib, or other lib the LLM can import, should carry NL description/documentation of existing rules
+> when it selects what to use.
+> Because, if I take my own understanding:
+>     symmetric - is quite simple
+>     includes, compose, converse - is harder to understand
+>     top, meet - absolute ambiguity
+>     slot-partition, slot-spatial - may look simple, but at the same time exact semantic is not obvious
+
+**In short.** The user's ranking is the model's record, rule for rule. The model is not without descriptions:
+EinAf's catalogue has one for each of its nineteen entries. But they say what a rule *derives*, not what it is
+*for* or what its arguments must be; they are EinAf's and not the library's, whose own words for a rule are its
+`:why`, a sentence about one firing; and a library other than the standard one has none at all, which is the one
+condition of the phase in which the model took up nothing. So: yes, and [proposal 26](#124-proposal-26-a-rule-described-for-its-use-by-the-library)
+is what such a description holds, where it lives, and how it is kept true.
+
+### 12.1 The ranking against the model's record
+
+The two attribute puzzles under the steps ([`steps/runs/steps/`](../steps/runs/steps/)), against the steps by hand:
+
+| the user | the rule | what the model wrote |
+|---|---|---|
+| *quite simple* | `symmetric` | the Zebra puzzle's two, right; the seating's two, left out |
+| *harder* | `includes` | five on the Zebra puzzle, each a verb read into the right relation (the hand has nine); on the seating `(includes sits next-to)`, one verb for *sits in* and *sits next to* |
+| | `converse` | four written, **four wrong**: a verb paired with a rectangle, `(converse smokes smoker-and-house)`, where it pairs a verb with its passive, `(converse drinks is-drunk-by)` |
+| | `compose` | **none**, of the hand's six; step 2 left it off the import ([§ 11.2](#112-what-the-two-partial-parts-cost)) |
+| *absolute ambiguity* | `top`, `meet` | five and five on the Zebra puzzle: the example's pattern with the names changed, four rectangles over kinds with no member, and `(meet same-house color-and-house lives-in)`, `(meet same-house thing-and-house has)`, which read back nothing the query asks |
+| *looks simple, the exact meaning not obvious* | `slot-partition` | its form right both times; on the seating its link is `next-to`, the neighbour relation; on the Zebra puzzle the kinds under it are empty or of unequal size |
+| | `slot-spatial` | one of the hand's two on the Zebra puzzle, none of its one on the seating |
+
+Where a description is plain the selection is right; where the user finds it ambiguous the model reproduces a
+shape and misses the meaning.
+
+### 12.2 What a selector is told today
+
+**Three texts say what a rule is, and all three say what it derives.** For `(top R isa Dom Ran)`:
+
+| | its words | whose |
+|---|---|---|
+| the rule's `:why` | *(top {?R} {?isa} {?Dom} {?Ran}): {?a}∈{?Dom},{?b}∈{?Ran} → {?R}({?a},{?b}).* | the library's; a sentence of one firing |
+| the reference page | `(R a b)` for every member `a` of `Dom` and `b` of `Ran`: R ⊇ Dom × Ran; *extensive* | Ein's documentation |
+| the catalogue's entry | *R holds between every member of Dom and every member of Ran, a member being what the membership relation isa says.* With a program: *Ann and Rex are a person and a pet.* | EinAf's, by hand ([07-steps § 1](../../../../docs/einaf/07-steps.md#1-the-catalogue)) |
+
+- **None says what it is for.** In every program of the phase `top` is half of one idiom: `top` makes the
+  rectangle of a kind and the places, `meet` cuts the link by it, and what is left is a verb read back (*a drink
+  is drunk in the house it shares*). That use is written once, as a comment inside `slot-partition`'s example.
+  The names are the lattice's, ⊤ and ∩; the slots page of the reference does not mention a read-back.
+- **A `:why` is written for a firing.** For a check it is the complaint: `functional`'s is *{?R} not functional:
+  {?a} has both {?b} and {?c}*. For `slot-partition` it is a list of ten activators. Read as a description it
+  says the wrong thing or nothing.
+- **`slot-partition`'s one sentence holds five roles and four conditions**: *R is an equivalence whose classes
+  are the places: each place holds exactly one member of every kind that is a sub of Super, and its member of the
+  kind Index names it.* The two misuses of the runs are each a condition inside it that nothing sets apart: the
+  link is the same-place relation (the seating), and every kind under `Super` has a member for every place (the
+  Zebra puzzle). The reference adds a trap in passing: transitivity holds of R *but must not be declared*.
+- **Neither module declares its selecting facts**, so no form of the library names an argument's role.
+- **The model reads what it is given.** Its steps 2 and 3 repeat the examples' comments nearly word for word
+  ([§ 3](#3-why-the-zebra-one-shot-missed)). Given mechanics, it wrote mechanics.
+
+**For a library that is not the standard one there is nothing.** A directory of modules given beside the library
+is shown *each by its forms, no comment of its file*: its declarations, and each rule's name, parameters and
+`:why` (`einaf::catalogue::Given::text`). Thirteen runs had the word problems' own modules shown so, offered to
+the grammars and loadable: **no program imported one**. The standard library, shown with a description and a
+worked program an entry, was selected on every text as its entries spell it. It is the phase's nearest
+measurement of the user's point, and it was not designed as one: the two differ in more than the description.
+
+The milestone's evaluation has the neighbour of this, [E-27](../../evaluation/stdlib/E-27-no-one-catalogue-says-how-each-library-property-is-spelled.md)
+(*no one catalogue says how each library property is spelled to be active*): that is the spelling. This is the
+meaning, and it is a candidate for the same ledger: **a library cannot say, in the library, what a selecting
+fact is for or what its arguments must be.**
+
+### 12.3 The eight rules, in the words of their use
+
+A first draft of what is asked for, from the reference page, the catalogue and the steps by hand, whose programs
+the gate runs; the wording is not checked by anything, and its first test is the user's own reading.
+
+| the fact | what it is for | each argument, and what it needs |
+|---|---|---|
+| `(symmetric R)` | R holds both ways: *next to* | R, a relation of two places |
+| `(includes R S)` | every R is also an S: a verb is one way of standing in a wider relation. *Lives in* is a way of being in the same house: `(includes lives-in same-house)` | R the narrower, S the wider; nothing comes back from S to R |
+| `(converse R S)` | S is R said from the other end: a verb and its passive, `(converse drinks is-drunk-by)` | two relations over the same pairs, each place exchanged; never a relation and a rectangle |
+| `(compose R S T)` | follow R, then S, and call the result T: what is drunk by a man who lives in a house is drunk in that house, `(compose is-drunk-by lives-in is-drunk-in)` | R's second place and S's first are the same kind of thing; `compose` is listed in the import with the rest |
+| `(top R isa Dom Ran)` | nothing about the problem: it makes a mask, every pair of a `Dom` and a `Ran`, for `meet` to cut with | both kinds have members, or the mask is empty and what is cut with it is empty |
+| `(meet R S T)` | T is where R and S both hold. With a mask: of all the pairs in one house, those of a drink and a house are *is drunk in*: `(top drink-and-house instance Drink House)`, `(meet same-house drink-and-house is-drunk-in)` | T is the verb whose two places are the mask's two kinds, in that order |
+| `(slot-partition R isa sub Super Index)` | things in places: every place holds exactly one thing of each kind. It is what proposes the candidates | **R** the same-place relation, stated symmetric and never transitive, the verbs of one place read into it by `includes`; **isa** the program's membership relation, **sub** its kind-of relation; **Super** the kind whose sub-kinds are dealt out; **Index** the sub-kind whose members are the places. Every sub-kind has as many members as `Index`; and everything that stands in R is a member of one (this last is my reading, not run) |
+| `(slot-spatial R S isa Index)` | a relation between places holds between the things in them, and back: *the green house is right of the ivory one* exactly where their places are | S is stated between the places themselves (the row, which a text rarely states), and the sentences' own relations are read into S by `includes`; one fact for each such relation |
+
+What the kernel shows when a need is not met, from the re-runs of [§ 3](#3-why-the-zebra-one-shot-missed): a
+kind with no member, root dead by `slot-no-fill`; a thing in two places, `slot-no-room`; and, as § 3 reads its
+last run, more members than places, every node owing. A description that names its needs is also what
+[proposal 4](#93-what-einafs-check-can-see-where-the-kernel-is-silent) evaluates: one list, read by the model as
+words and by the check as conditions.
+
+### 12.4 Proposal 26: a rule described for its use, by the library
+
+**What a description holds**, for each fact a program may select, and for each idiom of several (the read-back is
+one thing to a selector and three rules to the library):
+
+1. what it is for, in a sentence of the problem's kind and not of the rule's algebra;
+2. each argument's role by name, and what must hold of it;
+3. what it gives the hypothesis mechanism;
+4. what the kernel shows when a need is not met;
+5. what it is written with (`slot-partition` with `symmetric` and `includes`; `top` with `meet`);
+6. a program that uses it, run by the kernel, with its answer.
+
+The catalogue has 3 and 6 and part of 1 today.
+
+**Where it lives.** Four places, each with its cost under Ein's rules:
+
+| the place | what it takes | what it costs |
+|---|---|---|
+| the module's comments, read by EinAf | nothing of Ein: the comment above a rule is where the library's authors already say what it is; EinAf drops it today | words nothing checks, in the lattice's vocabulary as they stand, and no form for an argument's role |
+| a declaration of the selecting fact in the module, its labels the roles, its `:why` the sentence | no new syntax: a declaration's `:why` already reads its own arrows | a declaration is a fact others read: the blind enumerator guesses at every declared relation and `std.contradiction` activates from every declaration, so it would have to be shown to leave every answer as it is |
+| **a described program beside the module**, one a selectable fact or idiom, in the library's tree | the catalogue's entries moved from `einaf/catalogue/` to the library, as corpus programs the gate runs; a library is then its modules and their described programs, and a directory given beside it is read the same way | a place and a layout to choose in Ein's tree; `tests/stdlib/` has a program a rule already, written to break and not to teach |
+| a keyword of the language on `rule` and `macro`, beside `:why` | the description a part of the form, read by every tool | a change to Ein's syntax, which M2 does not make |
+
+**The proposal**: the third now, with the first's words where they serve; the fourth written into the evaluation
+for the iteration of Ein that follows, where it belongs with E-27. Then:
+
+- **EinAf's catalogue is generated from the library's described programs**, not written beside them, so the two
+  cannot part; a module with no described program is shown as undescribed, or not offered.
+- **`--module-dir` reads the same layout**, so the word problems' modules come with what they are for, and the
+  run that imported none can be made again.
+- **Each description's program is run**, as the catalogue's entries are today (`einaf/tests/catalogue.rs`), and
+  its needs are the conditions proposal 4 evaluates.
+- **For `top` and `meet` a description is the lesser repair.** The greater is that a selector never composes
+  them: one fact a verb, named for its use ([proposal 8](#94-what-the-library-and-the-kernel-owe),
+  [Q-M2.23](../open_questions/kernel/Q-M2.23-does-the-library-grow-a-reading-of-a-literal-vocabulary.md)).
+
+**How it is measured**, with the model, on the two attribute puzzles and a few like them, in the oracle form of
+[proposal 25](#115-proposal-25-the-cut-measured) (steps 2 and 3 given the hand's step 1, so that no misread
+statement hides the selection): the catalogue as it stands; with descriptions of use; with the names alone.
+What is counted is each selecting fact against the hand's. B3 has the catalogue as an input of its own, and
+[P2.6](../../p2.6_ablations/README.md)'s G9 varies which library is listed, not how it is described.
+
+**It needs the user's word**: on where a library's descriptions live, which is Ein's and not EinAf's to settle;
+and the first reader of § 12.3's draft is the user.
