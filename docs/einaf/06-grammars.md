@@ -114,14 +114,16 @@ without them.
 where the program begins**: where the prompt asks for the program in one fenced block, the grammar a request carries
 is the grammar with a root added, `fenced ::= "```" [a-z]* "\n" root "\n" "\n"? "```"`, so that the model's first
 token is the fence it means to write, the program is held inside it, and the turn ends at the closing fence. A grammar
-that leaves the fence out refuses the model's first choice, and the model's next is the program the prompt shows
-nearest, not the one it was asked for (the stage's record has the runs).
+that leaves the fence out refuses the model's first choice, and the model's next can be the program the prompt shows
+nearest, not the one it was asked for.
 
 **Thinking on, after the thinking**: a grammar from the first token takes the thinking too
 ([the model's runtime § 6](05-model.md#6-a-grammar-and-where-it-begins)), so the grammar a request carries is the
-grammar with a root added, `after-thinking ::= "</think>" "\n"? "\n"? root`, begun lazily at the trigger
-`[\s\S]*?(</think>)[\s\S]*`: llama.cpp feeds a lazy grammar the text from its trigger's first group, so the trigger
-is the grammar's own first text, and the white space after it is bounded. `einaf::grammar::request_grammar` writes
+grammar with a root added, `after-thinking ::= "</think>" "\n"? "\n"? root`, begun lazily at the model's closing tag,
+the token `</think>` (`{"at": "token", "text": "</think>"}`): llama.cpp feeds a lazy grammar the trigger's own text, so
+the trigger is the grammar's first text, and the white space after it is bounded. A pattern trigger,
+`[\s\S]*?(</think>)[\s\S]*`, begins it at the same token, but is matched against the whole thinking at every token
+while the model thinks, which costs a long thinking its speed; the token is matched against nothing. `einaf::grammar::request_grammar` writes
 each frame, `einaf::grammar::Frame`'s `fence` and `after_thinking`, alone or together (`after-thinking` then holds
 `fenced`).
 

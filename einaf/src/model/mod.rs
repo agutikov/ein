@@ -97,7 +97,13 @@ pub enum GrammarStart {
     First,
     /// **Lazily**, where the generated text first matches one of the
     /// patterns whole; the grammar is fed from the pattern's first group.
+    /// llama.cpp matches the whole text generated so far against each
+    /// pattern at every token.
     Patterns { patterns: Vec<String> },
+    /// **Lazily, at a token**: where the model generates the one token
+    /// `text` is (its special tokens parsed), the grammar begins, fed that
+    /// token's text. No pattern is matched while it waits.
+    Token { text: String },
 }
 
 /// A GBNF grammar: its text, its root, where it begins, and how a token is

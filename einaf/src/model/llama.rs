@@ -399,6 +399,24 @@ impl Runtime for Llama {
                         patterns,
                         &[],
                     ),
+                    GrammarStart::Token { text } => {
+                        let toks = self.model.vocab().tokenize(text.as_bytes(), false, true);
+                        let [tok] = toks[..] else {
+                            return Err(Failure::Engine {
+                                message: format!(
+                                    "the grammar's trigger {text:?} is {} tokens, not one",
+                                    toks.len()
+                                ),
+                            });
+                        };
+                        LlamaSampler::grammar_lazy(
+                            self.model,
+                            &g.text,
+                            &g.root,
+                            Vec::<&[u8]>::new(),
+                            &[tok],
+                        )
+                    }
                 };
                 Some(made.map_err(|_| Failure::GrammarParse {
                     sha256: grammar_sha.clone().unwrap_or_default(),

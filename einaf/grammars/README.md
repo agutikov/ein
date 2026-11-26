@@ -19,8 +19,7 @@ apart, a comment a line of its own between forms (the marker, `;; missing: …`,
 digits, `_` and `-`, a string with no `"`, `\` or line break. **Each is carried in a frame**
 (`einaf::grammar::request_grammar`): inside the fenced block a prompt asks for, the root `fenced` added, `"```"`, a
 word, a line break, the grammar's root, one or two line breaks, `"```"`; and after the model's thinking, the root
-`after-thinking` added, `"</think>"`, at most two line breaks, and the root, begun at the trigger
-`[\s\S]*?(</think>)[\s\S]*`.
+`after-thinking` added, `"</think>"`, at most two line breaks, and the root, begun at the model's token `</think>`.
 
 ## The hand-written rules of the whole grammar
 

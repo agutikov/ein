@@ -120,7 +120,11 @@ grammar from the first token writes its text where the thinking goes, and the an
 fed the text from the pattern's first group on; llama.cpp feeds it the whole text where that group is empty, so
 **the trigger is the grammar's own first text**: to begin after the thinking, the pattern is
 `[\s\S]*?(</think>)[\s\S]*` and the grammar begins with `"</think>"`, the white space after it bounded, or greedy
-decoding can write white space for ever. The envelope's `grammar.began_at` is the first generated token the grammar
+decoding can write white space for ever. llama.cpp matches the whole text generated so far against each pattern at
+every token, which a long thinking pays for. **Lazily at a token**, `{"at": "token", "text": T}`, it begins where the
+model generates the one token `T` is (its special tokens parsed; a text of more tokens is the failure `engine`), and
+is fed that token's text, with no pattern matched while it waits: `</think>` is one token of the model's. The
+envelope's `grammar.began_at` is the first generated token the grammar
 constrained. The grammars EinAf writes, and the grammar a request carries, are [the grammars](06-grammars.md)'.
 
 ## 7. A kept context

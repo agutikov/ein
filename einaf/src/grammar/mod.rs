@@ -53,8 +53,10 @@ pub fn manifest_text(whole: &str) -> String {
 pub const AFTER_THINKING: &str = "after-thinking";
 /// The closing tag of the model's thinking.
 pub const THINK_END: &str = "</think>";
-/// The trigger a grammar that begins after the thinking waits for: the
-/// generated text, its first group the closing tag.
+/// The trigger a grammar that begins after the thinking may wait for as a
+/// pattern: the generated text, its first group the closing tag. llama.cpp
+/// matches the whole thinking against it at every token, so
+/// [`request_grammar`] waits for the closing tag as a token instead.
 pub const THINK_TRIGGER: &str = "[\\s\\S]*?(</think>)[\\s\\S]*";
 
 /// The root of a grammar whose program stands in a fenced block.
@@ -73,8 +75,9 @@ pub struct Frame {
 
 /// **A grammar as a request carries it**: `text` at `root`, from the first
 /// token; inside a fence, with the root [`FENCED`] added; after the
-/// thinking, with the root [`AFTER_THINKING`] added and begun at
-/// [`THINK_TRIGGER`]. A token is held to it by the chain's choice first
+/// thinking, with the root [`AFTER_THINKING`] added and begun at the
+/// closing tag's token, [`THINK_END`], which needs no pattern matched while
+/// the model thinks. A token is held to it by the chain's choice first
 /// ([`crate::model::GrammarCheck::ChosenFirst`]).
 pub fn request_grammar(text: &str, root: &str, frame: Frame) -> crate::model::Grammar {
     use crate::model::{Grammar, GrammarCheck, GrammarStart};
@@ -93,8 +96,8 @@ pub fn request_grammar(text: &str, root: &str, frame: Frame) -> crate::model::Gr
         Grammar {
             text,
             root: AFTER_THINKING.to_string(),
-            start: GrammarStart::Patterns {
-                patterns: vec![THINK_TRIGGER.to_string()],
+            start: GrammarStart::Token {
+                text: THINK_END.to_string(),
             },
             check: GrammarCheck::ChosenFirst,
         }
