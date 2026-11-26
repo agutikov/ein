@@ -1,7 +1,7 @@
 # P2.2 — The formalizer (Stage B)
 
-**Status:** **closed 2026-11-27** on the user's word, *"Ok I agree, do it"*, to the routing of the phase's results
-([§ The close](#the-close-2026-11-27)); its folder is kept, as M2 keeps a closed phase's. It was **started
+**Status:** **closed 2026-11-27** on the user's word, *"close p2.2"*, after *"Ok I agree, do it"* to the routing of
+the phase's results ([§ The close](#the-close-2026-11-27)); its folder is kept, as M2 keeps a closed phase's. It was **started
 2026-11-26** on the user's word, *"start next phase plans/m2_nl_to_ir/p2.2_formalizer, execute s2.2.0a and pause"*;
 S2.2.0a ran to its end in a subagent, which committed its work; then, on the user's word the same day, *"Ok, I like
 what I see, after s2.2.0a continue with other stages of the phase"*, the phase ran its other stages to its end,
@@ -33,8 +33,8 @@ audit's section has the evidence.
 
 **The user's words.** On the report and the analysis: *"read results of p2.2 … analyze what can go into milestone
 ledgers after phase close, what has to go into existing phases, what needs new phases p2.2* (before p2.3)?"*; and on
-the routing that answered it: *"Ok I agree, do it"*. The coordinator read the second as closing the phase, which the
-user may correct.
+the routing that answered it: *"Ok I agree, do it"*. The coordinator read the second as closing the phase, and the
+user then said so: *"close p2.2"*.
 
 **The verdict the phase closes with** is [the analysis'](report/ANALYSIS.md#summary): partially met. What the phase
 was to build and to measure is there and replays; of [its twelve acceptance items](#acceptance) 8 are met, 3
