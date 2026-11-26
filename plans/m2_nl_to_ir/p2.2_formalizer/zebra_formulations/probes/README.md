@@ -13,10 +13,10 @@ binaries by `$EIN_BIN` (default `ein.rs/target/release/ein`) and `$EINAF_BIN` (d
 | [`damaged/`](damaged/) | the damaged variants, `<encoding>.<damage>.ein`, each headed by what was changed |
 | [`order/`](order/) | the six encodings in synthesis order and in theory-first order, and each order's contradictory twin |
 | [`order-cases/`](order-cases/) | six small programs, each with one form written before another it may need, beside the same forms in the usual order; `run.sh` compares their read-outs |
-| [`language/`](language/) | a relation declared at two counts, with and without an import ([E-104](../../evaluation/language/E-104-a-relation-declared-at-a-second-count-is-refused-where-the.md)) |
-| [`zebra3.2-spatial-as-same.ein`](zebra3.2-spatial-as-same.ein), [`zebra3.2-read-through-means.ein`](zebra3.2-read-through-means.ein) | two forms of `zebra3.2` the static check flags ([E-106](../../evaluation/answer/E-106-the-static-check-reads-a-relation-not-a-shape.md)) |
+| [`language/`](language/) | a relation declared at two counts, with and without an import ([E-104](../../../evaluation/language/E-104-a-relation-declared-at-a-second-count-is-refused-where-the.md)) |
+| [`zebra3.2-spatial-as-same.ein`](zebra3.2-spatial-as-same.ein), [`zebra3.2-read-through-means.ein`](zebra3.2-read-through-means.ein) | two forms of `zebra3.2` the static check flags ([E-106](../../../evaluation/answer/E-106-the-static-check-reads-a-relation-not-a-shape.md)) |
 | [`zebra3.2-descriptions-in-same-house.ein`](zebra3.2-descriptions-in-same-house.ein) | the monotone form of `zebra3.2` before its descriptions were read inside `same`: every description an object of `same-house`, 110 510 facts to describe R where the example takes 60 418 (`einaf feedback FILE`, `work`) |
-| [`slots-without-the-same-house-exemption.diff`](slots-without-the-same-house-exemption.diff) | `std.slots` with the guard of its two pruning rules taken out, run through `EIN_STDLIB` on a copy ([E-105](../../evaluation/stdlib/E-105-std-slots-lets-two-values-stated-next-to-each-other-share-a.md)) |
+| [`slots-without-the-same-house-exemption.diff`](slots-without-the-same-house-exemption.diff) | `std.slots` with the guard of its two pruning rules taken out, run through `EIN_STDLIB` on a copy ([E-105](../../../evaluation/stdlib/E-105-std-slots-lets-two-values-stated-next-to-each-other-share-a.md)) |
 
 ```sh
 cd plans/m2_nl_to_ir/p2.2_formalizer/zebra_formulations/probes

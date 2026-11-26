@@ -4,6 +4,7 @@
 **Found:** by S2.1.2, in both halves, 2026-11-25; filed from the
 records by the restructuring of M2's ledgers
 **Owner:** none
+**Since P2.2's close (2026-11-27):** [P2.2e](../../p2.2e_kernel_fixes/README.md) meets it first
 
 ## What
 

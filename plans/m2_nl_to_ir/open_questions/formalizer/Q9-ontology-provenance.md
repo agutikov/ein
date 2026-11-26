@@ -69,4 +69,4 @@ imports (**A**), is no part of the main arms and is the widest condition of the 
 
 **What would change it**: a family whose canonical vocabulary is a theory's own where B with C cannot reach the
 answer and A can, on the benchmark (S2.6.4's library ablation); and the user's word on whether the word problems'
-moments are the text's to state or the theory's to supply ([Q-M2.23](../../p2.2_formalizer/open_questions/kernel/Q-M2.23-does-the-library-grow-a-reading-of-a-literal-vocabulary.md)).
+moments are the text's to state or the theory's to supply ([Q-M2.23](../kernel/Q-M2.23-does-the-library-grow-a-reading-of-a-literal-vocabulary.md)).

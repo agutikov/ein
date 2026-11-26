@@ -261,7 +261,7 @@ Both under a grammar (the steps' grammars; the whole grammar's root):
 | calls, generation | 49, 1 745 s | 16, 376 s |
 
 **The default taken for B2's mode: the steps**
-([Q-M2.32](../open_questions/formalizer/Q-M2.32-which-mode-does-baseline-b2-run-with.md)). The stage's rule: the
+([Q-M2.32](../../open_questions/formalizer/Q-M2.32-which-mode-does-baseline-b2-run-with.md)). The stage's rule: the
 steps, unless the one call is no worse on both materials. On the word problems it is no worse (one right answer
 against none, the rest alike: no line or a wrong one); **on the Zebra puzzle it is worse**, no program against a
 program whose judgement names what to repair. The steps also hold every `:source` to a sentence and close steps 2b

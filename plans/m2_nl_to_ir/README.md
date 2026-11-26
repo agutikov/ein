@@ -18,7 +18,7 @@ folders and content when close phase. Only will delete the whole milestone in it
 before it. **P2.2 is started
 2026-11-26** on the user's word, *"start next phase plans/m2_nl_to_ir/p2.2_formalizer, execute s2.2.0a and pause"*; S2.2.0a ran to its end, and then, *"Ok, I like what I see, after s2.2.0a continue with other stages of the phase"*,
 **the phase runs its other stages to its end and stops there for the user's review; no other phase starts until the
-user says so.** S2.2.1 to S2.2.5 have run to their end (S2.2.4, stopped on the user's word while the user asked about the grammar, ran again on *"continue the phase"*); **the phase stops for the user's review, with [its report](p2.2_formalizer/report/README.md), and is not closed.** **[P2.2b](p2.2b_guided_thinking/README.md), guided thinking, is planned 2026-11-26** on the user's word, *"add new phase p2.2b for guided thinking"*, and not started.
+user says so.** S2.2.1 to S2.2.5 ran to their end (S2.2.4, stopped on the user's word while the user asked about the grammar, ran again on *"continue the phase"*), and the phase stopped for the user's review with [its report](p2.2_formalizer/report/README.md) and, on the user's questions, [an analysis against its goals](p2.2_formalizer/report/ANALYSIS.md). **P2.2 is closed 2026-11-27** on the user's word, *"Ok I agree, do it"*, to the routing of its results ([its close](p2.2_formalizer/README.md#the-close-2026-11-27)): what it left open is the milestone's, [its defaults](defaults/p2.2.md) stand, and its folder is kept. **[P2.2b](p2.2b_guided_thinking/README.md), guided thinking, is planned 2026-11-26** on the user's word, *"add new phase p2.2b for guided thinking"*, and **[P2.2c](p2.2c_decoding_and_model_alone/README.md), [P2.2d](p2.2d_formalizer_corrected/README.md) and [P2.2e](p2.2e_kernel_fixes/README.md) are planned 2026-11-27** at that close, for what P2.2's results left with no owner before the benchmark: a generation that ends and the model alone, the formalizer corrected, Ein's two bugs. **None of the four is started, and no phase starts until the user says so.**
 **Depends on:** the kernel as it stands after M1f's close
 ([Q-M2.1](open_questions/kernel/Q-M2.1-when-is-the-kernel-frozen.md)). No other milestone runs for it:
 [M1p](../m1p_ein_to_natural_language/README.md), Ein to natural language, stays unstarted
@@ -255,7 +255,8 @@ committed; results, reports, analysis - also should be committed"*.
 Each is the coordinator's, recorded so that the user can correct it. Four have been ruled on since and say so
 (2, 7, 11 and 15), and one was replaced by a ruling (16).
 
-1. **The ten phases keep their ids and their order.** P2.1 to P2.5 are at stage depth, P2.6 has one stage file,
+1. **The ten phases keep their ids and their order** (four more, `P2.2b` to `P2.2e`, were planned between P2.2 and
+   P2.3 after P2.2 ran: [the order before P2.3](#the-order-before-p23)). P2.1 to P2.5 are at stage depth, P2.6 has one stage file,
    P2.7 to P2.10 are phase READMEs, as before (§ How deep this plan is).
 2. **One tree a project** (ruled: *"One tree - yes, preferred, docs/einaf/ - separately"*): EinAf's code,
    grammars, benchmark and records are folders of `einaf/`; the plan's `grammars/`, `benchmark/`, `experiments/`
@@ -359,13 +360,16 @@ table is the map from the plan to the folder.
 
 ## Phases
 
-In work order, which is id order.
+In work order ([below the table](#the-order-before-p23)); the ids are in the plan's order but for the four `P2.2x`, which were planned after P2.2 ran and come before P2.3.
 
 | ID | title | stages | what it ends with |
 |---|---|---|---|
 | P2.1 | The kernel as instrumentation — Stage A | S2.1.1 EinAf's tree and the outcomes; S2.1.2 the kernel's diagnostics as values; S2.1.3 the feedback object; S2.1.4 four findings fixed (planned after the report, ran to its end) | `einaf/` builds and is tested in the gate; the kernel says a refusal, an abort, a load's notes and a core's sources as values and on a machine surface; EinAf's feedback object over them, one for every corpus program. **Closed 2026-11-26** on the user's word, its folder deleted; [its defaults](defaults/p2.1.md) stand |
-| [P2.2](p2.2_formalizer/README.md) | The formalizer — Stage B | [S2.2.0a](p2.2_formalizer/s2.2.0a_zebra_formulations.md) three Zebras (added by the user); [S2.2.1](p2.2_formalizer/s2.2.1_contract.md) the contract, and the steps; [S2.2.2](p2.2_formalizer/s2.2.2_model_runtime.md) the model's runtime, and whether the model writes Ein; [S2.2.3](p2.2_formalizer/s2.2.3_gbnf.md) the grammars; [S2.2.4](p2.2_formalizer/s2.2.4_passes.md) the steps; [S2.2.5](p2.2_formalizer/s2.2.5_from_text.md) from a text to a short answer; all under [the user's notes on formalization in steps](p2.2_formalizer/README.md#formalization-in-steps-the-users-notes-on-the-whole-phase) | `einaf from-text`, one shot: a text becomes a program in three steps (the facts and a partial ontology, then the complete ontology and a partial theory, then the complete theory, with the answer query among the facts) and the short answer Ein prints, with the run's record and each step's program in it; the Zebra puzzle from its text to its canonical answer, and the word problems to theirs |
+| [P2.2](p2.2_formalizer/README.md) | The formalizer — Stage B | [S2.2.0a](p2.2_formalizer/s2.2.0a_zebra_formulations.md) three Zebras (added by the user); [S2.2.1](p2.2_formalizer/s2.2.1_contract.md) the contract, and the steps; [S2.2.2](p2.2_formalizer/s2.2.2_model_runtime.md) the model's runtime, and whether the model writes Ein; [S2.2.3](p2.2_formalizer/s2.2.3_gbnf.md) the grammars; [S2.2.4](p2.2_formalizer/s2.2.4_passes.md) the steps; [S2.2.5](p2.2_formalizer/s2.2.5_from_text.md) from a text to a short answer; all under [the user's notes on formalization in steps](p2.2_formalizer/README.md#formalization-in-steps-the-users-notes-on-the-whole-phase) | `einaf from-text`, one shot: a text becomes a program in three steps (the facts and a partial ontology, then the complete ontology and a partial theory, then the complete theory, with the answer query among the facts) and the short answer Ein prints, with the run's record and each step's program in it; the Zebra puzzle from its text to its canonical answer, and the word problems to theirs. **Closed 2026-11-27** on the user's word, its folder kept: the machinery built and tested in the gate, the Zebra puzzle one shot not met (*The statements contradict each other.*), no word problem answered for the text's reason ([its close](p2.2_formalizer/README.md#the-close-2026-11-27)); [its defaults](defaults/p2.2.md) stand |
 | [P2.2b](p2.2b_guided_thinking/README.md) | Guided thinking: the model decomposes, Ein solves | [S2.2b.1](p2.2b_guided_thinking/s2.2b.1_questions_by_hand.md) the questions, the analysis by hand, and the thinking's grammar; [S2.2b.2](p2.2b_guided_thinking/s2.2b.2_step1_guided.md) step 1 with guided thinking; [S2.2b.3](p2.2b_guided_thinking/s2.2b.3_steps_and_verdict.md) steps 2 and 3, the one call, and the verdict | the model's thinking asked the user's questions (objects, relations, properties, attributes, kinds, groups, sets, orders, processes, dependencies) instead of solving, by an instruction, a scaffold, a grammar over the thinking and a budget; measured on step 1, then steps 2 and 3 and the one call, against thinking off and thinking left alone; the verdict for the user. **Planned 2026-11-26** on the user's word, not started |
+| [P2.2c](p2.2c_decoding_and_model_alone/README.md) | A generation that ends, and the model alone | [S2.2c.1](p2.2c_decoding_and_model_alone/s2.2c.1_a_generation_that_ends.md) a generation that ends; [S2.2c.2](p2.2c_decoding_and_model_alone/s2.2c.2_the_model_alone.md) the model alone, measured; [S2.2c.3](p2.2c_decoding_and_model_alone/s2.2c.3_the_tool_probed.md) the tool, probed | a stop of its own for a generation whose tail repeats, held on every recorded generation with no model; the model reasoning in text under its own sampler on the Zebra text, its two edits, a renamed and an unseen puzzle, which says where the minimal goal's premise stands; a few episodes with Ein offered as a function where the model fails alone. **Planned 2026-11-27** at P2.2's close, not started |
+| [P2.2d](p2.2d_formalizer_corrected/README.md) | The formalizer corrected | [S2.2d.1](p2.2d_formalizer_corrected/s2.2d.1_a_query_a_question.md) a query a question, and what an answer says; [S2.2d.2](p2.2d_formalizer_corrected/s2.2d.2_the_cut.md) the cut of the steps; [S2.2d.3](p2.2d_formalizer_corrected/s2.2d.3_entries_described.md) an entry described for its use, with what it needs; [S2.2d.4](p2.2d_formalizer_corrected/s2.2d.4_check_findings.md) what the check can see where the kernel is silent; [S2.2d.5](p2.2d_formalizer_corrected/s2.2d.5_grammars_from_the_program.md) grammars rendered from the program; [S2.2d.6](p2.2d_formalizer_corrected/s2.2d.6_run_again_and_nearest_miss.md) the prompts again, the run again, and the nearest miss | the one shot's formalizer corrected where the miss was its own arrangement's: each correction removes a defect by construction or names it in a sentence, held by a test with no model; the cut of the steps measured, for the user to rule; the plan's 29 run again as a development number; the least edit of the model's Zebra program that answers. **Planned 2026-11-27** at P2.2's close, not started |
+| [P2.2e](p2.2e_kernel_fixes/README.md) | Ein's two bugs, and a clock | [S2.2e.1](p2.2e_kernel_fixes/s2.2e.1_declared_again_under_an_import.md) a relation declared again, under an import; [S2.2e.2](p2.2e_kernel_fixes/s2.2e.2_slots_neighbours.md) `std.slots`: two neighbours do not share a place; [S2.2e.3](p2.2e_kernel_fixes/s2.2e.3_clock_and_a_dead_root.md) the clock, and a root that dies; [S2.2e.4](p2.2e_kernel_fixes/s2.2e.4_order_and_table_rows.md) the order of a program's forms, and two rows of the table | changes of Ein that leave its syntax and semantics as they are: E-104 and E-105 closed, so that nothing of the benchmark is written against a library rule known wrong; the clock reaching a root that dies; on the user's word, the order of a program's forms held by a test. **Planned 2026-11-27** at P2.2's close, not started |
 | [P2.3](p2.3_benchmark/README.md) | The benchmark — Stage C | [S2.3.1](p2.3_benchmark/s2.3.1_families_and_seed_set.md), [S2.3.2](p2.3_benchmark/s2.3.2_generators.md), [S2.3.3](p2.3_benchmark/s2.3.3_external_benchmarks.md), [S2.3.4](p2.3_benchmark/s2.3.4_splits.md) | eight families and the word problems; generators with an exact gold answer and a canonical program whose `:expect` the kernel checks; instances with one answer, ambiguous and unsatisfiable; external adapters; frozen splits. **Level B gate** |
 | [P2.4](p2.4_loop/README.md) | The loop — Stages E, F | [S2.4.1](p2.4_loop/s2.4.1_state_machine.md) the filter's state machine; [S2.4.2](p2.4_loop/s2.4.2_repair.md) repair; [S2.4.3](p2.4_loop/s2.4.3_feedback_ladder.md) the feedback ladder; [S2.4.4](p2.4_loop/s2.4.4_faithfulness.md) faithfulness; [S2.4.5](p2.4_loop/s2.4.5_alternatives_as_hypotheses.md) alternatives as hypotheses; [S2.4.6](p2.4_loop/s2.4.6_ein_as_a_tool.md) Ein as a tool | both arrangements: the filter, with every transition logged, repair as well as regenerate, F0 to F8 as nine named sets of the blocks one object renders into, termination and cycle detection; the tool, an episode in which the model calls Ein when it likes; faithfulness judged against the source in both |
 | [P2.5](p2.5_harness/README.md) | Baselines, metrics, records — Stages D, H, N | [S2.5.1](p2.5_harness/s2.5.1_experiment_record.md), [S2.5.2](p2.5_harness/s2.5.2_baselines.md), [S2.5.3](p2.5_harness/s2.5.3_metrics.md), [S2.5.4](p2.5_harness/s2.5.4_first_table.md) | the immutable experiment record; B0 to B6 under a matched budget; the four metric layers; **the first main table**, which is the first measurement of a chain of formal reasoning against a chain of thought |
@@ -375,9 +379,25 @@ In work order, which is id order.
 | [P2.9](p2.9_formal_account/README.md) | The formal account — Stage M | named at the Level C gate | the loop's half of the conceptual model, written independently of the Rust, over the kernel's half that `docs/ein/reasoning/` already states |
 | [P2.10](p2.10_result_artifact_demo/README.md) | The result, the artifact, the demo — Stages O, Q | named at the Level C gate | one claim with its evidence; the seven layers released; one command that shows the loop; the evaluation of Ein written up. **Level D gate**, with M5 |
 
+### The order before P2.3
+
+The four phases planned after P2.2 ran come before [P2.3](p2.3_benchmark/README.md), each started only on the
+user's word. The order the routing of P2.2's results proposed, the user's to change:
+
+1. **[P2.2e](p2.2e_kernel_fixes/README.md) and [P2.2c](p2.2c_decoding_and_model_alone/README.md)**, in either
+   order: neither reads the other. P2.2e's second stage is what P2.3 waits for; P2.2c's first is what every later
+   run with the model reads.
+2. **The record and the answer's comparison**, [S2.5.1](p2.5_harness/s2.5.1_experiment_record.md) and the first
+   part of [S2.5.3](p2.5_harness/s2.5.3_metrics.md), which [P2.5's own order](p2.5_harness/README.md#order) has run
+   before P2.2's numbers: P2.2 took its numbers with stand-ins for both.
+3. **[P2.2d](p2.2d_formalizer_corrected/README.md)**: the contract P2.3's instance is shaped by, and the formalizer
+   the Level B run opens `test` with.
+4. **[P2.2b](p2.2b_guided_thinking/README.md)**'s runs with the model, on the corrected formalizer and the cut that
+   stands; its first stage needs no model and may run at any time.
+
 ## How deep this plan is
 
-**P2.2 to P2.5 are at stage depth**, twenty stage files: nineteen re-planned 2026-11-25 against the kernel
+**P2.2 to P2.5 are at stage depth**, twenty stage files (and the four `P2.2x`, seventeen more: three of P2.2b's, planned 2026-11-26, and fourteen of P2.2c's, P2.2d's and P2.2e's, planned 2026-11-27 from P2.2's results): nineteen re-planned 2026-11-25 against the kernel
 at M1f's close with [the analysis](analysis/README.md) and its six audits as the worklist, and S2.2.0a
 added by the user after; P2.1's four, at the same depth, are deleted with its folder at its close; S2.2.0f, added the same day, is since 2026-11-26 the user's notes on the whole of P2.2. **P2.6 has one stage
 file**, [S2.6.4](p2.6_ablations/s2.6.4_representation_ablations.md), which carries the link-grammar experiment
@@ -477,7 +497,8 @@ first and the user's rulings after them.
 finds that is neither Ein's nor a question (`L-M2.n`). Each holds one file an item under a topic folder, and an index.
 **Every phase keeps the same three of its own**, beside its README, its ids taken from the milestone's sequences; at
 the phase's close what is open moves into the milestone's folder of the same name, under the same topic, and what is
-closed stays in the phase's folder, which M2 keeps until the milestone's own close (the user's rule, above).
+closed stays in the phase's folder, which M2 keeps until the milestone's own close (the user's rule, above). P2.2's
+close, 2026-11-27, was the first under that rule.
 
 **Ruled by the user, 2026-11-25:** the kernel M2 reads is the one M1f left
 ([Q-M2.1](open_questions/kernel/Q-M2.1-when-is-the-kernel-frozen.md)); the model is local
@@ -516,6 +537,18 @@ the schema numbers; [Q-M2.20](open_questions/kernel/Q-M2.20-what-are-max-steps-n
 `--max-steps`' name, unit and default; [Q-M2.21](open_questions/kernel/Q-M2.21-a-missing-files-line-the-pages-python-spelling-or-eins-own.md),
 the missing file's line. Each holds a default the phase took ([its defaults](defaults/p2.1.md)).
 
+**Open, and raised by P2.2**, the milestone's since the phase's close, 2026-11-27, each with the default the phase
+took ([its defaults](defaults/p2.2.md)): Q-M2.22 to Q-M2.34, by its stages (what a faithfulness event is and what a
+`:source` quotes, Q-M2.22, Q-M2.25, Q-M2.26; the library and the kernel, Q-M2.23, Q-M2.24, Q-M2.34; the decoding and
+the grammars, Q-M2.27 to Q-M2.31; B2's mode, Q-M2.32; an answer of several rows, Q-M2.33); and Q-M2.35 to Q-M2.42, by
+[the analysis of the phase](p2.2_formalizer/report/ANALYSIS.md) and the routing of its results (a query a question,
+the cut of the steps, where a library's descriptions live, the target shape's abbreviation, the minimal goal's
+instance, a third arm, a clause of *the theory before the facts*, and when Ein's two bugs are fixed).
+[The ledger's index](open_questions/README.md#open) has each with what it waits for. **Q-M2.35 holds
+[S2.2d.1](p2.2d_formalizer_corrected/s2.2d.1_a_query_a_question.md)**, and Q-M2.22, Q-M2.25, Q-M2.26 and Q-M2.38
+shape an instance of the benchmark ([S2.3.1](p2.3_benchmark/s2.3.1_families_and_seed_set.md)); no other holds a
+phase.
+
 ## Connections
 
 - [`EinAf.md`](EinAf.md) — the research plan, verbatim; this README is its
@@ -523,7 +556,8 @@ the missing file's line. Each holds a default the phase took ([its defaults](def
 - [The root `README.md`](../../README.md), the repository's page: Ein, ein.rs and EinAf, and what depends on
   what.
 - [`findings/`](findings/README.md): what the milestone finds that is neither Ein's nor a question for the user.
-- [`defaults/`](defaults/README.md): the defaults a closed phase took that still stand, one file a phase.
+- [`defaults/`](defaults/README.md): the defaults a closed phase took that still stand, one file a phase: P2.1's
+  whole, P2.2's as a map into its kept folder.
 - [The evaluation of Ein](evaluation/README.md): what this application found of the kernel, for the iteration of
   Ein that follows.
 - [`analysis/`](analysis/README.md): the plan against the project, the six audits and the host, which the

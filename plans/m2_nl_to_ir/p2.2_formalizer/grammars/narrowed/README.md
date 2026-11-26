@@ -99,7 +99,7 @@ in one session); under `chosen-first` the two are within 3 % of no grammar's spe
 
 ## 7. A fixed layout, measured and not adopted
 
-[Q-M2.30](../../open_questions/model/Q-M2.30-does-a-grammar-the-model-writes-under-fix-its-layout.md):
+[Q-M2.30](../../../open_questions/model/Q-M2.30-does-a-grammar-the-model-writes-under-fix-its-layout.md):
 [`fixed_layout.rs`](fixed_layout.rs), an EinAf test run once and removed, wrote [`fixed-layout.gbnf`](fixed-layout.gbnf),
 the narrowed root with one space between two words, none beside a paren, a line break between two forms and no
 comment: **31 199 bytes and 376 rules**, against the narrowed root's 34 631 bytes (its rules, comments aside) and 383

@@ -233,7 +233,7 @@ the premise is stated: `same-house(Englishman, Red)` is derived from the sentenc
 lives in the red house*, which is one step further back.
 
 **What a contradiction is explained by**: the cores of [§ 5](#5-what-a-formalizers-mistake-does). In the literal
-encodings a core is the text's sentences ([E-109](../evaluation/natural-language/E-109-a-sentence-written-as-a-rule-s-activating-fact-is-in-no.md));
+encodings a core is the text's sentences ([E-109](../../evaluation/natural-language/E-109-a-sentence-written-as-a-rule-s-activating-fact-is-in-no.md));
 in `zebra2` and `zebra3.4`, where a clue is a rule's activator, it is a rule's name.
 
 **The renderings** ([`renderings/`](renderings/), `python3 probes/render.py`): each encoding's query as `ein render
@@ -282,17 +282,17 @@ in `zebra3.1` and `zebra3.3`, `(the-thing-described same)` in `zebra3.2` and `(b
 - **A sentence dropped** shows as *several*: an under-determined text, which it is. The `std.slots` encodings answer
   55 states where the projections answer 32, and 23 of the 55 put Chesterfields with the fox or Kools with the
   horse in one house, which *next to* excludes: `std.slots`' pruning rules exempt a value's own house
-  ([E-105](../evaluation/stdlib/E-105-std-slots-lets-two-values-stated-next-to-each-other-share-a.md)).
+  ([E-105](../../evaluation/stdlib/E-105-std-slots-lets-two-values-stated-next-to-each-other-share-a.md)).
 - **A contradicting sentence** shows, and every encoding's core names it. The literal cores name the two sentences
   it contradicts besides, `zebra3.1`'s `(is-drunk-in Coffee First)`, `(is-drunk-in Coffee Green)`,
   `(is-immediately-to-the-right-of Green Ivory)`; `zebra2`'s and `zebra3.4`'s name the added fact, a membership and a
   declaration, refuted by the clue rules `co-located` / `same-house` and their negatives (E-109).
 - **A swapped clue** does not show at all: the swapped puzzle has one solution, the zebra in the fourth house, and in
   the literal encodings, which answer *who*, even the sentence is the right one's
-  ([E-108](../evaluation/answer/E-108-a-clue-with-its-arguments-swapped-is-answered-one-with.md)).
+  ([E-108](../../evaluation/answer/E-108-a-clue-with-its-arguments-swapped-is-answered-one-with.md)).
 - **A misspelt activator** is a fact of an undeclared relation and loads in silence; its outcome is the left-out
   one's in all six. Where it is *inconsistent*, the core names the Norwegian's sentences, which are right
-  ([E-107](../evaluation/diagnostics/E-107-a-theory-s-missing-activating-fact-is-reported-as-the.md)); `zebra2`
+  ([E-107](../../evaluation/diagnostics/E-107-a-theory-s-missing-activating-fact-is-reported-as-the.md)); `zebra2`
   says *incomplete*, R empty with every alive state owing, which is nearer the truth (the theory cannot place what it
   should), and `zebra3.2` *several*.
 - **The drinks' activating fact left out** shows as *several* where it is the only bridge from a sentence to the
@@ -353,8 +353,8 @@ statements, query). The four `zebra3.n` are written in synthesis order already.
 **What follows.** The order changes nothing that § 1.3 does not allow, on these programs, and the four examples are
 written in synthesis order. Whether Ein states it and holds it over the corpus, with a test beside
 `import_invariance.rs`, is a proposal for the user
-([Q-M2.24](../open_questions/kernel/Q-M2.24-does-ein-hold-that-an-answer-does-not-depend-on-the-order.md);
-[E-112](../evaluation/language/E-112-a-program-s-forms-may-be-written-in-the-order-they-are-made.md)). No kernel
+([Q-M2.24](../../open_questions/kernel/Q-M2.24-does-ein-hold-that-an-answer-does-not-depend-on-the-order.md);
+[E-112](../../evaluation/language/E-112-a-program-s-forms-may-be-written-in-the-order-they-are-made.md)). No kernel
 code was changed.
 
 ## 7. The user's reading, axis by axis
@@ -423,7 +423,7 @@ choice is written with its alternative and why; the forms a choice ruled out are
   (*the man who lives in the green house drinks coffee*), changes a sentence step 1 should not change.
 - *The theory*: the library's alone, no rule. The read-back of the answer was first `(compose same-house same-house
   in-one-house)` with a `meet` per question (86 854 facts to describe R), and a rule of the file's own was cheaper
-  (50 622, [E-111](../evaluation/bounds/E-111-the-answer-in-the-statements-own-words-costs-the-kernel.md)); the
+  (50 622, [E-111](../../evaluation/bounds/E-111-the-answer-in-the-statements-own-words-costs-the-kernel.md)); the
   converses made a third reading, through the verbs of place, 74 213, kept because it relates the verbs as the
   language does and stays the library's.
 
@@ -438,7 +438,7 @@ so it is a fact inside the description, `(is drunk in)`, a fact of `is`.
 - *The three sentences of the row* are relations between descriptions, `(next-to (the Norwegian (lives in) House)
   (the Blue House))`. Written as `same` with a description of the neighbouring house, `(same (the Norwegian (lives
   in) House) (the House (next to) (the Blue House)))`, the program is flagged
-  ([E-106](../evaluation/answer/E-106-the-static-check-reads-a-relation-not-a-shape.md);
+  ([E-106](../../evaluation/answer/E-106-the-static-check-reads-a-relation-not-a-shape.md);
   [`probes/zebra3.2-spatial-as-same.ein`](probes/zebra3.2-spatial-as-same.ein)).
 - *A description is read in place*: four rules read `(the K …)` as `K` in either place of a sentence, and one reads
   a `same` of two names as `same-house`. The first monotone form put every description into `same-house` as an
@@ -447,7 +447,7 @@ so it is a fact inside the description, `(is drunk in)`, a fact of `is`.
   through a relation `means` was cheaper still and flagged
   ([`probes/zebra3.2-read-through-means.ein`](probes/zebra3.2-read-through-means.ein), E-106).
 - *`the` at two counts* is declared at one: the second declaration is refused where a program imports a module
-  ([E-104](../evaluation/language/E-104-a-relation-declared-at-a-second-count-is-refused-where-the.md)).
+  ([E-104](../../evaluation/language/E-104-a-relation-declared-at-a-second-count-is-refused-where-the.md)).
 
 **`zebra3.3`, an adjective a relation of one argument.** The user's `(is-drunk-in Coffee (green House))`.
 
@@ -498,11 +498,11 @@ and how the library has it. A verb into the link: `(includes VERB same-house)`. 
 `(converse ACTIVE PASSIVE)`, one fact, the way back the library's. A passive of place: two `compose` facts through
 the verb a man lives in. A value in a house by its kind's verb: `top` and `meet`. A description, `(the K …)`, or an
 adjective, `(red House)`, has no reading in the library, and is a rule of the program's own
-([E-110](../evaluation/stdlib/E-110-the-library-has-no-reading-of-a-literal-vocabulary.md)); whether `stdlib/` grows
-one is the user's ([Q-M2.23](../open_questions/kernel/Q-M2.23-does-the-library-grow-a-reading-of-a-literal-vocabulary.md),
+([E-110](../../evaluation/stdlib/E-110-the-library-has-no-reading-of-a-literal-vocabulary.md)); whether `stdlib/` grows
+one is the user's ([Q-M2.23](../../open_questions/kernel/Q-M2.23-does-the-library-grow-a-reading-of-a-literal-vocabulary.md),
 default: no module, the catalogue's recipes). A literal program on `std.slots` needs `(config
 :record-alternative-justifications false)` wherever a dead state's core is printed
-([E-113](../evaluation/bounds/E-113-a-dead-state-s-core-costs-minutes-on-a-link-re-derived-many.md)): a recipe of the
+([E-113](../../evaluation/bounds/E-113-a-dead-state-s-core-costs-minutes-on-a-link-re-derived-many.md)): a recipe of the
 catalogue too.
 
 ## 10. What the stage filed

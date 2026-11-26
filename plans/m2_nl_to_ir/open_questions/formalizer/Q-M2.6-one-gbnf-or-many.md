@@ -50,11 +50,11 @@ parser's second reader. Each is carried inside the fence the prompt asks for, be
   where it refuses often: step 3, 8 and 22 % with 12 and 16 refusals in 256 tokens) and the whole grammar 0 to 1 %; a
   grammar's sampler is built in 0.19 to 0.56 ms against a prompt evaluated in 1.4 s. Applied to every candidate first,
   the step grammars run at 12.7 to 25.6 tokens a second and the whole grammar at 11.2 to 12.8, against 64: *smaller
-  grammars decode faster* only there ([Q-M2.28](../../p2.2_formalizer/open_questions/model/Q-M2.28-is-a-token-held-to-its-grammar-by-the-chain-s-choice-first.md)).
+  grammars decode faster* only there ([Q-M2.28](../model/Q-M2.28-is-a-token-held-to-its-grammar-by-the-chain-s-choice-first.md)).
 - **What the vocabulary closure is worth.** Steps 2b and 3 close every pattern, conclusion, activating fact and
   hypothesis to a relation the program or a module it imports declares, at a declared count, over the program's
   names. Step 1 closes no fact (under its grammar the model still wrote a fact of a relation it never declared), and
-  step 2 none of its ontology's facts ([Q-M2.29](../../p2.2_formalizer/open_questions/formalizer/Q-M2.29-are-step-2-s-facts-held-to-the-relations-step-2-declares.md)).
+  step 2 none of its ontology's facts ([Q-M2.29](Q-M2.29-are-step-2-s-facts-held-to-the-relations-step-2-declares.md)).
 
 **What would have reversed it**, by S2.2.3's terms: the probe finding no error a step's grammar removes and the whole
 one does not (it found three kinds), or a step's grammar costing more to build a call than it saves (under a
@@ -66,6 +66,6 @@ grammar changed a generation only where it refused a token (6 of 16 texts' three
 where it refused, it kept out of the programs 11 activating facts under a name the import does not list, 7 `:source`
 that are no sentence and 3 second answer queries, and four programs from a refusal (14 load against 11); and it sent
 7 of 49 calls into a loop to the budget that the free runs did not enter
-([L-M2.19](../../p2.2_formalizer/findings/model/L-M2.19-a-grammar-s-refusal-sends-greedy-decoding-into-a-loop-it-does-not-enter-free.md)).
+([L-M2.19](../../findings/model/L-M2.19-a-grammar-s-refusal-sends-greedy-decoding-into-a-loop-it-does-not-enter-free.md)).
 The answers were the same with and without. The whole grammar's root, in one call, refused a token in 2 calls of 16.
 The default, *many*, stands.

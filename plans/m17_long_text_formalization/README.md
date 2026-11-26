@@ -43,7 +43,7 @@ created M14, the server, *"useful for Ein MCP and M20"*, that is for M15 and thi
   chapters that write one name mean one object, and two names for one thing are two objects until a rule says
   otherwise. So the vocabulary across chapters is the merge's first problem. P2.2 found the model choosing its
   vocabulary text by text, and its readings going wrong in silence
-  ([L-M2.18](../m2_nl_to_ir/p2.2_formalizer/findings/model/L-M2.18-a-sentence-s-polarity-and-a-thing-s-kind-go-wrong-in-silence.md)).
+  ([L-M2.18](../m2_nl_to_ir/findings/model/L-M2.18-a-sentence-s-polarity-and-a-thing-s-kind-go-wrong-in-silence.md)).
   A relation written at another count loads in silence as another relation
   ([Q-M1f.447](../../docs/decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)). A conflict is
   what Ein already reports: the merged program's root dead, its core naming the facts and the rules

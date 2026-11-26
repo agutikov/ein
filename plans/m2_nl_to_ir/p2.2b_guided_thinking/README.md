@@ -11,7 +11,7 @@ this phase's baseline ([S2.2.4](../p2.2_formalizer/s2.2.4_passes.md)); `einaf fr
 ([S2.2.5](../p2.2_formalizer/s2.2.5_from_text.md)).
 **Informs:** [the arms](../README.md#the-arms) (B1, a chain of thought; B2 to B5, the filter with thinking off);
 [P2.6](../p2.6_ablations/README.md)'s *thinking before the program*, which as planned measures unguided thinking;
-[Q-M2.27](../p2.2_formalizer/open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md),
+[Q-M2.27](../open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md),
 greedy thinking that loops.
 **Research:** Ye et al., *SatLM* (2023), a declarative specification handed to a solver instead of a chain of
 thought ([the reading list](../reading.md)).
@@ -43,7 +43,7 @@ S2.2.4 runs as it is planned, thinking off, and its runs are this phase's baseli
   program as the example it decided to copy by about token 2 500 and looped from token 6 154. **36 of the probe's
   36 runs with thinking on** ended in a loop the budget cut, cycles of 11 to 911 tokens begun between tokens 249
   and 8 901 ([S2.2.2's report](../p2.2_formalizer/model_runtime/README.md)). Every run was greedy
-  ([Q-M2.27](../p2.2_formalizer/open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md)).
+  ([Q-M2.27](../open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md)).
 - **A grammar after the thinking costs the thinking nothing, and never begins when the thinking loops.** It begins at
   the model's token `</think>` (`einaf::model::GrammarStart::Token`); on short prompts it began at tokens 268 and 310,
   on the steps' prompts the thinking looped and never closed ([S2.2.3's report](../p2.2_formalizer/grammars/README.md)).
@@ -103,7 +103,7 @@ EinAf renders the chat template itself and owns the loop over tokens
 4. **Is the analysis handed on?** No: the program is what a step hands the next, as the contract has it, and the
    analysis is the step's own (default). Handing it on is a condition S2.2b.3 may add.
 5. **Sampling.** Greedy, as the phase's runs are
-   ([Q-M2.27](../p2.2_formalizer/open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md)'s
+   ([Q-M2.27](../open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md)'s
    default): whether a thinking with a shape still loops under greedy decoding is one of the measurements.
 6. **The budget** counts the thinking's tokens ([the frame's default 6](../README.md#the-defaults-the-re-plan-took));
    a run is reported at its whole cost.

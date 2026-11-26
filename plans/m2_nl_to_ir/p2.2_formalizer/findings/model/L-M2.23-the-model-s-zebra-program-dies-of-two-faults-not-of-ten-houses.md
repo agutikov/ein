@@ -2,8 +2,8 @@
 
 **Status:** closed: the records that said *ten houses for five places* are corrected in the commit that files this
 **Found:** by [the phase report](../../report/README.md)'s re-runs, 2026-11-26, on `fd10c690`
-**Owner:** — (what the faults say of the model is [L-M2.18](L-M2.18-a-sentence-s-polarity-and-a-thing-s-kind-go-wrong-in-silence.md)'s and
-[L-M2.21](L-M2.21-the-model-s-zebra-answer-query-asks-one-person-both-questions.md)'s, a repair's
+**Owner:** — (what the faults say of the model is [L-M2.18](../../../findings/model/L-M2.18-a-sentence-s-polarity-and-a-thing-s-kind-go-wrong-in-silence.md)'s and
+[L-M2.21](../../../findings/model/L-M2.21-the-model-s-zebra-answer-query-asks-one-person-both-questions.md)'s, a repair's
 [P2.4](../../../p2.4_loop/README.md)'s)
 
 ## What

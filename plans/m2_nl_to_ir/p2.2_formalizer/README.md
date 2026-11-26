@@ -1,10 +1,12 @@
 # P2.2 — The formalizer (Stage B)
 
-**Status:** **started 2026-11-26** on the user's word, *"start next phase plans/m2_nl_to_ir/p2.2_formalizer, execute s2.2.0a and pause"*. S2.2.0a ran to its end in a subagent, which committed
-its work; then, on the user's word the same day, *"Ok, I like what I see, after s2.2.0a continue with other stages of the phase"*, **the phase runs its other stages to its end**, S2.2.1 to
-S2.2.5, one by one, each in a subagent that commits its work, and stops there for the user's review with a phase
-report; it is not closed until the user says so. **S2.2.1 to S2.2.5 have run to their end; the phase stops for the
-user's review with [its report](report/README.md).**
+**Status:** **closed 2026-11-27** on the user's word, *"Ok I agree, do it"*, to the routing of the phase's results
+([§ The close](#the-close-2026-11-27)); its folder is kept, as M2 keeps a closed phase's. It was **started
+2026-11-26** on the user's word, *"start next phase plans/m2_nl_to_ir/p2.2_formalizer, execute s2.2.0a and pause"*;
+S2.2.0a ran to its end in a subagent, which committed its work; then, on the user's word the same day, *"Ok, I like
+what I see, after s2.2.0a continue with other stages of the phase"*, the phase ran its other stages to its end,
+S2.2.1 to S2.2.5, one by one, each in a subagent that committed its work, and stopped for the user's review with
+[its report](report/README.md) and, on the user's questions, [an analysis of the phase against its goals](report/ANALYSIS.md).
 **Depends on:** P2.1:
 [S2.1.1](../../../docs/einaf/README.md#the-package) creates `einaf/`, the Cargo package every
 stage here adds to, and writes the operational test of the seven outcomes;
@@ -26,6 +28,71 @@ B1 to B4.
 audit's section has the evidence.
 
 ---
+
+## The close (2026-11-27)
+
+**The user's words.** On the report and the analysis: *"read results of p2.2 … analyze what can go into milestone
+ledgers after phase close, what has to go into existing phases, what needs new phases p2.2* (before p2.3)?"*; and on
+the routing that answered it: *"Ok I agree, do it"*. The coordinator read the second as closing the phase, which the
+user may correct.
+
+**The verdict the phase closes with** is [the analysis'](report/ANALYSIS.md#summary): partially met. What the phase
+was to build and to measure is there and replays; of [its twelve acceptance items](#acceptance) 8 are met, 3
+partially and 1 not.
+
+| the item short at the close | where it is carried |
+|---|---|
+| 1, not met: the Zebra puzzle, one shot, to its answer | the minimal goal, open for the loop ([Q-M2.17](../open_questions/milestone/Q-M2.17-what-is-the-milestones-minimal-goal.md), [P2.4](../p2.4_loop/README.md)); the nearest miss is [S2.2d.6](../p2.2d_formalizer_corrected/s2.2d.6_run_again_and_nearest_miss.md)'s; whether the Level B gate's first criterion is held as written is the user's at that gate |
+| 3, partially: the judge finds no event in any reference program | [Q-M2.22](../open_questions/answer/Q-M2.22-is-a-membership-no-sentence-states-a-faithfulness-event.md): the Zebra steps by hand carry 11 events and the seating 5 under its default |
+| 4, partially: every form of every recorded program in one category row | [L-M2.26](../findings/einaf/L-M2.26-a-program-the-kernel-refuses-carries-no-categories.md), [S2.2d.6](../p2.2d_formalizer_corrected/s2.2d.6_run_again_and_nearest_miss.md) |
+| 11, partially: Q-M2.6 and Q9 decided | each carries a default and its measurement, and is the user's to rule ([Q-M2.6](../open_questions/formalizer/Q-M2.6-one-gbnf-or-many.md), [Q9](../open_questions/formalizer/Q9-ontology-provenance.md)) |
+
+**What the close moved**, by the ledgers' rule (what is open to the milestone, what is closed kept here):
+
+- the thirteen questions, Q-M2.22 to Q-M2.34, to [the milestone's ledger](../open_questions/README.md), none ruled;
+- the eight open findings to [the milestone's findings](../findings/README.md); the eleven closed stay in
+  [`findings/`](findings/README.md);
+- the twenty-four entries of the evaluation, all open or strengths, to
+  [the milestone's evaluation](../evaluation/README.md);
+- the defaults, mapped in [`defaults/p2.2.md`](../defaults/p2.2.md);
+- and, filed at the close because [the analysis](report/ANALYSIS.md) held them and no ledger did: L-M2.24 to
+  L-M2.30, Q-M2.35 to Q-M2.42 and E-128.
+
+**Where the phase's work goes on.** Three phases planned at the close, none started, each before
+[P2.3](../p2.3_benchmark/README.md): [P2.2c](../p2.2c_decoding_and_model_alone/README.md), a generation that ends
+and the model alone; [P2.2d](../p2.2d_formalizer_corrected/README.md), the formalizer corrected;
+[P2.2e](../p2.2e_kernel_fixes/README.md), Ein's two bugs and a clock. [P2.2b](../p2.2b_guided_thinking/README.md),
+guided thinking, was planned before. The phases after them carry a section each on what this phase hands them.
+
+**Where each proposal of the analysis went** (its numbers, [§§ 8 to 12](report/ANALYSIS.md#9-proposals-for-the-other-issues)).
+A proposal stays a proposal: a stage that carries one says what it waits for.
+
+| # | the proposal | where |
+|---:|---|---|
+| 1 | an answer query for each question | [Q-M2.35](../open_questions/formalizer/Q-M2.35-is-there-an-answer-query-for-each-question-of-the-text.md); [S2.2d.1](../p2.2d_formalizer_corrected/s2.2d.1_a_query_a_question.md) |
+| 2 | a statement's relation made of its sentence's words | [S2.2d.4](../p2.2d_formalizer_corrected/s2.2d.4_check_findings.md), a finding; [S2.2d.5](../p2.2d_formalizer_corrected/s2.2d.5_grammars_from_the_program.md), a grammar |
+| 3 | a description is not a new thing | [S2.2d.6](../p2.2d_formalizer_corrected/s2.2d.6_run_again_and_nearest_miss.md) |
+| 4 | each catalogue entry states what it needs, and the check evaluates it | [S2.2d.3](../p2.2d_formalizer_corrected/s2.2d.3_entries_described.md), with 26 |
+| 5 | step 3's grammar offers only the mechanism the program can have | [S2.2d.5](../p2.2d_formalizer_corrected/s2.2d.5_grammars_from_the_program.md) |
+| 6 | an import lists an entry's names together | [S2.2d.5](../p2.2d_formalizer_corrected/s2.2d.5_grammars_from_the_program.md) |
+| 7 | a change over time: an example, a finding, a reading in the library | [S2.2d.6](../p2.2d_formalizer_corrected/s2.2d.6_run_again_and_nearest_miss.md); [S2.2d.4](../p2.2d_formalizer_corrected/s2.2d.4_check_findings.md); [Q-M2.23](../open_questions/kernel/Q-M2.23-does-the-library-grow-a-reading-of-a-literal-vocabulary.md) |
+| 8 | one selecting fact a verb for the read-back | [Q-M2.23](../open_questions/kernel/Q-M2.23-does-the-library-grow-a-reading-of-a-literal-vocabulary.md) |
+| 9 | stop a generation that loops | [S2.2c.1](../p2.2c_decoding_and_model_alone/s2.2c.1_a_generation_that_ends.md); [Q-M2.27](../open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md), [Q-M2.31](../open_questions/model/Q-M2.31-does-a-step-s-grammar-bound-the-comment-lines-the-model-writes.md) |
+| 10 | the target shape against *the text's own words* | [Q-M2.38](../open_questions/formalizer/Q-M2.38-is-a-description-abbreviated-to-its-word-or-written-as-a-term.md) |
+| 11 | a step shown its own findings before the next | [Q-M2.41](../open_questions/formalizer/Q-M2.41-is-a-misread-statement-repaired-before-any-theory.md); [S2.4.2](../p2.4_loop/s2.4.2_repair.md); [P2.6](../p2.6_ablations/README.md)'s arm |
+| 12, 18 | the model alone, under its own sampler, on five texts | [S2.2c.2](../p2.2c_decoding_and_model_alone/s2.2c.2_the_model_alone.md) |
+| 13 | the clock and the lever | [S2.2e.3](../p2.2e_kernel_fixes/s2.2e.3_clock_and_a_dead_root.md); [Q-M2.34](../open_questions/kernel/Q-M2.34-does-einaf-s-kernel-call-set-the-lever-that-keeps-one-justification.md) |
+| 14 | E-104 and E-105 before the loop | [S2.2e.1](../p2.2e_kernel_fixes/s2.2e.1_declared_again_under_an_import.md), [S2.2e.2](../p2.2e_kernel_fixes/s2.2e.2_slots_neighbours.md); [Q-M2.42](../open_questions/kernel/Q-M2.42-are-e-104-and-e-105-fixed-before-the-benchmark-is-built.md) |
+| 15 | right, and right for the program's reason | [S2.2d.1](../p2.2d_formalizer_corrected/s2.2d.1_a_query_a_question.md); [S2.5.3](../p2.5_harness/s2.5.3_metrics.md) |
+| 16 | the repair ladder, by hand, once | [S2.2d.6](../p2.2d_formalizer_corrected/s2.2d.6_run_again_and_nearest_miss.md), for [S2.4.3](../p2.4_loop/s2.4.3_feedback_ladder.md) |
+| 17 | the small gaps of the acceptance | [S2.2d.6](../p2.2d_formalizer_corrected/s2.2d.6_run_again_and_nearest_miss.md) (the categories); [S2.5.1](../p2.5_harness/s2.5.1_experiment_record.md) (Ein's commit); the user (Q-M2.6, Q9) |
+| 19, 21 | Ein as the checker of the model's own answer; that answer as a level of the ladder | [Q-M2.40](../open_questions/einaf/Q-M2.40-is-the-model-reasons-and-ein-checks-its-answer-an-arm.md); [S2.4.6](../p2.4_loop/s2.4.6_ein_as_a_tool.md), [S2.4.3](../p2.4_loop/s2.4.3_feedback_ladder.md) |
+| 20 | think, then state | [P2.2b](../p2.2b_guided_thinking/README.md) |
+| 22 | the tool probed early | [S2.2c.3](../p2.2c_decoding_and_model_alone/s2.2c.3_the_tool_probed.md) |
+| 23 | where the model stops solving | [P2.7](../p2.7_failure_scaling_generalization/README.md)'s scaling, on [S2.3.2](../p2.3_benchmark/s2.3.2_generators.md)'s generator |
+| 24 | the minimal goal's instance | [Q-M2.39](../open_questions/milestone/Q-M2.39-what-is-the-minimal-goal-s-instance-if-the-model-alone-solves-the-zebra-text.md) |
+| 25 | the cut of the steps, measured | [S2.2d.2](../p2.2d_formalizer_corrected/s2.2d.2_the_cut.md); [Q-M2.36](../open_questions/formalizer/Q-M2.36-how-are-the-three-steps-cut.md) |
+| 26 | a rule described for its use, by the library | [S2.2d.3](../p2.2d_formalizer_corrected/s2.2d.3_entries_described.md); [Q-M2.37](../open_questions/kernel/Q-M2.37-where-do-a-library-s-descriptions-of-its-rules-live.md); [E-128](../evaluation/stdlib/E-128-a-library-cannot-say-what-a-selecting-fact-is-for-or-what-it-needs.md) |
 
 ## Goal
 
@@ -243,8 +310,8 @@ what both use and the formalizer of one of them.
 | [S2.2.0a](s2.2.0a_zebra_formulations.md) | Three Zebras: the generic vocabulary, the projections, and the text's own words | **ran to its end** 2026-11-26 ([its record](s2.2.0a_zebra_formulations.md#record), [the analysis](zebra_formulations/README.md)): `examples/zebra3.1.ein` to `zebra3.4.ein`, the target shape `zebra3.1` by default. Planned to end with: `zebra.ein` and `zebra2.ein` measured side by side for a formalizer (distance from the text, the theory and who writes it, the kernel's work and what it says back, what a mistake does); `examples/zebra3.ein`, its facts the sentences' own words, monotone and held to the published answer; each encoding written in its synthesis order (facts, ontology, theory) and held to the same answer; the target shape decided by the table |
 | [S2.2.1](s2.2.1_contract.md) | The formalization contract: B1 to B4, and the steps | **ran to its end** 2026-11-26 ([its record](s2.2.1_contract.md#record), [the page](../../../docs/einaf/04-contract.md)): the contract, `docs/einaf/04-contract.md`; the categories computed by `einaf::contract`; the Zebra puzzle, a seating and three word problems through the three steps by hand under `einaf/contract/`, held by `einaf/tests/contract.rs`. Planned to end with: one page, `docs/einaf/contract.md`: the input, the five-part output made in three steps with the hypothesis mechanism and the answer query, the steps stated with the five design questions decided, what a flagged program is, the categories by step with which of them is a faithfulness event, what the model receives, what is recorded; the Zebra puzzle and other texts through the three steps by hand, each step's program a file a test judges |
 | [S2.2.2](s2.2.2_model_runtime.md) | The model's runtime, and whether the model writes Ein | **ran to its end** 2026-11-26 ([its record](s2.2.2_model_runtime.md#record), [the probe's report](model_runtime/README.md), [the runtime's page](../../../docs/einaf/05-model.md)): `einaf::model`, the binding `llama-cpp-2` 0.1.161 behind the feature `cuda`, the model pinned by its SHA-256, the envelope, replay; held to `llama-server` (the prompt's tokens alike on fourteen requests, the text on eleven), repeatable; the first experiment (thinking off, `zebra3.1.ein` copied whole, *one*; thinking on, a loop to the budget); the probe's 87 runs, and step 1 with the model. Planned to end with: the binding chosen and built for the GPU, the model's file pinned by its SHA, the envelope every call returns, the binding held to `llama-server` on the same file; **the probe**, first the user's experiment (the Zebra puzzle with a working Zebra program as its example), then parse rate, load rate and the kinds of error of Ein written with no grammar, and step 1 alone set against the hand-written step 1 |
-| [S2.2.3](s2.2.3_gbnf.md) | The grammars | **ran to its end** 2026-11-26 ([its record](s2.2.3_gbnf.md#record), [the report](grammars/README.md), [the page](../../../docs/einaf/06-grammars.md)), and **amended on the user's word** the same day ([the amendment](s2.2.3_gbnf.md#amended-on-the-users-word), [its records](grammars/narrowed/README.md)): the grammars a model writes under leave out `<`, `>`, `|` and the backtick but in a sentence of the input, and `/` in a name, so that no marker of the chat template and no fence can be written ([L-M2.15](findings/model/L-M2.15-the-model-s-grammar-admitted-the-chat-template-s-markers-and-the-fence.md)), a request for a whole program carrying `root`'s 383 rules; [Q-M2.30](open_questions/model/Q-M2.30-does-a-grammar-the-model-writes-under-fix-its-layout.md), a fixed layout, for the user. `einaf::grammar`, the whole grammar `einaf/grammars/ein.gbnf` generated from `ein.l` and `ein.y` (two roots, `program` Ein's language exactly), accepting the corpus's 937 files exactly when the parser does and read alike by llama.cpp's sampler; a grammar a step (1, 2, 2b, 3) written on the program's vocabulary, each accepting the steps by hand; a grammar begun inside the fence and after the thinking at `</think>`, held to by the chosen token first, at no measurable cost; [Q-M2.6](../open_questions/formalizer/Q-M2.6-one-gbnf-or-many.md)'s default, *many*, for the user. Planned to end with: a GBNF grammar generated from `ein.l` and `ein.y`, held to the parser in both directions; a grammar a step, parameterised on the program's own vocabulary where the step has one; where a grammar begins and how an output ends; [Q-M2.6](../open_questions/formalizer/Q-M2.6-one-gbnf-or-many.md) decided |
-| [S2.2.4](s2.2.4_passes.md) | The steps: the facts first, then the ontology, then the theory | **ran to its end** 2026-11-26 ([its record](s2.2.4_passes.md#record), [the report](steps/README.md), [the page](../../../docs/einaf/07-steps.md)): `einaf::catalogue` (nineteen entries, each run by the kernel), `einaf::prompts` (the excerpt v2, a template a step, three examples), `einaf::check` (the seven findings), `einaf::formalize` and `einaf steps run|check`, `einaf::kernel::root` (the writer of H); the model through the three steps on the sixteen texts under the steps' grammars, in one call, and with no grammar (64 runs): 14 of 16 programs load, the Zebra puzzle's dead at step 2 with a core naming the misread sentence, two word texts the right count among others; [Q9](../open_questions/formalizer/Q9-ontology-provenance.md)'s default, B with C, A the escape hatch; B2's mode, the steps ([Q-M2.32](open_questions/formalizer/Q-M2.32-which-mode-does-baseline-b2-run-with.md)), for the user. Planned to end with: the catalogue of the library, each entry run by the kernel; three steps with their prompts; step 1 writing the facts, the answer query and a partial ontology; steps 2 and 3 selecting before they synthesise, and stating the hypothesis mechanism; the program assembled in synthesis order, each step's program checked and judged at root; [Q9](../open_questions/formalizer/Q9-ontology-provenance.md) decided |
+| [S2.2.3](s2.2.3_gbnf.md) | The grammars | **ran to its end** 2026-11-26 ([its record](s2.2.3_gbnf.md#record), [the report](grammars/README.md), [the page](../../../docs/einaf/06-grammars.md)), and **amended on the user's word** the same day ([the amendment](s2.2.3_gbnf.md#amended-on-the-users-word), [its records](grammars/narrowed/README.md)): the grammars a model writes under leave out `<`, `>`, `|` and the backtick but in a sentence of the input, and `/` in a name, so that no marker of the chat template and no fence can be written ([L-M2.15](findings/model/L-M2.15-the-model-s-grammar-admitted-the-chat-template-s-markers-and-the-fence.md)), a request for a whole program carrying `root`'s 383 rules; [Q-M2.30](../open_questions/model/Q-M2.30-does-a-grammar-the-model-writes-under-fix-its-layout.md), a fixed layout, for the user. `einaf::grammar`, the whole grammar `einaf/grammars/ein.gbnf` generated from `ein.l` and `ein.y` (two roots, `program` Ein's language exactly), accepting the corpus's 937 files exactly when the parser does and read alike by llama.cpp's sampler; a grammar a step (1, 2, 2b, 3) written on the program's vocabulary, each accepting the steps by hand; a grammar begun inside the fence and after the thinking at `</think>`, held to by the chosen token first, at no measurable cost; [Q-M2.6](../open_questions/formalizer/Q-M2.6-one-gbnf-or-many.md)'s default, *many*, for the user. Planned to end with: a GBNF grammar generated from `ein.l` and `ein.y`, held to the parser in both directions; a grammar a step, parameterised on the program's own vocabulary where the step has one; where a grammar begins and how an output ends; [Q-M2.6](../open_questions/formalizer/Q-M2.6-one-gbnf-or-many.md) decided |
+| [S2.2.4](s2.2.4_passes.md) | The steps: the facts first, then the ontology, then the theory | **ran to its end** 2026-11-26 ([its record](s2.2.4_passes.md#record), [the report](steps/README.md), [the page](../../../docs/einaf/07-steps.md)): `einaf::catalogue` (nineteen entries, each run by the kernel), `einaf::prompts` (the excerpt v2, a template a step, three examples), `einaf::check` (the seven findings), `einaf::formalize` and `einaf steps run|check`, `einaf::kernel::root` (the writer of H); the model through the three steps on the sixteen texts under the steps' grammars, in one call, and with no grammar (64 runs): 14 of 16 programs load, the Zebra puzzle's dead at step 2 with a core naming the misread sentence, two word texts the right count among others; [Q9](../open_questions/formalizer/Q9-ontology-provenance.md)'s default, B with C, A the escape hatch; B2's mode, the steps ([Q-M2.32](../open_questions/formalizer/Q-M2.32-which-mode-does-baseline-b2-run-with.md)), for the user. Planned to end with: the catalogue of the library, each entry run by the kernel; three steps with their prompts; step 1 writing the facts, the answer query and a partial ontology; steps 2 and 3 selecting before they synthesise, and stating the hypothesis mechanism; the program assembled in synthesis order, each step's program checked and judged at root; [Q9](../open_questions/formalizer/Q9-ontology-provenance.md) decided |
 | [S2.2.5](s2.2.5_from_text.md) | From a text to a short answer | **ran to its end** 2026-11-26 ([its record](s2.2.5_from_text.md#record), [the report](from_text/README.md), [the page](../../../docs/einaf/08-from-text.md)): `einaf from-text` (`einaf::from_text`), the steps and the least questions the answer needs; `einaf::answer`, the answer chosen by the answer query's classes and seven fixed texts; `einaf::format`, the formatters (the decimal numeral, the word theory's quantities by cases that are data), built and tested alone; every call recorded slim, no request body, and replayed; the Zebra puzzle **not met**: dead at step 2 (eleven houses for five places and four kinds with no member, either fault alone deadly: L-M2.23), *The statements contradict each other.*, its answer query one variable for two questions; the word problems, one shot: 11 of 13 load and 3 read right (each the undetermined text) with the library alone, 8 and 3 with the word theory's modules given (`bystander`'s *Carol has 9 apples.* the one right number, no module imported); E-126, E-127; Q-M2.33, Q-M2.34 for the user. Planned to end with: `einaf from-text`, one shot in three steps, the kernel run through EinAf's bounded call; the answer formatters, written to be [M1p](../../m1p_ein_to_natural_language/README.md)'s starting point; the fixed texts EinAf answers with where no program prints an answer; the record per run, each step's program and judgement in it; the Zebra puzzle and the word problems from their texts to their answers |
 
 ### Order
@@ -382,12 +449,12 @@ Each is this re-plan's, recorded so that the user can correct it; none is a ruli
    default for the user: of the six encodings, `zebra3.1` is the one whose facts are the text's words (59 of the
    sentences' 83 words kept, against `zebra`'s 39 and `zebra2`'s 47) with no rule of its own (`zebra3.2`, closer to
    the text, 75, writes six; `zebra2`, the cheapest to run, fifteen), monotone and `Solution` under every question,
-   whose cores name the sentences that contradict ([E-109](evaluation/natural-language/E-109-a-sentence-written-as-a-rule-s-activating-fact-is-in-no.md));
+   whose cores name the sentences that contradict ([E-109](../evaluation/natural-language/E-109-a-sentence-written-as-a-rule-s-activating-fact-is-in-no.md));
    it costs the kernel twice `zebra`'s facts and fourteen times `zebra2`'s
-   ([E-111](evaluation/bounds/E-111-the-answer-in-the-statements-own-words-costs-the-kernel.md)), and its
+   ([E-111](../evaluation/bounds/E-111-the-answer-in-the-statements-own-words-costs-the-kernel.md)), and its
    thirty-two selecting facts are thirty-two spellings a model can get wrong in silence
-   ([E-107](evaluation/diagnostics/E-107-a-theory-s-missing-activating-fact-is-reported-as-the.md),
-   [E-110](evaluation/stdlib/E-110-the-library-has-no-reading-of-a-literal-vocabulary.md)). Which axis weighs most
+   ([E-107](../evaluation/diagnostics/E-107-a-theory-s-missing-activating-fact-is-reported-as-the.md),
+   [E-110](../evaluation/stdlib/E-110-the-library-has-no-reading-of-a-literal-vocabulary.md)). Which axis weighs most
    is the user's.
 2. **The hypothesis mechanism is a part of the contract of its own**, stated in step 3. A program that
    states none is recorded as the kernel reports it, `blind`, and is not refused.
@@ -451,7 +518,7 @@ Each is this re-plan's, recorded so that the user can correct it; none is a ruli
 25. **The contract's table says which category is a faithfulness event**
     ([S2.4.4](../p2.4_loop/s2.4.4_faithfulness.md)): only a fact stated as holding with no sentence behind it, a
     membership no sentence states among them, which
-    [Q-M2.22](open_questions/answer/Q-M2.22-is-a-membership-no-sentence-states-a-faithfulness-event.md) asks the
+    [Q-M2.22](../open_questions/answer/Q-M2.22-is-a-membership-no-sentence-states-a-faithfulness-event.md) asks the
     user about, since the steps make memberships ontology.
     What a program needs to be well formed or to state its lattice (a declaration, an import, a `(solve …)`
     form, a closure, a written `(open F)`) is never one.

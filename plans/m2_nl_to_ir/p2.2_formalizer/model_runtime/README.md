@@ -65,9 +65,9 @@ of 65 536 tokens; `einaf generate --model M --ctx 65536 host_probe/NN_*.json`, t
 back** (01, 04, 08), **the grammar is honoured against the prompt** (03), and **a grammar from the first token with
 thinking on takes the thinking** (05), as through `llama-server`. **What the tool arm needs** is given: the template
 rendered with a function declared, and the model's call in the answer as it wrote it (07). How a grammar begins
-after the thinking took three tries ([L-M2.7](../findings/model/L-M2.7-a-lazy-grammar-is-fed-from-its-trigger-s-first-group.md)),
+after the thinking took three tries ([L-M2.7](../../findings/model/L-M2.7-a-lazy-grammar-is-fed-from-its-trigger-s-first-group.md)),
 and the kept context's second turn is its own input to greedy decoding
-([L-M2.8](../findings/model/L-M2.8-a-kept-context-and-a-whole-evaluation-of-one-prompt-part.md)).
+([L-M2.8](../../findings/model/L-M2.8-a-kept-context-and-a-whole-evaluation-of-one-prompt-part.md)).
 
 ## 2. The reference: the binding held to `llama-server`
 
@@ -104,7 +104,7 @@ llama.cpp**: at `library.off.youngest`'s token 339 the binding's two best candid
 at −0.69768 and `271` (two) at −0.69793, 0.00026 apart (the call again with 5 log-probabilities a token,
 [`reference/library_off_youngest_logprobs.jsonl`](reference/library_off_youngest_logprobs.jsonl)), and the server takes the second, a blank line fewer before
 the same `;; The hypothesis mechanism` comment; the program's forms are the same. The two second turns of the tool
-call part as [L-M2.8](../findings/model/L-M2.8-a-kept-context-and-a-whole-evaluation-of-one-prompt-part.md) says. The
+call part as [L-M2.8](../../findings/model/L-M2.8-a-kept-context-and-a-whole-evaluation-of-one-prompt-part.md) says. The
 binding's llama.cpp (`d8123504`) is 681 commits behind the server's (`cd959bae`): another CUDA kernel can move a
 logit's last bits, which is no bug of the runtime and which no comparison of two builds can rule out. Repeatability
 (§ 2.1) says each is deterministic on its own.
@@ -202,7 +202,7 @@ its thinking. The record: [`probe.jsonl.gz`](probe.jsonl.gz), `model-alone.on.ze
 **What stopped it is the decoding, not a limit.** The user's run through ollama stopped short of a solution at a
 limit nobody chose; this run had room for eleven solutions and found one, in its thinking, and then lost it in
 a loop greedy decoding cannot leave. The same happened to the first experiment with thinking on (§ 3), and is the
-question of [Q-M2.27](../open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md).
+question of [Q-M2.27](../../open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md).
 
 ## 5. The probe: Ein written with no grammar
 
@@ -238,7 +238,7 @@ The `youngest` runs are set apart: the excerpt every prompt holds shows that tex
 
 *Whole* parses in no run: every answer of every condition with thinking off is a fenced block, and in 34 of the 36
 off-runs outside the described condition read whole the fence's two lines are the only error
-([E-117](../evaluation/diagnostics/E-117-a-fence-around-a-program-is-the-parse-s-only-error-with-its-repair.md));
+([E-117](../../evaluation/diagnostics/E-117-a-fence-around-a-program-is-the-parse-s-only-error-with-its-repair.md));
 the two others are the model alone's prose and the library's `pencils`. *Stopped by the budget* is every run with
 thinking on, the model alone's with thinking off, and six of the described condition's runs, whose answers repeat a
 form to the budget. **The bound
@@ -247,7 +247,7 @@ stopped one run** (`library.off.bob1`, *not decided*, § 5.4).
 ### 5.2 What the model wrote, condition by condition
 
 **Thinking off, the model writes Ein in the shape of its examples, and the kernel takes most of it.** Every answer
-is one fenced block (so the whole reading fails, at the fence's two lines, [E-117](../evaluation/diagnostics/E-117-a-fence-around-a-program-is-the-parse-s-only-error-with-its-repair.md)),
+is one fenced block (so the whole reading fails, at the fence's two lines, [E-117](../../evaluation/diagnostics/E-117-a-fence-around-a-program-is-the-parse-s-only-error-with-its-repair.md)),
 and its block copies the examples' layout to their comments' rules (*"──── The statements ───"*), their section
 order, their `(solve :no-search)` and their rules' names, `two-counts-ask-the-difference` written into a program
 about a giving. **Over the library** (the main arms' condition), 13 of 14 blocks parse and 8 load, the `youngest`
@@ -270,18 +270,18 @@ cycle of 11 to 911 tokens begun between its 249th and its 8 901st generated toke
 after line, *"One detail: `Person` is a label. I will use `Person` as a label."*; the one, `library.on.boxes12`,
 repeats a block of five lines whose heading it numbers, *"165. **One more detail**"*. So the thinking-on conditions
 measure where greedy decoding loops, and no rate of parsing or loading; the question is
-[Q-M2.27](../open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md).
+[Q-M2.27](../../open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md).
 
 **What loaded in silence and should not count as right.** Of the nine library programs that load, `youngest`'s
 among them, seven are *one*, and **none prints the right answer**: three print a stated count as the answer (`contra`, `unused`, `before`: *"(n z
 5) apples"*, the query reading the stated `has` at any moment), one an invented one (`seating`: three sentences the
 text does not have, quoted as `:source`, and *"Ann sits in the first chair."*), three have no row (`youngest`, its
 rule copied from the excerpt with no membership it reads; `kinds`, `boxes13`), one is `inconsistent` for a numeral
-(`more`, [E-118](../evaluation/stdlib/E-118-a-numeral-written-with-two-digits-in-one-place-is-refuted-as-a-contradiction.md)),
+(`more`, [E-118](../../evaluation/stdlib/E-118-a-numeral-written-with-two-digits-in-one-place-is-refuted-as-a-contradiction.md)),
 and one never ends (`bob1`). The kernel's word is right each time; what a program says of its text is the
 contract's check's to read: a `:source` that is no sentence of the text (four of the nine: `seating` three
 sentences the text does not have; `unused`, `kinds` and `boxes13` a clause where one sentence states two facts, or
-a sentence rephrased, as the corpus's own word problems quote, [Q-M2.25](../open_questions/answer/Q-M2.25-is-a-clause-of-a-sentence-a-source-or-only-the-whole.md)),
+a sentence rephrased, as the corpus's own word problems quote, [Q-M2.25](../../open_questions/answer/Q-M2.25-is-a-clause-of-a-sentence-a-source-or-only-the-whole.md)),
 a fact beside its own negation with no theory of contradiction
 ([E-18](../../evaluation/stdlib/E-18-a-fact-beside-its-negation-is-a-contradiction-only-where-the.md), `seating`), a
 relation concluded and never declared ([E-12](../../evaluation/language/E-12-an-undeclared-relation-and-a-form-of-a-declared-relation-at.md),
@@ -322,7 +322,7 @@ bound by its match is well formed. And none of these is what made the loaded pro
 decided* at its clock, under both questions, as it should
 ([E-45](../../evaluation/bounds/E-45-nothing-in-a-solve-stops-a-saturation-that-has-no-fixpoint.md)); it took the
 call 94 seconds, the clock once for the load's judgement and once a question
-([L-M2.10](../findings/einaf/L-M2.10-a-program-with-no-fixpoint-costs-the-bounded-call-its-clock-once-a-saturation.md)).
+([L-M2.10](../../findings/einaf/L-M2.10-a-program-with-no-fixpoint-costs-the-bounded-call-its-clock-once-a-saturation.md)).
 
 ## 6. Step 1 with the model
 
@@ -350,7 +350,7 @@ is alive, so the kernel's judgement of a step-1 program (`--no-search`: it loads
 where the text gives them (*He* is Bob; the middle chair is the second); what goes wrong is the facts' shape: a
 number dropped from its fact or written as a name, a name of two words split, a passive made active, a sentence's
 content replaced by a guess. Six relation declarations, three of `apples` and three of `more`, read arrows they do
-not have ([E-119](../evaluation/natural-language/E-119-a-relation-s-why-that-names-an-arrow-its-declaration-lacks-loads.md)).
+not have ([E-119](../../evaluation/natural-language/E-119-a-relation-s-why-that-names-an-arrow-its-declaration-lacks-loads.md)).
 Only `youngest`, whose program the excerpt shows ([L-M2.9](../findings/model/L-M2.9-the-excerpt-shows-the-ordering-family-s-program.md)),
 states its sentences as the hand does. The contract's check (the step-1 findings of [§ 1.7 of the
 contract](../../../../docs/einaf/04-contract.md#17-what-a-formalization-comes-to): a `:source` that is no sentence,
@@ -361,13 +361,13 @@ says none.
 
 **Of Ein** ([the phase's evaluation](../evaluation/README.md)), each entry with the generations it rests on:
 
-- [E-117](../evaluation/diagnostics/E-117-a-fence-around-a-program-is-the-parse-s-only-error-with-its-repair.md)
+- [E-117](../../evaluation/diagnostics/E-117-a-fence-around-a-program-is-the-parse-s-only-error-with-its-repair.md)
   (strength): a fence around a program is the parse's only error, each fence line named with the repair that
   deletes it; `first-experiment.off.zebra`, and 34 of 36 off-runs read whole.
-- [E-118](../evaluation/stdlib/E-118-a-numeral-written-with-two-digits-in-one-place-is-refuted-as-a-contradiction.md)
+- [E-118](../../evaluation/stdlib/E-118-a-numeral-written-with-two-digits-in-one-place-is-refuted-as-a-contradiction.md)
   (weakness): `(n z 12)` makes root dead, its core exact, and the outcome reads as a contradiction;
   `library.off.more`.
-- [E-119](../evaluation/natural-language/E-119-a-relation-s-why-that-names-an-arrow-its-declaration-lacks-loads.md)
+- [E-119](../../evaluation/natural-language/E-119-a-relation-s-why-that-names-an-arrow-its-declaration-lacks-loads.md)
   (weakness): a relation's `:why` that names an arrow its declaration lacks loads and prints as text;
   `step1.off.apples`, `step1.off.more`.
 - **Confirmed**, a line each: [E-2](../../evaluation/answer/E-2-a-program-states-its-answer-and-the-kernel-checks-it.md)
@@ -388,15 +388,15 @@ says none.
   `library.off.boxes12`); the seating, the one text the library's slots fit, imports nothing.
 
 **Of EinAf, the plan and the process** ([the phase's findings](../findings/README.md)):
-[L-M2.7](../findings/model/L-M2.7-a-lazy-grammar-is-fed-from-its-trigger-s-first-group.md) (a lazy grammar's trigger
-is its own first text), [L-M2.8](../findings/model/L-M2.8-a-kept-context-and-a-whole-evaluation-of-one-prompt-part.md)
+[L-M2.7](../../findings/model/L-M2.7-a-lazy-grammar-is-fed-from-its-trigger-s-first-group.md) (a lazy grammar's trigger
+is its own first text), [L-M2.8](../../findings/model/L-M2.8-a-kept-context-and-a-whole-evaluation-of-one-prompt-part.md)
 (a kept context and a whole evaluation part under greedy decoding),
 [L-M2.9](../findings/model/L-M2.9-the-excerpt-shows-the-ordering-family-s-program.md) (the excerpt shows the ordering
-family's program), [L-M2.10](../findings/einaf/L-M2.10-a-program-with-no-fixpoint-costs-the-bounded-call-its-clock-once-a-saturation.md)
+family's program), [L-M2.10](../../findings/einaf/L-M2.10-a-program-with-no-fixpoint-costs-the-bounded-call-its-clock-once-a-saturation.md)
 (a runaway program costs the bounded call its clock once a saturation).
 
 **For the user** ([the phase's open questions](../open_questions/README.md)):
-[Q-M2.27](../open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md),
+[Q-M2.27](../../open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md),
 whether the phase's thinking-on runs stay greedy; default: yes, every loop recorded.
 
 **And outside both**: the user's editor's `rust-analyzer`, watching `einaf/Cargo.toml`, fetched the template's crates

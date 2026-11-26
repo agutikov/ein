@@ -19,7 +19,7 @@ And again by S2.2.5, 2026-11-26: `einaf from-text`, its program the one shot's, 
 `einaf/tests/fixtures/grow.ein`, prints *No answer: not decided.* with *stopped by the bound steps in a saturation of
 root* beneath it, within the call's bound; `ein solve --max-steps` exists, so *only `ein saturate --max-steps` stops
 it*, the re-plan's line, no longer holds. What the clock does not stop is
-[E-126](../../p2.2_formalizer/evaluation/bounds/E-126-a-root-that-dies-on-a-link-several-rules-derive-takes-its-time-past-every-clock.md).
+[E-126](E-126-a-root-that-dies-on-a-link-several-rules-derive-takes-its-time-past-every-clock.md).
 
 ## What it bounds
 

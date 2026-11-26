@@ -3,7 +3,7 @@
 **Status:** closed by S2.2.3 (`680a94ad`): a request's grammar carries `check`, and every grammar EinAf writes is held
 to by the chain's choice first
 **Found:** by S2.2.3, 2026-11-26, in its first generations under a grammar
-**Owner:** S2.2.3; whether the arms keep the order is [Q-M2.28](../../open_questions/model/Q-M2.28-is-a-token-held-to-its-grammar-by-the-chain-s-choice-first.md)
+**Owner:** S2.2.3; whether the arms keep the order is [Q-M2.28](../../../open_questions/model/Q-M2.28-is-a-token-held-to-its-grammar-by-the-chain-s-choice-first.md)
 
 ## What
 

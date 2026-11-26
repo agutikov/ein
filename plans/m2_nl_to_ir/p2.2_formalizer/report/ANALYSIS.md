@@ -14,6 +14,11 @@ steps against one call and a strict split of them. [§ 12](#12-what-a-library-sa
 was added on 2026-11-27, on the user's note that a library should carry a description of its rules for whoever
 selects them.
 
+**Since this page was written: the phase closed, 2026-11-27**, on the user's word. The findings and questions this
+page held and no ledger did are filed (L-M2.24 to L-M2.30, Q-M2.35 to Q-M2.42, E-128), and
+[the phase README § The close](../README.md#the-close-2026-11-27) says where each proposal below went. The page is
+otherwise as written.
+
 ## Summary
 
 **Partially met. What the phase was to build and to measure is there and holds when re-run; the one thing it was
@@ -100,13 +105,13 @@ The twelve items of [the phase's acceptance](../README.md#acceptance), in its or
 |---:|---|---|---|
 | 1 | Zebra: `einaf from-text` yields a program answered *one*, naming the Norwegian and the Japanese | **not met** | *inconsistent*; *The statements contradict each other.* One shot, the pinned model, the theory selected from the library, with the record: all as asked, but the answer |
 | 2 | the sixteen word problems, one shot, the library alone: parsed, loaded, outcome, the answer beside the README's; numbers from a record | **met** | [the tables](../from_text/tables.md): 13 texts for the 16 problems; 11 load; *one* 8, *several* 3, *invalid* 2; read right 3. The phase says itself this is no result: the prompts were developed on these problems |
-| 3 | a right program is scored right; the judge finds no event in any reference program | **partially** | scored right: yes, the reference word problem (*3*) and the Zebra steps by hand through the one shot, both gate tests. No event: only in the worked example; Zebra by hand carries 11 and the seating 5 under the open [Q-M2.22](../open_questions/answer/Q-M2.22-is-a-membership-no-sentence-states-a-faithfulness-event.md) |
+| 3 | a right program is scored right; the judge finds no event in any reference program | **partially** | scored right: yes, the reference word problem (*3*) and the Zebra steps by hand through the one shot, both gate tests. No event: only in the worked example; Zebra by hand carries 11 and the seating 5 under the open [Q-M2.22](../../open_questions/answer/Q-M2.22-is-a-membership-no-sentence-states-a-faithfulness-event.md) |
 | 4 | every form of every recorded program is in exactly one category row | **partially** | held by test for the reference programs. Of the 29 one-shot programs the sidecar has it for 22; **the 7 the kernel refuses carry an empty table** (the categories are computed after a load) |
 | 5 | the steps by hand: Zebra to `zebra3.1.ein` and two or more other texts, each step judged by a test | **met** | six texts, eighteen programs, `einaf/tests/contract.rs` |
 | 6 | the user's first experiment has a record; step 1 alone against the hand's | **met** | shown `zebra3.1.ein`, the model copies it whole and prints the right sentence (a floor); step 1 alone: 0 of the hand's 44 Zebra facts |
 | 7 | every one-shot record holds each step's program and judgement | **met** | a replay writes `steps/` and `kernel.jsonl` again from the slim calls (seen here) |
 | 8 | a record replays to the same program | **met** | 29 of 29; four re-run here, byte for byte |
-| 9 | a program with no fixpoint comes back *not decided* within the bound | **met as worded** | the cap on firings holds. The bound leaks beside it: a dead root took 72 s under a 60 s clock, and under `-T 5` ([E-126](../evaluation/bounds/E-126-a-root-that-dies-on-a-link-several-rules-derive-takes-its-time-past-every-clock.md)) |
+| 9 | a program with no fixpoint comes back *not decided* within the bound | **met as worded** | the cap on firings holds. The bound leaks beside it: a dead root took 72 s under a 60 s clock, and under `-T 5` ([E-126](../../evaluation/bounds/E-126-a-root-that-dies-on-a-link-several-rules-derive-takes-its-time-past-every-clock.md)) |
 | 10 | no prompt holds an instance's solution; the quoted programs listed and handed to S2.3.4 | **met in the record** | `config.json`'s `quoted` lists them; the hand-over waits for [S2.3.4](../../p2.3_benchmark/s2.3.4_splits.md), which has not run |
 | 11 | the probe's record exists; Q-M2.6 and Q9 decided in the ledger with their measurements | **partially** | the record exists; both questions carry a **default** with its measurement and are still open for the user |
 | 12 | the evaluation of Ein holds what each stage found, and is shown | **met** | E-104 to E-127, 24 entries, two of them bugs with no owner |
@@ -172,10 +177,10 @@ shot*); the selection is the part it got. The risk that did come true is the fou
   that is P2.6's arm), and no later step rewrites a step-1 fact (default 37: that is the loop's).
 - **The model ran without its reasoning.** Thinking on, greedy, every run of the probe loops to its budget (36 of
   36), so every result is thinking off, where the model *thinks in comment lines*
-  ([L-M2.16](../findings/model/L-M2.16-with-thinking-off-the-model-thinks-in-comment-lines.md)).
+  ([L-M2.16](../../findings/model/L-M2.16-with-thinking-off-the-model-thinks-in-comment-lines.md)).
 - **Most of the defects are silent in Ein.** Of the seven, the kernel names two, and those one at a time; two more
-  are seen only by EinAf's check; three have nothing that points at them ([E-123](../evaluation/diagnostics/E-123-no-value-says-whether-a-selecting-fact-was-taken-up.md),
-  [L-M2.18](../findings/model/L-M2.18-a-sentence-s-polarity-and-a-thing-s-kind-go-wrong-in-silence.md)).
+  are seen only by EinAf's check; three have nothing that points at them ([E-123](../../evaluation/diagnostics/E-123-no-value-says-whether-a-selecting-fact-was-taken-up.md),
+  [L-M2.18](../../findings/model/L-M2.18-a-sentence-s-polarity-and-a-thing-s-kind-go-wrong-in-silence.md)).
 
 ## 4. Why the word problems read as they do
 
@@ -189,16 +194,16 @@ shot*); the selection is the part it got. The risk that did come true is the fou
 - **The dominant failure is a missing notion, not a misspelling.** A change over time has no word in the text and
   no theory in the library, so the model's giving rule reads what it concludes and one state holds every pass:
   `bob1` prints 1, 3 and 5; `bystander` gives Carol five counts; `before` three
-  ([E-124](../evaluation/answer/E-124-one-state-may-answer-a-question-of-one-value-with-a-row-a-pass.md),
-  [E-110](../evaluation/stdlib/E-110-the-library-has-no-reading-of-a-literal-vocabulary.md)).
+  ([E-124](../../evaluation/answer/E-124-one-state-may-answer-a-question-of-one-value-with-a-row-a-pass.md),
+  [E-110](../../evaluation/stdlib/E-110-the-library-has-no-reading-of-a-literal-vocabulary.md)).
 - **The contradictory text is not seen as one.** `contra` prints *Bob has 5 apples.*; `zebra-contradiction` is
   scored right on a contradiction of the model's own making
-  ([L-M2.22](../findings/model/L-M2.22-a-fixed-text-scored-right-can-rest-on-a-contradiction-of-the-model-s-own.md)).
+  ([L-M2.22](../../findings/model/L-M2.22-a-fixed-text-scored-right-can-rest-on-a-contradiction-of-the-model-s-own.md)).
   The three classes Level B asks to be told apart are, on this evidence, hit only by accident.
 - **Given the family's own modules, the model imports none**, loads less (8 against 11) and prints one right
   number, `bystander`'s *Carol has 9 apples.*, which is a sentence of the text read back.
 - **Two refusals are Ein's**, not the model's: `unused` declares `has` twice and is refused against Q-M1f.447
-  ([E-104](../evaluation/language/E-104-a-relation-declared-at-a-second-count-is-refused-where-the.md)), in both
+  ([E-104](../../evaluation/language/E-104-a-relation-declared-at-a-second-count-is-refused-where-the.md)), in both
   conditions.
 
 ## 5. Where this reading differs from the report's
@@ -224,7 +229,7 @@ The report is accurate on what it states; every number checked here agrees. Thes
    solve it* is so far *the model alone, decoded greedily, prints no answer*. Under the model's own sampler, which
    is [S2.5.2](../../p2.5_harness/s2.5.2_baselines.md)'s default for the arms, it may solve the puzzle in text, and
    the minimal goal's premise would then need a second look
-   ([Q-M2.27](../open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md)).
+   ([Q-M2.27](../../open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md)).
    Not run here.
 5. **Two acceptance items are short in ways no record names**: item 4 (the seven refused programs have no
    categories) and item 11 (*decided* is a default taken, on both questions).
@@ -245,7 +250,7 @@ Inference, for the user's review; none of it is a ruling. What to do about each 
   That is a finding the plan allowed for, and it is the number the loop will be measured against.
 - **The loop inherits more than a repair.** Of the seven Zebra defects the kernel speaks of two, one at a time,
   its core naming a sentence by the accident of which house it took
-  ([E-125](../evaluation/diagnostics/E-125-a-dead-root-s-core-names-the-sentence-the-model-misread.md)); the other
+  ([E-125](../../evaluation/diagnostics/E-125-a-dead-root-s-core-names-the-sentence-the-model-misread.md)); the other
   five it cannot point at. Feedback made of the kernel's word alone will not carry the model from this program to
   the reference; the contract's check and the faithfulness judge have to carry most of it, and the principle *the
   theory before the facts* meets a case where the facts are what is wrong.
@@ -256,10 +261,10 @@ Inference, for the user's review; none of it is a ruling. What to do about each 
   ones the results turn on are greedy decoding with thinking off, the target shape `zebra3.1`, and the three
   examples.
 - **What Ein owes this application** is already in the evaluation: two bugs with no owner
-  ([E-104](../evaluation/language/E-104-a-relation-declared-at-a-second-count-is-refused-where-the.md), which cost a
-  run, and [E-105](../evaluation/stdlib/E-105-std-slots-lets-two-values-stated-next-to-each-other-share-a.md)), a
+  ([E-104](../../evaluation/language/E-104-a-relation-declared-at-a-second-count-is-refused-where-the.md), which cost a
+  run, and [E-105](../../evaluation/stdlib/E-105-std-slots-lets-two-values-stated-next-to-each-other-share-a.md)), a
   clock that does not stop a dead root (E-126, with
-  [Q-M2.34](../open_questions/kernel/Q-M2.34-does-einaf-s-kernel-call-set-the-lever-that-keeps-one-justification.md)),
+  [Q-M2.34](../../open_questions/kernel/Q-M2.34-does-einaf-s-kernel-call-set-the-lever-that-keeps-one-justification.md)),
   and the silences of § 3.
 
 ## 7. What was checked here, and what was not
@@ -429,7 +434,7 @@ change*). What a change is worth is shown only on texts no prompt was tuned agai
 The phase's own measurement is the argument for the grammar over the prompt: the `shops` example shows every one
 of these decisions made right, and the model made them wrong; a step's grammar kept out 11 misspelt selections and
 7 `:source` that are no sentence and changed no answer. Its cost is known too: a refusal led 7 calls into a loop
-([L-M2.19](../findings/model/L-M2.19-a-grammar-s-refusal-sends-greedy-decoding-into-a-loop-it-does-not-enter-free.md)),
+([L-M2.19](../../findings/model/L-M2.19-a-grammar-s-refusal-sends-greedy-decoding-into-a-loop-it-does-not-enter-free.md)),
 which proposal 9 is for, so 9a goes in before any grammar is narrowed further.
 
 **2. A statement's relation is made of words of its own sentence, in their order.** The contract's rule (*the
@@ -493,7 +498,7 @@ finding on the model's steps 2 and 3.
 reported where the answer query's class holds several rows; it is a note, since a transitive closure is such a
 rule. And a note where the answer's row is a statement of the text read back while the program has rules, which is
 `contra`'s *Bob has 5 apples.* and, rightly, `bystander`'s 9. With them
-[Q-M2.33](../open_questions/answer/Q-M2.33-is-a-class-with-several-rows-an-answer-of-several-values-or-the-undetermined-text.md)
+[Q-M2.33](../../open_questions/answer/Q-M2.33-is-a-class-with-several-rows-an-answer-of-several-values-or-the-undetermined-text.md)
 has a third answer beside *its lines* and *the undetermined text*: several rows for a question of one value is
 reported as a fault of the program, not printed as an answer.
 
@@ -510,9 +515,9 @@ statements of the text). On this phase's runs of the library condition the secon
 is read back through its place*). The model's step 3 has none of the hand's 18 forms. A rule with parameters, or a
 macro over the four, that says *a person drinks the drink of their house* in one fact a verb is a library change
 that leaves Ein's syntax and semantics alone. It reopens
-[Q-M2.23](../open_questions/kernel/Q-M2.23-does-the-library-grow-a-reading-of-a-literal-vocabulary.md), whose
+[Q-M2.23](../../open_questions/kernel/Q-M2.23-does-the-library-grow-a-reading-of-a-literal-vocabulary.md), whose
 default is *no module*. **7, the third part**, is the same question for the word problems: the moments of a change
-are a theory the library lacks ([E-110](../evaluation/stdlib/E-110-the-library-has-no-reading-of-a-literal-vocabulary.md)),
+are a theory the library lacks ([E-110](../../evaluation/stdlib/E-110-the-library-has-no-reading-of-a-literal-vocabulary.md)),
 and the family's own modules, given, were imported by no run, so a module needs a catalogue entry to be taken up.
 
 **10. The shape and the instruction disagree.** *In the text's own words* is the instruction; the target shape
@@ -522,18 +527,18 @@ as the rule it is (proposal 3, now); or make the literal reading the right one, 
 `zebra3.2`'s `(the Green House)`, with its six rules moved into the library, so that step 1 is translation and what
 a description names is found by the theory. The second is closer to the notes (*facts as close to the original
 text as possible*, the theory searched for); today it is six rules of the program's own, and
-[E-106](../evaluation/answer/E-106-the-static-check-reads-a-relation-not-a-shape.md) flags its `same` form where
+[E-106](../../evaluation/answer/E-106-the-static-check-reads-a-relation-not-a-shape.md) flags its `same` form where
 it would be most literal. Which axis weighs most was left to the user by S2.2.0a; this is evidence for that choice.
 
-**13. The clock and the lever.** [Q-M2.34](../open_questions/kernel/Q-M2.34-does-einaf-s-kernel-call-set-the-lever-that-keeps-one-justification.md)'s
+**13. The clock and the lever.** [Q-M2.34](../../open_questions/kernel/Q-M2.34-does-einaf-s-kernel-call-set-the-lever-that-keeps-one-justification.md)'s
 default is *no*. The case for *yes*: `:record-alternative-justifications false` is the one lever exempt from *no
 lever changes R*, it moves only a dead node's core, and a core is an explanation; 72 s against 0.07 s a question on
 the model's Zebra program. Beside it, an item for Ein: a clock that a dead root's bookkeeping does not outrun
-([E-126](../evaluation/bounds/E-126-a-root-that-dies-on-a-link-several-rules-derive-takes-its-time-past-every-clock.md)).
+([E-126](../../evaluation/bounds/E-126-a-root-that-dies-on-a-link-several-rules-derive-takes-its-time-past-every-clock.md)).
 
-**14. E-104 and E-105 before the loop.** [E-104](../evaluation/language/E-104-a-relation-declared-at-a-second-count-is-refused-where-the.md)
+**14. E-104 and E-105 before the loop.** [E-104](../../evaluation/language/E-104-a-relation-declared-at-a-second-count-is-refused-where-the.md)
 refuses what Q-M1f.447 allows and cost `unused` in both conditions; the loop would spend its turns repairing a
-program that is right. [E-105](../evaluation/stdlib/E-105-std-slots-lets-two-values-stated-next-to-each-other-share-a.md)
+program that is right. [E-105](../../evaluation/stdlib/E-105-std-slots-lets-two-values-stated-next-to-each-other-share-a.md)
 lets two neighbours share a house, in the theory every attribute puzzle of the benchmark will select.
 
 ### 9.5 The runtime and the decoding
@@ -543,11 +548,11 @@ the budget of 12 288 tokens took 1 758 s of the 2 138 s the 88 calls generated, 
 or in comment lines. Three things, in order of cost: (a) a detector in `einaf::model` that ends a generation whose
 tail repeats one cycle, with a stop reason of its own; **held by an invariance on the eight recorded calls**, with
 no model: the forms kept are the forms the budget's cut keeps. (b)
-[Q-M2.31](../open_questions/model/Q-M2.31-does-a-step-s-grammar-bound-the-comment-lines-the-model-writes.md): a bound
+[Q-M2.31](../../open_questions/model/Q-M2.31-does-a-step-s-grammar-bound-the-comment-lines-the-model-writes.md): a bound
 on consecutive comment lines in a step's grammar, where the model thinks and loops
-([L-M2.16](../findings/model/L-M2.16-with-thinking-off-the-model-thinks-in-comment-lines.md)). (c) a repetition
+([L-M2.16](../../findings/model/L-M2.16-with-thinking-off-the-model-thinks-in-comment-lines.md)). (c) a repetition
 sampler ahead of greedy in the chain, which stays one run a request; whether the binding exposes llama.cpp's is to
-be looked up. It bears on [Q-M2.27](../open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md)
+be looked up. It bears on [Q-M2.27](../../open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md)
 and on [P2.2b](../../p2.2b_guided_thinking/README.md), whose thinking runs meet the same loop.
 
 **12. The model alone, under its own sampler.** A handful of runs of about six thousand tokens each. If the model
@@ -771,13 +776,13 @@ What the table says, read column against column:
   The step boundary is what lets a grammar know the program; that gain would stay under any cut.
 - **The time is the loops.** Seven of the steps' 49 calls ran to the budget: 86 016 of the 96 412 tokens the
   steps generated, 89 % (counted here from the tables). The other 42 calls wrote 10 396 tokens, against 9 482 for
-  the one call's fifteen that ended: the same work. A step's grammar refusing a token is what starts each loop ([L-M2.19](../findings/model/L-M2.19-a-grammar-s-refusal-sends-greedy-decoding-into-a-loop-it-does-not-enter-free.md)).
+  the one call's fifteen that ended: the same work. A step's grammar refusing a token is what starts each loop ([L-M2.19](../../findings/model/L-M2.19-a-grammar-s-refusal-sends-greedy-decoding-into-a-loop-it-does-not-enter-free.md)).
 - **The Zebra puzzle in one call is no program at all**, with the grammar and without. A dead program in steps is
   more to work from.
 
 So B1's caution (*evaluate whether this intermediate representation helps rather than assuming that it does*) has
 been evaluated once, and the answer so far: **the steps help EinAf hold the output; they have not helped the model
-formalize.** The default for B2's mode, *the steps* ([Q-M2.32](../open_questions/formalizer/Q-M2.32-which-mode-does-baseline-b2-run-with.md)),
+formalize.** The default for B2's mode, *the steps* ([Q-M2.32](../../open_questions/formalizer/Q-M2.32-which-mode-does-baseline-b2-run-with.md)),
 rests on the Zebra row and on the findings, not on answers.
 
 ### 11.2 What the two partial parts cost
@@ -1031,7 +1036,7 @@ for the iteration of Ein that follows, where it belongs with E-27. Then:
   its needs are the conditions proposal 4 evaluates.
 - **For `top` and `meet` a description is the lesser repair.** The greater is that a selector never composes
   them: one fact a verb, named for its use ([proposal 8](#94-what-the-library-and-the-kernel-owe),
-  [Q-M2.23](../open_questions/kernel/Q-M2.23-does-the-library-grow-a-reading-of-a-literal-vocabulary.md)).
+  [Q-M2.23](../../open_questions/kernel/Q-M2.23-does-the-library-grow-a-reading-of-a-literal-vocabulary.md)).
 
 **How it is measured**, with the model, on the two attribute puzzles and a few like them, in the oracle form of
 [proposal 25](#115-proposal-25-the-cut-measured) (steps 2 and 3 given the hand's step 1, so that no misread

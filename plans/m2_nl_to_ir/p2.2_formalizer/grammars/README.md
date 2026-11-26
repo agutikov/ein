@@ -66,7 +66,7 @@ hand-written rule is [`einaf/grammars/README.md`](../../../../einaf/grammars/REA
 own, and a token that is not a paren runs to a separator or a paren. So the separator before a token depends on the
 kind of the token before it: none or any between a paren and anything, one or more between two words, and after a
 string one that does not begin with `#`
-([E-120](../evaluation/language/E-120-a-string-glued-to-a-block-comment-is-refused-where-a-name-glued-to-one-is-not.md)).
+([E-120](../../evaluation/language/E-120-a-string-glued-to-a-block-comment-is-refused-where-a-name-glued-to-one-is-not.md)).
 Each rule's productions are compiled into the Glushkov automaton of their regular expression over atoms (a token, or a
 rule of one start and one end kind), each state a rule, the separator before each atom chosen by the two atoms'
 kinds, states that behave alike one rule.
@@ -111,7 +111,7 @@ grammar run against the three checks ([`mutants/mutants.rs`](mutants/mutants.rs)
 | two words need no separator | 26 | 74 | 726 |
 
 Two of the five are seen by the sampler alone
-([E-121](../evaluation/language/E-121-the-banked-table-of-refused-shapes-misses-two-of-the-lexer-s-token-ends.md)):
+([E-121](../../evaluation/language/E-121-the-banked-table-of-refused-shapes-misses-two-of-the-lexer-s-token-ends.md)):
 test 2 is what holds them.
 
 ## 3. A grammar a step
@@ -125,7 +125,7 @@ module of `std` but `std.core`;
 | step | rendered on | Zebra: bytes, rules | `apples`: bytes, rules | what its vocabulary closes |
 |---|---|---|---|---|
 | 1 | the text's sentences | 14 928, 150 | 14 265, 150 | a `:source` is a sentence of the text; a declaration's `:why` references only its arrows; one answer query; nothing of a fact's relation or count |
-| 2 | the catalogue; step 1's program | 55 557, 172 | 55 557, 172 | an import is a module of the catalogue and lists names it declares, not one step 1 declared; an activating fact is the catalogue's, at its count; the ontology is open ([Q-M2.29](../open_questions/formalizer/Q-M2.29-are-step-2-s-facts-held-to-the-relations-step-2-declares.md)) |
+| 2 | the catalogue; step 1's program | 55 557, 172 | 55 557, 172 | an import is a module of the catalogue and lists names it declares, not one step 1 declared; an activating fact is the catalogue's, at its count; the ontology is open ([Q-M2.29](../../open_questions/formalizer/Q-M2.29-are-step-2-s-facts-held-to-the-relations-step-2-declares.md)) |
 | 2b | the catalogue; the program of steps 1 and 2 | 19 349, 131 | 35 854, 131 | every pattern and conclusion of a relation the program or a module it imports declares, at a declared count, over the program's names |
 | 3 | the same | 23 781, 136 | 36 404, 136 | as 2b; and every activating fact of a module the program imports, at its count, over its names |
 
@@ -305,7 +305,7 @@ to by the chain's choice first. It is written into
 - **What the vocabulary closure is worth**: steps 2b and 3 close everything they write, rendered on the program
   before them; step 1 closes no fact (its facts come before their declarations: under its grammar the model still
   wrote a fact of a relation it never declared, `(person Ann)` in `youngest`, the first plan), and step 2 none of its
-  ontology's facts ([Q-M2.29](../open_questions/formalizer/Q-M2.29-are-step-2-s-facts-held-to-the-relations-step-2-declares.md)).
+  ontology's facts ([Q-M2.29](../../open_questions/formalizer/Q-M2.29-are-step-2-s-facts-held-to-the-relations-step-2-declares.md)).
   What it closes is what the contract's check would otherwise report after the call (S2.2.4).
 
 **What would reverse it**, by the stage's terms: the probe finding no error a step's grammar removes and the whole one
@@ -316,13 +316,13 @@ millisecond). Neither held.
 
 **Of Ein** ([the phase's evaluation](../evaluation/README.md)):
 
-- [E-120](../evaluation/language/E-120-a-string-glued-to-a-block-comment-is-refused-where-a-name-glued-to-one-is-not.md)
+- [E-120](../../evaluation/language/E-120-a-string-glued-to-a-block-comment-is-refused-where-a-name-glued-to-one-is-not.md)
   (weakness): a string glued to a block comment is refused, where a name glued to one is a name and a comment;
   `ein.l` says `#|` ends every token, and `BADTEXT`'s tail takes `#`.
-- [E-121](../evaluation/language/E-121-the-banked-table-of-refused-shapes-misses-two-of-the-lexer-s-token-ends.md)
+- [E-121](../../evaluation/language/E-121-the-banked-table-of-refused-shapes-misses-two-of-the-lexer-s-token-ends.md)
   (gap): the parser's banked table of refused shapes, with the corpus, misses two of the lexer's token ends, which only
   sampled texts saw (§ 2).
-- [E-122](../evaluation/language/E-122-ein-s-syntax-is-context-free-but-for-two-refusals.md) (strength): Ein's syntax,
+- [E-122](../../evaluation/language/E-122-ein-s-syntax-is-context-free-but-for-two-refusals.md) (strength): Ein's syntax,
   its lexer included, is a context-free language but for two refusals, and a second reader takes it exactly.
 - **What of the lexer could not be said in a context-free grammar**: nothing but the two named refusals, which no
   corpus file meets; what saying it cost: a tree of 175 rules for a name, and `ein.y`'s 101 rules compiled into 337.
@@ -343,9 +343,9 @@ carry no marker of the grammar's shape),
 grammar that leaves out the fence a prompt asks for derails the model; closed by the fenced frame).
 
 **For the user** ([the phase's open questions](../open_questions/README.md)):
-[Q-M2.28](../open_questions/model/Q-M2.28-is-a-token-held-to-its-grammar-by-the-chain-s-choice-first.md), whether a
+[Q-M2.28](../../open_questions/model/Q-M2.28-is-a-token-held-to-its-grammar-by-the-chain-s-choice-first.md), whether a
 token is held to its grammar by the chain's choice first (default: yes, for every grammar EinAf writes);
-[Q-M2.29](../open_questions/formalizer/Q-M2.29-are-step-2-s-facts-held-to-the-relations-step-2-declares.md), whether
+[Q-M2.29](../../open_questions/formalizer/Q-M2.29-are-step-2-s-facts-held-to-the-relations-step-2-declares.md), whether
 step 2's facts are held to the relations step 2 declares (default: no grammar holds them, the contract's check does);
 and [Q-M2.6](../../open_questions/formalizer/Q-M2.6-one-gbnf-or-many.md)'s default (§ 6).
 

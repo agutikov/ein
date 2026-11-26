@@ -476,10 +476,18 @@ paragraph, no register count, no measurement (the user's rule).
   application finds of the kernel, for the iteration of Ein that follows.
   **P2.1 is closed on the user's word and its plans deleted**
   (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`);
-  **P2.2 has run its stages to its end on the user's word and waits for the
-  user's review, not closed; no other phase of M2 starts until the user says so.**
-  [P2.2b](plans/m2_nl_to_ir/p2.2b_guided_thinking/README.md), guided thinking,
-  is planned on the user's word and not started. M1f, the structure of the hypothesis
+  **P2.2 is closed on the user's word, its folder kept**
+  ([its close](plans/m2_nl_to_ir/p2.2_formalizer/README.md#the-close-2026-11-27):
+  what it left open is the milestone's ledgers', and where each of its
+  results went is said there). **Four phases are planned before P2.3 and none
+  is started**: [P2.2b](plans/m2_nl_to_ir/p2.2b_guided_thinking/README.md),
+  guided thinking; [P2.2c](plans/m2_nl_to_ir/p2.2c_decoding_and_model_alone/README.md),
+  a generation that ends and the model alone;
+  [P2.2d](plans/m2_nl_to_ir/p2.2d_formalizer_corrected/README.md), the
+  formalizer corrected; [P2.2e](plans/m2_nl_to_ir/p2.2e_kernel_fixes/README.md),
+  Ein's two bugs and a clock, the one of the four that changes Ein
+  ([the order](plans/m2_nl_to_ir/README.md#the-order-before-p23)). **No phase
+  of M2 starts until the user says so.** M1f, the structure of the hypothesis
   set and the documentation, is closed on the user's word and its plans deleted
   (`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation`): its
   answers are decisions under `docs/decisions/`, its rulings about the process

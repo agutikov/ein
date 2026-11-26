@@ -16,7 +16,7 @@
 Confirmed by S2.2.1, 2026-11-26: the five forms are `einaf/contract/youngest/no-theory.ein`, held by
 `einaf/tests/contract.rs`'s `the_worked_example_turns_on_its_mechanism_line`: 7 blind candidates, 128 states, *several*,
 and no diagnostic that names a mechanism. What the steps' partial programs show beside it is
-[E-114](../../p2.2_formalizer/evaluation/hypotheses/E-114-a-partial-program-s-h-is-set-by-its-relations-count-of-places.md).
+[E-114](E-114-a-partial-program-s-h-is-set-by-its-relations-count-of-places.md).
 
 ## What it costs the application
 

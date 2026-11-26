@@ -225,8 +225,8 @@ has each):
 | the `ein` binary does not start under `ulimit -v` | confirmed (exit 134; `einaf` answers) | [E-61](../../evaluation/bounds/E-61-the-ein-binary-does-not-start-under-a-cap-on-its-address.md) |
 | the writer of H is in no key of `ein-summary/2` | confirmed | [E-39](../../evaluation/hypotheses/E-39-the-answer-does-not-say-who-wrote-the-candidates.md) |
 | a goal at another count has no row and no word | confirmed, first hand | [E-12](../../evaluation/language/E-12-an-undeclared-relation-and-a-form-of-a-declared-relation-at.md) |
-| **new**: a root that dies on a link several rules derive takes 72 s past every clock, 63 ms with the lever | limit | [E-126](../evaluation/bounds/E-126-a-root-that-dies-on-a-link-several-rules-derive-takes-its-time-past-every-clock.md) |
-| **new**: the kernel's line is a template a caller fills again byte for byte | strength | [E-127](../evaluation/natural-language/E-127-the-kernel-s-line-is-a-template-filled-by-a-rule-a-caller-writes-again.md) |
+| **new**: a root that dies on a link several rules derive takes 72 s past every clock, 63 ms with the lever | limit | [E-126](../../evaluation/bounds/E-126-a-root-that-dies-on-a-link-several-rules-derive-takes-its-time-past-every-clock.md) |
+| **new**: the kernel's line is a template a caller fills again byte for byte | strength | [E-127](../../evaluation/natural-language/E-127-the-kernel-s-line-is-a-template-filled-by-a-rule-a-caller-writes-again.md) |
 
 ## 8. The commands, with their outputs
 
