@@ -8,7 +8,7 @@ set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 ROOT=$(cd "$HERE/../../../.." && pwd)
 EINAF=${EINAF:-$ROOT/einaf/target/release/einaf}
-MODEL=${EINAF_MODEL:?the model's file}
+MODEL=${EINAF_MODEL:?the file of the model}
 grep -v '^#' "$HERE/plan.tsv" | while IFS='	' read -r cond id line flags; do
     [ -n "$cond" ] || continue
     if [ -n "${ONLY:-}" ] && [ "$cond" != "$ONLY" ]; then continue; fi
