@@ -35,4 +35,8 @@ high.
 
 **What bears on it.** Q-M2.16 (what of the kernel may change inside M2: a library module leaves the syntax and the
 semantics as they are); [E-105](../../evaluation/stdlib/E-105-std-slots-lets-two-values-stated-next-to-each-other-share-a.md),
-a rule of `std.slots` a literal encoding relies on.
+a rule of `std.slots` a literal encoding relies on. **The user, 2026-11-27, on a name made of a phrase's words**
+(*"from fact (is drunk by) make is-drunk-by atom"*): not possible in Ein, possible outside it, *"if Ein rules will
+produce some special forms like e.g. (defrel (is drunk by)) and EinAF post process the output"*; written down in
+[S2.2f.3](../../p2.2f_text_analysis/s2.2f.3_step1_with_the_analysis.md)'s arm 5, where an analysis' phrase is made a
+relation, and a way a literal vocabulary's verb could become the relation the theory reads.
