@@ -1,28 +1,34 @@
 #!/usr/bin/env python3
-"""plan.py — S2.2.3's runs with the model, written before the first of them.
+"""plan.py — S2.2.3's runs with the model in the fenced frame, written before
+the first of them.
 
     python3 plan.py [--einaf einaf/target/release/einaf]
 
 Writes, beside this script:
 
-- `plan.jsonl.gz`: the recorded generations under a grammar, a line a run in the
-  probe's plan's form (`einaf::probe::Planned`), so that `einaf probe run`
-  makes each call and judges its answer through the kernel as the probe did.
-  Each is a run of S2.2.2's probe plan (`../model_runtime/plan.jsonl`), its
-  prompt, sampler (greedy) and seed unchanged, with a grammar added and a new
-  id: `step1-grammar.*`, step 1's grammar rendered on the text's sentences;
-  `whole-grammar.*`, the whole grammar's root `root`; and `demo.on.youngest`,
-  a short prompt whose thinking ends, with step 1's grammar after it.
+- `fenced/plan.jsonl.gz`: the recorded generations under a grammar, a line a
+  run in the probe's plan's form (`einaf::probe::Planned`), so that
+  `einaf probe run` makes each call and judges its answer through the kernel
+  as the probe did. Each is a run of S2.2.2's probe plan
+  (`../model_runtime/plan.jsonl`), its prompt, sampler (greedy) and seed
+  unchanged, with a grammar added in the fenced frame (the prompt asks for one
+  fenced block) and a new id: `step1-fenced.*`, step 1's grammar rendered on
+  the text's sentences; `whole-fenced.*`, the whole grammar's root `root`;
+  `step1-fenced.on.youngest`, the probe's thinking-on step 1 of `youngest`
+  with step 1's grammar after the thinking; and `demo-fenced.on.youngest`, a
+  short prompt whose thinking ends, step 1's grammar after it. A grammar after
+  the thinking begins at the model's token `</think>`.
 - `speed/requests.jsonl.gz`: the speed's requests, one a grammar and a check,
   each the probe's `step1.off.zebra` or `step1.off.apples` request with that
-  grammar, 256 tokens at most, a line `{"name", "request"}` each;
-  `speed/order.txt`, the names in the order they run, each three times.
+  grammar in the fenced frame, 256 tokens at most, a line `{"name",
+  "request"}` each; `speed/order.txt`, the names in the order they run, each
+  three times.
 
 Both are gzip with no time stamp, so that the same plan is the same bytes.
-
-Every grammar is written by `einaf grammar render … --request`: from the first
-token, or after the thinking (`--after-thinking`), held to by the chain's
-choice first.
+Every grammar is written by `einaf grammar render … --fence --request`, held
+to by the chain's choice first. The first plan, `first/plan.jsonl.gz`, the
+grammars from the first token with no fence, was written by this script's
+first version (`git log -- first/plan.jsonl.gz`).
 """
 
 from __future__ import annotations
@@ -53,7 +59,7 @@ def probe() -> dict[str, dict]:
 
 def grammar(einaf: str, which: str, *, text: str | None = None, program: str | None = None,
             after: bool = False, check: str = "chosen-first") -> dict:
-    args = [einaf, "grammar", "render", which, "--request"]
+    args = [einaf, "grammar", "render", which, "--request", "--fence"]
     if text:
         args += ["--text", text]
     if program:
@@ -86,22 +92,25 @@ def main() -> None:
     a = ap.parse_args()
     p = probe()
     runs = []
-    # Step 1 under its grammar, thinking off, from the first token.
+    # Step 1 under its grammar, thinking off, in the fence.
     for item in ITEMS:
         g = grammar(a.einaf, "1", text=f"{CONTRACT}/{item}/text.txt")
-        runs.append(with_grammar(p[f"step1.off.{item}"], f"step1-grammar.off.{item}", g))
+        runs.append(with_grammar(p[f"step1.off.{item}"], f"step1-fenced.off.{item}", g))
     # A whole program over the library, under the whole grammar's root; and
     # the first experiment under it.
     for pid in sorted(k for k in p if k.startswith("library.off.")):
-        runs.append(with_grammar(p[pid], "whole-grammar.off." + pid.split(".", 2)[2],
+        runs.append(with_grammar(p[pid], "whole-fenced.off." + pid.split(".", 2)[2],
                                  grammar(a.einaf, "whole")))
-    runs.append(with_grammar(p["first-experiment.off.zebra"], "whole-grammar.off.first-experiment",
+    runs.append(with_grammar(p["first-experiment.off.zebra"], "whole-fenced.off.first-experiment",
                              grammar(a.einaf, "whole")))
-    # Thinking on, the grammar begun after the thinking: the probe's step 1 of
-    # `youngest`, whose thinking looped with no grammar; and a short prompt.
-    runs.append(with_grammar(p["step1.on.youngest"], "step1-grammar.on.youngest",
+    # Thinking on, the grammar begun after the thinking at the token
+    # `</think>`: the probe's step 1 of `youngest`, whose thinking loops
+    # before it ends (the same tokens under any grammar begun after it), so
+    # that what a grammar waiting for its token costs is seen; and a short
+    # prompt whose thinking ends.
+    runs.append(with_grammar(p["step1.on.youngest"], "step1-fenced.on.youngest",
                              grammar(a.einaf, "1", text=f"{CONTRACT}/youngest/text.txt", after=True)))
-    demo = with_grammar(p["step1.on.youngest"], "demo.on.youngest",
+    demo = with_grammar(p["step1.on.youngest"], "demo-fenced.on.youngest",
                         grammar(a.einaf, "1", text=f"{CONTRACT}/youngest/text.txt", after=True))
     paragraph = (ROOT / "einaf/prompts/ein-paragraph.v1.md").read_text()
     demo["request"]["prompt"]["messages"] = [
@@ -110,12 +119,14 @@ def main() -> None:
             "Text: Ann is older than Bob. Bob is older than Cy. Who is the youngest?\n\n"
             "Write step 1 of its formalization in Ein: each statement as a fact with its sentence as "
             "`:source`, the question as a query with a `:goal` and a `:goal-text`, then the relations "
-            "declared, each with a `:why`.")},
+            "declared, each with a `:why`. Reply with the program alone, in one fenced block.")},
     ]
     demo["request"]["max_tokens"] = 4096
     demo["examples"] = []
     runs.append(demo)
-    write_gz(HERE / "plan.jsonl.gz", "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in runs))
+    (HERE / "fenced").mkdir(exist_ok=True)
+    write_gz(HERE / "fenced" / "plan.jsonl.gz",
+             "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in runs))
     # The speed's requests.
     lines = []
     order = []
@@ -141,7 +152,7 @@ def main() -> None:
     (HERE / "speed").mkdir(exist_ok=True)
     write_gz(HERE / "speed" / "requests.jsonl.gz", "".join(lines))
     (HERE / "speed" / "order.txt").write_text("\n".join(order) + "\n")
-    print(f"plan.py: {len(runs)} runs in plan.jsonl, {len(order)} calls in speed/order.txt")
+    print(f"plan.py: {len(runs)} runs in fenced/plan.jsonl.gz, {len(order)} calls in speed/order.txt")
 
 
 if __name__ == "__main__":

@@ -10,9 +10,11 @@ catalogue. Each grammar under both checks, `every-token` and `chosen-first`; no 
 
 **The request**: for every grammar of a text, one request, the probe's step-1 request of that text
 (`step1.off.zebra`, `step1.off.apples`, `../model_runtime/plan.jsonl`), unchanged but for its grammar and its budget,
-256 generated tokens at most: greedy, seed 1, thinking off, the grammar from the first token. So the prompt is the
-same under every grammar of a text, and what differs is the grammar; the model may end its turn before the budget,
-and a step's grammar holds a reply to a step-1 prompt to its own forms.
+256 generated tokens at most: greedy, seed 1, thinking off, the grammar from the first token in the fenced frame the
+prompt asks for (`einaf grammar render … --fence --request`). So the prompt is the same under every grammar of a
+text, and what differs is the grammar; the model may end its turn before the budget, and a step's grammar holds a
+reply to a step-1 prompt to its own forms. The requests were written again in the fenced frame, before any of them
+ran, when the first recorded generations showed what a grammar with no fence does to a prompt that asks for one.
 
 **The run**: [`speed.sh`](../speed.sh), every request three times in a row, the 66 calls in one process
 (`einaf generate`, the model loaded once, a context of 65 536 tokens), through `utils/bench_env.sh --cores P
