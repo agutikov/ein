@@ -112,7 +112,7 @@ pub enum Cut {
     /// **The forms written before the cut**: every top-level form the output
     /// completed, the one the cut stopped in dropped, and every form that
     /// repeats one written before it dropped too, which is the loop a greedy
-    /// decoding runs into (L-M2.19); the comments between them kept. A text
+    /// decoding runs into under a grammar; the comments between them kept. A text
     /// with no complete form is empty, and ends the run.
     KeepForms,
 }

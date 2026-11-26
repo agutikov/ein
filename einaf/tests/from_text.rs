@@ -11,11 +11,12 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use einaf::answer::{self, Case};
-use einaf::formalize::{self, Input, Mode, Options, Run};
+use einaf::formalize::{self, Input, Mode, Options};
 use einaf::format::{self, Formatters};
 use einaf::from_text::{self, Config, FromText};
 use einaf::kernel::{self, Bounds, Part, Question, Source};
 
+use einaf::model::replay::Replay;
 use einaf::model::{Failure, Generation, Recorded, Request, Runtime};
 use einaf::prompts;
 
@@ -523,6 +524,75 @@ fn the_zebra_puzzles_steps_by_hand_go_through_the_one_shot_to_its_answer() {
     assert!(fired.keys().any(|r| r.contains("slot")), "{fired:?}");
 }
 
+/// **A recorded run of the model replays, step by step**: the fixture's
+/// calls, slim (no request body, the generated tokens their digest), give
+/// each step's output and program and the complete program it recorded, and
+/// the same answer.
+#[test]
+fn a_recorded_run_of_the_model_replays_step_by_step_from_its_slim_record() {
+    let dir = package().join("tests/fixtures/from_text");
+    let mut seen = 0;
+    for entry in std::fs::read_dir(&dir).expect("the fixtures") {
+        let path = entry.expect("an entry").path();
+        if !path.join("generations.jsonl").exists() {
+            continue;
+        }
+        let rel = |n: &str| {
+            std::fs::read_to_string(path.join(n))
+                .unwrap_or_else(|e| panic!("{}/{n}: {e}", path.display()))
+        };
+        let generations = rel("generations.jsonl");
+        assert!(
+            !generations.contains("\"request\""),
+            "{}: a committed record carries no request body",
+            path.display()
+        );
+        let mut replay = Replay::from_jsonl(&generations).expect("the calls");
+        let args: Vec<String> = rel("args").split_whitespace().map(str::to_string).collect();
+        let line = args
+            .iter()
+            .position(|a| a == "--answer-line")
+            .and_then(|i| args.get(i + 1))
+            .cloned()
+            .unwrap_or_else(|| "generic".to_string());
+        let input = Input {
+            id: path.file_name().unwrap().to_string_lossy().into_owned(),
+            text: rel("text.txt"),
+            answer_line: prompts::answer_line(&line).expect("an answer line"),
+        };
+        let mut config = Config::default();
+        config.options.clock_s = 120;
+        let mut calls = Vec::new();
+        let ft = from_text::run(&mut replay, &input, &config, &mut calls).expect("runs");
+        assert!(
+            calls.iter().all(|c| c.failure.is_none()),
+            "{}: every request found its call",
+            path.display()
+        );
+        for s in &ft.run.steps {
+            let want = path.join(format!("step{}.ein", s.step));
+            if want.exists() {
+                assert_eq!(
+                    s.program.as_deref(),
+                    Some(std::fs::read_to_string(&want).unwrap().as_str()),
+                    "{}: step {}'s program",
+                    path.display(),
+                    s.step
+                );
+            }
+        }
+        assert_eq!(ft.run.program.as_deref(), Some(rel("program.ein").as_str()));
+        // Each step's judgement at root, the writer of H and the check's
+        // findings, and the categories: the sidecar the run committed.
+        let recorded: from_text::Sidecar =
+            serde_json::from_str(&rel("program.sidecar.json")).expect("a sidecar");
+        assert_eq!(from_text::sidecar(&ft.run), recorded, "{}", path.display());
+        assert_eq!(ft.answer.print(), rel("answer.txt"), "{}", path.display());
+        seen += 1;
+    }
+    assert!(seen > 0, "no recorded run under {}", dir.display());
+}
+
 /// The recorded run's options are the default's: the one shot replays it as
 /// recorded, with nothing but the calls.
 #[test]
@@ -539,7 +609,6 @@ fn the_one_shots_defaults_keep_the_forms_an_output_the_budget_cut() {
     let (kept, off) = formalize::keep_forms("(p a)\n;; c\n(q b)\n(q b)\n(q b)\n(r (c");
     assert_eq!(kept, "(p a)\n;; c\n(q b)\n");
     assert_eq!((off.kept, off.repeats), (2, 2));
-    let _: Option<Run> = None;
 }
 
 /// **A directory of modules given beside the library** (`--module-dir`):

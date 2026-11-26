@@ -77,7 +77,8 @@ answer query has no single class with a row, or the outcome gives no state to re
 fixed texts of EinAf's, chosen by the kernel's values and never written by the model. Every arm is asked for such a
 sentence, and scored by the values it binds, not by its wording. *Enforced by* the kernel, which fills the template
 (the feedback object's `queries[].classes[].lines`, [the feedback object § 2](03-feedback.md#2-the-keys)); the
-formatters and the fixed texts: nothing yet.
+formatters and the fixed texts, `einaf::format` and `einaf::answer`
+([from a text to a short answer § 2 and § 3](08-from-text.md#2-the-answer)).
 
 ### 1.6 The target encoding
 

@@ -97,6 +97,14 @@ and held to by the chain's choice first, or under no grammar (`--no-grammar`). H
 prompt and grammar is a **request mode**, `thinking-off` today, which a later stage extends. **What the step wrote**
 is its answer's first fenced block, or the whole answer where it wrote none, parsed alone through `einaf::kernel::parse`.
 
+**An output the budget cut** is read as it stands (`--cut end`, this command's reading): cut inside a form, it
+does not parse, and the step ends the run. The one shot reads it as the forms written before the cut
+([from a text to a short answer § 1](08-from-text.md#1-a-run)), `einaf::formalize::Cut::KeepForms`. **A request's
+seed** is the options' (`seed`, 1), recorded; greedy decoding draws nothing. **A catalogue may carry a directory of
+modules given beside the library** (`einaf::catalogue::Catalogue::with_modules`, `einaf::formalize::run_with`), which
+the one shot's `--module-dir` gives: shown to steps 2 and 3, offered to their grammars, and the directory every step's
+program is loaded from.
+
 **The steps, in order**: step 1; step 2, on step 1's output; **step 2's second call**, only where step 2's output
 holds a marker line, `;; missing: ` and the property's words, with the markers in its prompt; step 3, on the program
 so far. A step whose output does not parse, or is empty, ends the run, and the record says where.

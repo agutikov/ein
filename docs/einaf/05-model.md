@@ -158,6 +158,14 @@ the line or under its `recorded` key, and answers a request with the generation 
 digest is the request's, field for field. So a run replayed asks the model nothing, and a record is the input of a
 second run: `--replay FILE` in place of `--model PATH`, on every command that makes a call.
 
+**A call as a committed record keeps it is slim** (`einaf::model::Slim`, `einaf-call/1`, written by
+`Recorded::slim`): the request's digest and the generation or the failure, with **no request body**, and the
+generated tokens' ids replaced by their digest, `generation.tokens_sha256` (the prompt's tokens are already a digest
+of the envelope's). Replay reads a slim line as it reads a whole one: the request is rendered again from the
+versioned prompts by the run that replays, and found by its digest. A generation's count of tokens is its ids' where
+they are kept, and its thinking's and its answer's where they are not (`GenerationId::count`). `einaf from-text`
+writes its calls slim ([from a text to a short answer § 4](08-from-text.md#4-the-record)).
+
 ## 10. The commands
 
 ```sh

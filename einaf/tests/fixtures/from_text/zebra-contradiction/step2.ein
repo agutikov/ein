@@ -1,0 +1,126 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+
+(instance House1 House :source "There are five houses.")
+(instance House2 House :source "There are five houses.")
+(instance House3 House :source "There are five houses.")
+(instance House4 House :source "There are five houses.")
+(instance House5 House :source "There are five houses.")
+
+(lives-in Englishman Red :source "The Englishman lives in the red house.")
+(owns Spaniard Dog :source "The Spaniard owns the dog.")
+(drinks Coffee Green :source "Coffee is drunk in the green house.")
+(drinks Ukrainian Tea :source "The Ukrainian drinks tea.")
+(is-immediately-to-the-right-of Green Ivory :source "The green house is immediately to the right of the ivory house.")
+(owns OldGold Snails :source "The Old Gold smoker owns snails.")
+(smokes Kools Yellow :source "Kools are smoked in the yellow house.")
+(drinks Milk Middle :source "Milk is drunk in the middle house.")
+(lives-in Norwegian First :source "The Norwegian lives in the first house.")
+(lives-in-next-to Chesterfields Fox :source "The man who smokes Chesterfields lives in the house next to the man with the fox.")
+(smokes Kools Horse :source "Kools are smoked in the house next to the house where the horse is kept.")
+(drinks LuckyStrike Orange :source "The Lucky Strike smoker drinks orange juice.")
+(smokes Japanese Parliaments :source "The Japanese smokes Parliaments.")
+(lives-in-next-to Norwegian Blue :source "The Norwegian lives next to the blue house.")
+(drinks Norwegian Milk :source "The Norwegian drinks milk.")
+
+;; Who drinks water? Who owns the zebra?
+(query
+  :goal (and (drinks ?who Water) (owns ?who Zebra))
+  :goal-text "{?who} drinks water. {?who} owns the zebra.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, completed with relations the theory reads.
+(relation instance T T :why "{?3} is a {?4}")
+(relation type T T :why "{?3} is a kind of {?4}")
+(relation lives-in Person House :why "a {?3} lives in a {?4}")
+(relation owns Person Thing :why "a {?3} owns a {?4}")
+(relation drinks Person Drink :why "a {?3} drinks a {?4}")
+(relation is-immediately-to-the-right-of House House :why "a {?3} is immediately to the right of a {?4}")
+(relation smokes Person Smoke :why "a {?3} smokes a {?4}")
+(relation lives-in-next-to Person Person :why "a {?3} lives next to a {?4}")
+(relation smokes-next-to Smoke Smoke :why "a {?3} is smoked next to a {?4}")
+(relation house-and-color House Color :why "a {?3} and a {?4}")
+(relation house-and-smoke House Smoke :why "a {?3} and a {?4}")
+(relation house-and-drink House Drink :why "a {?3} and a {?4}")
+(relation house-and-thing House Thing :why "a {?3} and a {?4}")
+(relation house-and-person House Person :why "a {?3} and a {?4}")
+(relation house-and-house House House :why "a {?3} and a {?4}")
+
+;; The kinds, and their place.
+(type Attribute T)
+(type House Attribute)
+(type Person Attribute)
+(type Color Attribute)
+(type Drink Attribute)
+(type Smoke Attribute)
+(type Thing Attribute)
+
+;; What kind of thing each name is: step 1's memberships.
+(instance House1 House :source "There are five houses.")
+(instance House2 House :source "There are five houses.")
+(instance House3 House :source "There are five houses.")
+(instance House4 House :source "There are five houses.")
+(instance House5 House :source "There are five houses.")
+(instance Englishman Person :source "The Englishman lives in the red house.")
+(instance Spaniard Person :source "The Spaniard owns the dog.")
+(instance Ukrainian Person :source "The Ukrainian drinks tea.")
+(instance OldGold Smoke :source "The Old Gold smoker owns snails.")
+(instance Kools Smoke :source "Kools are smoked in the yellow house.")
+(instance LuckyStrike Smoke :source "The Lucky Strike smoker drinks orange juice.")
+(instance Japanese Person :source "The Japanese smokes Parliaments.")
+(instance Norwegian Person :source "The Norwegian lives in the first house.")
+(instance Red Color :source "The Englishman lives in the red house.")
+(instance Dog Thing :source "The Spaniard owns the dog.")
+(instance Coffee Drink :source "Coffee is drunk in the green house.")
+(instance Tea Drink :source "The Ukrainian drinks tea.")
+(instance Green Color :source "Coffee is drunk in the green house.")
+(instance Ivory Color :source "The green house is immediately to the right of the ivory house.")
+(instance Snails Thing :source "The Old Gold smoker owns snails.")
+(instance Yellow Color :source "Kools are smoked in the yellow house.")
+(instance Middle House :source "Milk is drunk in the middle house.")
+(instance First House :source "The Norwegian lives in the first house.")
+(instance Blue Color :source "The Norwegian lives next to the blue house.")
+(instance Fox Thing :source "The man who smokes Chesterfields lives in the house next to the man with the fox.")
+(instance Chesterfields Smoke :source "The man who smokes Chesterfields lives in the house next to the man with the fox.")
+(instance Horse Thing :source "Kools are smoked in the house next to the house where the horse is kept.")
+(instance Orange Drink :source "The Lucky Strike smoker drinks orange juice.")
+(instance Parliaments Smoke :source "The Japanese smokes Parliaments.")
+(instance Milk Drink :source "The Norwegian drinks milk.")
+(instance Water Drink :source "Who drinks water?")
+(instance Zebra Thing :source "Who owns the zebra?")
+
+;; The row the text speaks of and never states.
+(is-immediately-to-the-right-of First Second)
+(is-immediately-to-the-right-of Second Third)
+(is-immediately-to-the-right-of Third Fourth)
+(is-immediately-to-the-right-of Fourth Fifth)
+
+;; The theory: algebra and slots for the houses and attributes.
+(import std.algebra :symbols (symmetric includes converse top meet))
+(import std.slots)
+
+;; A verb of one house is a part of house-and-color, etc.
+(includes lives-in house-and-person)
+(includes owns house-and-thing)
+(includes drinks house-and-drink)
+(includes smokes house-and-smoke)
+(includes is-immediately-to-the-right-of house-and-house)
+(includes smokes-next-to smokes-next-to)
+(includes lives-in-next-to lives-in-next-to)
+
+(symmetric house-and-color)
+(symmetric house-and-smoke)
+(symmetric house-and-drink)
+(symmetric house-and-thing)
+(symmetric house-and-person)
+(symmetric house-and-house)
+
+(symmetric is-immediately-to-the-right-of)
+
+;; The classes of house-and-person are the houses, each holding one value of every kind.
+(slot-partition house-and-person instance type Attribute House)
+(slot-spatial house-and-person is-immediately-to-the-right-of instance House)
+(slot-spatial house-and-person smokes-next-to instance House)
+(slot-spatial house-and-person lives-in-next-to instance House)

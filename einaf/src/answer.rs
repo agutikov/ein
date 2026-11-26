@@ -3,7 +3,7 @@
 //! the answer query's values formatted ([`crate::format`]).
 //!
 //! **The text is chosen by the answer query's classes, not by the kernel's
-//! word alone** ([the answer's page](../../docs/einaf/08-from-text.md#3-the-answer)):
+//! word alone** ([the answer's page](../../docs/einaf/08-from-text.md#2-the-answer)):
 //! where R has a state and the answer query one class with a row over a
 //! complete set, each row through its `:goal-text`, its values formatted, a
 //! line each, which is the program's own sentence; where it has two classes

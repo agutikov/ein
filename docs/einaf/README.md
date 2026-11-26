@@ -22,7 +22,10 @@ its parser in both directions, and a grammar a step of the formalization, writte
 own vocabulary. And **the steps** ([the steps](07-steps.md)): the catalogue of the library the steps select from, each
 entry a program the kernel runs; the prompts, versioned templates filled by named slots; a run of the three steps, or
 of the whole program in one call, each step's program assembled in synthesis order and judged at root with the
-writer of H; and the contract's check, its seven findings.
+writer of H; and the contract's check, its seven findings. And **the one shot** ([from a text to a short
+answer](08-from-text.md)): `einaf from-text`, the steps, the least questions the answer needs, and the short answer
+the program prints, its values formatted by EinAf's formatters, or one of EinAf's fixed texts where no program prints
+one; the run's record, each call slim, which replays to the same program and answer.
 
 | page | what |
 |---|---|
@@ -33,6 +36,7 @@ writer of H; and the contract's check, its seven findings.
 | [05-model.md](05-model.md) | the model's runtime: building with the feature, giving a run the model, a request and a generation, the envelope, the chat template, a grammar and where it begins, a kept context, the failures, replay, the commands and the probe |
 | [06-grammars.md](06-grammars.md) | the grammars: the whole grammar generated from `ein.l` and `ein.y` and its hand-written rules, held to the parser; a grammar a step and what its vocabulary closes; where a grammar begins and how an output ends; how a token is held to a grammar; the commands |
 | [07-steps.md](07-steps.md) | the steps: the catalogue, the prompts, a run, the contract's check, the record, the commands |
+| [08-from-text.md](08-from-text.md) | the one shot: a run and its questions, the answer and its fixed texts, the formatters, the record, the command |
 
 ## What it depends on
 
@@ -87,7 +91,7 @@ cargo build --release --manifest-path einaf/Cargo.toml        # einaf/target/rel
 cargo test --manifest-path einaf/Cargo.toml --profile gate     # EinAf's tests, a step of the gate after Ein's
 ```
 
-The tests are eight files under [`einaf/tests/`](../../einaf/tests/), five running programs through the bounded call:
+The tests are eleven files under [`einaf/tests/`](../../einaf/tests/), most running programs through the bounded call:
 [`outcomes.rs`](../../einaf/tests/outcomes.rs), one test an outcome, on a program that has it, and the programs
 whose saturation has no fixpoint, EinAf's own fixtures under [`einaf/tests/fixtures/`](../../einaf/tests/fixtures/);
 [`corpus.rs`](../../einaf/tests/corpus.rs), every corpus program that is not `slow` asked every question, each outcome
@@ -102,7 +106,10 @@ categories of every form of the reference programs; and two of the model's runti
 and each typed failure from calls the binding recorded, and a line of the probe judged again; and
 [`prompts.rs`](../../einaf/tests/prompts.rs), the Ein of the prompts' files and of the probe's plan; and
 [`grammar.rs`](../../einaf/tests/grammar.rs), the grammars held to the parser with no model
-([the grammars § 7](06-grammars.md#7-held-by)).
+([the grammars § 7](06-grammars.md#7-held-by)); [`catalogue.rs`](../../einaf/tests/catalogue.rs) and
+[`steps.rs`](../../einaf/tests/steps.rs), the catalogue and the steps ([the steps § 7](07-steps.md#7-held-by)); and
+[`from_text.rs`](../../einaf/tests/from_text.rs), the one shot, its answer, its formatters and its record
+([from a text to a short answer § 6](08-from-text.md#6-held-by)).
 
 `corpus.rs` runs the `ein` binary the gate built, `ein.rs/target/gate/ein`, which the gate's step before EinAf's
 builds, or the one `$EIN_BIN` names, and `contract.rs` reads H off its `ein show hyps`; without one each fails,
@@ -124,4 +131,6 @@ einaf outcome · examples/zebra2.ein --single
 The questions are `ein solve`'s: none for a description of R, `--single`, `--minimal` or `--maximal` with or without
 `--single`, `--count` and `--no-search`; the bounds are `--region-budget`, `--region-limit`, `--max-steps` and `-T`.
 `einaf --help` lists them, and the model's subcommands, `render`, `generate`, `grammar`, `model` and `probe`, which
-[the model's runtime § 10](05-model.md#10-the-commands) states, `grammar`'s in [the grammars § 6](06-grammars.md#6-the-commands).
+[the model's runtime § 10](05-model.md#10-the-commands) states, `grammar`'s in [the grammars § 6](06-grammars.md#6-the-commands),
+`steps` and `catalogue`, which [the steps § 6](07-steps.md#6-the-commands) states, and `from-text`, the one shot
+([from a text to a short answer § 5](08-from-text.md#5-the-command)).

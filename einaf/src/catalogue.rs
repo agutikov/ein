@@ -21,7 +21,7 @@
 //! catalogue has every entry; the minimal one ([`Size::Minimal`]) the
 //! relation algebra's and the contradiction, the closure of `std.algebra`.
 //! **A directory of modules may be given beside it** ([`Given`],
-//! [`Catalogue::with_modules`]): Q9's escape hatch, the widest condition of
+//! [`Catalogue::with_modules`]): the escape hatch of the ontology's provenance, the widest condition of
 //! the library ablation, and no part of the main arms; its modules are shown
 //! by their forms, offered to the grammars, and found from the directory
 //! when a program that imports one is loaded.

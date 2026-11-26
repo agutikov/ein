@@ -44,8 +44,9 @@ pub const SCHEMA: &str = "einaf-from-text/1";
 #[derive(Clone, Debug)]
 pub struct Config {
     pub options: Options,
-    /// Q9's escape hatch: a directory of theory modules the program may
-    /// import; `None` in the main arms.
+    /// A theory given, the escape hatch of the ontology's provenance: a
+    /// directory of theory modules the program may import; `None` in the
+    /// main arms.
     pub module_dir: Option<PathBuf>,
     /// The answer's formatters; `false`, the kernel's lines as they stand.
     pub format: bool,
