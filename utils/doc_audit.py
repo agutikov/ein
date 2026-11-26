@@ -24,7 +24,9 @@ wherever it is written — so it takes any number of directories and files, or
 
 **links** reads four kinds of referrer, and exits 1 under `--check` on a
 target that does not exist or an anchor no heading of the target has, naming
-the referrer and its line:
+the referrer and its line. A missing target git would ignore is an output
+(a run's artefacts, which are not committed, `plans/m2_nl_to_ir/.gitignore`),
+not a finding, for a link as for a bare path:
 
 - **`.md`**: every markdown link, relative to the page, a reference-style
   definition (`[label]: target`) too;
@@ -375,9 +377,10 @@ def bare_paths(text: str) -> list[tuple[int, str, Path]]:
     return found
 
 
-def git_ignored(paths: list[Path]) -> set[Path]:
+def git_ignored(paths: list[Path] | list[str]) -> set[Path]:
     """The ones git would ignore: outputs of a build or a run, not files of
-    the tree, so their absence on a fresh checkout is not a finding."""
+    the tree, so their absence on a fresh checkout is not a finding. A path
+    given as a string ending in `/` is asked about as a folder."""
     if not paths:
         return set()
     try:
@@ -402,6 +405,7 @@ def check_links(
     ``refs``, when given, collects every reference that resolves."""
     bad: list[tuple[Path, int, str, str]] = []
     missing_bare: list[tuple[Path, int, str, Path]] = []
+    missing_links: list[tuple[Path, int, str, str]] = []
     for page in pages:
         kind = kind_of(page) or "md"
         raw = page.read_text(errors="replace")
@@ -468,7 +472,9 @@ def check_links(
                 bad.append((page, line, target, "outside the repo"))
                 continue
             if not dest.exists():
-                bad.append((page, line, target, "file missing"))
+                # Its trailing `/` kept, so a folder git ignores by a `dir/`
+                # pattern is asked about as a folder.
+                missing_links.append((page, line, target, str(dest) + ("/" if fpart.endswith("/") else "")))
                 continue
             if refs is not None:
                 refs.append((page, line, target, dest, kind))
@@ -501,6 +507,10 @@ def check_links(
     for page, line, written, dest in missing_bare:
         if dest not in ignored:
             bad.append((page, line, written, "file missing"))
+    ignored = git_ignored([q for _, _, _, q in missing_links if Path(q).is_relative_to(REPO)])
+    for page, line, target, query in missing_links:
+        if Path(query) not in ignored:
+            bad.append((page, line, target, "file missing"))
     bad.sort(key=lambda b: (str(b[0]), b[1]))
     return bad
 

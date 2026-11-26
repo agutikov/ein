@@ -492,7 +492,24 @@ paragraph, no register count, no measurement (the user's rule).
   it stays in `git log --diff-filter=D -- plans/<folder>`, and a link to it is
   its label text. What stays under `plans/` is unfinished work: open
   milestones, phases and followups, the open questions, the open wrong answers,
-  and `plans/ideas/`.
+  and `plans/ideas/`. **M2 is the exception** (the user's rule inside the
+  milestone): a phase of M2 that closes keeps its folder and everything in it,
+  and M2's folder goes whole at the milestone's own close.
+- **What a script writes again is not committed** (the user's rule): a file a
+  script, a tool or a model run writes, and writes again with no agent, stays
+  out of git unless the user asks for it. Of an experiment, the scripts, the
+  benchmarks (its plan, texts and inputs), the automation and the analysis
+  tools are committed, and so are its results, reports and analyses; its
+  artefacts (the records, the generations, a run's outputs and their
+  renderings) are not: a stage writes them under a `runs/` or `out/` folder,
+  which git ignores (`plans/m2_nl_to_ir/.gitignore`), and a page may link into
+  them, the link check taking a missing target git ignores for an output. It
+  holds from its ruling on: what was committed before stays, until the user
+  asks otherwise. The rule is about runs' outputs: the generated files of
+  [§ Edits that go together](#edits-that-go-together) are committed, the
+  documentation's renderings being the user's own example of what a reader
+  needs present, and the rest what the build, the gate and the pages read as
+  they stand.
 - **What waits for the user**: questions that span milestones, and the
   rulings about the process a closed milestone left binding, are the root
   ledger, [`plans/open_questions.md`](plans/open_questions.md), ids sticky; what

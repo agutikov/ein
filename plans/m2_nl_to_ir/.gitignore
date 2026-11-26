@@ -1,0 +1,7 @@
+# The artefacts of an experiment, kept on the host that ran it and never committed (the user's rule, 2026-11-26):
+# what a script, a tool or a model run writes, and writes again with no agent. A stage writes them under a folder
+# of one of these names; its scripts, plan, texts, results, report and analysis are committed beside it. The rule
+# holds from its ruling on: the files under such a folder that were committed before it (P2.2's from_text/runs/,
+# steps/runs/ and report/out/) stay tracked, and only what is new there is ignored.
+runs/
+out/

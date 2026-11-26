@@ -12,7 +12,10 @@ s2.2.0f - it must be not a separate stage, it's my notes about whole formalizer 
 close p2.1 and stop"*; it was started 2026-11-25 on the user's word, *"start implementation of M2, everything in p2.1,
 then stop and let me review; each stage in subagents, subagents commit their work"*, and ran its four stages to their
 end; its plans are deleted (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`), what it
-left open is the milestone's, and [the defaults it took](defaults/p2.1.md) stand. **P2.2 is started
+left open is the milestone's, and [the defaults it took](defaults/p2.1.md) stand. **From 2026-11-26 a phase of M2
+that closes keeps its folder** (the user's rule inside the milestone: *"In this milestone M2 we do not delete phase
+folders and content when close phase. Only will delete the whole milestone in it's end."*); P2.1's was deleted
+before it. **P2.2 is started
 2026-11-26** on the user's word, *"start next phase plans/m2_nl_to_ir/p2.2_formalizer, execute s2.2.0a and pause"*; S2.2.0a ran to its end, and then, *"Ok, I like what I see, after s2.2.0a continue with other stages of the phase"*,
 **the phase runs its other stages to its end and stops there for the user's review; no other phase starts until the
 user says so.** S2.2.1 to S2.2.5 have run to their end (S2.2.4, stopped on the user's word while the user asked about the grammar, ran again on *"continue the phase"*); **the phase stops for the user's review, with [its report](p2.2_formalizer/report/README.md), and is not closed.** **[P2.2b](p2.2b_guided_thinking/README.md), guided thinking, is planned 2026-11-26** on the user's word, *"add new phase p2.2b for guided thinking"*, and not started.
@@ -217,19 +220,35 @@ them.
 | `einaf/src/` | the kernel as EinAf reads it (the feedback object), the model's runtime, the formalizer, the formatters, the loop, the tool, the record, the metrics, the benchmark's generators |
 | `einaf/prompts/`, `einaf/grammars/` | the prompts, versioned by hash; the grammars, generated |
 | `einaf/benchmark/` | the instances: a text, its gold class and short answer, its canonical program with an `:expect`; the frozen splits |
-| `einaf/experiments/` | the records, immutable, one a run |
+| `einaf/experiments/` | the records, immutable, one a run, kept on the host that ran them and never committed ([below](#what-is-committed)) |
 | `docs/einaf/` | EinAf's documentation |
 
 The model's file is not in the repository: a record names it by its SHA, and a run is given its path.
 
-**What a run commits** (the user's ruling of 2026-11-26, asked *"Do you think we need to commit all artefacts?"*,
-answering *"1"*: leave S2.2.4's records as committed, and commit less from S2.2.5 on): what cannot be made again
-cheaply, and what a reader needs without a build. Committed: the plan, before the first generation; the scripts and
-the texts; for each call, the request's digest, the tokens' digest and the generation, with no request body, since
-replay renders the request again from the versioned prompts and finds the call by its digest; for each run, its
-program and the live run's stderr (its times); the report, with its tables written by replay. Not committed: the
-request bodies, a run's JSON and summary, the replay's stderr and a step's output, which is a generation's text;
-`replay` writes each on demand. S2.2.4's records (`c7f81431`) and the stages' before it stay as committed.
+#### What is committed
+
+**The user's rule of 2026-11-26**, which replaces the ruling of the same day on what a run commits: *"If something
+can be re-generated without agent then we must not commit it, except if I explicitely ask for. For example
+documentation renderings - can be re-generated, but in order to read documentation we need renderings present."*;
+and of experiments, *"content of folders like plans/m2_nl_to_ir/p2.2_formalizer/report/out,
+plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs, plans/m2_nl_to_ir/p2.2_formalizer/steps/runs considered experiments
+artefacts and should not be committed into the repo; scripts, benchmarks, automation and analysis tools - should be
+committed; results, reports, analysis - also should be committed"*.
+
+- **Committed**: the plan of a run, before its first generation, and its texts and inputs; the scripts, the
+  benchmarks, the automation and the analysis tools; the results (a table, a result page), the reports and the
+  analyses; and EinAf's test fixtures (`einaf/tests/fixtures/`), which are the tests' inputs.
+- **Not committed**: a run's artefacts, everything a script, a tool or a model run writes and writes again with no
+  agent: the record of each call, the generations, the programs a model wrote, a run's JSON, outputs and stderr, the
+  renderings of them, a report script's outputs. A stage writes them under a folder named `runs/` or `out/`, which
+  [`.gitignore`](.gitignore) keeps out of git, and they stay on the host that ran it. A page may link into them (the
+  link check takes a missing target git ignores for an output); on a checkout that has none, a replay needs the run
+  made again with the model first.
+- **The rule holds from 2026-11-26 on**: what was committed before it stays committed (S2.2.0a to S2.2.5's records,
+  the phase report's `out/`) until the user asks otherwise (*"I did not ask to delete anything right now. But we must
+  follow this rule in future"*). **The plans of P2.5, P2.7, P2.9 and P2.10 that speak of committed records** under
+  `einaf/experiments/` were written before the rule: it holds over them, and each is re-aimed to it when its phase is
+  planned to run.
 
 ### The defaults the re-plan took
 
@@ -458,7 +477,7 @@ first and the user's rulings after them.
 finds that is neither Ein's nor a question (`L-M2.n`). Each holds one file an item under a topic folder, and an index.
 **Every phase keeps the same three of its own**, beside its README, its ids taken from the milestone's sequences; at
 the phase's close what is open moves into the milestone's folder of the same name, under the same topic, and what is
-closed goes with the phase's folder.
+closed stays in the phase's folder, which M2 keeps until the milestone's own close (the user's rule, above).
 
 **Ruled by the user, 2026-11-25:** the kernel M2 reads is the one M1f left
 ([Q-M2.1](open_questions/kernel/Q-M2.1-when-is-the-kernel-frozen.md)); the model is local
