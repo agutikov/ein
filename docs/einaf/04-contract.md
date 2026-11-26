@@ -7,10 +7,11 @@ to B4 (the task, the categories of what a program holds, what the model receives
 three steps a formalization is made in.
 
 Every clause names what enforces it: **the kernel** (a refusal, the static check, a read-out), **EinAf's code**
-([`einaf::contract`](../../einaf/src/contract.rs), which computes the categories), **EinAf's tests**
-([`einaf/tests/contract.rs`](../../einaf/tests/contract.rs), which run this page's examples), or **nothing yet**:
-the contract's check on a program, the grammars, the prompts, the record and the faithfulness judge are written to
-this page and do not exist yet. A number on the page carries the test that holds it.
+([`einaf::contract`](../../einaf/src/contract.rs), which computes the categories, and
+[`einaf::check`](../../einaf/src/check.rs), the contract's check, [the steps § 4](07-steps.md#4-the-contracts-check)),
+**EinAf's tests** ([`einaf/tests/contract.rs`](../../einaf/tests/contract.rs), which run this page's examples), or
+**nothing yet**: the faithfulness judge and the record's layout are written to this page and do not exist yet. A
+number on the page carries the test that holds it.
 
 | section | what |
 |---|---|
@@ -41,11 +42,11 @@ later step completes it ([§ 3](#3-the-steps)).
 
 | part | step | the forms | the rule | enforced by |
 |---|---|---|---|---|
-| **instance** | 1 | facts and stored negations with `:source`, in the text's own words | the `:source` is **a sentence of the input, verbatim**: a sentence that states several facts is quoted whole by each, as `There are five houses.` is by five; a quantity a theory computes with is a numeral of the calculator, `(n z 5)`, and any other number is a name | the categories: a `:source` that is no sentence of the input is the judge's event `unfound_source` ([§ 4](#4-what-each-form-is-the-categories)); a fact takes `:source`, `:rule` and `:using` and no other keyword, which the kernel refuses ([Q-M1e2.28](../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)); a number written as a name where the theory computes: nothing yet |
-| **query** | 1 | **the answer query, the one `query` that carries a `:goal-text`**; any other query carries none and is a check | its goal asks what the text's question asks, written as literally as a statement, over the facts' own relations, so that the theory has to make it answerable; its `:goal-text` is **a sentence that says the answer in the problem's words**, `"{?who} is the youngest"`, with references and no name of its own where a reference should be; its variables bind names and numerals | the kernel holds a goal to what a rule's `:match` is held to ([§ 2.21](../ein/user/04-reference/07-diagnostics.md#221-a-goal-is-held-to-what-a-rules-match-is-held-to)); [`einaf::contract::answer_query`](../../einaf/src/contract.rs) reads the first query with a `:goal-text`; a program with none or with two, and a template that holds more than its references: nothing yet |
-| **ontology** | 1, partial; 2, complete | `relation` forms; membership facts | every relation carries a `:why` that reads its declaration, `{?3}` its first label ([natural language § 1](../ein/user/03-syntax-and-semantics/14-natural-language.md#1-the-four-texts)); a name is a run of the characters [the syntax § 1](../ein/user/04-reference/02-syntax.md#1-lexical-rules) allows, taken from the text's own words; a label is no type ([Q-M1f.372](../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)) | the kernel refuses a relation with no `:why` ([§ 2.10](../ein/user/04-reference/07-diagnostics.md#210-a-form-with-no-why)), and EinAf never loads with the requirement off; a fact of a relation the program does not declare, and a form of a declared relation at another count, load in silence ([Q-M1f.447](../decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)): nothing yet |
-| **theory** | 2, partial; 3, complete | `import` forms with `:symbols`, and the facts that select what they bring; a `rule` of the program's own where the library has nothing | a theory is written as the library's pages write it ([what to list](../ein/user/04-reference/04-stdlib/README.md#what-to-list)); a rule carries a `:why` that says what it concludes and from what | the kernel refuses a rule with no `:why`; a selection under a name the file does not list is inert, with no message, and a selected theory that activated nothing: nothing yet |
-| **hypothesis mechanism** | 3 | nothing, where a theory the program selects has obligations that propose; a rule that concludes `(open F)`, or a written `(open F)`; `(solve :no-search)`; `(solve :hypothesis-relations (R …))` | **the program states its mechanism**: one of the four, or the first two together, whose hypotheses the kernel takes as one set ([Q-M1f.570](../decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md)); the writer of H is what the kernel reports, `obligations`, `hypothesis-rules`, `union`, `no-search` or `blind`, as `ein show hyps` prints it, and `blind` with no `(solve …)` list is a mechanism not stated | the kernel refuses mechanisms that contradict one another ([§ 2.26](../ein/user/04-reference/07-diagnostics.md#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)); **a program that states none is answered by the blind enumerator in silence** ([the writers](../ein/user/03-syntax-and-semantics/09-hypotheses.md#where-candidates-come-from-the-writers), [Q-M1f.576](../decisions/hypotheses/Q-M1f.576-the-blind-enumerator-writes-only-where-root.md)), and the bounded call returns no writer: nothing yet |
+| **instance** | 1 | facts and stored negations with `:source`, in the text's own words | the `:source` is **a sentence of the input, verbatim**: a sentence that states several facts is quoted whole by each, as `There are five houses.` is by five; a quantity a theory computes with is a numeral of the calculator, `(n z 5)`, and any other number is a name | the categories: a `:source` that is no sentence of the input is the judge's event `unfound_source` ([§ 4](#4-what-each-form-is-the-categories)); a fact takes `:source`, `:rule` and `:using` and no other keyword, which the kernel refuses ([Q-M1e2.28](../decisions/language/Q-M1e2.28-each-form-takes-a-closed-list-of-keywords.md)); a number written as a name: the contract's check, `number-as-name` |
+| **query** | 1 | **the answer query, the one `query` that carries a `:goal-text`**; any other query carries none and is a check | its goal asks what the text's question asks, written as literally as a statement, over the facts' own relations, so that the theory has to make it answerable; its `:goal-text` is **a sentence that says the answer in the problem's words**, `"{?who} is the youngest"`, with references and no name of its own where a reference should be; its variables bind names and numerals | the kernel holds a goal to what a rule's `:match` is held to ([§ 2.21](../ein/user/04-reference/07-diagnostics.md#221-a-goal-is-held-to-what-a-rules-match-is-held-to)); [`einaf::contract::answer_query`](../../einaf/src/contract.rs) reads the first query with a `:goal-text`; a program with none or with two, a reference the goal does not bind, and a template that holds more than its references: the contract's check, finding 6 |
+| **ontology** | 1, partial; 2, complete | `relation` forms; membership facts | every relation carries a `:why` that reads its declaration, `{?3}` its first label ([natural language § 1](../ein/user/03-syntax-and-semantics/14-natural-language.md#1-the-four-texts)); a name is a run of the characters [the syntax § 1](../ein/user/04-reference/02-syntax.md#1-lexical-rules) allows, taken from the text's own words; a label is no type ([Q-M1f.372](../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)) | the kernel refuses a relation with no `:why` ([§ 2.10](../ein/user/04-reference/07-diagnostics.md#210-a-form-with-no-why)), and EinAf never loads with the requirement off; a fact of a relation the program does not declare, and a form of a declared relation at another count, load in silence ([Q-M1f.447](../decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)): the contract's check, `undeclared` and `wrong-count` |
+| **theory** | 2, partial; 3, complete | `import` forms with `:symbols`, and the facts that select what they bring; a `rule` of the program's own where the library has nothing | a theory is written as the library's pages write it ([what to list](../ein/user/04-reference/04-stdlib/README.md#what-to-list)); a rule carries a `:why` that says what it concludes and from what | the kernel refuses a rule with no `:why`; a selection under a name the file does not list is inert, with no message, and a selected theory that activated nothing: the contract's check, `selection-not-listed` and `selection-inactive`; the catalogue each step 2 and 3 is shown is a table of programs the kernel ran ([the steps § 1](07-steps.md#1-the-catalogue)) |
+| **hypothesis mechanism** | 3 | nothing, where a theory the program selects has obligations that propose; a rule that concludes `(open F)`, or a written `(open F)`; `(solve :no-search)`; `(solve :hypothesis-relations (R …))` | **the program states its mechanism**: one of the four, or the first two together, whose hypotheses the kernel takes as one set ([Q-M1f.570](../decisions/hypotheses/Q-M1f.570-h-is-the-union-of-the-hypotheses-root-holds.md)); the writer of H is what the kernel reports, `obligations`, `hypothesis-rules`, `union`, `no-search` or `blind`, as `ein show hyps` prints it, and `blind` with no `(solve …)` list is a mechanism not stated | the kernel refuses mechanisms that contradict one another ([§ 2.26](../ein/user/04-reference/07-diagnostics.md#226-a-programs-hypothesis-mechanisms-do-not-contradict-one-another)); **a program that states none is answered by the blind enumerator in silence** ([the writers](../ein/user/03-syntax-and-semantics/09-hypotheses.md#where-candidates-come-from-the-writers), [Q-M1f.576](../decisions/hypotheses/Q-M1f.576-the-blind-enumerator-writes-only-where-root.md)); the bounded call returns no writer, and `einaf::kernel::root` does; a mechanism not stated, or not the one the writer is: the contract's check, finding 3 |
 
 ### 1.3 The order of the program's text
 
@@ -61,7 +62,8 @@ way round, has the same outcome, states and answer.
 
 A `(config …)`, since no flag changes the answer and the harness sets what a run needs; a `(trace …)`; a saved
 file's wrapper; a string outside `:why`, `:source` and `:goal-text`, which the kernel refuses. *Enforced by* the
-kernel for the strings; the rest: nothing yet. The categories put a `(config …)` and a `(trace …)` in the program's
+kernel for the strings; for the rest, the grammars a model writes under, which admit none of them
+([the grammars § 1](06-grammars.md#1-the-whole-grammar)), and with no grammar nothing. The categories put a `(config …)` and a `(trace …)` in the program's
 frame ([§ 4](#4-what-each-form-is-the-categories)).
 
 ### 1.5 The answer is the program's
@@ -97,8 +99,9 @@ never the kernel's, kept apart from what the kernel said: a `:source` that is no
 theory that activated nothing; a mechanism not stated; a fact of a relation the program does not declare; a form of
 a declared relation at another count; a number written as a name where the theory computes; a `:goal-text`
 reference nothing binds; a `:goal-text` on no query, or on two. The kernel refuses none of them. *Enforced by* the
-kernel and [the outcomes](01-outcomes.md) for the outcome; the first finding by the categories; the rest: nothing
-yet.
+kernel and [the outcomes](01-outcomes.md) for the outcome; the findings by the contract's check,
+[`einaf::check`](../../einaf/src/check.rs), each from the step that could have avoided it
+([the steps § 4](07-steps.md#4-the-contracts-check)).
 
 ## 2. The mechanism line: the worked example
 
@@ -133,10 +136,11 @@ the name the file lists:
 (transitive older)
 ```
 
-**Step 3**, [`step3.ein`](../../einaf/contract/youngest/step3.ein), adds what the library does not have, and the
-mechanism:
+**Step 3**, [`step3.ein`](../../einaf/contract/youngest/step3.ein), adds what the library does not have, after the
+marker of the property it supplies, and the mechanism:
 
 ```lisp
+;; missing: the youngest, the one older than nobody
 (rule youngest-is-older-than-nobody ()
   :match  (and (person ?p) (absent (older ?p ?q)))
   :assert (youngest ?p)
@@ -179,7 +183,7 @@ consumed, and a repair changes the theory before the facts.
 | **what it decides** | **which words name the same object**; what is an object and what a relation; one fact a sentence or several; whether the objects are of one kind or of several | which library theory, which properties | which rules the library does not have; which mechanism |
 | **what it may change** | nothing before it | step 1's ontology, completed or renamed; never a statement or the answer query | nothing of a statement or the answer query |
 | **how it is checked** | the kernel at root, under `--no-search`: it loads, it is not flagged, root is alive; the contract's check, its findings that apply to a step-1 program, a fact held to a declaration among them | the kernel at root; the contract's check | the kernel under every question; the contract's check |
-| **enforced by** | a step's grammar, the contract's check and the record: nothing yet; on this page's programs, `a_later_step_keeps_the_statements_and_writes_its_own_part` holds that no later step rewrites a statement or the answer query and that no step writes a form of a later step's part ([§ 4](#4-what-each-form-is-the-categories) gives each part its step) | as step 1 | as step 1 |
+| **enforced by** | a step's grammar ([the grammars § 3](06-grammars.md#3-a-grammar-a-step)), the contract's check on the step's program and the run's record ([the steps](07-steps.md)); on this page's programs, `a_later_step_keeps_the_statements_and_writes_its_own_part` holds that no later step rewrites a statement or the answer query and that no step writes a form of a later step's part ([§ 4](#4-what-each-form-is-the-categories) gives each part its step) | as step 1 | as step 1 |
 
 ### 3.2 The five design questions
 
@@ -198,7 +202,7 @@ consumed, and a repair changes the theory before the facts.
    a sentence step 1 already stated otherwise is recorded as *rewritten*, with the step-1 fact it differs from, and
    counted. Changing a step-1 fact is the loop's. On this page's programs no step rewrote one.
 5. **What EinAf checks where the kernel cannot.** The contract's check runs on each step's program with the findings
-   that apply to it ([§ 1.7](#17-what-a-formalization-comes-to)): nothing yet.
+   that apply to it ([§ 1.7](#17-what-a-formalization-comes-to), [the steps § 4](07-steps.md#4-the-contracts-check)).
 
 ## 4. What each form is: the categories
 
@@ -255,8 +259,9 @@ apples,"*), and an assumption marked by a text no sentence has (*"ASSUMPTION, no
 
 The items of a prompt, in the order a prompt is assembled, each versioned and hashed; the first and the third are in
 every prompt, of every step and every arm, and the tool's function description carries what the filter's prompt
-holds of Ein, so the two arrangements differ by no knowledge of the language. *Enforced by* nothing yet: no prompt
-is assembled.
+holds of Ein, so the two arrangements differ by no knowledge of the language. *Enforced by* the steps' prompts,
+versioned templates under [`einaf/prompts/`](../../einaf/prompts/) rendered by named slots, each naming the section of
+this page it implements ([the steps § 2](07-steps.md#2-the-prompts)); the tool's description: nothing yet.
 
 1. **An excerpt of Ein's reference**, cut from pages at a named commit: the forms of
    [the syntax](../ein/user/04-reference/02-syntax.md), the table from intent to word of
@@ -292,20 +297,23 @@ of the kernel but the rendered feedback object; a human edit between iterations.
 ## 6. What a run records
 
 A prompt edit changes a hash, and a changed hash is a new experiment. The layout is the record's; the fields are
-these. *Enforced by* the record: nothing yet, but the parts the feedback object already holds.
+these. *Enforced by* the record of a run of the steps ([the steps § 5](07-steps.md#5-the-record)): every call with
+its envelope, and the run with its digests, programs and judgements; the record's layout of the harness: nothing
+yet.
 
 | the research plan's B4 asks for | the field | today |
 |---|---|---|
-| model, model version | the file's SHA-256 and what its header says of it, the binding and its llama.cpp | nothing yet |
-| system prompt hash, formalization prompt hash | the hash of each rendered prompt, one a call, and of each template it was rendered from | nothing yet |
-| Ein specification version | the hash of the excerpt, and the commit it was cut at | nothing yet |
-| stdlib version | the hash of the catalogue, and the library's manifest digest, `ein --version`'s `stdlib` line | the manifest digest is the feedback object's `kernel.stdlib` |
-| generation parameters | the sampler chain in order, the seed, the context, thinking on or off, the grammar's hash and where it began | nothing yet |
-| *beyond B4* | the kernel's commit, read from git; the program, and each step's program with its judgement at root; the categories, with the step of each form; the writer of H the kernel reported; the feedback object | the kernel's version is `kernel.version`, its commit `kernel.commit`, which the record sets; the categories are [`einaf::contract`](../../einaf/src/contract.rs)'s; the writer of H is `ein show hyps`' and no value the bounded call returns |
+| model, model version | the file's SHA-256 and what its header says of it, the binding and its llama.cpp | each call's envelope ([the model's runtime § 4](05-model.md#4-the-envelope)) |
+| system prompt hash, formalization prompt hash | the hash of each rendered prompt, one a call, and of each template it was rendered from | a run's `steps[].prompt_sha256` and `template_sha256` |
+| Ein specification version | the hash of the excerpt, and the commit it was cut at | a run's `excerpt_sha256`; the commit: nothing yet |
+| stdlib version | the hash of the catalogue, and the library's manifest digest, `ein --version`'s `stdlib` line | a run's `catalogue_sha256`; the manifest digest is the feedback object's `kernel.stdlib` and the catalogue's first line |
+| generation parameters | the sampler chain in order, the seed, the context, thinking on or off, the grammar's hash and where it began | each call's envelope, and a run's `steps[].grammar_sha256` |
+| *beyond B4* | the kernel's commit, read from git; the program, and each step's program with its judgement at root; the categories, with the step of each form; the writer of H the kernel reported; the feedback object | the kernel's version is `kernel.version`, its commit `kernel.commit`, which the record sets; a run's `steps[].program` and `steps[].judged`, its `program`, `complete` and `categories`; the writer of H is [`einaf::kernel::root`](../../einaf/src/kernel/root.rs)'s, `judged.root.writer` |
 
 ## 7. The steps by hand
 
-Five texts beside the worked example, each through the three steps by hand: the Zebra puzzle to the target shape;
+Five texts beside the worked example, each through the three steps by hand, each rule after the marker of the
+property it supplies, `;; missing: ` and its words, as a step's grammar asks: the Zebra puzzle to the target shape;
 three word problems over the calculator alone, as the main arms see the library (a computed quantity, a comparison,
 and a text that does not give enough to answer); and a seating. Each step's program is a file under
 [`einaf/contract/`](../../einaf/contract/), `stepN.ein`, the text beside it as `text.txt`; a step's program is the
@@ -392,5 +400,6 @@ call and its forms through `einaf::kernel::forms`; H read off `ein show hyps` of
 | `each_complete_program_is_one_under_every_question` | each step 3 *one* under every reading of every question that searches, and its answer the same under each |
 | `each_complete_program_answers_alike_with_its_forms_reversed` | [§ 1.3](#13-the-order-of-the-programs-text), on each complete program |
 | `the_zebra_steps_end_at_the_target_shape` | [§ 7.2](#72-the-zebra-puzzle-step-by-step): step 3 against `zebra3.1.ein`, form for form and under every question |
+| `the_writer_of_h_the_kernel_module_reads_is_ein_show_hyps` | `einaf::kernel::root`'s writer of H and H's size, which a run of the steps records, against `ein show hyps` on every program of `einaf/contract/` |
 | `a_later_step_keeps_the_statements_and_writes_its_own_part` | [§ 3.1](#31-each-step): no statement or answer query rewritten, no form of a later step's part |
 | `the_categories_partition_every_form_of_the_reference_programs` | [§ 4](#4-what-each-form-is-the-categories): every form of every reference program in one row with a step, the table's counts and the word problems' `unfound_source` events |

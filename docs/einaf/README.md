@@ -19,7 +19,10 @@ Cargo feature, every call returning a generation with its envelope or a typed fa
 call from a record with no model; and the probe made with it, of Ein written with no grammar. And **the grammars**
 ([the grammars](06-grammars.md)): the whole grammar of Ein as GBNF, generated from Ein's two grammar files and held to
 its parser in both directions, and a grammar a step of the formalization, written at request time from the program's
-own vocabulary.
+own vocabulary. And **the steps** ([the steps](07-steps.md)): the catalogue of the library the steps select from, each
+entry a program the kernel runs; the prompts, versioned templates filled by named slots; a run of the three steps, or
+of the whole program in one call, each step's program assembled in synthesis order and judged at root with the
+writer of H; and the contract's check, its seven findings.
 
 | page | what |
 |---|---|
@@ -29,6 +32,7 @@ own vocabulary.
 | [04-contract.md](04-contract.md) | the formalization contract: the task, the three steps and their five design questions, the categories of a program's forms, what the model receives, what a run records; the steps by hand |
 | [05-model.md](05-model.md) | the model's runtime: building with the feature, giving a run the model, a request and a generation, the envelope, the chat template, a grammar and where it begins, a kept context, the failures, replay, the commands and the probe |
 | [06-grammars.md](06-grammars.md) | the grammars: the whole grammar generated from `ein.l` and `ein.y` and its hand-written rules, held to the parser; a grammar a step and what its vocabulary closes; where a grammar begins and how an output ends; how a token is held to a grammar; the commands |
+| [07-steps.md](07-steps.md) | the steps: the catalogue, the prompts, a run, the contract's check, the record, the commands |
 
 ## What it depends on
 
@@ -44,9 +48,12 @@ program and asks it nothing, and returns its top-level forms, each as `ein_ir::d
 shape, with what its imports bring; and `einaf::kernel::parse`, which parses a text and loads nothing, every error
 with its kind and its place; `einaf::kernel::shapes`, a text's forms read off its parse alone; and
 `einaf::kernel::vocabulary`, what a text declares, imports and writes, read off its parse, with
-`einaf::kernel::library`, the standard library's modules as texts. Nothing else in the package names an item of Ein's
-crates: `einaf::contract`, the contract's categories, reads the forms, `einaf::probe` reads the kernel through them,
-and `einaf::grammar` the vocabularies.
+`einaf::kernel::library`, the standard library's modules as texts, `einaf::kernel::rule_docs`, each rule a text writes
+with its parameters and its `:why`, and `einaf::kernel::stdlib_digest`, the library's manifest digest; and
+`einaf::kernel::root`, which builds root and H as `ein show hyps` does, under the call's bounds, and returns the
+writer of H the kernel reports and root's firings and owes as values. Nothing else in the package names an item of
+Ein's crates: `einaf::contract`, the contract's categories, reads the forms, `einaf::probe` reads the kernel through
+them, `einaf::grammar` the vocabularies, and `einaf::catalogue`, `einaf::check` and `einaf::formalize` all of them.
 
 **Ein's two grammar files, through grmtools**: `einaf::grammar` reads `ein.l` and `ein.y`, which the build embeds,
 through `lrlex`, `cfgrammar` and `regex-syntax`, at the versions `ein-ir` builds against, and names no item of Ein's

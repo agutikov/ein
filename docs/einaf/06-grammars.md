@@ -106,10 +106,14 @@ writes, in the order it writes them ([the contract § 3.1](04-contract.md#31-eac
 | **2b**, step 2's second call | `rule` forms, each after a marker, each pattern and conclusion of a relation the program or a module it imports declares, at a count it is declared at, over the program's names and variables | the catalogue; the program of the steps before |
 | **3** | the activating facts of the modules the program imports, at their counts, over its names; a marker before each `rule` form, closed as step 2b's; the hypothesis mechanism: `(solve :no-search)`, `(solve :hypothesis-relations (…))` of the program's relations, a written `(open F)` | the catalogue; the program of the steps before |
 
-**The catalogue** a grammar is rendered on is read off the library's texts, `einaf::grammar::steps::Catalogue`:
-each module of `std` but `std.core`, the names it declares (which `:symbols` may list), its rules of one parameter or
-more with their counts (a fact of whose name activates them), and the relations its rules read that no module
-declares (`slot-partition`). `einaf grammar catalogue` lists it.
+**The catalogue** a grammar is rendered on, `einaf::grammar::steps::Catalogue`, is either of two. **A run of the
+steps renders its grammars on the catalogue's entries** ([the steps § 1](07-steps.md#1-the-catalogue)): the modules
+the entries import, the names they list, the facts they select with at their counts, the relations a module reads
+that no module declares (`slot-partition`), and the names a program writes as values (the calculator's orders, the
+digits); `einaf catalogue --grammar` lists it. **The library's**, `Catalogue::library`, read off its texts, is every
+module of `std` but `std.core`, the names it declares (which `:symbols` may list), its rules of one parameter or more
+with their counts (a fact of whose name activates them), and the relations its rules read that no module declares;
+`einaf grammar catalogue` lists it, and the grammars' own tests render on it.
 
 **What a step's vocabulary closes.** Step 1 writes its facts before their declarations, so it closes none of them. Step
 2 declares relations in the same output as the facts of them, so its ontology is open, and its imports and activating
@@ -125,7 +129,7 @@ word of Ein's; a string holds no `"`, `\` or line break, and a template's braces
 comment and the marker hold no `<`, `>`, `|` or backtick**, as under the whole grammar's `root`, but a sentence of the
 input quoted verbatim as step 1's `:source`, which is the input's. **The marker**
 of a missing property is the comment line `;; missing: ` and the property's words, which steps 2b and 3 write directly
-above each rule and step 2 writes as any comment. A program the kernel reads is the same with its comments or
+above each rule and step 2 writes as any comment, as the steps by hand do ([the contract § 7](04-contract.md#7-the-steps-by-hand)). A program the kernel reads is the same with its comments or
 without them.
 
 ## 4. Where a grammar begins, and how an output ends

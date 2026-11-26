@@ -1,0 +1,966 @@
+{
+  "schema": "einaf-steps/1",
+  "id": "bob1",
+  "options": {
+    "mode": "steps",
+    "grammar": true,
+    "request": "thinking-off",
+    "catalogue": "whole",
+    "max_tokens": 12288,
+    "clock_s": 60
+  },
+  "text_sha256": "sha256:4dddcbd923da2e550ab1c26320845ca824da6ca6fcc06eafb434dfc9cc7764b7",
+  "answer_line": "answer-lines/word.v1.md",
+  "answer_line_sha256": "sha256:61469c564e09f842972425d3289b81570c2303edf9f972ec695c55ca056676df",
+  "excerpt_sha256": "sha256:5812ed7e64cfc95aab3e663ff0d5a1350d9880102f2453f555ae0cfacdfcee81",
+  "catalogue_sha256": "sha256:93d7869f6b90aa517b61d2d8a414fdc3b2ec4ec93f351cd9aa91be8bc2acd8b3",
+  "quoted": [
+    "prompts/examples/shops/step1.ein",
+    "prompts/examples/shops/step2.ein",
+    "prompts/examples/shops/step3.ein",
+    "prompts/examples/buying/step1.ein",
+    "prompts/examples/buying/step2.ein",
+    "prompts/examples/buying/step3.ein",
+    "prompts/examples/ages/step1.ein",
+    "prompts/examples/ages/step2.ein",
+    "prompts/examples/ages/step3.ein",
+    "catalogue/algebra.transitive.ein",
+    "catalogue/algebra.symmetric.ein",
+    "catalogue/algebra.includes.ein",
+    "catalogue/algebra.converse.ein",
+    "catalogue/algebra.compose.ein",
+    "catalogue/algebra.top.ein",
+    "catalogue/algebra.meet.ein",
+    "catalogue/algebra.functional.ein",
+    "catalogue/algebra.injective.ein",
+    "catalogue/algebra.total-owed.ein",
+    "catalogue/slots.partition.ein",
+    "catalogue/slots.spatial.ein",
+    "catalogue/bijection.bijective.ein",
+    "catalogue/contradiction.ein",
+    "catalogue/calc.add.ein",
+    "catalogue/calc.sub.ein",
+    "catalogue/calc.mul.ein",
+    "catalogue/calc.div.ein",
+    "catalogue/calc.cmp.ein"
+  ],
+  "steps": [
+    {
+      "step": "1",
+      "template": "steps/step1.v1.md",
+      "template_sha256": "sha256:bac161de900c9fb5cdfa8b7cf2f12777244b10e40a50e8cf7f2f1e863a681d6b",
+      "prompt_sha256": "sha256:868e17c58710a10156e3c8829b0178f2e78af2eb4e5ee69e7e94c893d251b363",
+      "grammar_sha256": "sha256:905fd3d1fd5532a202829ddbdd4bccc507b5f245d430a7055817f42998b540af",
+      "digest": "sha256:9a1a0daf5c0d85dcb41d5cb434f86b85a97b78b71d8e472bebedc1b7e7387162",
+      "generated_tokens": 142,
+      "prompt_tokens": 4636,
+      "stop": "end-of-turn",
+      "generation_ms": 2238.015006,
+      "failure": null,
+      "output": ";; The statements, in the text's own words.\n(has Bob (n z 5) Apple :source \"Bob has 5 apples.\")\n(gave Bob (n z 2) Alice :source \"He gave 2 to Alice.\")\n\n;; How many apples does Bob have?\n(query :goal (has Bob ?n Apple) :goal-text \"Bob has {?n} apples.\")\n\n;; The ontology, partial.\n(relation has Person Number Thing :why \"a {?3} has a {?4} of {?5}s\")\n(relation gave Person Number Person :why \"a {?3} gave a {?4} to a {?5}\")\n",
+      "fenced": true,
+      "parsed": {
+        "forms": 5,
+        "findings": [],
+        "cut": false
+      },
+      "markers": [],
+      "program": ";; ---- step 1: the statements and the answer query\n\n;; The statements, in the text's own words.\n(has Bob (n z 5) Apple :source \"Bob has 5 apples.\")\n(gave Bob (n z 2) Alice :source \"He gave 2 to Alice.\")\n\n;; How many apples does Bob have?\n(query :goal (has Bob ?n Apple) :goal-text \"Bob has {?n} apples.\")\n\n;; The ontology, partial.\n(relation has Person Number Thing :why \"a {?3} has a {?4} of {?5}s\")\n(relation gave Person Number Person :why \"a {?3} gave a {?4} to a {?5}\")\n",
+      "judged": {
+        "feedback": [
+          {
+            "schema": "einaf-feedback/1",
+            "program": {
+              "name": "bob1.step1.ein",
+              "digest": "sha256:1abb789aa15aec9a7ede9c6f963d8108df19bc2d74258c909f1539ad5f6ce0f0",
+              "of": "canonical-dump"
+            },
+            "kernel": {
+              "version": "0.1.0",
+              "protocol": "ein-events/1",
+              "stdlib": "sha256:292894befd300e536cdd1181db772f44fe3f3f7ad6ff52b1467f1735ff83d681",
+              "commit": null
+            },
+            "asked": {
+              "question": "--no-search",
+              "which": "all",
+              "ask": "no-search",
+              "budget": 1048576,
+              "limit": 16,
+              "max_steps": 1048576,
+              "clock_us": 60000000
+            },
+            "outcome": [
+              {
+                "part": "all",
+                "outcome": "not-decided",
+                "why": "--no-search: root is alive, and R was not searched"
+              }
+            ],
+            "readings": {
+              "word": null,
+              "k_s": null,
+              "k_c": null,
+              "minimal": null,
+              "maximal": null,
+              "exhausted": false,
+              "stopped": {
+                "why": "asked",
+                "saturation": null
+              }
+            },
+            "diagnostics": [],
+            "flagged": null,
+            "queries": [
+              {
+                "goal": "(has Bob ?n Apple)",
+                "goal_text": "Bob has {?n} apples.",
+                "over": "all",
+                "exact": false,
+                "agree": true,
+                "classes": [
+                  {
+                    "facts": [
+                      "(has Bob (n z 5) Apple)"
+                    ],
+                    "rows": [
+                      {
+                        "n": "(n z 5)"
+                      }
+                    ],
+                    "lines": [
+                      "Bob has (n z 5) apples."
+                    ],
+                    "states": [
+                      1
+                    ]
+                  }
+                ],
+                "expect": null
+              }
+            ],
+            "claim": null,
+            "states": [
+              {
+                "facts": [],
+                "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "of": "model",
+                "lines": [
+                  "minimal"
+                ],
+                "listed": true
+              }
+            ],
+            "owed": {
+              "root": [],
+              "frontier": null
+            },
+            "core": null,
+            "work": {
+              "saturations": 1,
+              "facts": 0,
+              "layers": null,
+              "run_us": 111,
+              "load_us": 336,
+              "ask_us": 202
+            },
+            "dependencies": null,
+            "provenance": null,
+            "fault": null
+          }
+        ],
+        "root": {
+          "writer": "blind",
+          "candidates": 0,
+          "root_dead": false,
+          "monotone": true,
+          "fired": {},
+          "owed": {},
+          "stopped": null,
+          "refused": []
+        },
+        "check": {
+          "findings": [],
+          "mechanism": {
+            "writer": "blind",
+            "candidates": 0,
+            "stated": []
+          },
+          "not_loaded": null
+        }
+      }
+    },
+    {
+      "step": "2",
+      "template": "steps/step2.v1.md",
+      "template_sha256": "sha256:89d98fa90ddab90d2cba9b5a154ce782807afc15eb3fd29c6aaff930e3dc6c74",
+      "prompt_sha256": "sha256:516dbd984c9fba5b8ed9727533c4eee88f33dfeb07e164683db046d48fab7507",
+      "grammar_sha256": "sha256:9b2354340ee0b2abf17bcd2ee7c4d6ff9253262cf1d0095477568dfecd682037",
+      "digest": "sha256:c99afe24d1c2a4fbee6e1c4c75d1a42607991ed549a7a746b898a15e00a790a5",
+      "generated_tokens": 122,
+      "prompt_tokens": 11589,
+      "stop": "end-of-turn",
+      "generation_ms": 2179.075218,
+      "failure": null,
+      "output": ";; The ontology, whole: step 1's, complete as it stands.\n(relation has Person Number Thing :why \"a {?3} has a {?4} of {?5}s\")\n(relation gave Person Number Person :why \"a {?3} gave a {?4} to a {?5}\")\n\n;; The theory: the calculator, which gives the numerals their meaning.\n(import std.math.decimal-arith :symbols (sub diff-of))\n(import std.math.decimal :symbols (n))\n(import std.math.arith :symbols (z))\n",
+      "fenced": true,
+      "parsed": {
+        "forms": 5,
+        "findings": [],
+        "cut": false
+      },
+      "markers": [],
+      "program": ";; ---- step 1: the statements and the answer query\n\n;; The statements, in the text's own words.\n(has Bob (n z 5) Apple :source \"Bob has 5 apples.\")\n(gave Bob (n z 2) Alice :source \"He gave 2 to Alice.\")\n\n;; How many apples does Bob have?\n(query :goal (has Bob ?n Apple) :goal-text \"Bob has {?n} apples.\")\n\n;; ---- step 2: the ontology whole, the imports and the selection\n\n;; The ontology, whole: step 1's, complete as it stands.\n(relation has Person Number Thing :why \"a {?3} has a {?4} of {?5}s\")\n(relation gave Person Number Person :why \"a {?3} gave a {?4} to a {?5}\")\n\n;; The theory: the calculator, which gives the numerals their meaning.\n(import std.math.decimal-arith :symbols (sub diff-of))\n(import std.math.decimal :symbols (n))\n(import std.math.arith :symbols (z))\n",
+      "judged": {
+        "feedback": [
+          {
+            "schema": "einaf-feedback/1",
+            "program": {
+              "name": "bob1.step2.ein",
+              "digest": "sha256:47b2e9b9e8eef4c9ebb2cc845dbc6696879a63bd393e4771b09f2a18dd18e986",
+              "of": "canonical-dump"
+            },
+            "kernel": {
+              "version": "0.1.0",
+              "protocol": "ein-events/1",
+              "stdlib": "sha256:292894befd300e536cdd1181db772f44fe3f3f7ad6ff52b1467f1735ff83d681",
+              "commit": null
+            },
+            "asked": {
+              "question": "--no-search",
+              "which": "all",
+              "ask": "no-search",
+              "budget": 1048576,
+              "limit": 16,
+              "max_steps": 1048576,
+              "clock_us": 60000000
+            },
+            "outcome": [
+              {
+                "part": "all",
+                "outcome": "not-decided",
+                "why": "--no-search: root is alive, and R was not searched"
+              }
+            ],
+            "readings": {
+              "word": null,
+              "k_s": null,
+              "k_c": null,
+              "minimal": null,
+              "maximal": null,
+              "exhausted": false,
+              "stopped": {
+                "why": "asked",
+                "saturation": null
+              }
+            },
+            "diagnostics": [],
+            "flagged": null,
+            "queries": [
+              {
+                "goal": "(has Bob ?n Apple)",
+                "goal_text": "Bob has {?n} apples.",
+                "over": "all",
+                "exact": false,
+                "agree": true,
+                "classes": [
+                  {
+                    "facts": [
+                      "(has Bob (n z 5) Apple)"
+                    ],
+                    "rows": [
+                      {
+                        "n": "(n z 5)"
+                      }
+                    ],
+                    "lines": [
+                      "Bob has (n z 5) apples."
+                    ],
+                    "states": [
+                      1
+                    ]
+                  }
+                ],
+                "expect": null
+              }
+            ],
+            "claim": null,
+            "states": [
+              {
+                "facts": [],
+                "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "of": "model",
+                "lines": [
+                  "minimal"
+                ],
+                "listed": true
+              }
+            ],
+            "owed": {
+              "root": [],
+              "frontier": null
+            },
+            "core": null,
+            "work": {
+              "saturations": 1,
+              "facts": 0,
+              "layers": null,
+              "run_us": 2802,
+              "load_us": 31583,
+              "ask_us": 6191
+            },
+            "dependencies": null,
+            "provenance": null,
+            "fault": null
+          }
+        ],
+        "root": {
+          "writer": "blind",
+          "candidates": 0,
+          "root_dead": false,
+          "monotone": true,
+          "fired": {
+            "std.math.arith.arith": 1,
+            "std.math.decimal-arith.decimal-arith": 1,
+            "std.math.decimal.decimal": 1
+          },
+          "owed": {},
+          "stopped": null,
+          "refused": []
+        },
+        "check": {
+          "findings": [],
+          "mechanism": {
+            "writer": "blind",
+            "candidates": 0,
+            "stated": []
+          },
+          "not_loaded": null
+        }
+      }
+    },
+    {
+      "step": "3",
+      "template": "steps/step3.v1.md",
+      "template_sha256": "sha256:f9b269a6782c684a694e5decba52911232fd28eab0b2f933b61c17561eec0373",
+      "prompt_sha256": "sha256:957c5d8f97012e6e83792b2c8f69c5763eb5be4f306b9fcd5001271c684c5ff5",
+      "grammar_sha256": "sha256:b9d1fcc27fdff0c0f035403186df2b6719fa89ba4828f49b533de5dc46811e52",
+      "digest": "sha256:42df9439952fccd5936889855a41caad85a2f2a970009f398d7d77deb192d4c1",
+      "generated_tokens": 230,
+      "prompt_tokens": 12351,
+      "stop": "end-of-turn",
+      "generation_ms": 3951.916972,
+      "failure": null,
+      "output": ";; missing: the remainder of the subtraction, read back as what Bob has left\n(rule giving-asks-the-difference ()\n  :match  (and (gave ?giver ?k ?receiver) (has ?giver ?a ?thing))\n  :assert (sub ?a ?k)\n  :why    \"{?giver} had {?a} and gave {?k} to {?receiver}: ask {?a} less {?k}\")\n;; missing: the difference, read back as what the giver has left\n(rule giving-is-the-difference ()\n  :match  (and (gave ?giver ?k ?receiver) (has ?giver ?a ?thing) (diff-of ?a ?k ?d z))\n  :assert (has ?giver ?d ?thing)\n  :why    \"{?a} less {?k} is {?d}, so {?giver} has {?d} {?thing}s left\")\n\n;; The hypothesis mechanism: none; the text states every fact there is.\n(solve :no-search)\n",
+      "fenced": true,
+      "parsed": {
+        "forms": 3,
+        "findings": [],
+        "cut": false
+      },
+      "markers": [
+        "the remainder of the subtraction, read back as what Bob has left",
+        "the difference, read back as what the giver has left"
+      ],
+      "program": ";; ---- step 1: the statements and the answer query\n\n;; The statements, in the text's own words.\n(has Bob (n z 5) Apple :source \"Bob has 5 apples.\")\n(gave Bob (n z 2) Alice :source \"He gave 2 to Alice.\")\n\n;; How many apples does Bob have?\n(query :goal (has Bob ?n Apple) :goal-text \"Bob has {?n} apples.\")\n\n;; ---- step 2: the ontology whole, the imports and the selection\n\n;; The ontology, whole: step 1's, complete as it stands.\n(relation has Person Number Thing :why \"a {?3} has a {?4} of {?5}s\")\n(relation gave Person Number Person :why \"a {?3} gave a {?4} to a {?5}\")\n\n;; The theory: the calculator, which gives the numerals their meaning.\n(import std.math.decimal-arith :symbols (sub diff-of))\n(import std.math.decimal :symbols (n))\n(import std.math.arith :symbols (z))\n\n;; ---- step 3: the rest of the theory and the hypothesis mechanism\n\n;; missing: the remainder of the subtraction, read back as what Bob has left\n(rule giving-asks-the-difference ()\n  :match  (and (gave ?giver ?k ?receiver) (has ?giver ?a ?thing))\n  :assert (sub ?a ?k)\n  :why    \"{?giver} had {?a} and gave {?k} to {?receiver}: ask {?a} less {?k}\")\n;; missing: the difference, read back as what the giver has left\n(rule giving-is-the-difference ()\n  :match  (and (gave ?giver ?k ?receiver) (has ?giver ?a ?thing) (diff-of ?a ?k ?d z))\n  :assert (has ?giver ?d ?thing)\n  :why    \"{?a} less {?k} is {?d}, so {?giver} has {?d} {?thing}s left\")\n\n;; The hypothesis mechanism: none; the text states every fact there is.\n(solve :no-search)\n",
+      "judged": {
+        "feedback": [
+          {
+            "schema": "einaf-feedback/1",
+            "program": {
+              "name": "bob1.ein",
+              "digest": "sha256:7b9ca9b974cd0860245dcd4ba1e03b6c4fcad58ef1deed3cd9b9773a32defbb2",
+              "of": "canonical-dump"
+            },
+            "kernel": {
+              "version": "0.1.0",
+              "protocol": "ein-events/1",
+              "stdlib": "sha256:292894befd300e536cdd1181db772f44fe3f3f7ad6ff52b1467f1735ff83d681",
+              "commit": null
+            },
+            "asked": {
+              "question": "--no-search",
+              "which": "all",
+              "ask": "no-search",
+              "budget": 1048576,
+              "limit": 16,
+              "max_steps": 1048576,
+              "clock_us": 60000000
+            },
+            "outcome": [
+              {
+                "part": "all",
+                "outcome": "not-decided",
+                "why": "--no-search: root is alive, and R was not searched"
+              }
+            ],
+            "readings": {
+              "word": null,
+              "k_s": null,
+              "k_c": null,
+              "minimal": null,
+              "maximal": null,
+              "exhausted": false,
+              "stopped": {
+                "why": "asked",
+                "saturation": null
+              }
+            },
+            "diagnostics": [],
+            "flagged": null,
+            "queries": [
+              {
+                "goal": "(has Bob ?n Apple)",
+                "goal_text": "Bob has {?n} apples.",
+                "over": "all",
+                "exact": false,
+                "agree": true,
+                "classes": [
+                  {
+                    "facts": [
+                      "(has Bob (n z 1) Apple)",
+                      "(has Bob (n z 3) Apple)",
+                      "(has Bob (n z 5) Apple)"
+                    ],
+                    "rows": [
+                      {
+                        "n": "(n z 1)"
+                      },
+                      {
+                        "n": "(n z 3)"
+                      },
+                      {
+                        "n": "(n z 5)"
+                      }
+                    ],
+                    "lines": [
+                      "Bob has (n z 1) apples.",
+                      "Bob has (n z 3) apples.",
+                      "Bob has (n z 5) apples."
+                    ],
+                    "states": [
+                      1
+                    ]
+                  }
+                ],
+                "expect": null
+              }
+            ],
+            "claim": null,
+            "states": [
+              {
+                "facts": [],
+                "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "of": "model",
+                "lines": [
+                  "minimal"
+                ],
+                "listed": true
+              }
+            ],
+            "owed": {
+              "root": [],
+              "frontier": null
+            },
+            "core": null,
+            "work": {
+              "saturations": 1,
+              "facts": 0,
+              "layers": null,
+              "run_us": 2775,
+              "load_us": 33571,
+              "ask_us": 6156
+            },
+            "dependencies": null,
+            "provenance": null,
+            "fault": null
+          },
+          {
+            "schema": "einaf-feedback/1",
+            "program": {
+              "name": "bob1.ein",
+              "digest": "sha256:7b9ca9b974cd0860245dcd4ba1e03b6c4fcad58ef1deed3cd9b9773a32defbb2",
+              "of": "canonical-dump"
+            },
+            "kernel": {
+              "version": "0.1.0",
+              "protocol": "ein-events/1",
+              "stdlib": "sha256:292894befd300e536cdd1181db772f44fe3f3f7ad6ff52b1467f1735ff83d681",
+              "commit": null
+            },
+            "asked": {
+              "question": "--single",
+              "which": "all",
+              "ask": "single",
+              "budget": 1048576,
+              "limit": 16,
+              "max_steps": 1048576,
+              "clock_us": 60000000
+            },
+            "outcome": [
+              {
+                "part": "all",
+                "outcome": "one",
+                "why": "Solution: one state"
+              }
+            ],
+            "readings": {
+              "word": {
+                "part": "all",
+                "word": "Solution"
+              },
+              "k_s": null,
+              "k_c": null,
+              "minimal": null,
+              "maximal": null,
+              "exhausted": true,
+              "stopped": null
+            },
+            "diagnostics": [],
+            "flagged": null,
+            "queries": [
+              {
+                "goal": "(has Bob ?n Apple)",
+                "goal_text": "Bob has {?n} apples.",
+                "over": "all",
+                "exact": true,
+                "agree": true,
+                "classes": [
+                  {
+                    "facts": [
+                      "(has Bob (n z 1) Apple)",
+                      "(has Bob (n z 3) Apple)",
+                      "(has Bob (n z 5) Apple)"
+                    ],
+                    "rows": [
+                      {
+                        "n": "(n z 1)"
+                      },
+                      {
+                        "n": "(n z 3)"
+                      },
+                      {
+                        "n": "(n z 5)"
+                      }
+                    ],
+                    "lines": [
+                      "Bob has (n z 1) apples.",
+                      "Bob has (n z 3) apples.",
+                      "Bob has (n z 5) apples."
+                    ],
+                    "states": [
+                      1
+                    ]
+                  }
+                ],
+                "expect": null
+              }
+            ],
+            "claim": null,
+            "states": [
+              {
+                "facts": [],
+                "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "of": "model",
+                "lines": [],
+                "listed": true
+              }
+            ],
+            "owed": null,
+            "core": null,
+            "work": {
+              "saturations": 1,
+              "facts": 0,
+              "layers": null,
+              "run_us": 2770,
+              "load_us": 33571,
+              "ask_us": 6089
+            },
+            "dependencies": null,
+            "provenance": null,
+            "fault": null
+          }
+        ],
+        "root": {
+          "writer": "no-search",
+          "candidates": 0,
+          "root_dead": false,
+          "monotone": true,
+          "fired": {
+            "giving-asks-the-difference": 3,
+            "giving-is-the-difference": 2,
+            "std.math.arith.arith": 1,
+            "std.math.decimal-arith.decimal-arith": 1,
+            "std.math.decimal.decimal": 1,
+            "std.math.positional.numeral-step": 4,
+            "std.math.positional.numeral-valid": 4,
+            "std.math.positional.operand-check": 6,
+            "std.math.positional.operand-number": 6,
+            "std.math.positional.strip-top": 3,
+            "std.math.positional.sub-answer": 2,
+            "std.math.positional.sub-answer-short": 1,
+            "std.math.positional.sub-ask": 3,
+            "std.math.positional.sub-ask-second": 3,
+            "std.math.positional.sub-borrow-out": 3,
+            "std.math.positional.sub-column": 6,
+            "std.math.positional.sub-end": 3,
+            "std.math.positional.sub-start": 3,
+            "std.math.positional.turn-end": 3,
+            "std.math.positional.turn-step": 3
+          },
+          "owed": {},
+          "stopped": null,
+          "refused": []
+        },
+        "check": {
+          "findings": [],
+          "mechanism": {
+            "writer": "no-search",
+            "candidates": 0,
+            "stated": [
+              "no-search"
+            ]
+          },
+          "not_loaded": null
+        }
+      }
+    }
+  ],
+  "stopped": null,
+  "program": ";; ---- step 1: the statements and the answer query\n\n;; The statements, in the text's own words.\n(has Bob (n z 5) Apple :source \"Bob has 5 apples.\")\n(gave Bob (n z 2) Alice :source \"He gave 2 to Alice.\")\n\n;; How many apples does Bob have?\n(query :goal (has Bob ?n Apple) :goal-text \"Bob has {?n} apples.\")\n\n;; ---- step 2: the ontology whole, the imports and the selection\n\n;; The ontology, whole: step 1's, complete as it stands.\n(relation has Person Number Thing :why \"a {?3} has a {?4} of {?5}s\")\n(relation gave Person Number Person :why \"a {?3} gave a {?4} to a {?5}\")\n\n;; The theory: the calculator, which gives the numerals their meaning.\n(import std.math.decimal-arith :symbols (sub diff-of))\n(import std.math.decimal :symbols (n))\n(import std.math.arith :symbols (z))\n\n;; ---- step 3: the rest of the theory and the hypothesis mechanism\n\n;; missing: the remainder of the subtraction, read back as what Bob has left\n(rule giving-asks-the-difference ()\n  :match  (and (gave ?giver ?k ?receiver) (has ?giver ?a ?thing))\n  :assert (sub ?a ?k)\n  :why    \"{?giver} had {?a} and gave {?k} to {?receiver}: ask {?a} less {?k}\")\n;; missing: the difference, read back as what the giver has left\n(rule giving-is-the-difference ()\n  :match  (and (gave ?giver ?k ?receiver) (has ?giver ?a ?thing) (diff-of ?a ?k ?d z))\n  :assert (has ?giver ?d ?thing)\n  :why    \"{?a} less {?k} is {?d}, so {?giver} has {?d} {?thing}s left\")\n\n;; The hypothesis mechanism: none; the text states every fact there is.\n(solve :no-search)\n",
+  "complete": {
+    "feedback": [
+      {
+        "schema": "einaf-feedback/1",
+        "program": {
+          "name": "bob1.ein",
+          "digest": "sha256:7b9ca9b974cd0860245dcd4ba1e03b6c4fcad58ef1deed3cd9b9773a32defbb2",
+          "of": "canonical-dump"
+        },
+        "kernel": {
+          "version": "0.1.0",
+          "protocol": "ein-events/1",
+          "stdlib": "sha256:292894befd300e536cdd1181db772f44fe3f3f7ad6ff52b1467f1735ff83d681",
+          "commit": null
+        },
+        "asked": {
+          "question": "--no-search",
+          "which": "all",
+          "ask": "no-search",
+          "budget": 1048576,
+          "limit": 16,
+          "max_steps": 1048576,
+          "clock_us": 60000000
+        },
+        "outcome": [
+          {
+            "part": "all",
+            "outcome": "not-decided",
+            "why": "--no-search: root is alive, and R was not searched"
+          }
+        ],
+        "readings": {
+          "word": null,
+          "k_s": null,
+          "k_c": null,
+          "minimal": null,
+          "maximal": null,
+          "exhausted": false,
+          "stopped": {
+            "why": "asked",
+            "saturation": null
+          }
+        },
+        "diagnostics": [],
+        "flagged": null,
+        "queries": [
+          {
+            "goal": "(has Bob ?n Apple)",
+            "goal_text": "Bob has {?n} apples.",
+            "over": "all",
+            "exact": false,
+            "agree": true,
+            "classes": [
+              {
+                "facts": [
+                  "(has Bob (n z 1) Apple)",
+                  "(has Bob (n z 3) Apple)",
+                  "(has Bob (n z 5) Apple)"
+                ],
+                "rows": [
+                  {
+                    "n": "(n z 1)"
+                  },
+                  {
+                    "n": "(n z 3)"
+                  },
+                  {
+                    "n": "(n z 5)"
+                  }
+                ],
+                "lines": [
+                  "Bob has (n z 1) apples.",
+                  "Bob has (n z 3) apples.",
+                  "Bob has (n z 5) apples."
+                ],
+                "states": [
+                  1
+                ]
+              }
+            ],
+            "expect": null
+          }
+        ],
+        "claim": null,
+        "states": [
+          {
+            "facts": [],
+            "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "of": "model",
+            "lines": [
+              "minimal"
+            ],
+            "listed": true
+          }
+        ],
+        "owed": {
+          "root": [],
+          "frontier": null
+        },
+        "core": null,
+        "work": {
+          "saturations": 1,
+          "facts": 0,
+          "layers": null,
+          "run_us": 2775,
+          "load_us": 33571,
+          "ask_us": 6156
+        },
+        "dependencies": null,
+        "provenance": null,
+        "fault": null
+      },
+      {
+        "schema": "einaf-feedback/1",
+        "program": {
+          "name": "bob1.ein",
+          "digest": "sha256:7b9ca9b974cd0860245dcd4ba1e03b6c4fcad58ef1deed3cd9b9773a32defbb2",
+          "of": "canonical-dump"
+        },
+        "kernel": {
+          "version": "0.1.0",
+          "protocol": "ein-events/1",
+          "stdlib": "sha256:292894befd300e536cdd1181db772f44fe3f3f7ad6ff52b1467f1735ff83d681",
+          "commit": null
+        },
+        "asked": {
+          "question": "--single",
+          "which": "all",
+          "ask": "single",
+          "budget": 1048576,
+          "limit": 16,
+          "max_steps": 1048576,
+          "clock_us": 60000000
+        },
+        "outcome": [
+          {
+            "part": "all",
+            "outcome": "one",
+            "why": "Solution: one state"
+          }
+        ],
+        "readings": {
+          "word": {
+            "part": "all",
+            "word": "Solution"
+          },
+          "k_s": null,
+          "k_c": null,
+          "minimal": null,
+          "maximal": null,
+          "exhausted": true,
+          "stopped": null
+        },
+        "diagnostics": [],
+        "flagged": null,
+        "queries": [
+          {
+            "goal": "(has Bob ?n Apple)",
+            "goal_text": "Bob has {?n} apples.",
+            "over": "all",
+            "exact": true,
+            "agree": true,
+            "classes": [
+              {
+                "facts": [
+                  "(has Bob (n z 1) Apple)",
+                  "(has Bob (n z 3) Apple)",
+                  "(has Bob (n z 5) Apple)"
+                ],
+                "rows": [
+                  {
+                    "n": "(n z 1)"
+                  },
+                  {
+                    "n": "(n z 3)"
+                  },
+                  {
+                    "n": "(n z 5)"
+                  }
+                ],
+                "lines": [
+                  "Bob has (n z 1) apples.",
+                  "Bob has (n z 3) apples.",
+                  "Bob has (n z 5) apples."
+                ],
+                "states": [
+                  1
+                ]
+              }
+            ],
+            "expect": null
+          }
+        ],
+        "claim": null,
+        "states": [
+          {
+            "facts": [],
+            "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "of": "model",
+            "lines": [],
+            "listed": true
+          }
+        ],
+        "owed": null,
+        "core": null,
+        "work": {
+          "saturations": 1,
+          "facts": 0,
+          "layers": null,
+          "run_us": 2770,
+          "load_us": 33571,
+          "ask_us": 6089
+        },
+        "dependencies": null,
+        "provenance": null,
+        "fault": null
+      }
+    ],
+    "root": {
+      "writer": "no-search",
+      "candidates": 0,
+      "root_dead": false,
+      "monotone": true,
+      "fired": {
+        "giving-asks-the-difference": 3,
+        "giving-is-the-difference": 2,
+        "std.math.arith.arith": 1,
+        "std.math.decimal-arith.decimal-arith": 1,
+        "std.math.decimal.decimal": 1,
+        "std.math.positional.numeral-step": 4,
+        "std.math.positional.numeral-valid": 4,
+        "std.math.positional.operand-check": 6,
+        "std.math.positional.operand-number": 6,
+        "std.math.positional.strip-top": 3,
+        "std.math.positional.sub-answer": 2,
+        "std.math.positional.sub-answer-short": 1,
+        "std.math.positional.sub-ask": 3,
+        "std.math.positional.sub-ask-second": 3,
+        "std.math.positional.sub-borrow-out": 3,
+        "std.math.positional.sub-column": 6,
+        "std.math.positional.sub-end": 3,
+        "std.math.positional.sub-start": 3,
+        "std.math.positional.turn-end": 3,
+        "std.math.positional.turn-step": 3
+      },
+      "owed": {},
+      "stopped": null,
+      "refused": []
+    },
+    "check": {
+      "findings": [],
+      "mechanism": {
+        "writer": "no-search",
+        "candidates": 0,
+        "stated": [
+          "no-search"
+        ]
+      },
+      "not_loaded": null
+    }
+  },
+  "categories": [
+    {
+      "canonical": "(has Bob (n z 5) Apple :source \"Bob has 5 apples.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(gave Bob (n z 2) Alice :source \"He gave 2 to Alice.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(query :goal (has Bob ?n Apple) :goal-text \"Bob has {?n} apples.\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation has Person Number Thing :why \"a {?3} has a {?4} of {?5}s\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation gave Person Number Person :why \"a {?3} gave a {?4} to a {?5}\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.decimal-arith :symbols (sub diff-of))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.decimal :symbols (n))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.arith :symbols (z))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(rule\n  giving-asks-the-difference\n  ()\n  :match (and (gave ?giver ?k ?receiver) (has ?giver ?a ?thing))\n  :assert (sub ?a ?k)\n  :why \"{?giver} had {?a} and gave {?k} to {?receiver}: ask {?a} less {?k}\")",
+      "category": "generated-rule",
+      "step": 3,
+      "judged": "generated-rule"
+    },
+    {
+      "canonical": "(rule\n  giving-is-the-difference\n  ()\n  :match (and (gave ?giver ?k ?receiver) (has ?giver ?a ?thing) (diff-of ?a ?k ?d z))\n  :assert (has ?giver ?d ?thing)\n  :why \"{?a} less {?k} is {?d}, so {?giver} has {?d} {?thing}s left\")",
+      "category": "generated-rule",
+      "step": 3,
+      "judged": "generated-rule"
+    },
+    {
+      "canonical": "(solve :no-search)",
+      "category": "frame",
+      "step": 3,
+      "judged": null
+    }
+  ],
+  "ontology_change": {
+    "kept": 2,
+    "dropped": [],
+    "added": [],
+    "redeclared": []
+  }
+}

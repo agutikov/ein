@@ -17,6 +17,7 @@ use einaf::formalize::{self, Input, Options, Run};
 use einaf::grammar::gbnf::Compiled;
 use einaf::grammar::steps::{self as gsteps, Params, Step};
 use einaf::kernel::{self, Bounds, Outcome, Part, Question, Source};
+use einaf::model::replay::Replay;
 use einaf::model::{Failure, Generation, Recorded, Request, Runtime};
 use einaf::prompts::{self, EXAMPLES};
 
@@ -408,6 +409,42 @@ fn the_check_finds_what_the_kernel_loads_in_silence() {
         );
     }
     assert!(!found.contains(&Kind::MechanismNotStated));
+
+    // `(solve :no-search)` beside a selected obligation: the writer is
+    // `no-search`, and the obligations' candidates are gone.
+    let entry = catalogue::ENTRIES
+        .iter()
+        .find(|e| e.id == "slots.partition")
+        .expect("the entry");
+    let program = format!("{}\n(solve :no-search)\n", entry.program);
+    let root = kernel::root(
+        Source::Text {
+            text: &program,
+            name: "silent3",
+            base_dir: None,
+        },
+        bounds(),
+    );
+    let checked = check::check(&check::Input {
+        program: &program,
+        name: "silent3",
+        step: 3,
+        text: "",
+        catalogue: &catalogue,
+        generated: &generated,
+        step1: None,
+        root: &root,
+    });
+    assert_eq!(checked.mechanism.writer.as_deref(), Some("no-search"));
+    assert_eq!(checked.mechanism.stated, ["no-search", "obligations"]);
+    assert!(
+        checked
+            .findings
+            .iter()
+            .any(|f| f.kind == Kind::MechanismNotTheOneStated),
+        "{:#?}",
+        checked.findings
+    );
 }
 
 /// **The steps by hand are what a run's grammars take**: each step's part,
@@ -463,4 +500,74 @@ fn each_hand_written_step_is_accepted_by_the_grammar_a_run_renders() {
             );
         }
     }
+}
+
+/// **The recorded runs of the model replay**: each fixture's calls, replayed,
+/// give the run it recorded, its programs and its findings; and its
+/// templates' digests are today's.
+#[test]
+fn a_recorded_run_replays_to_the_run_it_recorded() {
+    let dir = package().join("tests/fixtures/steps");
+    let mut seen = 0;
+    for entry in std::fs::read_dir(&dir).expect("the fixtures") {
+        let path = entry.expect("an entry").path();
+        if !path.join("run.json").exists() {
+            continue;
+        }
+        let recorded: Run = serde_json::from_str(
+            &std::fs::read_to_string(path.join("run.json")).expect("run.json"),
+        )
+        .expect("a run");
+        for s in &recorded.steps {
+            let t = prompts::TEMPLATES
+                .iter()
+                .find(|t| t.file == s.template)
+                .expect("a template of the record");
+            assert_eq!(
+                s.template_sha256,
+                t.sha256(),
+                "{}: {} changed since the record: a prompt edit is a new experiment, record again",
+                path.display(),
+                s.template
+            );
+        }
+        let mut replay = Replay::from_file(&path.join("calls.jsonl")).expect("the calls");
+        let text = std::fs::read_to_string(path.join("text.txt")).expect("text.txt");
+        let input = Input {
+            id: recorded.id.clone(),
+            text,
+            answer_line: prompts::answer_line(
+                recorded
+                    .answer_line
+                    .trim_start_matches("answer-lines/")
+                    .split('.')
+                    .next()
+                    .unwrap_or("generic"),
+            )
+            .expect("an answer line"),
+        };
+        let mut calls = Vec::new();
+        let again = formalize::run(&mut replay, &input, recorded.options, &mut calls);
+        assert_eq!(again.stopped, recorded.stopped);
+        assert_eq!(again.program, recorded.program, "{}", path.display());
+        assert_eq!(again.steps.len(), recorded.steps.len());
+        for (a, b) in again.steps.iter().zip(&recorded.steps) {
+            assert_eq!(a.digest, b.digest, "{}: step {}", path.display(), a.step);
+            assert_eq!(a.output, b.output);
+            assert_eq!(
+                a.judged.as_ref().map(|j| &j.check),
+                b.judged.as_ref().map(|j| &j.check),
+                "{}: step {}",
+                path.display(),
+                a.step
+            );
+            assert_eq!(
+                a.judged.as_ref().map(|j| &j.root),
+                b.judged.as_ref().map(|j| &j.root)
+            );
+        }
+        assert_eq!(again.categories, recorded.categories);
+        seen += 1;
+    }
+    assert!(seen > 0, "no recorded run under {}", dir.display());
 }

@@ -16,8 +16,8 @@
 //!    of, a check aside, which fires only where a state breaks it; and an
 //!    import or a selection the catalogue has no entry for;
 //! 3. the mechanism (at step 3 alone): the writer of H the kernel reports,
-//!    `blind` where the program states none, or another than the one the
-//!    program states;
+//!    `blind` where the program states none, or one that does not agree with
+//!    every mechanism the program states;
 //! 4. a fact or a pattern of a relation the program does not declare and no
 //!    imported module has, or at a count it is not declared at (a top-level
 //!    fact and a goal from step 1, a fact inside a fact from step 2, a rule's
@@ -57,7 +57,7 @@ pub enum Kind {
     SelectionNotInCatalogue,
     /// 3: the writer of H is `blind`, and the program states no mechanism.
     MechanismNotStated,
-    /// 3: the writer of H is not the one the program states.
+    /// 3: the writer of H is not every one the program states.
     MechanismNotTheOneStated,
     /// 4: a fact or a pattern of a relation the program does not declare
     /// and no imported module has.
@@ -460,7 +460,10 @@ fn mechanism_findings(m: &Mechanism, out: &mut Vec<Finding>) {
         }
         return;
     }
-    let agrees = m.stated.iter().any(|s| match s.as_str() {
+    // Every mechanism the program states agrees with the writer: a
+    // `(solve :no-search)` beside a selected obligation takes the
+    // obligations' candidates away, and the writer is `no-search`.
+    let agrees = m.stated.iter().all(|s| match s.as_str() {
         "no-search" => writer == "no-search",
         "hypothesis-relations" => writer == "blind",
         "hypothesis-rules" => matches!(writer, "hypothesis-rules" | "union"),
