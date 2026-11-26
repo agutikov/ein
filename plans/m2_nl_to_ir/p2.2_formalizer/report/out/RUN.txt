@@ -1,0 +1,13 @@
+written by make_report.sh on 2026-11-26 20:54 +04
+checkout   fd10c690ca4f27898e8404dd4ed51ec303069f6f (M2, P2.2: S2.2.5 runs to its end on the user's word ("Ok, I …)
+code dirty 0 paths under einaf/, ein.rs/, stdlib/
+ein        ein.rs/target/release/ein
+           ein 0.1.0
+           protocol   ein-events/1
+           container  einb/2.2
+           features   einb, parallel, snmalloc
+           stdlib     sha256:292894befd300e536cdd1181db772f44fe3f3f7ad6ff52b1467f1735ff83d681  checkout stdlib
+einaf      einaf/target/release/einaf, 634M (about 630M with the model's runtime, the cuda feature; about 19M without)
+graphviz   dot - graphviz version 16.1.1 (0)
+power      AC online=1
+mode       quick=0 model=given

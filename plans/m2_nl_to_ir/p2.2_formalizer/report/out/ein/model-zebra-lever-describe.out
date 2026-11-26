@@ -1,0 +1,49 @@
+solve · plans/m2_nl_to_ir/p2.2_formalizer/report/out/ein/model-zebra-lever.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      0
+  commitments (k_c) 0
+  exhausted         yes — every commitment is classified: this is all of R
+  empty             every node is dead — root's own fixpoint holds a contradiction
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate: the program states :no-search, so R is {∅} or empty, decided by root alone
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              1 saturation · 0 facts beyond root · 1 layer
+
+  unsat core        (instance BlueHouse House)
+  unsat core        (instance GreenHouse House)
+  unsat core        (instance House1 House)
+  unsat core        (instance House2 House)
+  unsat core        (instance House3 House)
+  unsat core        (instance House4 House)
+  unsat core        (instance House5 House)
+  unsat core        (instance IvoryHouse House)
+  unsat core        (instance MiddleHouse House)
+  unsat core        (instance Norwegian Person)
+  unsat core        (instance RedHouse House)
+  unsat core        (instance YellowHouse House)
+  unsat core        (lives-in Norwegian BlueHouse)
+  unsat core        (lives-in Norwegian House1)
+  unsat core        (type House Attribute)
+  unsat core        (type Person Attribute)
+  source            (instance BlueHouse House) :source "The Norwegian lives next to the blue house."
+  source            (instance GreenHouse House) :source "Coffee is drunk in the green house."
+  source            (instance House1 House) :source "There are five houses."
+  source            (instance House2 House) :source "There are five houses."
+  source            (instance House3 House) :source "There are five houses."
+  source            (instance House4 House) :source "There are five houses."
+  source            (instance House5 House) :source "There are five houses."
+  source            (instance IvoryHouse House) :source "The green house is immediately to the right of the ivory house."
+  source            (instance MiddleHouse House) :source "Milk is drunk in the middle house."
+  source            (instance Norwegian Person) :source "The Norwegian lives in the first house."
+  source            (instance RedHouse House) :source "The Englishman lives in the red house."
+  source            (instance YellowHouse House) :source "Kools are smoked in the yellow house."
+  source            (lives-in Norwegian BlueHouse) :source "The Norwegian lives next to the blue house."
+  source            (lives-in Norwegian House1) :source "The Norwegian lives in the first house."
+  refuted by        std.slots.slot-no-room
+
+  (false)
+
+  query             (and (drinks ?who Water) (owns ?who Zebra))
+  over              all of R — R is empty, root is dead: no state to answer from
+  as :expect        (false)

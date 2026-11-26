@@ -1,0 +1,509 @@
+# The catalogue: the theories of the standard library
+
+The library is sha256:292894befd300e536cdd1181db772f44fe3f3f7ad6ff52b1467f1735ff83d681. A program selects a theory by importing its module, listing after :symbols every short name of the module the program writes, and writing the facts that select the theory over its own relations, exactly as the entry writes them. A name the program writes and the import does not list is the program's own, and a fact of it selects nothing, in silence. Each entry is a program the kernel ran, with its answer.
+
+## std.algebra: properties of a relation of two places, each selected by one fact of its name; the import lists every name the program writes
+
+### (transitive R)
+
+R is transitive: R a b and R b c give R a c. Its rule's own words: "{?rel} is transitive."
+What it gives the hypothesis mechanism: nothing.
+The kernel's answer: Ann is an ancestor of Bob. Ann is an ancestor of Cy.
+
+```ein
+(import std.algebra :symbols (transitive))
+
+(relation ancestor-of Person Person :why "a {?3} is an ancestor of a {?4}")
+(ancestor-of Ann Bob)
+(ancestor-of Bob Cy)
+
+;; R a b and R b c give R a c.
+(transitive ancestor-of)
+
+(query :goal (ancestor-of Ann ?d) :goal-text "Ann is an ancestor of {?d}.")
+(solve :no-search)
+```
+
+### (symmetric R)
+
+R is symmetric: R a b gives R b a, and a stored negation is mirrored too. Its rule's own words: "{?rel} is symmetric: {?a} ↔ {?b}."
+What it gives the hypothesis mechanism: nothing.
+The kernel's answer: Bob is married to Ann.
+
+```ein
+(import std.algebra :symbols (symmetric))
+
+(relation is-married-to Person Person :why "a {?3} is married to a {?4}")
+(is-married-to Ann Bob)
+
+;; R a b gives R b a.
+(symmetric is-married-to)
+
+(query :goal (is-married-to Bob ?w) :goal-text "Bob is married to {?w}.")
+(solve :no-search)
+```
+
+### (includes R S)
+
+S includes R: every fact of R is a fact of S. Its rule's own words: "{?q} includes {?p}: from {?a} →{?p}→ {?b}, derive {?a} →{?q}→ {?b}."
+What it gives the hypothesis mechanism: nothing.
+The kernel's answer: Ann is an ancestor of Bob.
+
+```ein
+(import std.algebra :symbols (includes))
+
+(relation is-parent-of   Person Person :why "a {?3} is a parent of a {?4}")
+(relation is-ancestor-of Person Person :why "a {?3} is an ancestor of a {?4}")
+(is-parent-of Ann Bob)
+
+;; Every fact of R is a fact of S.
+(includes is-parent-of is-ancestor-of)
+
+(query :goal (is-ancestor-of ?a Bob) :goal-text "{?a} is an ancestor of Bob.")
+(solve :no-search)
+```
+
+### (converse R S)
+
+S is R turned round: R a b gives S b a, and S b a gives R a b. Its rule's own words: "(converse {?R1} {?R2}): mirror {?R1}({?a},{?b}) → {?R2}({?b},{?a})"
+What it gives the hypothesis mechanism: nothing.
+The kernel's answer: Bob is a child of Ann.
+
+```ein
+(import std.algebra :symbols (converse))
+
+(relation is-parent-of Person Person :why "a {?3} is a parent of a {?4}")
+(relation is-child-of  Person Person :why "a {?3} is a child of a {?4}")
+(is-parent-of Ann Bob)
+
+;; S is R turned round: R a b gives S b a, and S b a gives R a b.
+(converse is-parent-of is-child-of)
+
+(query :goal (is-child-of Bob ?p) :goal-text "Bob is a child of {?p}.")
+(solve :no-search)
+```
+
+### (compose R S T)
+
+R then S is in T: R a b and S b c give T a c. Its rule's own words: "(compose {?R1} {?R2} {?R3}): {?R1}({?a},{?b})∧{?R2}({?b},{?c}) → {?R3}({?a},{?c})."
+What it gives the hypothesis mechanism: nothing.
+The kernel's answer: Ann is a grandparent of Cy.
+
+```ein
+(import std.algebra :symbols (compose))
+
+(relation is-parent-of      Person Person :why "a {?3} is a parent of a {?4}")
+(relation is-grandparent-of Person Person :why "a {?3} is a grandparent of a {?4}")
+(is-parent-of Ann Bob)
+(is-parent-of Bob Cy)
+
+;; R then S is T: R a b and S b c give T a c.
+(compose is-parent-of is-parent-of is-grandparent-of)
+
+(query :goal (is-grandparent-of ?g Cy) :goal-text "{?g} is a grandparent of Cy.")
+(solve :no-search)
+```
+
+### (top R isa Dom Ran)
+
+R holds between every member of Dom and every member of Ran, a member being what the membership relation isa says. Its rule's own words: "(top {?R} {?isa} {?Dom} {?Ran}): {?a}∈{?Dom},{?b}∈{?Ran} → {?R}({?a},{?b})."
+What it gives the hypothesis mechanism: nothing.
+The kernel's answer: Ann and Rex are a person and a pet.
+
+```ein
+(import std.algebra :symbols (top))
+
+(relation instance       T T           :why "{?3} is a {?4}")
+(relation person-and-pet Person Pet    :why "a {?3} and a {?4}")
+(instance Ann Person)
+(instance Rex Pet)
+
+;; R holds between every member of Dom and every member of Ran, by the
+;; membership relation isa.
+(top person-and-pet instance Person Pet)
+
+(query :goal (person-and-pet ?p ?q) :goal-text "{?p} and {?q} are a person and a pet.")
+(solve :no-search)
+```
+
+### (meet R S T)
+
+Where R a b and S a b both hold, T a b holds. Its rule's own words: "(meet {?R1} {?R2} {?R3}): {?R1}({?a},{?b})∧{?R2}({?a},{?b}) → {?R3}({?a},{?b})."
+What it gives the hypothesis mechanism: nothing.
+The kernel's answer: Ann is close to Bob.
+
+```ein
+(import std.algebra :symbols (meet))
+
+(relation lives-with Person Person :why "a {?3} lives with a {?4}")
+(relation works-with Person Person :why "a {?3} works with a {?4}")
+(relation is-close-to Person Person :why "a {?3} is close to a {?4}")
+(lives-with Ann Bob)
+(works-with Ann Bob)
+(works-with Ann Cy)
+
+;; Where both R a b and S a b hold, T a b.
+(meet lives-with works-with is-close-to)
+
+(query :goal (is-close-to Ann ?b) :goal-text "Ann is close to {?b}.")
+(solve :no-search)
+```
+
+### (functional R)
+
+A check: R a b and R a c, b and c two things, is a contradiction. Its rule's own words: "{?R} not functional: {?a} has both {?b} and {?c}."
+What it gives the hypothesis mechanism: nothing; it kills a state that breaks it.
+The kernel's answer: Ann sits in the Front seat.
+
+```ein
+(import std.algebra :symbols (functional))
+
+(relation sits-in Person Seat :why "a {?3} sits in a {?4}")
+(sits-in Ann Front)
+
+;; A check: R a b and R a c with b and c two things is a contradiction, so a
+;; state that supposes Ann sits in a second seat is dead.
+(functional sits-in)
+
+(open (sits-in Ann Back))
+
+(query :goal (sits-in Ann ?s) :goal-text "Ann sits in the {?s} seat.")
+```
+
+### (injective R)
+
+A check: R a c and R b c, a and b two things, is a contradiction. Its rule's own words: "{?R} not injective: {?c} reached from both {?a} and {?b}."
+What it gives the hypothesis mechanism: nothing; it kills a state that breaks it.
+The kernel's answer: Ann sits in the front seat.
+
+```ein
+(import std.algebra :symbols (injective))
+
+(relation sits-in Person Seat :why "a {?3} sits in a {?4}")
+(sits-in Ann Front)
+
+;; A check: R a c and R b c with a and b two things is a contradiction, so a
+;; state that supposes Bob sits in Ann's seat is dead.
+(injective sits-in)
+
+(open (sits-in Bob Front))
+
+(query :goal (sits-in ?p Front) :goal-text "{?p} sits in the front seat.")
+```
+
+### (total-owed R isa)
+
+An obligation: every member of R's first label owes a fact of R with a member of its second label. Its rule's own words: "{?R} owes {?a} a {?B}."
+What it gives the hypothesis mechanism: the obligation's candidates are the hypotheses: the program states no other mechanism.
+The kernel's answer: Bob sits in the Back seat.
+
+```ein
+(import std.algebra :symbols (total-owed functional injective))
+
+(relation instance T T           :why "{?3} is a {?4}")
+(relation sits-in  Person Seat   :why "a {?3} sits in a {?4}")
+(instance Ann   Person)
+(instance Bob   Person)
+(instance Front Seat)
+(instance Back  Seat)
+(sits-in Ann Front)
+
+;; An obligation: every member of the first label owes a fact of R with a
+;; member of the second, by the membership relation isa. Its candidates are
+;; the hypotheses, so the program states no other mechanism.
+(total-owed sits-in instance)
+(functional sits-in)
+(injective  sits-in)
+
+(query :goal (sits-in Bob ?s) :goal-text "Bob sits in the {?s} seat.")
+```
+
+## std.slots: things in places: one relation whose classes are the places, each holding one value of every kind; its two selecting facts are no module's names, so the import lists nothing
+
+### (slot-partition R isa sub Super Index)
+
+R is an equivalence whose classes are the places: each place holds exactly one member of every kind that is a sub of Super, and its member of the kind Index names it. Its rule's own words: "(slot-partition {?R} …) ⟹ locate / exclusion / occupancy / negative-propagation / elimination / fill / no-room / no-fill / owed-room / owed-fill activators."
+What it gives the hypothesis mechanism: its obligations propose every placement as a hypothesis: the program states no other mechanism.
+The kernel's answer: Bob lives in the Right house.
+
+```ein
+(import std.algebra :symbols (symmetric includes top meet))
+(import std.slots)
+
+(relation lives-in       Person House    :why "a {?3} lives in a {?4}")
+(relation same-house     Attribute Attribute :why "a {?3} and a {?4} are in the same house")
+(relation person-and-house Person House  :why "a {?3} and a {?4}")
+(relation instance       T T             :why "{?3} is a {?4}")
+(relation type           T T             :why "{?3} is a kind of {?4}")
+(type Attribute T)
+(type House     Attribute)
+(type Person    Attribute)
+(instance Left  House)
+(instance Right House)
+(instance Ann   Person)
+(instance Bob   Person)
+(lives-in Ann Left)
+
+;; R is an equivalence whose classes are the places: each holds exactly one
+;; member of every kind sub Super, and its Index member names it. Its
+;; obligations propose every placement as a hypothesis.
+(includes lives-in same-house)
+(symmetric same-house)
+(slot-partition same-house instance type Attribute House)
+
+;; Read back: a person lives in the house it shares a place with.
+(top  person-and-house instance Person House)
+(meet same-house person-and-house lives-in)
+
+(query :goal (lives-in Bob ?h) :goal-text "Bob lives in the {?h} house.")
+```
+
+### (slot-spatial R S isa Index)
+
+S holds between two values exactly where it holds between their places, the places being the members of Index. Its rule's own words: "(slot-spatial {?R} {?S} …) ⟹ the eight directional propagation / pruning / endpoint activators."
+What it gives the hypothesis mechanism: nothing beside slot-partition's obligations.
+The kernel's answer: Ann lives in the Right house.
+
+```ein
+(import std.algebra :symbols (symmetric includes top meet))
+(import std.slots)
+
+(relation lives-in       Person House    :why "a {?3} lives in a {?4}")
+(relation is-left-of     Attribute Attribute :why "a {?3} is left of a {?4}")
+(relation lives-left-of  Person Person   :why "a {?3} lives left of a {?4}")
+(relation same-house     Attribute Attribute :why "a {?3} and a {?4} are in the same house")
+(relation person-and-house Person House  :why "a {?3} and a {?4}")
+(relation instance       T T             :why "{?3} is a {?4}")
+(relation type           T T             :why "{?3} is a kind of {?4}")
+(type Attribute T)
+(type House     Attribute)
+(type Person    Attribute)
+(instance Left  House)
+(instance Right House)
+(instance Ann   Person)
+(instance Bob   Person)
+(is-left-of Left Right)
+(lives-left-of Bob Ann)
+
+(includes lives-in same-house)
+(includes lives-left-of is-left-of)
+(symmetric same-house)
+(slot-partition same-house instance type Attribute House)
+;; S holds between two values exactly where it holds between their places.
+(slot-spatial same-house is-left-of instance House)
+
+(top  person-and-house instance Person House)
+(meet same-house person-and-house lives-in)
+
+(query :goal (lives-in Ann ?h) :goal-text "Ann lives in the {?h} house.")
+```
+
+## std.bijection: a relation one to one between the members of its two labels; its selecting facts are no module's names, so the import lists nothing
+
+### (bijective R) and (bijection-hierarchy isa)
+
+R is one to one between the members of its two labels: each member of the first has exactly one of the second, and each of the second exactly one of the first. Its rule's own words: "(bijective {?R}) + hierarchy {?isa} ⟹ totality / obligations / elimination / negative-completion activators."
+What it gives the hypothesis mechanism: its obligations propose the facts of R as hypotheses: the program states no other mechanism.
+The kernel's answer: Cy wears Blue.
+
+```ein
+(import std.bijection)
+
+(relation instance T T         :why "{?3} is a {?4}")
+(relation wears    Person Color :why "a {?3} wears {?4}")
+(instance Ann  Person)
+(instance Bob  Person)
+(instance Cy   Person)
+(instance Red   Color)
+(instance Green Color)
+(instance Blue  Color)
+(wears Ann Red)
+(not (wears Bob Blue))
+
+;; R is one to one between its two labels: each member of the first has
+;; exactly one of the second and each of the second exactly one of the first.
+;; Its obligations propose the facts of R as hypotheses.
+(bijective wears)
+(bijection-hierarchy instance)
+
+(query :goal (wears Cy ?c) :goal-text "Cy wears {?c}.")
+```
+
+## std.contradiction: a fact beside its stored negation is a contradiction; std.algebra, std.slots and std.bijection import it already
+
+### (import std.contradiction)
+
+A fact beside its stored negation is a contradiction, for every relation the program declares.
+What it gives the hypothesis mechanism: nothing.
+The kernel's answer: the statements contradict each other.
+
+```ein
+(import std.contradiction)
+
+(relation sits-in Person Seat :why "a {?3} sits in a {?4}")
+(sits-in Ann Back)
+
+;; With the module imported, a fact beside its stored negation is a
+;; contradiction, for every relation the program declares: here root holds
+;; both, and root is dead.
+(not (sits-in Ann Back))
+
+(query :goal (sits-in Ann ?s) :goal-text "Ann sits in the {?s} seat.")
+(solve :no-search)
+```
+
+## std.math.decimal-arith: the calculator: a natural number is a numeral, z is zero, (n z 5) is 5, (n (n z 1) 2) is 12; a rule states a request and reads its result back; the three imports always go together
+
+### (add X Y), answered by (sum-of X Y S)
+
+S is X plus Y.
+What it gives the hypothesis mechanism: nothing; the entry states (solve :no-search).
+The kernel's answer: They have (n (n z 1) 2) apples together.
+
+```ein
+(import std.math.decimal-arith :symbols (add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation has     Person Number :why "a {?3} has a {?4} of apples")
+(relation have-together Number  :why "they have {?3} apples together")
+(has Ann (n z 5))
+(has Bob (n z 7))
+
+;; A request (add X Y) is answered by (sum-of X Y S): a rule states the
+;; request and another reads the result back.
+(rule together-asks-the-sum ()
+  :match  (and (has Ann ?a) (has Bob ?b))
+  :assert (add ?a ?b)
+  :why    "Ann has {?a} and Bob {?b}: ask {?a} plus {?b}")
+(rule together-is-the-sum ()
+  :match  (and (has Ann ?a) (has Bob ?b) (sum-of ?a ?b ?s))
+  :assert (have-together ?s)
+  :why    "{?a} and {?b} make {?s}")
+
+(query :goal (have-together ?s) :goal-text "They have {?s} apples together.")
+(solve :no-search)
+```
+
+### (sub X Y), answered by (diff-of X Y D R)
+
+D is X less Y where X is not the smaller, else z; R is Y less X where X is the smaller, else z.
+What it gives the hypothesis mechanism: nothing; the entry states (solve :no-search).
+The kernel's answer: Ann has (n z 7) more apples.
+
+```ein
+(import std.math.decimal-arith :symbols (sub diff-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation has      Person Number :why "a {?3} has a {?4} of apples")
+(relation has-more Person Number :why "a {?3} has a {?4} more")
+(has Ann (n (n z 1) 2))
+(has Bob (n z 5))
+
+;; (sub X Y) is answered by (diff-of X Y D R): D is X less Y where X is not
+;; the smaller, else z; R is Y less X where X is the smaller, else z.
+(rule more-asks-the-difference ()
+  :match  (and (has Ann ?a) (has Bob ?b))
+  :assert (sub ?a ?b)
+  :why    "Ann has {?a} and Bob {?b}: ask {?a} less {?b}")
+(rule more-is-the-difference ()
+  :match  (and (has Ann ?a) (has Bob ?b) (diff-of ?a ?b ?d z))
+  :assert (has-more Ann ?d)
+  :why    "{?a} less {?b} is {?d}")
+
+(query :goal (has-more Ann ?d) :goal-text "Ann has {?d} more apples.")
+(solve :no-search)
+```
+
+### (mul X Y), answered by (product-of X Y P)
+
+P is X times Y.
+What it gives the hypothesis mechanism: nothing; the entry states (solve :no-search).
+The kernel's answer: The hall has (n (n z 2) 4) seats.
+
+```ein
+(import std.math.decimal-arith :symbols (mul product-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation has-rows  Room Number :why "a {?3} has {?4} rows")
+(relation row-seats Room Number :why "a row of a {?3} has {?4} seats")
+(relation seats     Room Number :why "a {?3} has {?4} seats")
+(has-rows  Hall (n z 4))
+(row-seats Hall (n z 6))
+
+;; (mul X Y) is answered by (product-of X Y P).
+(rule seats-asks-the-product ()
+  :match  (and (has-rows ?r ?k) (row-seats ?r ?m))
+  :assert (mul ?k ?m)
+  :why    "{?r} has {?k} rows of {?m}: ask {?k} times {?m}")
+(rule seats-is-the-product ()
+  :match  (and (has-rows ?r ?k) (row-seats ?r ?m) (product-of ?k ?m ?p))
+  :assert (seats ?r ?p)
+  :why    "{?k} rows of {?m} are {?p} seats")
+
+(query :goal (seats Hall ?p) :goal-text "The hall has {?p} seats.")
+(solve :no-search)
+```
+
+### (div X Y), answered by (quot-of X Y Q R)
+
+Q is X divided by Y and R what is left.
+What it gives the hypothesis mechanism: nothing; the entry states (solve :no-search).
+The kernel's answer: Each friend gets (n z 3) sweets and (n z 2) are left.
+
+```ein
+(import std.math.decimal-arith :symbols (div quot-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation has      Person Number :why "a {?3} has {?4} sweets")
+(relation shared-among Person Number :why "a {?3} shares among {?4} friends")
+(relation each-gets Number Number  :why "each friend gets {?3} and {?4} are left")
+(has Ann (n (n z 1) 7))
+(shared-among Ann (n z 5))
+
+;; (div X Y) is answered by (quot-of X Y Q R): Q the quotient, R the rest.
+(rule sharing-asks-the-quotient ()
+  :match  (and (has Ann ?a) (shared-among Ann ?k))
+  :assert (div ?a ?k)
+  :why    "Ann shares {?a} among {?k}: ask {?a} divided by {?k}")
+(rule sharing-is-the-quotient ()
+  :match  (and (has Ann ?a) (shared-among Ann ?k) (quot-of ?a ?k ?q ?r))
+  :assert (each-gets ?q ?r)
+  :why    "{?a} among {?k} is {?q} each and {?r} left")
+
+(query :goal (each-gets ?q ?r) :goal-text "Each friend gets {?q} sweets and {?r} are left.")
+(solve :no-search)
+```
+
+### (cmp X Y), answered by (cmp-of X Y O)
+
+O is lt, eq or gt as X is less than, equal to or more than Y.
+What it gives the hypothesis mechanism: nothing; the entry states (solve :no-search).
+The kernel's answer: Ann is older than Bob.
+
+```ein
+(import std.math.decimal-arith :symbols (cmp cmp-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation is-years-old Person Number :why "a {?3} is {?4} years old")
+(relation is-older-than Person Person :why "a {?3} is older than a {?4}")
+(is-years-old Ann (n z 9))
+(is-years-old Bob (n z 7))
+
+;; (cmp X Y) is answered by (cmp-of X Y O), O one of lt, eq and gt.
+(rule older-asks-the-comparison ()
+  :match  (and (is-years-old ?a ?x) (is-years-old ?b ?y) (neq ?a ?b))
+  :assert (cmp ?x ?y)
+  :why    "{?a} is {?x} and {?b} is {?y}: compare them")
+(rule older-is-greater ()
+  :match  (and (is-years-old ?a ?x) (is-years-old ?b ?y) (cmp-of ?x ?y gt))
+  :assert (is-older-than ?a ?b)
+  :why    "{?x} is more than {?y}, so {?a} is older than {?b}")
+
+(query :goal (is-older-than ?a ?b) :goal-text "{?a} is older than {?b}.")
+(solve :no-search)
+```

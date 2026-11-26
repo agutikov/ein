@@ -1,0 +1,10 @@
+einaf: replaying 3 recorded calls
+step 1     4787 prompt tokens, 1032 generated (end-of-turn, 16.3 s), 53 forms; at root not decided; H from blind (7840); 0 findings
+step 2     12627 prompt tokens, 1160 generated (end-of-turn, 19.9 s), 69 forms; at root inconsistent; H from stuck (0); 0 findings
+step 3     13869 prompt tokens, 308 generated (end-of-turn, 5.3 s), 15 forms
+the program: H from no-search (0); 6 findings of the check
+  --no-search: inconsistent (root is dead, so every node is), 77.9 s
+  --single: inconsistent (Contradiction: R is empty and every node is dead), 77.9 s
+the answer: inconsistent (from einaf)
+einaf from-text: 236.0 s
+against the gold answer "Norwegian water|Japanese zebra": wrong (the fixed text "The statements contradict each other." against values)

@@ -1,0 +1,7 @@
+std.algebra: 10 names; selected by compose/3 converse/2 functional/1 includes/2 injective/1 meet/3 symmetric/1 top/4 total-owed/2 transitive/1; read, declared by none: bijective/1; values: none
+std.bijection: 0 names; selected by none; read, declared by none: bijection-hierarchy/1 bijective/1; values: none
+std.contradiction: 0 names; selected by none; read, declared by none: none; values: none
+std.math.arith: 1 names; selected by none; read, declared by none: none; values: 1 2 4 5 6 7 9 Number gt
+std.math.decimal: 1 names; selected by none; read, declared by none: none; values: 0 1 2 3 4 5 6 7 8 9 Number gt
+std.math.decimal-arith: 10 names; selected by none; read, declared by none: none; values: 1 2 4 5 6 7 9 Number gt
+std.slots: 0 names; selected by none; read, declared by none: slot-partition/5 slot-spatial/4; values: none

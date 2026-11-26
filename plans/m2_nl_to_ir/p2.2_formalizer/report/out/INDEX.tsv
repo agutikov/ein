@@ -1,0 +1,54 @@
+kernel/outcome-hand-zebra-step1-no-search	0	0.09	einaf/target/release/einaf outcome einaf/contract/zebra/step1.ein --no-search
+kernel/outcome-hand-zebra-step2-single	0	0.07	einaf/target/release/einaf outcome einaf/contract/zebra/step2.ein --single
+kernel/outcome-hand-zebra-step3-single	0	0.08	einaf/target/release/einaf outcome einaf/contract/zebra/step3.ein --single
+kernel/outcome-model-bystander-single	0	0.09	einaf/target/release/einaf outcome plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/module-dir/bystander/program.ein --single
+kernel/feedback-model-bystander-single	0	0.09	einaf/target/release/einaf feedback plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/module-dir/bystander/program.ein --single
+grammars/write-check	0	0.05	einaf/target/release/einaf grammar write --check
+grammars/render-1-zebra-fence	0	0.04	einaf/target/release/einaf grammar render 1 --text nl2smt/puzzles/zebra.txt --fence
+grammars/render-2-zebra-fence	0	0.10	einaf/target/release/einaf grammar render 2 --program einaf/contract/zebra/step1.ein --fence
+grammars/render-whole-fence	0	0.05	einaf/target/release/einaf grammar render whole --fence
+grammars/accept-root	1	0.07	einaf/target/release/einaf grammar accept --root root plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/zebra/program.ein examples/zebra3.1.ein einaf/contract/zebra/step3.ein
+grammars/accept-program	0	0.09	einaf/target/release/einaf grammar accept examples/zebra3.1.ein einaf/contract/zebra/step3.ein
+catalogue/catalogue	0	0.11	einaf/target/release/einaf catalogue
+catalogue/catalogue-grammar	0	0.37	einaf/target/release/einaf catalogue --grammar
+check/model-gap	0	0.62	einaf/target/release/einaf steps check plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/gap/program.ein --text plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/gap.txt
+check/model-gap-ein-single	0	0.07	ein.rs/target/release/ein solve plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/gap/program.ein --single
+check/model-zebra	0	0.87	einaf/target/release/einaf steps check plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/zebra/program.ein --text nl2smt/puzzles/zebra.txt
+check/model-bystander	0	0.62	einaf/target/release/einaf steps check plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/module-dir/bystander/program.ein --text plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/bystander.txt
+check/hand-zebra-step3	0	0.59	einaf/target/release/einaf steps check einaf/contract/zebra/step3.ein --text einaf/contract/zebra/text.txt
+steps/bob1-replay	0	2.09	einaf/target/release/einaf steps run plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/bob1.txt --id bob1 --answer-line word --replay einaf/tests/fixtures/steps/bob1/calls.jsonl --out plans/m2_nl_to_ir/p2.2_formalizer/report/out/steps/bob1
+from-text/zebra/replay	0	236.03	einaf/target/release/einaf from-text nl2smt/puzzles/zebra.txt --id zebra --answer-line zebra --gold-answer 'Norwegian water|Japanese zebra' --replay plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/zebra/generations.jsonl --record plans/m2_nl_to_ir/p2.2_formalizer/report/out/from-text/zebra/record
+from-text/zebra-minus-15/replay	0	11.22	einaf/target/release/einaf from-text nl2smt/puzzles/zebra-minus-15.txt --id zebra-minus-15 --answer-line zebra --gold-answer @undetermined --replay plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/zebra-minus-15/generations.jsonl --record plans/m2_nl_to_ir/p2.2_formalizer/report/out/from-text/zebra-minus-15/record
+from-text/zebra-contradiction/replay	0	3.08	einaf/target/release/einaf from-text nl2smt/puzzles/zebra-contradiction.txt --id zebra-contradiction --answer-line zebra --gold-answer @contradiction --replay plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/zebra-contradiction/generations.jsonl --record plans/m2_nl_to_ir/p2.2_formalizer/report/out/from-text/zebra-contradiction/record
+from-text/bob1/replay	0	2.08	einaf/target/release/einaf from-text plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/bob1.txt --id bob1 --answer-line word --gold-answer 3 --replay plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/bob1/generations.jsonl --record plans/m2_nl_to_ir/p2.2_formalizer/report/out/from-text/bob1/record
+from-text/bob1/replay-no-format	0	2.10	einaf/target/release/einaf from-text plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/bob1.txt --id bob1 --answer-line word --replay plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/bob1/generations.jsonl --no-format
+from-text/bystander/replay	0	2.47	einaf/target/release/einaf from-text plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/bystander.txt --id bystander --answer-line word --gold-answer 9 --replay plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/module-dir/bystander/generations.jsonl --record plans/m2_nl_to_ir/p2.2_formalizer/report/out/from-text/bystander/record --module-dir examples/word_problems --explain plans/m2_nl_to_ir/p2.2_formalizer/report/out/from-text/bystander/explain.md
+from-text/bystander/replay-no-format	0	2.42	einaf/target/release/einaf from-text plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/bystander.txt --id bystander --answer-line word --module-dir examples/word_problems --replay plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/module-dir/bystander/generations.jsonl --no-format
+from-text/gap/replay	0	2.11	einaf/target/release/einaf from-text plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/gap.txt --id gap --answer-line word --gold-answer @undetermined --replay plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/gap/generations.jsonl --record plans/m2_nl_to_ir/p2.2_formalizer/report/out/from-text/gap/record
+ein/model-zebra-describe	0	72.02	ein.rs/target/release/ein solve plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/zebra/program.ein
+ein/model-zebra-single	0	72.01	ein.rs/target/release/ein solve plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/zebra/program.ein --single
+ein/model-zebra-single-T5	0	72.06	ein.rs/target/release/ein solve plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/zebra/program.ein --single -T 5
+ein/model-zebra-lever-single	0	0.07	ein.rs/target/release/ein solve plans/m2_nl_to_ir/p2.2_formalizer/report/out/ein/model-zebra-lever.ein --single
+ein/model-zebra-lever-describe	0	0.06	ein.rs/target/release/ein solve plans/m2_nl_to_ir/p2.2_formalizer/report/out/ein/model-zebra-lever.ein
+ein/model-zebra-less-houses	0	0.03	ein.rs/target/release/ein solve plans/m2_nl_to_ir/p2.2_formalizer/report/out/ein/model-zebra-less-houses.ein
+ein/model-zebra-less-kinds	0	0.05	ein.rs/target/release/ein solve plans/m2_nl_to_ir/p2.2_formalizer/report/out/ein/model-zebra-less-kinds.ein
+ein/model-zebra-less-both	0	0.04	ein.rs/target/release/ein solve plans/m2_nl_to_ir/p2.2_formalizer/report/out/ein/model-zebra-less-both.ein
+ein/hand-zebra-step2-single	0	0.03	ein.rs/target/release/ein solve einaf/contract/zebra/step2.ein --single
+ein/hand-zebra-step3-single	0	0.04	ein.rs/target/release/ein solve einaf/contract/zebra/step3.ein --single
+ein/zebra3.1-single	0	0.04	ein.rs/target/release/ein solve examples/zebra3.1.ein --single
+ein/model-bob1-single	0	0.08	ein.rs/target/release/ein solve plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/bob1/program.ein --single
+ein/model-bystander-single	0	0.07	ein.rs/target/release/ein solve plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/module-dir/bystander/program.ein --single
+ein/show-hyps-model-zebra-step1	0	0.03	ein.rs/target/release/ein show hyps plans/m2_nl_to_ir/p2.2_formalizer/report/out/from-text/zebra/record/steps/step1.ein
+ein/show-hyps-model-zebra-step2	0	0.05	ein.rs/target/release/ein show hyps plans/m2_nl_to_ir/p2.2_formalizer/report/out/from-text/zebra/record/steps/step2.ein
+ein/show-hyps-model-zebra	0	0.08	ein.rs/target/release/ein show hyps plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/zebra/program.ein
+ein/show-hyps-hand-zebra-step1	0	0.04	ein.rs/target/release/ein show hyps einaf/contract/zebra/step1.ein
+ein/show-hyps-hand-zebra-step2	0	0.03	ein.rs/target/release/ein show hyps einaf/contract/zebra/step2.ein
+ein/show-hyps-model-bystander	0	0.08	ein.rs/target/release/ein show hyps plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/module-dir/bystander/program.ein
+render/model-zebra/render-program	0	0.06	ein.rs/target/release/ein render program plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/zebra/program.ein
+render/hand-zebra-step1/render-program	0	0.02	ein.rs/target/release/ein render program einaf/contract/zebra/step1.ein
+render/hand-zebra-step2/render-program	0	0.02	ein.rs/target/release/ein render program einaf/contract/zebra/step2.ein
+render/zebra3.1/render-program	0	0.02	ein.rs/target/release/ein render program examples/zebra3.1.ein
+render/model-bystander/render-program	0	0.07	ein.rs/target/release/ein render program plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/module-dir/bystander/program.ein
+render/model-bob1/render-program	0	0.07	ein.rs/target/release/ein render program plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/bob1/program.ein
+live/model	0	2.69	einaf/target/release/einaf model --model /var/lib/ollama/blobs/sha256-a9d0a3e1d8c91732a3812becd31f8d4a8ff57414903f226306069f0437e2ac50
+live/bob1	0	24.74	einaf/target/release/einaf from-text plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/bob1.txt --id bob1 --answer-line word --record plans/m2_nl_to_ir/p2.2_formalizer/report/out/live/bob1 --gold-answer 3 --model /var/lib/ollama/blobs/sha256-a9d0a3e1d8c91732a3812becd31f8d4a8ff57414903f226306069f0437e2ac50

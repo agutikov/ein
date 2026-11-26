@@ -1,0 +1,10 @@
+einaf: replaying 3 recorded calls
+step 1     4637 prompt tokens, 180 generated (end-of-turn, 2.8 s), 6 forms; at root not decided; H from blind (0); 1 findings
+step 2     11628 prompt tokens, 148 generated (end-of-turn, 2.7 s), 6 forms; at root not decided; H from blind (0); 1 findings
+step 3     12391 prompt tokens, 213 generated (end-of-turn, 3.8 s), 3 forms
+the program: H from no-search (0); 1 findings of the check
+  --no-search: not decided (--no-search: root is alive, and R was not searched), 0.0 s
+  --single: one (Solution: one state), 0.0 s
+the answer: no-row (from einaf)
+einaf from-text: 2.1 s
+against the gold answer "@undetermined": right (the fixed text "The statements do not determine the answer.")

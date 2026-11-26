@@ -1,0 +1,27 @@
+{
+  "answer": {
+    "alternatives": [],
+    "alternatives_complete": false,
+    "beneath": [],
+    "case": "no-row",
+    "fixed": "The statements do not determine the answer.",
+    "formatters": [
+      "decimal",
+      "words"
+    ],
+    "from": "einaf",
+    "goal_text": "They have {?n} apples together.",
+    "lines": [],
+    "outcome": "one",
+    "question": "--single",
+    "terms": 0
+  },
+  "kernel": "",
+  "schema": "einaf-answer/1",
+  "scored": {
+    "gold": "@undetermined",
+    "verdict": "right",
+    "why": "the fixed text \"The statements do not determine the answer.\""
+  },
+  "text": "The statements do not determine the answer."
+}

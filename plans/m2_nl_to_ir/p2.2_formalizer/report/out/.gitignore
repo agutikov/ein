@@ -1,0 +1,19 @@
+# Written by make_report.sh: what it writes again and git does not keep. Every DOT (its SVG is kept); each
+# command's .cmd, .exit and .time (INDEX.tsv holds all three); a model record or a run's JSON a replay
+# writes again; and any file over 200 KB (an SVG over 250 KB).
+*.dot
+*.cmd
+*.exit
+*.time
+*/*/record/*
+!*/*/record/steps/
+!*/*/record/answer.json
+live/bob1/*
+!live/bob1/program.ein
+!live/bob1/steps/
+!live/bob1/answer.json
+render/*/render-program.out
+steps/bob1/calls.jsonl
+steps/bob1/run.json
+ein/show-hyps-hand-zebra-step1.out
+ein/show-hyps-model-zebra-step1.out

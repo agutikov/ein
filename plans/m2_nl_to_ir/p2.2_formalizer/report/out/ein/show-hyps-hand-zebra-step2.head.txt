@@ -1,0 +1,13 @@
+112 lines; the first 12:
+(same-house Chesterfields Fifth)
+(same-house Chesterfields Fourth)
+(same-house Chesterfields Middle)
+(same-house Chesterfields Second)
+(same-house Coffee Fifth)
+(same-house Coffee Fourth)
+(same-house Dog Fifth)
+(same-house Dog Fourth)
+(same-house Dog Middle)
+(same-house Englishman Fifth)
+(same-house Englishman Fourth)
+(same-house Englishman Middle)

@@ -1,0 +1,40 @@
+{
+  "answer": {
+    "alternatives": [],
+    "alternatives_complete": false,
+    "beneath": [],
+    "case": "lines",
+    "fixed": null,
+    "formatters": [
+      "decimal",
+      "words"
+    ],
+    "from": "program",
+    "goal_text": "Carol has {?n} apples.",
+    "lines": [
+      {
+        "formatted": "Carol has 9 apples.",
+        "kernel": "Carol has (n z 9) apples.",
+        "values": [
+          {
+            "by": "decimal",
+            "printed": "9",
+            "variable": "n",
+            "written": "(n z 9)"
+          }
+        ]
+      }
+    ],
+    "outcome": "one",
+    "question": "--single",
+    "terms": 0
+  },
+  "kernel": "Carol has (n z 9) apples.",
+  "schema": "einaf-answer/1",
+  "scored": {
+    "gold": "9",
+    "verdict": "right",
+    "why": "every claim stated, no other number"
+  },
+  "text": "Carol has 9 apples."
+}

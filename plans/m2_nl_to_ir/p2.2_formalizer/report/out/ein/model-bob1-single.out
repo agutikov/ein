@@ -1,0 +1,24 @@
+solve · plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/bob1/program.ein --single
+──────────────────────────────────────────────────────────────
+  asked             is R one state? (--single)
+  verdict           Solution — R is one state
+  decided           yes — R holds no other state
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          0 candidates
+  route             the state route, each state at most once — L1 dead is upward-closed · L2 discharged is upward-closed
+  work              1 saturation · 0 facts beyond root
+
+  ;; state 1 of 1 — ∅, root itself
+  (model)
+
+  query             (has Bob ?n Apple)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?n = (n z 1)
+                        “Bob has (n z 1) apples.”
+                      ?n = (n z 3)
+                        “Bob has (n z 3) apples.”
+                      ?n = (n z 5)
+                        “Bob has (n z 5) apples.”
+  as :expect        (model (has Bob (n z 1) Apple) (has Bob (n z 3) Apple)
+                           (has Bob (n z 5) Apple))

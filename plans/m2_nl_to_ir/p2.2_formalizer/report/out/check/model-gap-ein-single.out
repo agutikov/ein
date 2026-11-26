@@ -1,0 +1,17 @@
+solve · plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/gap/program.ein --single
+──────────────────────────────────────────────────────────────
+  asked             is R one state? (--single)
+  verdict           Solution — R is one state
+  decided           yes — R holds no other state
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          0 candidates
+  route             the state route, each state at most once — L1 dead is upward-closed · L2 discharged is upward-closed
+  work              1 saturation · 0 facts beyond root
+
+  ;; state 1 of 1 — ∅, root itself
+  (model)
+
+  query             (sum-of (n z 5) (n z 2) ?n)
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1) — the goal has no row: undetermined here
+  as :expect        (model)

@@ -1,0 +1,66 @@
+solve · examples/zebra3.1.ein --single
+──────────────────────────────────────────────────────────────
+  asked             is R one state? (--single)
+  verdict           Solution — R is one state
+  decided           yes — R holds no other state
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          112 candidates
+    outside         are-smoked-by, are-smoked-in, cigarette-and-house, drink-and-house, drinks, is-drunk-by, is-drunk-in, is-kept-in, is-lived-in-by, is-owned-by, lives-in, man-and-house, next-to, owns, pet-and-house, smokes — no candidate: no obligation owes them. R holds of them only what the program states and saturation derives
+  route             the obligation tree, over states, branching on the owed instance with the fewest alternatives left, the first by text among equals — L1 dead is upward-closed · L2 discharged is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local · L5 an owed instance's alternatives are exhaustive · L8 what a state denies is dead above it
+  work              9 saturations · 1 679 facts beyond root
+
+  ;; state 1 of 1 — 36 candidates · from {(same-house Coffee Fifth), (same-house Dog Fourth)}
+  (model (same-house Blue Second) (same-house Chesterfields Second)
+         (same-house Chesterfields Ukrainian) (same-house Coffee Fifth)
+         (same-house Coffee Green) (same-house Coffee Japanese)
+         (same-house Dog Fourth) (same-house Dog Spaniard)
+         (same-house Englishman Middle) (same-house Englishman Milk)
+         (same-house Englishman Old_Gold) (same-house Englishman Red)
+         (same-house Englishman Snail) (same-house Fifth Coffee)
+         (same-house Fifth Green) (same-house Fifth Japanese)
+         (same-house Fifth Parliament) (same-house Fifth Zebra)
+         (same-house First Fox) (same-house First Kools)
+         (same-house First Norwegian) (same-house First Water)
+         (same-house First Yellow) (same-house Fourth Dog)
+         (same-house Fourth Ivory) (same-house Fourth Juice)
+         (same-house Fourth Lucky_Strike) (same-house Fourth Spaniard)
+         (same-house Fox First) (same-house Fox Norwegian)
+         (same-house Green Coffee) (same-house Green Fifth)
+         (same-house Horse Second) (same-house Horse Ukrainian)
+         (same-house Ivory Fourth) (same-house Japanese Coffee)
+         (same-house Japanese Fifth) (same-house Japanese Parliament)
+         (same-house Japanese Zebra) (same-house Juice Fourth)
+         (same-house Juice Lucky_Strike) (same-house Juice Spaniard)
+         (same-house Kools First) (same-house Kools Norwegian)
+         (same-house Kools Yellow) (same-house Lucky_Strike Fourth)
+         (same-house Lucky_Strike Juice) (same-house Lucky_Strike Spaniard)
+         (same-house Middle Englishman) (same-house Middle Milk)
+         (same-house Middle Old_Gold) (same-house Middle Red)
+         (same-house Middle Snail) (same-house Milk Englishman)
+         (same-house Milk Middle) (same-house Milk Red)
+         (same-house Norwegian First) (same-house Norwegian Fox)
+         (same-house Norwegian Kools) (same-house Norwegian Water)
+         (same-house Old_Gold Englishman) (same-house Old_Gold Middle)
+         (same-house Old_Gold Red) (same-house Old_Gold Snail)
+         (same-house Parliament Fifth) (same-house Parliament Japanese)
+         (same-house Red Englishman) (same-house Red Middle)
+         (same-house Red Milk) (same-house Red Old_Gold)
+         (same-house Second Blue) (same-house Second Chesterfields)
+         (same-house Second Horse) (same-house Second Tea)
+         (same-house Second Ukrainian) (same-house Snail Englishman)
+         (same-house Snail Middle) (same-house Snail Old_Gold)
+         (same-house Spaniard Dog) (same-house Spaniard Fourth)
+         (same-house Spaniard Juice) (same-house Spaniard Lucky_Strike)
+         (same-house Tea Second) (same-house Tea Ukrainian)
+         (same-house Ukrainian Chesterfields) (same-house Ukrainian Horse)
+         (same-house Ukrainian Second) (same-house Ukrainian Tea)
+         (same-house Water First) (same-house Water Norwegian)
+         (same-house Yellow First) (same-house Yellow Kools)
+         (same-house Zebra Fifth) (same-house Zebra Japanese))
+
+  query             (and (drinks ?who_water Water) (owns ?who_zebra Zebra))
+  over              all of R — 1 state → 1 projection class
+    class 1 of 1    1 state (1)
+                      ?who_water = Norwegian · ?who_zebra = Japanese
+                        “The Norwegian drinks water. The Japanese owns the zebra.”
+  as :expect        (model (drinks Norwegian Water) (owns Japanese Zebra))

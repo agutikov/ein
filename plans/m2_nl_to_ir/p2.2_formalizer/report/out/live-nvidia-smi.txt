@@ -1,0 +1,2 @@
+name, memory.used [MiB], memory.total [MiB]
+NVIDIA GeForce RTX 4060 Laptop GPU, 72 MiB, 8188 MiB

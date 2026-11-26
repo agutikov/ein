@@ -1,0 +1,2 @@
+program.ein: the committed one (plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/bob1/program.ein), byte for byte
+calls: 3 live, 3 recorded; the request alike on 3, the generated tokens alike on 3

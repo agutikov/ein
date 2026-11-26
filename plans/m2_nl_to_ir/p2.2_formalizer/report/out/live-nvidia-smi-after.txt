@@ -1,0 +1,4 @@
+name, memory.used [MiB], memory.total [MiB]
+NVIDIA GeForce RTX 4060 Laptop GPU, 72 MiB, 8188 MiB
+pid, process_name, used_gpu_memory [MiB]
+1307, /usr/bin/kwin_wayland, 7 MiB

@@ -1,0 +1,13 @@
+solve · plans/m2_nl_to_ir/p2.2_formalizer/report/out/ein/model-zebra-lever.ein --single
+──────────────────────────────────────────────────────────────
+  asked             is R one state? (--single)
+  verdict           Contradiction — R is empty: every node is dead
+  decided           yes — R is empty
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          0 candidates
+  route             1, the alive down-set — L1 dead is upward-closed
+  work              1 saturation · 0 facts beyond root
+
+  query             (and (drinks ?who Water) (owns ?who Zebra))
+  over              all of R — R is empty, root is dead: no state to answer from
+  as :expect        (false)

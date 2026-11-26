@@ -1,0 +1,10 @@
+einaf: replaying 3 recorded calls
+step 1     4777 prompt tokens, 1041 generated (end-of-turn, 16.4 s), 53 forms; at root not decided; H from blind (6931); 0 findings
+step 2     12626 prompt tokens, 1168 generated (end-of-turn, 19.9 s), 74 forms; at root inconsistent; H from stuck (0); 6 findings
+step 3     13848 prompt tokens, 336 generated (end-of-turn, 5.8 s), 17 forms
+the program: H from stuck (0); 8 findings of the check
+  --no-search: inconsistent (root is dead, so every node is), 3.1 s
+  --single: inconsistent (Contradiction: R is empty and every node is dead), 3.1 s
+the answer: inconsistent (from einaf)
+einaf from-text: 11.2 s
+against the gold answer "@undetermined": wrong (not the fixed text "The statements do not determine the answer.")

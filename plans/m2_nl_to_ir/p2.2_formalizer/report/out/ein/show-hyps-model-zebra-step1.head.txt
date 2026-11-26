@@ -1,0 +1,13 @@
+7840 lines; the first 12:
+(drinks BlueHouse Chesterfields)
+(drinks BlueHouse ChesterfieldsHouse)
+(drinks BlueHouse Coffee)
+(drinks BlueHouse Dog)
+(drinks BlueHouse Englishman)
+(drinks BlueHouse Fox)
+(drinks BlueHouse FoxOwner)
+(drinks BlueHouse GreenHouse)
+(drinks BlueHouse Horse)
+(drinks BlueHouse HorseKeeperHouse)
+(drinks BlueHouse House1)
+(drinks BlueHouse House2)

@@ -1,0 +1,1801 @@
+# The grammar of step 2 of the formalization, rendered by EinAf for one request.
+# Its forms are Ein's grammar's, restricted to the step's; its layout is the model's.
+
+# the step's forms, comment lines before and after them
+root ::= ( comment nl )* body ( nl comment )*
+
+# step 2: the ontology whole, then the imports, then the selection; no rule
+body ::= ontology ( nl imports )? ( nl selection )? |
+       imports ( nl selection )? |
+       selection
+
+ontology ::= onto-form ( nl onto-form )*
+
+onto-form ::= decl |
+            onto-fact
+
+onto-fact ::= "(" m-name args ( sp ":source" sp source )? ")"
+
+imports ::= import ( nl import )*
+
+selection ::= select ( nl select )*
+
+select ::= activator
+
+# an activating fact of the catalogue, at its count, over any names
+activator ::= "(add-answer" sp m-name sp m-name sp m-name ")" |
+            "(add-ask" sp m-name sp m-name sp m-name ")" |
+            "(add-ask-second" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(add-carry-out" sp m-name sp m-name sp m-name ")" |
+            "(add-column" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(add-column-first" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(add-column-second" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(add-end" sp m-name sp m-name ")" |
+            "(add-start" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(add-walk-check-x" sp m-name sp m-name sp m-name ")" |
+            "(add-walk-check-y" sp m-name sp m-name sp m-name ")" |
+            "(add-walk-runs" sp m-name sp m-name ")" |
+            "(antisymmetric" sp m-name ")" |
+            "(asymmetric" sp m-name ")" |
+            "(bad-add-first" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(bad-add-second" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(bad-cmp-first" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(bad-cmp-second" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(bad-div-first" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(bad-div-second" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(bad-mul-first" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(bad-mul-second" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(bad-request-malformed" sp m-name sp m-name sp m-name ")" |
+            "(bad-request-undeclared" sp m-name sp m-name sp m-name ")" |
+            "(bad-sub-first" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(bad-sub-second" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(bijection-hierarchy" sp m-name ")" |
+            "(bijective" sp m-name ")" |
+            "(clash-0" sp m-name ")" |
+            "(clash-1" sp m-name ")" |
+            "(clash-2" sp m-name ")" |
+            "(clash-3" sp m-name ")" |
+            "(clash-4" sp m-name ")" |
+            "(clash-5" sp m-name ")" |
+            "(clash-6" sp m-name ")" |
+            "(cmp-answer" sp m-name sp m-name sp m-name ")" |
+            "(cmp-ask" sp m-name sp m-name sp m-name ")" |
+            "(cmp-ask-second" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(cmp-column" sp m-name sp m-name sp m-name ")" |
+            "(cmp-column-first" sp m-name sp m-name sp m-name ")" |
+            "(cmp-column-second" sp m-name sp m-name sp m-name ")" |
+            "(cmp-end" sp m-name sp m-name ")" |
+            "(cmp-start" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(cmp-walk-check-x" sp m-name sp m-name sp m-name ")" |
+            "(cmp-walk-check-y" sp m-name sp m-name sp m-name ")" |
+            "(cmp-walk-runs" sp m-name sp m-name ")" |
+            "(complement" sp m-name sp m-name sp m-name sp m-name sp m-name ")" |
+            "(compose" sp m-name sp m-name sp m-name ")" |
+            "(compose-negative-r" sp m-name sp m-name sp m-name ")" |
+            "(compose-negative-s" sp m-name sp m-name sp m-name ")" |
+            "(connex" sp m-name sp m-name sp m-name ")" |
+            "(converse" sp m-name sp m-name ")" |
+            "(converse-illtyped-dom" sp m-name sp m-name sp m-name ")" |
+            "(converse-illtyped-ran" sp m-name sp m-name sp m-name ")" |
+            "(debt-due" sp m-name sp m-name ")" |
+            "(debt-paid" sp m-name sp m-name ")" |
+            "(debts-of-owed)" |
+            "(difference" sp m-name sp m-name sp m-name ")" |
+            "(difunctional" sp m-name ")" |
+            "(div-answer" sp m-name sp m-name sp m-name ")" |
+            "(div-ask" sp m-name sp m-name sp m-name ")" |
+            "(div-ask-second" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(div-begin" sp m-name sp m-name sp m-name ")" |
+            "(div-by-zero" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(div-call-by-zero" sp m-name sp m-name sp m-name ")" |
+            "(div-call-check-x" sp m-name sp m-name sp m-name ")" |
+            "(div-call-check-y" sp m-name sp m-name sp m-name ")" |
+            "(div-call-runs" sp m-name sp m-name ")" |
+            "(div-end" sp m-name sp m-name sp m-name ")" |
+            "(div-start" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(domain-elimination" sp m-name sp m-name ")" |
+            "(domain-elimination" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(eliminate-0" sp m-name ")" |
+            "(eliminate-1" sp m-name ")" |
+            "(eliminate-2" sp m-name ")" |
+            "(eliminate-3" sp m-name ")" |
+            "(eliminate-4" sp m-name ")" |
+            "(eliminate-5" sp m-name ")" |
+            "(eliminate-6" sp m-name ")" |
+            "(empty" sp m-name ")" |
+            "(fill-due" sp m-name sp m-name sp m-name sp m-name sp m-name ")" |
+            "(fill-paid" sp m-name sp m-name sp m-name sp m-name sp m-name ")" |
+            "(forall" sp m-name sp m-name sp m-name ")" |
+            "(functional" sp m-name ")" |
+            "(functional-negative" sp m-name sp m-name ")" |
+            "(identity" sp m-name sp m-name sp m-name ")" |
+            "(imply1" sp m-name sp m-name ")" |
+            "(imply2-fwd" sp m-name sp m-name ")" |
+            "(imply2-reverse" sp m-name sp m-name ")" |
+            "(includes" sp m-name sp m-name ")" |
+            "(injective" sp m-name ")" |
+            "(injective-negative" sp m-name sp m-name ")" |
+            "(irreflexive" sp m-name ")" |
+            "(join" sp m-name sp m-name sp m-name ")" |
+            "(join-l" sp m-name sp m-name sp m-name ")" |
+            "(join-r" sp m-name sp m-name sp m-name ")" |
+            "(let-digit" sp m-name sp m-name sp m-name ")" |
+            "(let-digit-zero" sp m-name sp m-name ")" |
+            "(let-named" sp m-name sp m-name ")" |
+            "(let-to-digit" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(let-to-digit-zero" sp m-name sp m-name ")" |
+            "(let-to-name" sp m-name sp m-name sp m-name ")" |
+            "(let-twice" sp m-name sp m-name ")" |
+            "(let-zero" sp m-name sp m-name ")" |
+            "(malformed-is-false" sp m-name ")" |
+            "(meet" sp m-name sp m-name sp m-name ")" |
+            "(mul-answer" sp m-name sp m-name sp m-name ")" |
+            "(mul-ask" sp m-name sp m-name sp m-name ")" |
+            "(mul-ask-second" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(mul-begin" sp m-name sp m-name sp m-name ")" |
+            "(mul-call-check-x" sp m-name sp m-name sp m-name ")" |
+            "(mul-call-check-y" sp m-name sp m-name sp m-name ")" |
+            "(mul-call-runs" sp m-name sp m-name ")" |
+            "(mul-end" sp m-name sp m-name ")" |
+            "(mul-next" sp m-name sp m-name sp m-name ")" |
+            "(mul-start" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(mul-turn" sp m-name sp m-name sp m-name ")" |
+            "(no-room-left" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(numeral-step" sp m-name sp m-name sp m-name ")" |
+            "(numeral-step-zero" sp m-name sp m-name ")" |
+            "(numeral-valid" sp m-name sp m-name ")" |
+            "(operand-check" sp m-name sp m-name sp m-name ")" |
+            "(operand-digit" sp m-name sp m-name sp m-name sp m-name sp m-name ")" |
+            "(operand-digit-zero" sp m-name sp m-name sp m-name ")" |
+            "(operand-name" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(operand-number" sp m-name sp m-name sp m-name ")" |
+            "(operand-zero" sp m-name sp m-name ")" |
+            "(positional" sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name sp m-name ")" |
+            "(range-elimination" sp m-name sp m-name ")" |
+            "(reflexive" sp m-name ")" |
+            "(reflexive-cod" sp m-name ")" |
+            "(reflexive-dom" sp m-name ")" |
+            "(room-due" sp m-name sp m-name sp m-name sp m-name sp m-name ")" |
+            "(room-paid" sp m-name sp m-name sp m-name sp m-name sp m-name ")" |
+            "(slot-adjacent-bwd" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(slot-adjacent-bwd-neg" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(slot-adjacent-fwd" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(slot-adjacent-fwd-neg" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(slot-elimination" sp m-name sp m-name sp m-name sp m-name sp m-name ")" |
+            "(slot-endpoint-bwd" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(slot-endpoint-fwd" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(slot-exclusive" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(slot-fill" sp m-name sp m-name sp m-name sp m-name sp m-name ")" |
+            "(slot-locate" sp m-name sp m-name sp m-name ")" |
+            "(slot-negative" sp m-name sp m-name sp m-name ")" |
+            "(slot-no-fill" sp m-name sp m-name sp m-name sp m-name sp m-name ")" |
+            "(slot-no-room" sp m-name sp m-name sp m-name sp m-name sp m-name ")" |
+            "(slot-occupied" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(slot-owed-fill" sp m-name sp m-name sp m-name sp m-name sp m-name ")" |
+            "(slot-owed-room" sp m-name sp m-name sp m-name sp m-name sp m-name ")" |
+            "(slot-partition" sp m-name sp m-name sp m-name sp m-name sp m-name ")" |
+            "(slot-prune-bwd" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(slot-prune-fwd" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(slot-spatial" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(strip-none" sp m-name sp m-name ")" |
+            "(strip-top" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(strip-zero" sp m-name sp m-name ")" |
+            "(sub-answer" sp m-name sp m-name sp m-name ")" |
+            "(sub-answer-short" sp m-name sp m-name sp m-name ")" |
+            "(sub-ask" sp m-name sp m-name sp m-name ")" |
+            "(sub-ask-second" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(sub-borrow-out" sp m-name sp m-name ")" |
+            "(sub-column" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(sub-column-first" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(sub-column-second" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(sub-end" sp m-name sp m-name ")" |
+            "(sub-start" sp m-name sp m-name sp m-name sp m-name sp m-name ")" |
+            "(sub-walk-check-x" sp m-name sp m-name sp m-name ")" |
+            "(sub-walk-check-y" sp m-name sp m-name sp m-name ")" |
+            "(sub-walk-runs" sp m-name sp m-name ")" |
+            "(surjective" sp m-name sp m-name ")" |
+            "(surjective-due" sp m-name sp m-name ")" |
+            "(surjective-owed" sp m-name sp m-name ")" |
+            "(surjective-paid" sp m-name sp m-name ")" |
+            "(symmetric" sp m-name ")" |
+            "(symmetric-negative" sp m-name ")" |
+            "(top" sp m-name sp m-name sp m-name sp m-name ")" |
+            "(top-first-end" sp m-name sp m-name ")" |
+            "(top-first-step" sp m-name sp m-name sp m-name ")" |
+            "(total" sp m-name sp m-name ")" |
+            "(total-due" sp m-name sp m-name ")" |
+            "(total-owed" sp m-name sp m-name ")" |
+            "(total-paid" sp m-name sp m-name ")" |
+            "(transitive" sp m-name ")" |
+            "(turn-end" sp m-name sp m-name sp m-name ")" |
+            "(turn-step" sp m-name sp m-name sp m-name ")" |
+            "(type-hierarchy" sp m-name ")" |
+            "(typecheck-arg-0" sp m-name sp m-name sp m-name ")" |
+            "(typecheck-arg-1" sp m-name sp m-name sp m-name ")" |
+            "(typecheck-hierarchy" sp m-name ")" |
+            "(undeclared-is-false" sp m-name ")" |
+            "(unknown" sp m-name ")"
+
+# a name std.algebra declares
+symbol-1 ::= "antisymmetric" |
+           "asymmetric" |
+           "bijective-properties" |
+           "complement" |
+           "compose" |
+           "compose-contravariant" |
+           "compose-negative-r" |
+           "compose-negative-s" |
+           "connex" |
+           "converse" |
+           "converse-illtyped-dom" |
+           "converse-illtyped-ran" |
+           "converse-pair-symmetric" |
+           "derive-join" |
+           "difference" |
+           "difunctional" |
+           "empty" |
+           "functional" |
+           "identity" |
+           "imply1" |
+           "imply2-fwd" |
+           "imply2-reverse" |
+           "includes" |
+           "injective" |
+           "irreflexive" |
+           "join-converse" |
+           "join-l" |
+           "join-r" |
+           "meet" |
+           "self-converse-is-symmetric" |
+           "surjective" |
+           "surjective-owed" |
+           "symmetric" |
+           "symmetric-is-self-converse" |
+           "symmetric-negative" |
+           "symmetric-negative-setup" |
+           "top" |
+           "total" |
+           "total-owed" |
+           "transitive"
+
+# a name std.bijection declares
+symbol-2 ::= "bijective-setup" |
+           "domain-elimination" |
+           "functional-negative" |
+           "injective-negative" |
+           "range-elimination" |
+           "typecheck-arg-0" |
+           "typecheck-arg-1" |
+           "typecheck-setup"
+
+# a name std.bool.circuit declares
+symbol-3 ::= "circuit" |
+           "circuit-rule" |
+           "gate" |
+           "one-value" |
+           "propagate" |
+           "val"
+
+# a name std.bool.gates declares
+symbol-4 ::= "And" |
+           "And-rows" |
+           "Andn" |
+           "Andn-rows" |
+           "Fst" |
+           "Fst-rows" |
+           "Nand" |
+           "Nand-rows" |
+           "Nfst" |
+           "Nfst-rows" |
+           "Nor" |
+           "Nor-rows" |
+           "Nsnd" |
+           "Nsnd-rows" |
+           "One" |
+           "One-rows" |
+           "Or" |
+           "Or-rows" |
+           "Orn" |
+           "Orn-rows" |
+           "Randn" |
+           "Randn-rows" |
+           "Rorn" |
+           "Rorn-rows" |
+           "Snd" |
+           "Snd-rows" |
+           "Xnor" |
+           "Xnor-rows" |
+           "Xor" |
+           "Xor-rows" |
+           "Zero" |
+           "Zero-rows" |
+           "bit" |
+           "column-name" |
+           "gate2" |
+           "gates" |
+           "gates-rule" |
+           "inv" |
+           "le"
+
+# a name std.bool.inputs declares
+symbol-5 ::= "in" |
+           "in-drives" |
+           "inputs" |
+           "inputs-rule" |
+           "is-a" |
+           "require" |
+           "required"
+
+# a name std.bool.props declares
+symbol-6 ::= "absorbing" |
+           "absorbing-of" |
+           "affine" |
+           "affine-r" |
+           "assoc-at" |
+           "assoc-point" |
+           "associative" |
+           "associative-r" |
+           "column" |
+           "column-of" |
+           "commutative" |
+           "commutative-r" |
+           "complement" |
+           "complement-of" |
+           "complete-alone" |
+           "complete-alone-r" |
+           "dual" |
+           "dual-of" |
+           "escapes-affine" |
+           "escapes-affine-r" |
+           "escapes-monotone" |
+           "escapes-monotone-r" |
+           "escapes-one" |
+           "escapes-one-r" |
+           "escapes-self-dual" |
+           "escapes-self-dual-r" |
+           "escapes-zero" |
+           "escapes-zero-r" |
+           "idempotent" |
+           "idempotent-r" |
+           "identity" |
+           "identity-of" |
+           "ignores-first" |
+           "ignores-first-r" |
+           "ignores-second" |
+           "ignores-second-r" |
+           "left-absorbing" |
+           "left-absorbing-of" |
+           "left-identity" |
+           "left-identity-of" |
+           "left-neg" |
+           "left-negated" |
+           "monotone" |
+           "monotone-r" |
+           "preserves-one" |
+           "preserves-one-r" |
+           "preserves-zero" |
+           "preserves-zero-r" |
+           "props" |
+           "props-rule" |
+           "reads-first" |
+           "reads-first-r" |
+           "reads-second" |
+           "reads-second-r" |
+           "right-absorbing" |
+           "right-absorbing-of" |
+           "right-identity" |
+           "right-identity-of" |
+           "right-neg" |
+           "right-negated" |
+           "self-dual" |
+           "self-dual-r" |
+           "swap" |
+           "swap-of"
+
+# a name std.closure declares
+symbol-7 ::= "infer-closure"
+
+# a name std.contradiction declares
+symbol-8 ::= "clash-0" |
+           "clash-1" |
+           "clash-2" |
+           "clash-3" |
+           "clash-4" |
+           "clash-5" |
+           "clash-6" |
+           "clash-of-0" |
+           "clash-of-1" |
+           "clash-of-2" |
+           "clash-of-3" |
+           "clash-of-4" |
+           "clash-of-5" |
+           "clash-of-6"
+
+# a name std.debts declares
+symbol-9 ::= "debts-of-fill" |
+           "debts-of-room" |
+           "debts-of-surjective" |
+           "debts-of-total" |
+           "discharged-from-nothing-unpaid" |
+           "fill-due" |
+           "fill-paid" |
+           "room-due" |
+           "room-paid" |
+           "surjective-due" |
+           "surjective-paid" |
+           "total-due" |
+           "total-paid"
+
+# a name std.elim declares
+symbol-10 ::= "domain-elimination" |
+            "no-room-left" |
+            "typecheck-arg-0" |
+            "typecheck-arg-1"
+
+# a name std.macro declares
+symbol-11 ::= "forall" |
+            "unknown"
+
+# a name std.math.arith declares
+symbol-12 ::= "arith" |
+            "arith-module-rule" |
+            "division-by-zero" |
+            "division-by-zero-is-false" |
+            "z"
+
+# a name std.math.binary declares
+symbol-13 ::= "b2" |
+            "bin-check" |
+            "bin-named" |
+            "bin-numeral-bit" |
+            "bin-numeral-prefix-bit" |
+            "bin-numeral-prefix-named" |
+            "bin-numeral-prefix-zero" |
+            "bin-valid" |
+            "binary" |
+            "binary-rule" |
+            "not-binary" |
+            "not-binary-is-false"
+
+# a name std.math.binary-arith declares
+symbol-14 ::= "bin-add" |
+            "bin-add-first" |
+            "bin-add-run" |
+            "bin-add-second" |
+            "bin-add-walk" |
+            "bin-arith-rule" |
+            "bin-b" |
+            "bin-bad-operand" |
+            "bin-bad-request" |
+            "bin-cmp" |
+            "bin-cmp-first" |
+            "bin-cmp-of" |
+            "bin-cmp-run" |
+            "bin-cmp-second" |
+            "bin-cmp-walk" |
+            "bin-diff-of" |
+            "bin-difference" |
+            "bin-div" |
+            "bin-div-bring" |
+            "bin-div-bring-first" |
+            "bin-div-bring-zero" |
+            "bin-div-bring-zero-none" |
+            "bin-div-call" |
+            "bin-div-digits" |
+            "bin-div-done" |
+            "bin-div-first" |
+            "bin-div-fits" |
+            "bin-div-m1" |
+            "bin-div-multiples" |
+            "bin-div-run" |
+            "bin-div-second" |
+            "bin-div-step" |
+            "bin-div-too-big" |
+            "bin-div-too-big-none" |
+            "bin-div-trial" |
+            "bin-div-turn" |
+            "bin-done" |
+            "bin-let" |
+            "bin-malformed" |
+            "bin-mul" |
+            "bin-mul-call" |
+            "bin-mul-digits" |
+            "bin-mul-first" |
+            "bin-mul-one" |
+            "bin-mul-one-first" |
+            "bin-mul-run" |
+            "bin-mul-second" |
+            "bin-mul-step" |
+            "bin-mul-sum" |
+            "bin-mul-zero" |
+            "bin-mul-zero-first" |
+            "bin-no-let" |
+            "bin-not-a-number" |
+            "bin-operand" |
+            "bin-operand-is" |
+            "bin-operand-undeclared" |
+            "bin-order" |
+            "bin-order-is" |
+            "bin-product" |
+            "bin-product-of" |
+            "bin-quot-of" |
+            "bin-quotient" |
+            "bin-short" |
+            "bin-shortfall" |
+            "bin-strip" |
+            "bin-sub" |
+            "bin-sub-first" |
+            "bin-sub-run" |
+            "bin-sub-second" |
+            "bin-sub-walk" |
+            "bin-sum" |
+            "bin-sum-of" |
+            "bin-top-first" |
+            "bin-top-first-is" |
+            "bin-turn" |
+            "bin-undeclared" |
+            "binary-arith"
+
+# a name std.math.bits declares
+symbol-15 ::= "bin-cl" |
+            "bin-fa" |
+            "bin-fs" |
+            "bin-nz"
+
+# a name std.math.convert declares
+symbol-16 ::= "bin-of" |
+            "bits" |
+            "convert" |
+            "convert-rule" |
+            "dec-bits" |
+            "dec-of" |
+            "doubling" |
+            "halving" |
+            "to-bin" |
+            "to-bin-answer" |
+            "to-bin-ask" |
+            "to-bin-bit-0" |
+            "to-bin-bit-1" |
+            "to-bin-end" |
+            "to-bin-go" |
+            "to-bin-halve" |
+            "to-dec" |
+            "to-dec-answer" |
+            "to-dec-ask" |
+            "to-dec-begin" |
+            "to-dec-double" |
+            "to-dec-go" |
+            "to-dec-next"
+
+# a name std.math.decimal declares
+symbol-17 ::= "check" |
+            "decimal" |
+            "decimal-rule" |
+            "n" |
+            "named" |
+            "not-decimal" |
+            "not-decimal-is-false" |
+            "numeral-digit" |
+            "numeral-prefix-digit" |
+            "numeral-prefix-named" |
+            "numeral-prefix-zero" |
+            "valid"
+
+# a name std.math.decimal-arith declares
+symbol-18 ::= "add" |
+            "add-first" |
+            "add-run" |
+            "add-second" |
+            "add-walk" |
+            "arith-rule" |
+            "b" |
+            "bad-operand" |
+            "bad-request" |
+            "cmp" |
+            "cmp-first" |
+            "cmp-of" |
+            "cmp-run" |
+            "cmp-second" |
+            "cmp-walk" |
+            "decimal-arith" |
+            "diff-of" |
+            "difference" |
+            "div" |
+            "div-bring" |
+            "div-bring-first" |
+            "div-bring-zero" |
+            "div-call" |
+            "div-choose" |
+            "div-digit" |
+            "div-digit-found" |
+            "div-digits" |
+            "div-done" |
+            "div-first" |
+            "div-fits" |
+            "div-m1" |
+            "div-m2" |
+            "div-m3" |
+            "div-m4" |
+            "div-m5" |
+            "div-m6" |
+            "div-m7" |
+            "div-m8" |
+            "div-m9" |
+            "div-multiple-2" |
+            "div-multiple-3" |
+            "div-multiple-4" |
+            "div-multiple-5" |
+            "div-multiple-6" |
+            "div-multiple-7" |
+            "div-multiple-8" |
+            "div-multiple-9" |
+            "div-multiples" |
+            "div-next" |
+            "div-next-none" |
+            "div-next-zero" |
+            "div-run" |
+            "div-second" |
+            "div-step" |
+            "div-too-big" |
+            "div-trial" |
+            "div-try-1" |
+            "div-try-2" |
+            "div-try-3" |
+            "div-try-4" |
+            "div-try-5" |
+            "div-try-6" |
+            "div-try-7" |
+            "div-try-8" |
+            "div-try-9" |
+            "div-turn" |
+            "done" |
+            "let" |
+            "malformed" |
+            "mul" |
+            "mul-add-row" |
+            "mul-call" |
+            "mul-carry-out" |
+            "mul-column" |
+            "mul-digits" |
+            "mul-first" |
+            "mul-first-row" |
+            "mul-row" |
+            "mul-row-of" |
+            "mul-run" |
+            "mul-second" |
+            "mul-step" |
+            "mul-sum" |
+            "mul-walk" |
+            "mul-walk-end" |
+            "multiples" |
+            "no-let" |
+            "not-a-number" |
+            "operand" |
+            "operand-is" |
+            "operand-undeclared" |
+            "order" |
+            "order-is" |
+            "product" |
+            "product-of" |
+            "quot-of" |
+            "quotient" |
+            "short" |
+            "shortfall" |
+            "strip" |
+            "sub" |
+            "sub-first" |
+            "sub-run" |
+            "sub-second" |
+            "sub-walk" |
+            "sum" |
+            "sum-of" |
+            "top-first" |
+            "top-first-is" |
+            "turn" |
+            "undeclared"
+
+# a name std.math.digits declares
+symbol-19 ::= "adj" |
+            "cl" |
+            "fa" |
+            "fs" |
+            "md" |
+            "mid" |
+            "nz"
+
+# a name std.math.gcd declares
+symbol-20 ::= "gcd" |
+            "gcd-answer" |
+            "gcd-ask" |
+            "gcd-ask-second" |
+            "gcd-bad-first" |
+            "gcd-bad-second" |
+            "gcd-call" |
+            "gcd-call-chain" |
+            "gcd-call-check-x" |
+            "gcd-call-check-y" |
+            "gcd-call-first" |
+            "gcd-call-runs" |
+            "gcd-call-second" |
+            "gcd-chain" |
+            "gcd-done" |
+            "gcd-end" |
+            "gcd-first" |
+            "gcd-next" |
+            "gcd-norm" |
+            "gcd-norm-of" |
+            "gcd-of" |
+            "gcd-rem" |
+            "gcd-rule" |
+            "gcd-run" |
+            "gcd-second" |
+            "gcd-start" |
+            "gcd-step" |
+            "lcm" |
+            "lcm-answer" |
+            "lcm-ask" |
+            "lcm-divide" |
+            "lcm-g" |
+            "lcm-of" |
+            "lcm-p" |
+            "lcm-product" |
+            "lcm-q" |
+            "lcm-start" |
+            "lcm-zero"
+
+# a name std.math.int declares
+symbol-21 ::= "int" |
+            "int-add" |
+            "int-add-answer" |
+            "int-add-ask" |
+            "int-add-call" |
+            "int-add-call-runs" |
+            "int-add-minus" |
+            "int-add-n" |
+            "int-add-norm" |
+            "int-add-p" |
+            "int-add-plus" |
+            "int-add-run" |
+            "int-add-start" |
+            "int-arith" |
+            "int-bad-div" |
+            "int-bad-first" |
+            "int-bad-only" |
+            "int-bad-second" |
+            "int-check" |
+            "int-check-n" |
+            "int-check-p" |
+            "int-cmp" |
+            "int-cmp-answer" |
+            "int-cmp-ask" |
+            "int-cmp-call" |
+            "int-cmp-call-runs" |
+            "int-cmp-l" |
+            "int-cmp-left" |
+            "int-cmp-of" |
+            "int-cmp-r" |
+            "int-cmp-right" |
+            "int-cmp-run" |
+            "int-cmp-sides" |
+            "int-cmp-start" |
+            "int-diff-of" |
+            "int-div-a" |
+            "int-div-b" |
+            "int-div-by-zero" |
+            "int-div-divisor" |
+            "int-div-done" |
+            "int-div-euclid" |
+            "int-div-euclid-answer" |
+            "int-div-euclid-ask" |
+            "int-div-euclid-neg" |
+            "int-div-euclid-nn-exact" |
+            "int-div-euclid-nn-more" |
+            "int-div-euclid-np-exact" |
+            "int-div-euclid-np-more" |
+            "int-div-euclid-pn" |
+            "int-div-euclid-pos" |
+            "int-div-euclid-pp" |
+            "int-div-floor" |
+            "int-div-floor-answer" |
+            "int-div-floor-ask" |
+            "int-div-floor-neg" |
+            "int-div-floor-nn" |
+            "int-div-floor-np-exact" |
+            "int-div-floor-np-more" |
+            "int-div-floor-pn-exact" |
+            "int-div-floor-pn-more" |
+            "int-div-floor-pos" |
+            "int-div-floor-pp" |
+            "int-div-m" |
+            "int-div-nn" |
+            "int-div-np" |
+            "int-div-of" |
+            "int-div-pn" |
+            "int-div-pp" |
+            "int-div-q" |
+            "int-div-r" |
+            "int-div-rest" |
+            "int-div-start" |
+            "int-div-trunc" |
+            "int-div-trunc-answer" |
+            "int-div-trunc-ask" |
+            "int-div-trunc-nn" |
+            "int-div-trunc-np" |
+            "int-div-trunc-pn" |
+            "int-div-trunc-pp" |
+            "int-done" |
+            "int-first" |
+            "int-minus" |
+            "int-mul" |
+            "int-mul-answer" |
+            "int-mul-ask" |
+            "int-mul-call" |
+            "int-mul-call-runs" |
+            "int-mul-first" |
+            "int-mul-fourth" |
+            "int-mul-minus" |
+            "int-mul-neg" |
+            "int-mul-nn" |
+            "int-mul-norm" |
+            "int-mul-np" |
+            "int-mul-plus" |
+            "int-mul-pn" |
+            "int-mul-pos" |
+            "int-mul-pp" |
+            "int-mul-run" |
+            "int-mul-second" |
+            "int-mul-start" |
+            "int-mul-third" |
+            "int-n-digit" |
+            "int-n-named" |
+            "int-n-zero" |
+            "int-neg" |
+            "int-neg-answer" |
+            "int-neg-ask" |
+            "int-neg-of" |
+            "int-neg-start" |
+            "int-norm" |
+            "int-norm-minus" |
+            "int-norm-plus" |
+            "int-norm-run" |
+            "int-norm-runs" |
+            "int-norm-walks" |
+            "int-only" |
+            "int-operand" |
+            "int-operand-check" |
+            "int-operand-second" |
+            "int-p-digit" |
+            "int-p-named" |
+            "int-p-zero" |
+            "int-plus" |
+            "int-product-of" |
+            "int-quot-euclid-of" |
+            "int-quot-floor-of" |
+            "int-quot-trunc-of" |
+            "int-rule" |
+            "int-second" |
+            "int-simple-of" |
+            "int-simplify" |
+            "int-simplify-answer" |
+            "int-simplify-ask" |
+            "int-simplify-start" |
+            "int-sub" |
+            "int-sub-answer" |
+            "int-sub-ask" |
+            "int-sub-start" |
+            "int-sum-of" |
+            "not-integer" |
+            "not-integer-is-false"
+
+# a name std.math.num9 declares
+symbol-22 ::= "add9" |
+            "add9-fits" |
+            "add9-overflows" |
+            "arith9" |
+            "as9" |
+            "big" |
+            "cmp9" |
+            "cmp9-columns" |
+            "cmp9-of" |
+            "diff9-of" |
+            "div9" |
+            "div9-at" |
+            "div9-by-zero" |
+            "div9-done" |
+            "div9-start" |
+            "div9-step-0" |
+            "div9-step-1" |
+            "div9-step-2" |
+            "div9-step-3" |
+            "div9-step-4" |
+            "div9-step-5" |
+            "div9-step-6" |
+            "div9-step-7" |
+            "div9-step-8" |
+            "div9-step-9" |
+            "from9" |
+            "from9-1" |
+            "from9-2" |
+            "from9-3" |
+            "from9-4" |
+            "from9-5" |
+            "from9-6" |
+            "from9-7" |
+            "from9-8" |
+            "from9-9" |
+            "from9-zero" |
+            "mul9" |
+            "mul9-at" |
+            "mul9-done" |
+            "mul9-overflows-add" |
+            "mul9-overflows-row" |
+            "mul9-overflows-shift" |
+            "mul9-start" |
+            "mul9-step" |
+            "mul9-step-zero" |
+            "multiples9" |
+            "num9" |
+            "num9-rule" |
+            "of9" |
+            "overflow" |
+            "product9-of" |
+            "quot9-of" |
+            "row9" |
+            "sub9" |
+            "sub9-fits" |
+            "sub9-short" |
+            "sum9-of" |
+            "to9" |
+            "to9-1" |
+            "to9-2" |
+            "to9-3" |
+            "to9-4" |
+            "to9-5" |
+            "to9-6" |
+            "to9-7" |
+            "to9-8" |
+            "to9-9" |
+            "to9-big" |
+            "to9-check" |
+            "to9-zero"
+
+# a name std.math.positional declares
+symbol-23 ::= "add-answer" |
+            "add-ask" |
+            "add-ask-second" |
+            "add-carry-out" |
+            "add-column" |
+            "add-column-first" |
+            "add-column-second" |
+            "add-end" |
+            "add-start" |
+            "add-walk-check-x" |
+            "add-walk-check-y" |
+            "add-walk-runs" |
+            "bad-add-first" |
+            "bad-add-second" |
+            "bad-cmp-first" |
+            "bad-cmp-second" |
+            "bad-div-first" |
+            "bad-div-second" |
+            "bad-mul-first" |
+            "bad-mul-second" |
+            "bad-request-malformed" |
+            "bad-request-undeclared" |
+            "bad-sub-first" |
+            "bad-sub-second" |
+            "cmp-answer" |
+            "cmp-ask" |
+            "cmp-ask-second" |
+            "cmp-column" |
+            "cmp-column-first" |
+            "cmp-column-second" |
+            "cmp-end" |
+            "cmp-start" |
+            "cmp-walk-check-x" |
+            "cmp-walk-check-y" |
+            "cmp-walk-runs" |
+            "div-answer" |
+            "div-ask" |
+            "div-ask-second" |
+            "div-begin" |
+            "div-by-zero" |
+            "div-call-by-zero" |
+            "div-call-check-x" |
+            "div-call-check-y" |
+            "div-call-runs" |
+            "div-end" |
+            "div-start" |
+            "let-digit" |
+            "let-digit-zero" |
+            "let-named" |
+            "let-to-digit" |
+            "let-to-digit-zero" |
+            "let-to-name" |
+            "let-twice" |
+            "let-zero" |
+            "malformed-is-false" |
+            "mul-answer" |
+            "mul-ask" |
+            "mul-ask-second" |
+            "mul-begin" |
+            "mul-call-check-x" |
+            "mul-call-check-y" |
+            "mul-call-runs" |
+            "mul-end" |
+            "mul-next" |
+            "mul-start" |
+            "mul-turn" |
+            "numeral-step" |
+            "numeral-step-zero" |
+            "numeral-valid" |
+            "operand-check" |
+            "operand-digit" |
+            "operand-digit-zero" |
+            "operand-name" |
+            "operand-number" |
+            "operand-zero" |
+            "positional" |
+            "strip-none" |
+            "strip-top" |
+            "strip-zero" |
+            "sub-answer" |
+            "sub-answer-short" |
+            "sub-ask" |
+            "sub-ask-second" |
+            "sub-borrow-out" |
+            "sub-column" |
+            "sub-column-first" |
+            "sub-column-second" |
+            "sub-end" |
+            "sub-start" |
+            "sub-walk-check-x" |
+            "sub-walk-check-y" |
+            "sub-walk-runs" |
+            "top-first-end" |
+            "top-first-step" |
+            "turn-end" |
+            "turn-step" |
+            "undeclared-is-false"
+
+# a name std.math.rat declares
+symbol-24 ::= "not-rational" |
+            "not-rational-is-false" |
+            "rat" |
+            "rat-add" |
+            "rat-add-answer" |
+            "rat-add-ask" |
+            "rat-add-start" |
+            "rat-arith" |
+            "rat-bad-first" |
+            "rat-bad-only" |
+            "rat-bad-second" |
+            "rat-check" |
+            "rat-check-ask" |
+            "rat-check-d" |
+            "rat-check-z" |
+            "rat-check-z-natural" |
+            "rat-cmp" |
+            "rat-cmp-answer" |
+            "rat-cmp-ask" |
+            "rat-cmp-num" |
+            "rat-cmp-of" |
+            "rat-cmp-sides" |
+            "rat-cmp-start" |
+            "rat-cross" |
+            "rat-cross-end" |
+            "rat-cross-first" |
+            "rat-cross-fourth" |
+            "rat-cross-is" |
+            "rat-cross-minus" |
+            "rat-cross-plus" |
+            "rat-cross-run" |
+            "rat-cross-runs" |
+            "rat-cross-second" |
+            "rat-cross-third" |
+            "rat-d-digit" |
+            "rat-d-named" |
+            "rat-d-zero" |
+            "rat-den" |
+            "rat-den-norm" |
+            "rat-diff-of" |
+            "rat-div" |
+            "rat-div-answer" |
+            "rat-div-ask" |
+            "rat-div-by" |
+            "rat-div-neg" |
+            "rat-div-pos" |
+            "rat-div-start" |
+            "rat-div-zero" |
+            "rat-done" |
+            "rat-first" |
+            "rat-g" |
+            "rat-low" |
+            "rat-lowest-denominator" |
+            "rat-lowest-neg" |
+            "rat-lowest-numerator" |
+            "rat-lowest-pos" |
+            "rat-mul" |
+            "rat-mul-answer" |
+            "rat-mul-ask" |
+            "rat-mul-call" |
+            "rat-mul-call-runs" |
+            "rat-mul-den" |
+            "rat-mul-denominator" |
+            "rat-mul-done" |
+            "rat-mul-num" |
+            "rat-mul-numerator" |
+            "rat-mul-run" |
+            "rat-mul-start" |
+            "rat-neg" |
+            "rat-neg-answer" |
+            "rat-neg-ask" |
+            "rat-neg-of" |
+            "rat-neg-start" |
+            "rat-norm" |
+            "rat-norm-denominator" |
+            "rat-norm-done" |
+            "rat-norm-numerator" |
+            "rat-norm-run" |
+            "rat-norm-runs" |
+            "rat-num" |
+            "rat-of" |
+            "rat-only" |
+            "rat-operand" |
+            "rat-operand-check" |
+            "rat-operand-found" |
+            "rat-operand-is" |
+            "rat-operand-second" |
+            "rat-operand-zero" |
+            "rat-product-of" |
+            "rat-q-den" |
+            "rat-q-num" |
+            "rat-quot-of" |
+            "rat-rule" |
+            "rat-second" |
+            "rat-simple-of" |
+            "rat-simplify" |
+            "rat-simplify-answer" |
+            "rat-simplify-ask" |
+            "rat-simplify-neg" |
+            "rat-simplify-pos" |
+            "rat-simplify-start" |
+            "rat-sub" |
+            "rat-sub-answer" |
+            "rat-sub-ask" |
+            "rat-sub-start" |
+            "rat-sum-den" |
+            "rat-sum-denominator" |
+            "rat-sum-norm" |
+            "rat-sum-num" |
+            "rat-sum-of" |
+            "rat-x1" |
+            "rat-x2" |
+            "rat-x3" |
+            "rat-x4" |
+            "rat-x5" |
+            "rat-x6" |
+            "rat-z-digit" |
+            "rat-z-named" |
+            "rat-z-zero" |
+            "rat-zero-den" |
+            "rat-zero-first" |
+            "rat-zero-only" |
+            "rat-zero-second"
+
+# a name std.negation declares
+symbol-25 ::= "eliminate-0" |
+            "eliminate-1" |
+            "eliminate-2" |
+            "eliminate-3" |
+            "eliminate-4" |
+            "eliminate-5" |
+            "eliminate-6"
+
+# a name std.slots declares
+symbol-26 ::= "slot-adjacent-bwd" |
+            "slot-adjacent-bwd-neg" |
+            "slot-adjacent-fwd" |
+            "slot-adjacent-fwd-neg" |
+            "slot-elimination" |
+            "slot-endpoint-bwd" |
+            "slot-endpoint-fwd" |
+            "slot-exclusive" |
+            "slot-fill" |
+            "slot-locate" |
+            "slot-negative" |
+            "slot-no-fill" |
+            "slot-no-room" |
+            "slot-occupied" |
+            "slot-owed-fill" |
+            "slot-owed-room" |
+            "slot-partition-setup" |
+            "slot-prune-bwd" |
+            "slot-prune-fwd" |
+            "slot-spatial-setup"
+
+# a name std.typing declares
+symbol-27 ::= "derive-reflexive" |
+            "reflexive-cod" |
+            "reflexive-dom" |
+            "type-hierarchy-converse"
+
+# an import of a module of the catalogue, listing names it declares
+import ::= "(import" sp ( "std.algebra" ( sp ":symbols" sp "(" symbol-1 ( sp symbol-1 )* ")" )? | "std.bijection" ( sp ":symbols" sp "(" symbol-2 ( sp symbol-2 )* ")" )? | "std.bool.circuit" ( sp ":symbols" sp "(" symbol-3 ( sp symbol-3 )* ")" )? | "std.bool.gates" ( sp ":symbols" sp "(" symbol-4 ( sp symbol-4 )* ")" )? | "std.bool.inputs" ( sp ":symbols" sp "(" symbol-5 ( sp symbol-5 )* ")" )? | "std.bool.props" ( sp ":symbols" sp "(" symbol-6 ( sp symbol-6 )* ")" )? | "std.closure" ( sp ":symbols" sp "(" symbol-7 ( sp symbol-7 )* ")" )? | "std.contradiction" ( sp ":symbols" sp "(" symbol-8 ( sp symbol-8 )* ")" )? | "std.debts" ( sp ":symbols" sp "(" symbol-9 ( sp symbol-9 )* ")" )? | "std.elim" ( sp ":symbols" sp "(" symbol-10 ( sp symbol-10 )* ")" )? | "std.macro" ( sp ":symbols" sp "(" symbol-11 ( sp symbol-11 )* ")" )? | "std.math.arith" ( sp ":symbols" sp "(" symbol-12 ( sp symbol-12 )* ")" )? | "std.math.binary" ( sp ":symbols" sp "(" symbol-13 ( sp symbol-13 )* ")" )? | "std.math.binary-arith" ( sp ":symbols" sp "(" symbol-14 ( sp symbol-14 )* ")" )? | "std.math.bits" ( sp ":symbols" sp "(" symbol-15 ( sp symbol-15 )* ")" )? | "std.math.convert" ( sp ":symbols" sp "(" symbol-16 ( sp symbol-16 )* ")" )? | "std.math.decimal" ( sp ":symbols" sp "(" symbol-17 ( sp symbol-17 )* ")" )? | "std.math.decimal-arith" ( sp ":symbols" sp "(" symbol-18 ( sp symbol-18 )* ")" )? | "std.math.digits" ( sp ":symbols" sp "(" symbol-19 ( sp symbol-19 )* ")" )? | "std.math.gcd" ( sp ":symbols" sp "(" symbol-20 ( sp symbol-20 )* ")" )? | "std.math.int" ( sp ":symbols" sp "(" symbol-21 ( sp symbol-21 )* ")" )? | "std.math.num9" ( sp ":symbols" sp "(" symbol-22 ( sp symbol-22 )* ")" )? | "std.math.positional" ( sp ":symbols" sp "(" symbol-23 ( sp symbol-23 )* ")" )? | "std.math.rat" ( sp ":symbols" sp "(" symbol-24 ( sp symbol-24 )* ")" )? | "std.negation" ( sp ":symbols" sp "(" symbol-25 ( sp symbol-25 )* ")" )? | "std.slots" ( sp ":symbols" sp "(" symbol-26 ( sp symbol-26 )* ")" )? | "std.typing" ( sp ":symbols" sp "(" symbol-27 ( sp symbol-27 )* ")" )? ) ")"
+
+args ::= ( sp arg )*
+
+arg ::= m-name |
+      "(" m-name args ")"
+
+source ::= "\"" [^\n\"<>\\`|]* "\""
+
+# a `relation` form: the name, its labels, and a `:why` that reads its arrows
+decl ::= "(relation" sp m-name decl-0
+
+decl-0 ::= sp ":why" sp why-0 ")" |
+         sp m-name decl-1
+
+decl-1 ::= sp ":why" sp why-1 ")" |
+         sp m-name decl-2
+
+decl-2 ::= sp ":why" sp why-2 ")" |
+         sp m-name decl-3
+
+decl-3 ::= sp ":why" sp why-3 ")" |
+         sp m-name decl-4
+
+decl-4 ::= sp ":why" sp why-4 ")" |
+         sp m-name decl-5
+
+decl-5 ::= sp ":why" sp why-5 ")" |
+         sp m-name decl-6
+
+decl-6 ::= sp ":why" sp why-6 ")" |
+         sp m-name decl-7
+
+decl-7 ::= sp ":why" sp why-7 ")" |
+         sp m-name decl-8
+
+decl-8 ::= sp ":why" sp why-8 ")"
+
+why-0 ::= "\"" ( [^\n\"<>\\`{-}] | "{?2}" )* "\""
+
+why-1 ::= "\"" ( [^\n\"<>\\`{-}] | "{?" ( "2" | "3" ) "}" )* "\""
+
+why-2 ::= "\"" ( [^\n\"<>\\`{-}] | "{?" ( "2" | "3" | "4" ) "}" )* "\""
+
+why-3 ::= "\"" ( [^\n\"<>\\`{-}] | "{?" ( "2" | "3" | "4" | "5" ) "}" )* "\""
+
+why-4 ::= "\"" ( [^\n\"<>\\`{-}] | "{?" ( "2" | "3" | "4" | "5" | "6" ) "}" )* "\""
+
+why-5 ::= "\"" ( [^\n\"<>\\`{-}] | "{?" ( "2" | "3" | "4" | "5" | "6" | "7" ) "}" )* "\""
+
+why-6 ::= "\"" ( [^\n\"<>\\`{-}] | "{?" ( "2" | "3" | "4" | "5" | "6" | "7" | "8" ) "}" )* "\""
+
+why-7 ::= "\"" ( [^\n\"<>\\`{-}] | "{?" ( "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ) "}" )* "\""
+
+why-8 ::= "\"" ( [^\n\"<>\\`{-}] | "{?" ( "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" ) "}" )* "\""
+
+# between two tokens: a run of spaces, or a line break and an indentation
+sp ::= " "{1,24} |
+     "\n" " "{1,24}
+
+# between two forms: a line break or a blank line, and comment lines, each a line of its own
+nl ::= "\n" "\n"? ( comment "\n" "\n"? )*
+
+comment ::= ";" [^\n<>`|]*
+
+# hand-written: a run of the name characters less `_`, `absent`, `and`, `commit`, `config`, `eq`, `false`, `import`, `macro`, `merged`, `model`, `module`, `neq`, `not`, `open`, `or`, `owing`, `program`, `query`, `region`, `relation`, `rule`, `solve`, `step`, `trace`, `true`
+m-name ::= "_" m-name-1 |
+         "a" m-name-2 |
+         "c" m-name-3 |
+         "e" m-name-4 |
+         "f" m-name-5 |
+         "i" m-name-6 |
+         "m" m-name-7 |
+         "n" m-name-8 |
+         "o" m-name-9 |
+         "p" m-name-10 |
+         "q" m-name-11 |
+         "r" m-name-12 |
+         "s" m-name-13 |
+         "t" m-name-14 |
+         [\-0-9A-Zbdghj-lu-z] m-name-rest
+
+# after `_`
+m-name-1 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `a`
+m-name-2 ::= "" |
+           "b" m-name-15 |
+           "n" m-name-16 |
+           [\-0-9A-Z_ac-mo-z] m-name-rest
+
+# after `c`
+m-name-3 ::= "" |
+           "o" m-name-17 |
+           [\-0-9A-Z_a-np-z] m-name-rest
+
+# after `e`
+m-name-4 ::= "" |
+           "q" m-name-18 |
+           [\-0-9A-Z_a-pr-z] m-name-rest
+
+# after `f`
+m-name-5 ::= "" |
+           "a" m-name-19 |
+           [\-0-9A-Z_b-z] m-name-rest
+
+# after `i`
+m-name-6 ::= "" |
+           "m" m-name-20 |
+           [\-0-9A-Z_a-ln-z] m-name-rest
+
+# after `m`
+m-name-7 ::= "" |
+           "a" m-name-21 |
+           "e" m-name-22 |
+           "o" m-name-23 |
+           [\-0-9A-Z_b-df-np-z] m-name-rest
+
+# after `n`
+m-name-8 ::= "" |
+           "e" m-name-24 |
+           "o" m-name-25 |
+           [\-0-9A-Z_a-df-np-z] m-name-rest
+
+# after `o`
+m-name-9 ::= "" |
+           "p" m-name-26 |
+           "r" m-name-27 |
+           "w" m-name-28 |
+           [\-0-9A-Z_a-oqs-vx-z] m-name-rest
+
+# after `p`
+m-name-10 ::= "" |
+            "r" m-name-29 |
+            [\-0-9A-Z_a-qs-z] m-name-rest
+
+# after `q`
+m-name-11 ::= "" |
+            "u" m-name-30 |
+            [\-0-9A-Z_a-tv-z] m-name-rest
+
+# after `r`
+m-name-12 ::= "" |
+            "e" m-name-31 |
+            "u" m-name-32 |
+            [\-0-9A-Z_a-df-tv-z] m-name-rest
+
+# after `s`
+m-name-13 ::= "" |
+            "o" m-name-33 |
+            "t" m-name-34 |
+            [\-0-9A-Z_a-np-su-z] m-name-rest
+
+# after `t`
+m-name-14 ::= "" |
+            "r" m-name-35 |
+            [\-0-9A-Z_a-qs-z] m-name-rest
+
+# after `ab`
+m-name-15 ::= "" |
+            "s" m-name-36 |
+            [\-0-9A-Z_a-rt-z] m-name-rest
+
+# after `an`
+m-name-16 ::= "" |
+            "d" m-name-37 |
+            [\-0-9A-Z_a-ce-z] m-name-rest
+
+# after `co`
+m-name-17 ::= "" |
+            "m" m-name-38 |
+            "n" m-name-39 |
+            [\-0-9A-Z_a-lo-z] m-name-rest
+
+# after `eq`
+m-name-18 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `fa`
+m-name-19 ::= "" |
+            "l" m-name-40 |
+            [\-0-9A-Z_a-km-z] m-name-rest
+
+# after `im`
+m-name-20 ::= "" |
+            "p" m-name-41 |
+            [\-0-9A-Z_a-oq-z] m-name-rest
+
+# after `ma`
+m-name-21 ::= "" |
+            "c" m-name-42 |
+            [\-0-9A-Z_abd-z] m-name-rest
+
+# after `me`
+m-name-22 ::= "" |
+            "r" m-name-43 |
+            [\-0-9A-Z_a-qs-z] m-name-rest
+
+# after `mo`
+m-name-23 ::= "" |
+            "d" m-name-44 |
+            [\-0-9A-Z_a-ce-z] m-name-rest
+
+# after `ne`
+m-name-24 ::= "" |
+            "q" m-name-45 |
+            [\-0-9A-Z_a-pr-z] m-name-rest
+
+# after `no`
+m-name-25 ::= "" |
+            "t" m-name-46 |
+            [\-0-9A-Z_a-su-z] m-name-rest
+
+# after `op`
+m-name-26 ::= "" |
+            "e" m-name-47 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `or`
+m-name-27 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `ow`
+m-name-28 ::= "" |
+            "i" m-name-48 |
+            [\-0-9A-Z_a-hj-z] m-name-rest
+
+# after `pr`
+m-name-29 ::= "" |
+            "o" m-name-49 |
+            [\-0-9A-Z_a-np-z] m-name-rest
+
+# after `qu`
+m-name-30 ::= "" |
+            "e" m-name-50 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `re`
+m-name-31 ::= "" |
+            "g" m-name-51 |
+            "l" m-name-52 |
+            [\-0-9A-Z_a-fh-km-z] m-name-rest
+
+# after `ru`
+m-name-32 ::= "" |
+            "l" m-name-53 |
+            [\-0-9A-Z_a-km-z] m-name-rest
+
+# after `so`
+m-name-33 ::= "" |
+            "l" m-name-54 |
+            [\-0-9A-Z_a-km-z] m-name-rest
+
+# after `st`
+m-name-34 ::= "" |
+            "e" m-name-55 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `tr`
+m-name-35 ::= "" |
+            "a" m-name-56 |
+            "u" m-name-57 |
+            [\-0-9A-Z_b-tv-z] m-name-rest
+
+# after `abs`
+m-name-36 ::= "" |
+            "e" m-name-58 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `and`
+m-name-37 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `com`
+m-name-38 ::= "" |
+            "m" m-name-59 |
+            [\-0-9A-Z_a-ln-z] m-name-rest
+
+# after `con`
+m-name-39 ::= "" |
+            "f" m-name-60 |
+            [\-0-9A-Z_a-eg-z] m-name-rest
+
+# after `fal`
+m-name-40 ::= "" |
+            "s" m-name-61 |
+            [\-0-9A-Z_a-rt-z] m-name-rest
+
+# after `imp`
+m-name-41 ::= "" |
+            "o" m-name-62 |
+            [\-0-9A-Z_a-np-z] m-name-rest
+
+# after `mac`
+m-name-42 ::= "" |
+            "r" m-name-63 |
+            [\-0-9A-Z_a-qs-z] m-name-rest
+
+# after `mer`
+m-name-43 ::= "" |
+            "g" m-name-64 |
+            [\-0-9A-Z_a-fh-z] m-name-rest
+
+# after `mod`
+m-name-44 ::= "" |
+            "e" m-name-65 |
+            "u" m-name-66 |
+            [\-0-9A-Z_a-df-tv-z] m-name-rest
+
+# after `neq`
+m-name-45 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `not`
+m-name-46 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `ope`
+m-name-47 ::= "" |
+            "n" m-name-67 |
+            [\-0-9A-Z_a-mo-z] m-name-rest
+
+# after `owi`
+m-name-48 ::= "" |
+            "n" m-name-68 |
+            [\-0-9A-Z_a-mo-z] m-name-rest
+
+# after `pro`
+m-name-49 ::= "" |
+            "g" m-name-69 |
+            [\-0-9A-Z_a-fh-z] m-name-rest
+
+# after `que`
+m-name-50 ::= "" |
+            "r" m-name-70 |
+            [\-0-9A-Z_a-qs-z] m-name-rest
+
+# after `reg`
+m-name-51 ::= "" |
+            "i" m-name-71 |
+            [\-0-9A-Z_a-hj-z] m-name-rest
+
+# after `rel`
+m-name-52 ::= "" |
+            "a" m-name-72 |
+            [\-0-9A-Z_b-z] m-name-rest
+
+# after `rul`
+m-name-53 ::= "" |
+            "e" m-name-73 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `sol`
+m-name-54 ::= "" |
+            "v" m-name-74 |
+            [\-0-9A-Z_a-uw-z] m-name-rest
+
+# after `ste`
+m-name-55 ::= "" |
+            "p" m-name-75 |
+            [\-0-9A-Z_a-oq-z] m-name-rest
+
+# after `tra`
+m-name-56 ::= "" |
+            "c" m-name-76 |
+            [\-0-9A-Z_abd-z] m-name-rest
+
+# after `tru`
+m-name-57 ::= "" |
+            "e" m-name-77 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `abse`
+m-name-58 ::= "" |
+            "n" m-name-78 |
+            [\-0-9A-Z_a-mo-z] m-name-rest
+
+# after `comm`
+m-name-59 ::= "" |
+            "i" m-name-79 |
+            [\-0-9A-Z_a-hj-z] m-name-rest
+
+# after `conf`
+m-name-60 ::= "" |
+            "i" m-name-80 |
+            [\-0-9A-Z_a-hj-z] m-name-rest
+
+# after `fals`
+m-name-61 ::= "" |
+            "e" m-name-81 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `impo`
+m-name-62 ::= "" |
+            "r" m-name-82 |
+            [\-0-9A-Z_a-qs-z] m-name-rest
+
+# after `macr`
+m-name-63 ::= "" |
+            "o" m-name-83 |
+            [\-0-9A-Z_a-np-z] m-name-rest
+
+# after `merg`
+m-name-64 ::= "" |
+            "e" m-name-84 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `mode`
+m-name-65 ::= "" |
+            "l" m-name-85 |
+            [\-0-9A-Z_a-km-z] m-name-rest
+
+# after `modu`
+m-name-66 ::= "" |
+            "l" m-name-86 |
+            [\-0-9A-Z_a-km-z] m-name-rest
+
+# after `open`
+m-name-67 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `owin`
+m-name-68 ::= "" |
+            "g" m-name-87 |
+            [\-0-9A-Z_a-fh-z] m-name-rest
+
+# after `prog`
+m-name-69 ::= "" |
+            "r" m-name-88 |
+            [\-0-9A-Z_a-qs-z] m-name-rest
+
+# after `quer`
+m-name-70 ::= "" |
+            "y" m-name-89 |
+            [\-0-9A-Z_a-xz] m-name-rest
+
+# after `regi`
+m-name-71 ::= "" |
+            "o" m-name-90 |
+            [\-0-9A-Z_a-np-z] m-name-rest
+
+# after `rela`
+m-name-72 ::= "" |
+            "t" m-name-91 |
+            [\-0-9A-Z_a-su-z] m-name-rest
+
+# after `rule`
+m-name-73 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `solv`
+m-name-74 ::= "" |
+            "e" m-name-92 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `step`
+m-name-75 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `trac`
+m-name-76 ::= "" |
+            "e" m-name-93 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `true`
+m-name-77 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `absen`
+m-name-78 ::= "" |
+            "t" m-name-94 |
+            [\-0-9A-Z_a-su-z] m-name-rest
+
+# after `commi`
+m-name-79 ::= "" |
+            "t" m-name-95 |
+            [\-0-9A-Z_a-su-z] m-name-rest
+
+# after `confi`
+m-name-80 ::= "" |
+            "g" m-name-96 |
+            [\-0-9A-Z_a-fh-z] m-name-rest
+
+# after `false`
+m-name-81 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `impor`
+m-name-82 ::= "" |
+            "t" m-name-97 |
+            [\-0-9A-Z_a-su-z] m-name-rest
+
+# after `macro`
+m-name-83 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `merge`
+m-name-84 ::= "" |
+            "d" m-name-98 |
+            [\-0-9A-Z_a-ce-z] m-name-rest
+
+# after `model`
+m-name-85 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `modul`
+m-name-86 ::= "" |
+            "e" m-name-99 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `owing`
+m-name-87 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `progr`
+m-name-88 ::= "" |
+            "a" m-name-100 |
+            [\-0-9A-Z_b-z] m-name-rest
+
+# after `query`
+m-name-89 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `regio`
+m-name-90 ::= "" |
+            "n" m-name-101 |
+            [\-0-9A-Z_a-mo-z] m-name-rest
+
+# after `relat`
+m-name-91 ::= "" |
+            "i" m-name-102 |
+            [\-0-9A-Z_a-hj-z] m-name-rest
+
+# after `solve`
+m-name-92 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `trace`
+m-name-93 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `absent`
+m-name-94 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `commit`
+m-name-95 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `config`
+m-name-96 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `import`
+m-name-97 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `merged`
+m-name-98 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `module`
+m-name-99 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `progra`
+m-name-100 ::= "" |
+             "m" m-name-103 |
+             [\-0-9A-Z_a-ln-z] m-name-rest
+
+# after `region`
+m-name-101 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `relati`
+m-name-102 ::= "" |
+             "o" m-name-104 |
+             [\-0-9A-Z_a-np-z] m-name-rest
+
+# after `program`
+m-name-103 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `relatio`
+m-name-104 ::= "" |
+             "n" m-name-105 |
+             [\-0-9A-Z_a-mo-z] m-name-rest
+
+# after `relation`
+m-name-105 ::= [\-0-9A-Z_a-z] m-name-rest
+
+m-name-rest ::= [\-0-9A-Z_a-z]*
+
+# hand-written: ?a run of the name characters less `?_`
+m-var ::= "?" ( "_" m-var-1 | [\-0-9A-Za-z] m-var-rest )
+
+# after `?_`
+m-var-1 ::= [\-0-9A-Z_a-z] m-var-rest
+
+m-var-rest ::= [\-0-9A-Z_a-z]*
+
+fenced ::= "```" [a-z]* "\n" root "\n" "\n"? "```"

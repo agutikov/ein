@@ -1,0 +1,16 @@
+plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/module-dir/bystander/program.ein: H from no-search (0 candidates); the program states no-search
+undeclared (4, from step 1): a fact of instance, which the program does not declare and no imported module has
+    (instance Alice Person :source "Bob gave 2 apples to Alice.")
+undeclared (4, from step 1): a fact of instance, which the program does not declare and no imported module has
+    (instance Apple Thing :source "Bob has 5 apples.")
+undeclared (4, from step 1): a fact of instance, which the program does not declare and no imported module has
+    (instance Bob Person :source "Bob has 5 apples.")
+undeclared (4, from step 1): a fact of instance, which the program does not declare and no imported module has
+    (instance Carol Person :source "Carol has 9 apples.")
+undeclared (4, from step 1): a fact of type, which the program does not declare and no imported module has
+    (type Number T)
+undeclared (4, from step 1): a fact of type, which the program does not declare and no imported module has
+    (type Person T)
+undeclared (4, from step 1): a fact of type, which the program does not declare and no imported module has
+    (type Thing T)
+7 findings

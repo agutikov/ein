@@ -1,0 +1,13 @@
+plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/zebra/program.ein: H from no-search (0 candidates); the program states no-search and obligations
+selection-inactive (2, from step 2): root's saturation names no firing of meet with these arguments and no owe of it
+    (meet same-house color-and-house lives-in)
+selection-inactive (2, from step 2): root's saturation names no firing of top with these arguments and no owe of it
+    (top color-and-house instance Color House)
+selection-inactive (2, from step 2): root's saturation names no firing of top with these arguments and no owe of it
+    (top drinker-and-house instance Drinker House)
+selection-inactive (2, from step 2): root's saturation names no firing of top with these arguments and no owe of it
+    (top owner-and-house instance Owner House)
+selection-inactive (2, from step 2): root's saturation names no firing of top with these arguments and no owe of it
+    (top smoker-and-house instance Smoker House)
+mechanism-not-the-one-stated (3, from step 3): the program states no-search and obligations, and the writer of H is no-search
+6 findings

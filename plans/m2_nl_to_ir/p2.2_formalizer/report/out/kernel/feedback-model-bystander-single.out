@@ -1,0 +1,95 @@
+{
+  "schema": "einaf-feedback/1",
+  "program": {
+    "name": "plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/module-dir/bystander/program.ein",
+    "digest": "sha256:f99c610d342b210f05155b5f9ab023e2e662d282fa905b1df196e46686a8bacf",
+    "of": "canonical-dump"
+  },
+  "kernel": {
+    "version": "0.1.0",
+    "protocol": "ein-events/1",
+    "stdlib": "sha256:292894befd300e536cdd1181db772f44fe3f3f7ad6ff52b1467f1735ff83d681",
+    "commit": null
+  },
+  "asked": {
+    "question": "--single",
+    "which": "all",
+    "ask": "single",
+    "budget": 1048576,
+    "limit": 16,
+    "max_steps": 1048576,
+    "clock_us": null
+  },
+  "outcome": [
+    {
+      "part": "all",
+      "outcome": "one",
+      "why": "Solution: one state"
+    }
+  ],
+  "readings": {
+    "word": {
+      "part": "all",
+      "word": "Solution"
+    },
+    "k_s": null,
+    "k_c": null,
+    "minimal": null,
+    "maximal": null,
+    "exhausted": true,
+    "stopped": null
+  },
+  "diagnostics": [],
+  "flagged": null,
+  "queries": [
+    {
+      "goal": "(has Carol ?n Apple)",
+      "goal_text": "Carol has {?n} apples.",
+      "over": "all",
+      "exact": true,
+      "agree": true,
+      "classes": [
+        {
+          "facts": [
+            "(has Carol (n z 9) Apple)"
+          ],
+          "rows": [
+            {
+              "n": "(n z 9)"
+            }
+          ],
+          "lines": [
+            "Carol has (n z 9) apples."
+          ],
+          "states": [
+            1
+          ]
+        }
+      ],
+      "expect": null
+    }
+  ],
+  "claim": null,
+  "states": [
+    {
+      "facts": [],
+      "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "of": "model",
+      "lines": [],
+      "listed": true
+    }
+  ],
+  "owed": null,
+  "core": null,
+  "work": {
+    "saturations": 1,
+    "facts": 0,
+    "layers": null,
+    "run_us": 2710,
+    "load_us": 34437,
+    "ask_us": 6022
+  },
+  "dependencies": null,
+  "provenance": null,
+  "fault": null
+}

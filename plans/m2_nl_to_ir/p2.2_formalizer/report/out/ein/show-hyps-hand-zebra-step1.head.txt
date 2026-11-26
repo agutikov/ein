@@ -1,0 +1,13 @@
+9896 lines; the first 12:
+(are-smoked-in Blue Chesterfields)
+(are-smoked-in Blue Coffee)
+(are-smoked-in Blue Color)
+(are-smoked-in Blue Dog)
+(are-smoked-in Blue Englishman)
+(are-smoked-in Blue Fifth)
+(are-smoked-in Blue First)
+(are-smoked-in Blue Fourth)
+(are-smoked-in Blue Fox)
+(are-smoked-in Blue Green)
+(are-smoked-in Blue Horse)
+(are-smoked-in Blue Ivory)

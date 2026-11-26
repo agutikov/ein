@@ -1,0 +1,27 @@
+{
+  "answer": {
+    "alternatives": [],
+    "alternatives_complete": false,
+    "beneath": [],
+    "case": "inconsistent",
+    "fixed": "The statements contradict each other.",
+    "formatters": [
+      "decimal",
+      "words"
+    ],
+    "from": "einaf",
+    "goal_text": "{?who} drinks water. {?who} owns the zebra.",
+    "lines": [],
+    "outcome": "inconsistent",
+    "question": "--single",
+    "terms": 0
+  },
+  "kernel": "",
+  "schema": "einaf-answer/1",
+  "scored": {
+    "gold": "Norwegian water|Japanese zebra",
+    "verdict": "wrong",
+    "why": "the fixed text \"The statements contradict each other.\" against values"
+  },
+  "text": "The statements contradict each other."
+}

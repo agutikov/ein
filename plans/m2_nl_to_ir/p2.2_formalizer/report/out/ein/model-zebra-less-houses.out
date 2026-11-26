@@ -1,0 +1,22 @@
+solve · plans/m2_nl_to_ir/p2.2_formalizer/report/out/ein/model-zebra-less-houses.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      0
+  commitments (k_c) 0
+  exhausted         yes — every commitment is classified: this is all of R
+  empty             every node is dead — root's own fixpoint holds a contradiction
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate: the program states :no-search, so R is {∅} or empty, decided by root alone
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              1 saturation · 0 facts beyond root · 1 layer
+
+  unsat core        (instance House1 House)
+  unsat core        (type Smoker Attribute)
+  source            (instance House1 House) :source "There are five houses."
+  refuted by        std.slots.slot-no-fill
+
+  (false)
+
+  query             (and (drinks ?who Water) (owns ?who Zebra))
+  over              all of R — R is empty, root is dead: no state to answer from
+  as :expect        (false)

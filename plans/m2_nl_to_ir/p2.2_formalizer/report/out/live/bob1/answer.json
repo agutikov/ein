@@ -1,0 +1,64 @@
+{
+  "answer": {
+    "alternatives": [],
+    "alternatives_complete": false,
+    "beneath": [],
+    "case": "lines",
+    "fixed": null,
+    "formatters": [
+      "decimal",
+      "words"
+    ],
+    "from": "program",
+    "goal_text": "Bob has {?n} apples.",
+    "lines": [
+      {
+        "formatted": "Bob has 1 apples.",
+        "kernel": "Bob has (n z 1) apples.",
+        "values": [
+          {
+            "by": "decimal",
+            "printed": "1",
+            "variable": "n",
+            "written": "(n z 1)"
+          }
+        ]
+      },
+      {
+        "formatted": "Bob has 3 apples.",
+        "kernel": "Bob has (n z 3) apples.",
+        "values": [
+          {
+            "by": "decimal",
+            "printed": "3",
+            "variable": "n",
+            "written": "(n z 3)"
+          }
+        ]
+      },
+      {
+        "formatted": "Bob has 5 apples.",
+        "kernel": "Bob has (n z 5) apples.",
+        "values": [
+          {
+            "by": "decimal",
+            "printed": "5",
+            "variable": "n",
+            "written": "(n z 5)"
+          }
+        ]
+      }
+    ],
+    "outcome": "one",
+    "question": "--single",
+    "terms": 0
+  },
+  "kernel": "Bob has (n z 1) apples.\nBob has (n z 3) apples.\nBob has (n z 5) apples.",
+  "schema": "einaf-answer/1",
+  "scored": {
+    "gold": "3",
+    "verdict": "wrong",
+    "why": "a line states 1, which the gold does not"
+  },
+  "text": "Bob has 1 apples.\nBob has 3 apples.\nBob has 5 apples."
+}

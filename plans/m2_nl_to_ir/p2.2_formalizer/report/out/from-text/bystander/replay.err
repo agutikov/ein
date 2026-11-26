@@ -1,0 +1,10 @@
+einaf: replaying 3 recorded calls
+step 1     4643 prompt tokens, 168 generated (end-of-turn, 2.7 s), 6 forms; at root not decided; H from blind (0); 0 findings
+step 2     14575 prompt tokens, 12288 generated (max-tokens, 222.0 s), 15 forms; cut by the budget: 15 forms kept, 0 repeats dropped; at root not decided; H from blind (0); 7 findings
+step 3     15520 prompt tokens, 446 generated (end-of-turn, 7.9 s), 5 forms
+the program: H from no-search (0); 7 findings of the check
+  --no-search: not decided (--no-search: root is alive, and R was not searched), 0.0 s
+  --single: one (Solution: one state), 0.0 s
+the answer: lines (from program)
+einaf from-text: 2.4 s
+against the gold answer "9": right (every claim stated, no other number)

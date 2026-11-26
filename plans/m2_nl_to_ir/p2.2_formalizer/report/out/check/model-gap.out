@@ -1,0 +1,3 @@
+plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/library/gap/program.ein: H from no-search (0 candidates); the program states no-search
+name-not-listed (2, from step 2): the program writes sum-of, which std.math.decimal-arith declares and its import does not list: the module's facts are std.math.decimal-arith.sum-of, and the program's sum-of is its own
+1 findings

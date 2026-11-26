@@ -1,0 +1,47 @@
+solve · plans/m2_nl_to_ir/p2.2_formalizer/report/out/ein/model-zebra-less-both.ein
+──────────────────────────────────────────────────────────────
+  asked             all of R — describe
+  states (k_s)      0
+  commitments (k_c) 0
+  exhausted         yes — every commitment is classified: this is all of R
+  empty             every alive node owes — no commitment pays every debt
+  lattice           monotone (the static check) — R is convex: no hole
+  universe          no candidate: the program states :no-search, so R is {∅} or empty, decided by root alone
+  route             the state route, every alive state once — L1 dead is upward-closed · L3 a commitment's state is its closure's · L4 the lines are local
+  work              1 saturation · 0 facts beyond root · 2 layers
+
+  owing             ∅ — owes 28
+                      Englishman is in no slot yet — some House is still owed.
+                      Spaniard is in no slot yet — some House is still owed.
+                      Coffee is in no slot yet — some House is still owed.
+                      Ukrainian is in no slot yet — some House is still owed.
+                      OldGold is in no slot yet — some House is still owed.
+                      Kools is in no slot yet — some House is still owed.
+                      Milk is in no slot yet — some House is still owed.
+                      Dog is in no slot yet — some House is still owed.
+                      Tea is in no slot yet — some House is still owed.
+                      Snails is in no slot yet — some House is still owed.
+                      Fox is in no slot yet — some House is still owed.
+                      Chesterfields is in no slot yet — some House is still owed.
+                      Horse is in no slot yet — some House is still owed.
+                      OrangeJuice is in no slot yet — some House is still owed.
+                      LuckyStrike is in no slot yet — some House is still owed.
+                      Parliaments is in no slot yet — some House is still owed.
+                      Japanese is in no slot yet — some House is still owed.
+                      Water is in no slot yet — some House is still owed.
+                      Zebra is in no slot yet — some House is still owed.
+                      slot House1 has no Thing yet — one is still owed.
+                      slot House2 has no Person yet — one is still owed.
+                      slot House2 has no Thing yet — one is still owed.
+                      slot House3 has no Person yet — one is still owed.
+                      slot House3 has no Thing yet — one is still owed.
+                      slot House4 has no Person yet — one is still owed.
+                      slot House4 has no Thing yet — one is still owed.
+                      slot House5 has no Person yet — one is still owed.
+                      slot House5 has no Thing yet — one is still owed.
+
+  (region (owing (model)))
+
+  query             (and (drinks ?who Water) (owns ?who Zebra))
+  over              all of R — R is empty, root is alive and owes 28 instances: no state to answer from
+  as :expect        (false)

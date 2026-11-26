@@ -1,0 +1,6 @@
+einaf/contract/zebra/step3.ein: H from obligations (112 candidates); the program states obligations
+selection-inactive (2, from step 2): root's saturation names no firing of compose with these arguments and no owe of it
+    (compose is-kept-in is-lived-in-by is-owned-by)
+selection-inactive (2, from step 2): root's saturation names no firing of compose with these arguments and no owe of it
+    (compose is-owned-by lives-in is-kept-in)
+2 findings

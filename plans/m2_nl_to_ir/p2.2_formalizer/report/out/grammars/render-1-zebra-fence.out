@@ -1,0 +1,623 @@
+# The grammar of step 1 of the formalization, rendered by EinAf for one request.
+# Its forms are Ein's grammar's, restricted to the step's; its layout is the model's.
+
+# the step's forms, comment lines before and after them
+root ::= ( comment nl )* body ( nl comment )*
+
+# step 1: the statements with the answer query among them, then the ontology
+body ::= statements nl ontology
+
+statements ::= ( statement nl )* answer-query ( nl statement )*
+
+statement ::= fact |
+            negation |
+            check-query
+
+# a statement: a fact of the text's words, with its sentence
+fact ::= "(" m-name args sp ":source" sp source ")"
+
+negation ::= "(not (" m-name args ")" sp ":source" sp source ")"
+
+# the answer query, once: a goal and the sentence that says the answer
+answer-query ::= "(query" sp ":goal" sp premise sp ":goal-text" sp goal-text ")"
+
+check-query ::= "(query" sp ":goal" sp premise ")"
+
+premise ::= premise-1 |
+          "(absent" sp premise-1 ")"
+
+# a premise that is no `absent`, which `absent` takes
+premise-1 ::= pattern |
+            "(and" ( sp premise )+ ")" |
+            "(not" sp pattern ")"
+
+pattern ::= "(" m-name ( sp term )* ")"
+
+term ::= m-var |
+       m-name |
+       pattern
+
+goal-text ::= "\"" ( [^\n\"<>\\`{-}] | "{?" [\-0-9A-Z_a-z]+ "}" )* "\""
+
+# the ontology: declarations, the first first, and memberships
+ontology ::= decl ( nl ( decl | membership ) )*
+
+membership ::= "(" m-name args ( sp ":source" sp source )? ")"
+
+args ::= ( sp arg )*
+
+arg ::= m-name |
+      "(" m-name args ")"
+
+# a `:source`: one of the input's sentences, verbatim
+source ::= "\"" ( "There are five houses." | "The Englishman lives in the red house." | "The Spaniard owns the dog." | "Coffee is drunk in the green house." | "The Ukrainian drinks tea." | "The green house is immediately to the right of the ivory house." | "The Old Gold smoker owns snails." | "Kools are smoked in the yellow house." | "Milk is drunk in the middle house." | "The Norwegian lives in the first house." | "The man who smokes Chesterfields lives in the house next to the man with the fox." | "Kools are smoked in the house next to the house where the horse is kept." | "The Lucky Strike smoker drinks orange juice." | "The Japanese smokes Parliaments." | "The Norwegian lives next to the blue house." | "Who drinks water?" | "Who owns the zebra?" ) "\""
+
+# a `relation` form: the name, its labels, and a `:why` that reads its arrows
+decl ::= "(relation" sp m-name decl-0
+
+decl-0 ::= sp ":why" sp why-0 ")" |
+         sp m-name decl-1
+
+decl-1 ::= sp ":why" sp why-1 ")" |
+         sp m-name decl-2
+
+decl-2 ::= sp ":why" sp why-2 ")" |
+         sp m-name decl-3
+
+decl-3 ::= sp ":why" sp why-3 ")" |
+         sp m-name decl-4
+
+decl-4 ::= sp ":why" sp why-4 ")" |
+         sp m-name decl-5
+
+decl-5 ::= sp ":why" sp why-5 ")" |
+         sp m-name decl-6
+
+decl-6 ::= sp ":why" sp why-6 ")" |
+         sp m-name decl-7
+
+decl-7 ::= sp ":why" sp why-7 ")" |
+         sp m-name decl-8
+
+decl-8 ::= sp ":why" sp why-8 ")"
+
+why-0 ::= "\"" ( [^\n\"<>\\`{-}] | "{?2}" )* "\""
+
+why-1 ::= "\"" ( [^\n\"<>\\`{-}] | "{?" ( "2" | "3" ) "}" )* "\""
+
+why-2 ::= "\"" ( [^\n\"<>\\`{-}] | "{?" ( "2" | "3" | "4" ) "}" )* "\""
+
+why-3 ::= "\"" ( [^\n\"<>\\`{-}] | "{?" ( "2" | "3" | "4" | "5" ) "}" )* "\""
+
+why-4 ::= "\"" ( [^\n\"<>\\`{-}] | "{?" ( "2" | "3" | "4" | "5" | "6" ) "}" )* "\""
+
+why-5 ::= "\"" ( [^\n\"<>\\`{-}] | "{?" ( "2" | "3" | "4" | "5" | "6" | "7" ) "}" )* "\""
+
+why-6 ::= "\"" ( [^\n\"<>\\`{-}] | "{?" ( "2" | "3" | "4" | "5" | "6" | "7" | "8" ) "}" )* "\""
+
+why-7 ::= "\"" ( [^\n\"<>\\`{-}] | "{?" ( "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ) "}" )* "\""
+
+why-8 ::= "\"" ( [^\n\"<>\\`{-}] | "{?" ( "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" ) "}" )* "\""
+
+# between two tokens: a run of spaces, or a line break and an indentation
+sp ::= " "{1,24} |
+     "\n" " "{1,24}
+
+# between two forms: a line break or a blank line, and comment lines, each a line of its own
+nl ::= "\n" "\n"? ( comment "\n" "\n"? )*
+
+comment ::= ";" [^\n<>`|]*
+
+# hand-written: a run of the name characters less `_`, `absent`, `and`, `commit`, `config`, `eq`, `false`, `import`, `macro`, `merged`, `model`, `module`, `neq`, `not`, `open`, `or`, `owing`, `program`, `query`, `region`, `relation`, `rule`, `solve`, `step`, `trace`, `true`
+m-name ::= "_" m-name-1 |
+         "a" m-name-2 |
+         "c" m-name-3 |
+         "e" m-name-4 |
+         "f" m-name-5 |
+         "i" m-name-6 |
+         "m" m-name-7 |
+         "n" m-name-8 |
+         "o" m-name-9 |
+         "p" m-name-10 |
+         "q" m-name-11 |
+         "r" m-name-12 |
+         "s" m-name-13 |
+         "t" m-name-14 |
+         [\-0-9A-Zbdghj-lu-z] m-name-rest
+
+# after `_`
+m-name-1 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `a`
+m-name-2 ::= "" |
+           "b" m-name-15 |
+           "n" m-name-16 |
+           [\-0-9A-Z_ac-mo-z] m-name-rest
+
+# after `c`
+m-name-3 ::= "" |
+           "o" m-name-17 |
+           [\-0-9A-Z_a-np-z] m-name-rest
+
+# after `e`
+m-name-4 ::= "" |
+           "q" m-name-18 |
+           [\-0-9A-Z_a-pr-z] m-name-rest
+
+# after `f`
+m-name-5 ::= "" |
+           "a" m-name-19 |
+           [\-0-9A-Z_b-z] m-name-rest
+
+# after `i`
+m-name-6 ::= "" |
+           "m" m-name-20 |
+           [\-0-9A-Z_a-ln-z] m-name-rest
+
+# after `m`
+m-name-7 ::= "" |
+           "a" m-name-21 |
+           "e" m-name-22 |
+           "o" m-name-23 |
+           [\-0-9A-Z_b-df-np-z] m-name-rest
+
+# after `n`
+m-name-8 ::= "" |
+           "e" m-name-24 |
+           "o" m-name-25 |
+           [\-0-9A-Z_a-df-np-z] m-name-rest
+
+# after `o`
+m-name-9 ::= "" |
+           "p" m-name-26 |
+           "r" m-name-27 |
+           "w" m-name-28 |
+           [\-0-9A-Z_a-oqs-vx-z] m-name-rest
+
+# after `p`
+m-name-10 ::= "" |
+            "r" m-name-29 |
+            [\-0-9A-Z_a-qs-z] m-name-rest
+
+# after `q`
+m-name-11 ::= "" |
+            "u" m-name-30 |
+            [\-0-9A-Z_a-tv-z] m-name-rest
+
+# after `r`
+m-name-12 ::= "" |
+            "e" m-name-31 |
+            "u" m-name-32 |
+            [\-0-9A-Z_a-df-tv-z] m-name-rest
+
+# after `s`
+m-name-13 ::= "" |
+            "o" m-name-33 |
+            "t" m-name-34 |
+            [\-0-9A-Z_a-np-su-z] m-name-rest
+
+# after `t`
+m-name-14 ::= "" |
+            "r" m-name-35 |
+            [\-0-9A-Z_a-qs-z] m-name-rest
+
+# after `ab`
+m-name-15 ::= "" |
+            "s" m-name-36 |
+            [\-0-9A-Z_a-rt-z] m-name-rest
+
+# after `an`
+m-name-16 ::= "" |
+            "d" m-name-37 |
+            [\-0-9A-Z_a-ce-z] m-name-rest
+
+# after `co`
+m-name-17 ::= "" |
+            "m" m-name-38 |
+            "n" m-name-39 |
+            [\-0-9A-Z_a-lo-z] m-name-rest
+
+# after `eq`
+m-name-18 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `fa`
+m-name-19 ::= "" |
+            "l" m-name-40 |
+            [\-0-9A-Z_a-km-z] m-name-rest
+
+# after `im`
+m-name-20 ::= "" |
+            "p" m-name-41 |
+            [\-0-9A-Z_a-oq-z] m-name-rest
+
+# after `ma`
+m-name-21 ::= "" |
+            "c" m-name-42 |
+            [\-0-9A-Z_abd-z] m-name-rest
+
+# after `me`
+m-name-22 ::= "" |
+            "r" m-name-43 |
+            [\-0-9A-Z_a-qs-z] m-name-rest
+
+# after `mo`
+m-name-23 ::= "" |
+            "d" m-name-44 |
+            [\-0-9A-Z_a-ce-z] m-name-rest
+
+# after `ne`
+m-name-24 ::= "" |
+            "q" m-name-45 |
+            [\-0-9A-Z_a-pr-z] m-name-rest
+
+# after `no`
+m-name-25 ::= "" |
+            "t" m-name-46 |
+            [\-0-9A-Z_a-su-z] m-name-rest
+
+# after `op`
+m-name-26 ::= "" |
+            "e" m-name-47 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `or`
+m-name-27 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `ow`
+m-name-28 ::= "" |
+            "i" m-name-48 |
+            [\-0-9A-Z_a-hj-z] m-name-rest
+
+# after `pr`
+m-name-29 ::= "" |
+            "o" m-name-49 |
+            [\-0-9A-Z_a-np-z] m-name-rest
+
+# after `qu`
+m-name-30 ::= "" |
+            "e" m-name-50 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `re`
+m-name-31 ::= "" |
+            "g" m-name-51 |
+            "l" m-name-52 |
+            [\-0-9A-Z_a-fh-km-z] m-name-rest
+
+# after `ru`
+m-name-32 ::= "" |
+            "l" m-name-53 |
+            [\-0-9A-Z_a-km-z] m-name-rest
+
+# after `so`
+m-name-33 ::= "" |
+            "l" m-name-54 |
+            [\-0-9A-Z_a-km-z] m-name-rest
+
+# after `st`
+m-name-34 ::= "" |
+            "e" m-name-55 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `tr`
+m-name-35 ::= "" |
+            "a" m-name-56 |
+            "u" m-name-57 |
+            [\-0-9A-Z_b-tv-z] m-name-rest
+
+# after `abs`
+m-name-36 ::= "" |
+            "e" m-name-58 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `and`
+m-name-37 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `com`
+m-name-38 ::= "" |
+            "m" m-name-59 |
+            [\-0-9A-Z_a-ln-z] m-name-rest
+
+# after `con`
+m-name-39 ::= "" |
+            "f" m-name-60 |
+            [\-0-9A-Z_a-eg-z] m-name-rest
+
+# after `fal`
+m-name-40 ::= "" |
+            "s" m-name-61 |
+            [\-0-9A-Z_a-rt-z] m-name-rest
+
+# after `imp`
+m-name-41 ::= "" |
+            "o" m-name-62 |
+            [\-0-9A-Z_a-np-z] m-name-rest
+
+# after `mac`
+m-name-42 ::= "" |
+            "r" m-name-63 |
+            [\-0-9A-Z_a-qs-z] m-name-rest
+
+# after `mer`
+m-name-43 ::= "" |
+            "g" m-name-64 |
+            [\-0-9A-Z_a-fh-z] m-name-rest
+
+# after `mod`
+m-name-44 ::= "" |
+            "e" m-name-65 |
+            "u" m-name-66 |
+            [\-0-9A-Z_a-df-tv-z] m-name-rest
+
+# after `neq`
+m-name-45 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `not`
+m-name-46 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `ope`
+m-name-47 ::= "" |
+            "n" m-name-67 |
+            [\-0-9A-Z_a-mo-z] m-name-rest
+
+# after `owi`
+m-name-48 ::= "" |
+            "n" m-name-68 |
+            [\-0-9A-Z_a-mo-z] m-name-rest
+
+# after `pro`
+m-name-49 ::= "" |
+            "g" m-name-69 |
+            [\-0-9A-Z_a-fh-z] m-name-rest
+
+# after `que`
+m-name-50 ::= "" |
+            "r" m-name-70 |
+            [\-0-9A-Z_a-qs-z] m-name-rest
+
+# after `reg`
+m-name-51 ::= "" |
+            "i" m-name-71 |
+            [\-0-9A-Z_a-hj-z] m-name-rest
+
+# after `rel`
+m-name-52 ::= "" |
+            "a" m-name-72 |
+            [\-0-9A-Z_b-z] m-name-rest
+
+# after `rul`
+m-name-53 ::= "" |
+            "e" m-name-73 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `sol`
+m-name-54 ::= "" |
+            "v" m-name-74 |
+            [\-0-9A-Z_a-uw-z] m-name-rest
+
+# after `ste`
+m-name-55 ::= "" |
+            "p" m-name-75 |
+            [\-0-9A-Z_a-oq-z] m-name-rest
+
+# after `tra`
+m-name-56 ::= "" |
+            "c" m-name-76 |
+            [\-0-9A-Z_abd-z] m-name-rest
+
+# after `tru`
+m-name-57 ::= "" |
+            "e" m-name-77 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `abse`
+m-name-58 ::= "" |
+            "n" m-name-78 |
+            [\-0-9A-Z_a-mo-z] m-name-rest
+
+# after `comm`
+m-name-59 ::= "" |
+            "i" m-name-79 |
+            [\-0-9A-Z_a-hj-z] m-name-rest
+
+# after `conf`
+m-name-60 ::= "" |
+            "i" m-name-80 |
+            [\-0-9A-Z_a-hj-z] m-name-rest
+
+# after `fals`
+m-name-61 ::= "" |
+            "e" m-name-81 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `impo`
+m-name-62 ::= "" |
+            "r" m-name-82 |
+            [\-0-9A-Z_a-qs-z] m-name-rest
+
+# after `macr`
+m-name-63 ::= "" |
+            "o" m-name-83 |
+            [\-0-9A-Z_a-np-z] m-name-rest
+
+# after `merg`
+m-name-64 ::= "" |
+            "e" m-name-84 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `mode`
+m-name-65 ::= "" |
+            "l" m-name-85 |
+            [\-0-9A-Z_a-km-z] m-name-rest
+
+# after `modu`
+m-name-66 ::= "" |
+            "l" m-name-86 |
+            [\-0-9A-Z_a-km-z] m-name-rest
+
+# after `open`
+m-name-67 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `owin`
+m-name-68 ::= "" |
+            "g" m-name-87 |
+            [\-0-9A-Z_a-fh-z] m-name-rest
+
+# after `prog`
+m-name-69 ::= "" |
+            "r" m-name-88 |
+            [\-0-9A-Z_a-qs-z] m-name-rest
+
+# after `quer`
+m-name-70 ::= "" |
+            "y" m-name-89 |
+            [\-0-9A-Z_a-xz] m-name-rest
+
+# after `regi`
+m-name-71 ::= "" |
+            "o" m-name-90 |
+            [\-0-9A-Z_a-np-z] m-name-rest
+
+# after `rela`
+m-name-72 ::= "" |
+            "t" m-name-91 |
+            [\-0-9A-Z_a-su-z] m-name-rest
+
+# after `rule`
+m-name-73 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `solv`
+m-name-74 ::= "" |
+            "e" m-name-92 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `step`
+m-name-75 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `trac`
+m-name-76 ::= "" |
+            "e" m-name-93 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `true`
+m-name-77 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `absen`
+m-name-78 ::= "" |
+            "t" m-name-94 |
+            [\-0-9A-Z_a-su-z] m-name-rest
+
+# after `commi`
+m-name-79 ::= "" |
+            "t" m-name-95 |
+            [\-0-9A-Z_a-su-z] m-name-rest
+
+# after `confi`
+m-name-80 ::= "" |
+            "g" m-name-96 |
+            [\-0-9A-Z_a-fh-z] m-name-rest
+
+# after `false`
+m-name-81 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `impor`
+m-name-82 ::= "" |
+            "t" m-name-97 |
+            [\-0-9A-Z_a-su-z] m-name-rest
+
+# after `macro`
+m-name-83 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `merge`
+m-name-84 ::= "" |
+            "d" m-name-98 |
+            [\-0-9A-Z_a-ce-z] m-name-rest
+
+# after `model`
+m-name-85 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `modul`
+m-name-86 ::= "" |
+            "e" m-name-99 |
+            [\-0-9A-Z_a-df-z] m-name-rest
+
+# after `owing`
+m-name-87 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `progr`
+m-name-88 ::= "" |
+            "a" m-name-100 |
+            [\-0-9A-Z_b-z] m-name-rest
+
+# after `query`
+m-name-89 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `regio`
+m-name-90 ::= "" |
+            "n" m-name-101 |
+            [\-0-9A-Z_a-mo-z] m-name-rest
+
+# after `relat`
+m-name-91 ::= "" |
+            "i" m-name-102 |
+            [\-0-9A-Z_a-hj-z] m-name-rest
+
+# after `solve`
+m-name-92 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `trace`
+m-name-93 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `absent`
+m-name-94 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `commit`
+m-name-95 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `config`
+m-name-96 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `import`
+m-name-97 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `merged`
+m-name-98 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `module`
+m-name-99 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `progra`
+m-name-100 ::= "" |
+             "m" m-name-103 |
+             [\-0-9A-Z_a-ln-z] m-name-rest
+
+# after `region`
+m-name-101 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `relati`
+m-name-102 ::= "" |
+             "o" m-name-104 |
+             [\-0-9A-Z_a-np-z] m-name-rest
+
+# after `program`
+m-name-103 ::= [\-0-9A-Z_a-z] m-name-rest
+
+# after `relatio`
+m-name-104 ::= "" |
+             "n" m-name-105 |
+             [\-0-9A-Z_a-mo-z] m-name-rest
+
+# after `relation`
+m-name-105 ::= [\-0-9A-Z_a-z] m-name-rest
+
+m-name-rest ::= [\-0-9A-Z_a-z]*
+
+# hand-written: ?a run of the name characters less `?_`
+m-var ::= "?" ( "_" m-var-1 | [\-0-9A-Za-z] m-var-rest )
+
+# after `?_`
+m-var-1 ::= [\-0-9A-Z_a-z] m-var-rest
+
+m-var-rest ::= [\-0-9A-Z_a-z]*
+
+fenced ::= "```" [a-z]* "\n" root "\n" "\n"? "```"
