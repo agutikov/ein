@@ -371,7 +371,7 @@ no row: the puzzle is solved in the theory's relation and not yet in the questio
 | more | none; one moment, `Now` | one fact a sentence; the question one relation of five places | none written | the calculator | 2 rules: the difference, and *more* where it is past nothing |
 
 **Step 1 is not as simple off the Zebra puzzle as on it.** On the Zebra puzzle the hard part of step 1 is
-coreference through descriptions, and every sentence is one fact. On the word problems step 1 decides things no
+coreference through descriptions, and every sentence is one fact but the first, which is five. On the word problems step 1 decides things no
 word names: the moments a change implies, the kind an ellipsis drops, a pronoun; and a step-1 numeral is a fact of
 the file's own `n` until step 2 imports the calculator, which loads in silence either way. On the seating a sentence
 is six facts and a negation a stored negation. **Where the work lands moves with the text**: an attribute puzzle's
