@@ -10,6 +10,9 @@ any other model (ollama not running). The code every call ran is `680a94ad`'s fo
 test 3 on the corpus and the table, and `e657682d`'s for the rest; each plan was committed before its first
 generation (`3ac3ecf9`, `b4f63367`, `61a566a7`).
 
+**Amended on the user's word the same day**: the grammars a model writes under leave out the chat template's markers
+and the fence ([the amendment's records](narrowed/README.md)); what follows is the stage as it ran.
+
 **What it comes to.**
 
 - **Ein's grammar is a GBNF grammar, exactly.** Generated from `ein.l` and `ein.y` (531 rules; five hand-written
@@ -361,6 +364,7 @@ and [Q-M2.6](../../open_questions/formalizer/Q-M2.6-one-gbnf-or-many.md)'s defau
 | [`mutants/mutants.rs`](mutants/mutants.rs) | the five broken grammars and the three checks, an EinAf test run once and removed |
 | [`run.sh`](run.sh), [`speed.sh`](speed.sh), [`llama_steps.py`](llama_steps.py), [`llama_table.py`](llama_table.py) | the runs, each one command (`run.sh` takes a plan) |
 | [`report.py`](report.py) | the tables of § 4 and § 5 from the records |
+| [`narrowed/`](narrowed/README.md) | the amendment on the user's word: the grammars a model writes under narrowed, their sizes, tests, the model's programs, test 3, the special tokens on their ids, the speeds |
 
 ## 9. How each part is taken again
 

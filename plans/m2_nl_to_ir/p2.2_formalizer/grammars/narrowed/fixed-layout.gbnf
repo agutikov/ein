@@ -1,0 +1,1227 @@
+
+root ::= m-form ( "\n" m-form )*
+
+m-form ::= m-relation |
+         m-rule |
+         m-query |
+         m-solve |
+         m-import |
+         m-not-fact |
+         m-fact |
+         m-open-fact
+
+m-name ::= m-head-name |
+         "not"
+
+m-head-name ::= m-tok-name |
+              "relation" |
+              "step" |
+              "eq" |
+              "absent" |
+              "false" |
+              "true" |
+              "open" |
+              "model" |
+              "region" |
+              "merged" |
+              "owing" |
+              "program" |
+              "module" |
+              "commit"
+
+m-decl-name ::= m-tok-name |
+              "false" |
+              "not" |
+              "step" |
+              "true" |
+              "model" |
+              "region" |
+              "merged" |
+              "owing" |
+              "program" |
+              "module" |
+              "commit"
+
+m-fact-head ::= m-tok-name |
+              "step" |
+              "eq" |
+              "true" |
+              "model"
+
+m-value-head ::= m-open-head |
+               "absent"
+
+m-open-head ::= m-ordinary-head |
+              "open"
+
+m-ordinary-head ::= m-tok-name |
+                  "relation" |
+                  "step" |
+                  "true" |
+                  "model" |
+                  "region" |
+                  "merged" |
+                  "owing" |
+                  "program" |
+                  "module" |
+                  "commit"
+
+m-premise-head ::= m-open-head |
+                 m-var
+
+m-conclusion-head ::= m-ordinary-head |
+                    m-var
+
+m-var ::= m-tok-var
+
+m-text ::= m-tok-text
+
+m-name-list ::= "(" m-name-list-1 |
+              "(" m-name-list-2
+
+m-name-list-1 ::= ")"
+
+m-name-list-2 ::= m-name m-name-list-3
+
+m-name-list-3 ::= " " m-name m-name-list-3 |
+                ")"
+
+m-name-list-plus ::= "(" m-name-list-plus-1
+
+m-name-list-plus-1 ::= m-name m-name-list-plus-2
+
+m-name-list-plus-2 ::= " " m-name m-name-list-plus-2 |
+                     ")"
+
+m-fact ::= "(" m-fact-1 |
+         "(" m-fact-2
+
+m-fact-1 ::= m-fact-head m-fact-3
+
+m-fact-2 ::= "false" m-fact-4
+
+m-fact-3 ::= " " m-name m-fact-3 |
+           m-nested-fact m-fact-5 |
+           m-neg-fact m-fact-5 |
+           " :source" m-fact-6 |
+           " :rule" m-fact-7 |
+           " :using" m-fact-8 |
+           ")"
+
+m-fact-4 ::= " :source" m-fact-6 |
+           " :rule" m-fact-7 |
+           " :using" m-fact-8 |
+           ")"
+
+m-fact-5 ::= m-name m-fact-3 |
+           m-nested-fact m-fact-5 |
+           m-neg-fact m-fact-5 |
+           ":source" m-fact-6 |
+           ":rule" m-fact-7 |
+           ":using" m-fact-8 |
+           ")"
+
+m-fact-6 ::= " " m-text m-fact-9
+
+m-fact-7 ::= " " m-name m-fact-4
+
+m-fact-8 ::= "(" m-fact-10
+
+m-fact-9 ::= " :source" m-fact-6 |
+           " :rule" m-fact-7 |
+           " :using" m-fact-8 |
+           ")"
+
+m-fact-10 ::= m-nested-fact m-fact-11
+
+m-fact-11 ::= m-nested-fact m-fact-11 |
+            ")" m-fact-12
+
+m-fact-12 ::= ":source" m-fact-6 |
+            ":rule" m-fact-7 |
+            ":using" m-fact-8 |
+            ")"
+
+m-open-fact ::= "(" m-open-fact-1
+
+m-open-fact-1 ::= "open" m-open-fact-2
+
+m-open-fact-2 ::= " " m-name m-open-fact-3 |
+                m-opened-fact m-open-fact-4 |
+                m-neg-fact m-open-fact-4
+
+m-open-fact-3 ::= " :source" m-open-fact-5 |
+                " :rule" m-open-fact-6 |
+                " :using" m-open-fact-7 |
+                ")"
+
+m-open-fact-4 ::= ":source" m-open-fact-5 |
+                ":rule" m-open-fact-6 |
+                ":using" m-open-fact-7 |
+                ")"
+
+m-open-fact-5 ::= " " m-text m-open-fact-8
+
+m-open-fact-6 ::= " " m-name m-open-fact-3
+
+m-open-fact-7 ::= "(" m-open-fact-9
+
+m-open-fact-8 ::= " :source" m-open-fact-5 |
+                " :rule" m-open-fact-6 |
+                " :using" m-open-fact-7 |
+                ")"
+
+m-open-fact-9 ::= m-nested-fact m-open-fact-10
+
+m-open-fact-10 ::= m-nested-fact m-open-fact-10 |
+                 ")" m-open-fact-4
+
+m-opened-fact ::= "(" m-opened-fact-1 |
+                "(" m-opened-fact-2
+
+m-opened-fact-1 ::= m-ordinary-head m-opened-fact-3
+
+m-opened-fact-2 ::= "false" m-opened-fact-4
+
+m-opened-fact-3 ::= " " m-name m-opened-fact-3 |
+                  m-nested-fact m-opened-fact-5 |
+                  m-neg-fact m-opened-fact-5 |
+                  ")"
+
+m-opened-fact-4 ::= ")"
+
+m-opened-fact-5 ::= m-name m-opened-fact-3 |
+                  m-nested-fact m-opened-fact-5 |
+                  m-neg-fact m-opened-fact-5 |
+                  ")"
+
+m-not-fact ::= "(" m-not-fact-1 |
+             "(" m-not-fact-2 |
+             "(" m-not-fact-3
+
+m-not-fact-1 ::= "not" m-not-fact-4
+
+m-not-fact-2 ::= "not" m-not-fact-5
+
+m-not-fact-3 ::= "not" m-not-fact-6
+
+m-not-fact-4 ::= m-nested-fact m-not-fact-7
+
+m-not-fact-5 ::= m-neg-fact m-not-fact-7
+
+m-not-fact-6 ::= m-eq-fact m-not-fact-7
+
+m-not-fact-7 ::= ":source" m-not-fact-8 |
+               ":rule" m-not-fact-9 |
+               ":using" m-not-fact-10 |
+               ")"
+
+m-not-fact-8 ::= " " m-text m-not-fact-11
+
+m-not-fact-9 ::= " " m-name m-not-fact-12
+
+m-not-fact-10 ::= "(" m-not-fact-13
+
+m-not-fact-11 ::= " :source" m-not-fact-8 |
+                " :rule" m-not-fact-9 |
+                " :using" m-not-fact-10 |
+                ")"
+
+m-not-fact-12 ::= " :source" m-not-fact-8 |
+                " :rule" m-not-fact-9 |
+                " :using" m-not-fact-10 |
+                ")"
+
+m-not-fact-13 ::= m-nested-fact m-not-fact-14
+
+m-not-fact-14 ::= m-nested-fact m-not-fact-14 |
+                ")" m-not-fact-7
+
+m-neg-fact ::= "(" m-neg-fact-1 |
+             "(" m-neg-fact-2
+
+m-neg-fact-1 ::= "not" m-neg-fact-3
+
+m-neg-fact-2 ::= "not" m-neg-fact-4
+
+m-neg-fact-3 ::= m-nested-fact m-neg-fact-5
+
+m-neg-fact-4 ::= m-neg-fact m-neg-fact-5
+
+m-neg-fact-5 ::= ")"
+
+m-nested-fact ::= "(" m-nested-fact-1 |
+                "(" m-nested-fact-2
+
+m-nested-fact-1 ::= m-value-head m-nested-fact-3
+
+m-nested-fact-2 ::= "false" m-nested-fact-4
+
+m-nested-fact-3 ::= " " m-name m-nested-fact-3 |
+                  m-nested-fact m-nested-fact-5 |
+                  m-neg-fact m-nested-fact-5 |
+                  ")"
+
+m-nested-fact-4 ::= ")"
+
+m-nested-fact-5 ::= m-name m-nested-fact-3 |
+                  m-nested-fact m-nested-fact-5 |
+                  m-neg-fact m-nested-fact-5 |
+                  ")"
+
+m-eq-fact ::= "(" m-eq-fact-1
+
+m-eq-fact-1 ::= "eq" m-eq-fact-2
+
+m-eq-fact-2 ::= " " m-name m-eq-fact-2 |
+              m-nested-fact m-eq-fact-3 |
+              m-neg-fact m-eq-fact-3 |
+              ")"
+
+m-eq-fact-3 ::= m-name m-eq-fact-2 |
+              m-nested-fact m-eq-fact-3 |
+              m-neg-fact m-eq-fact-3 |
+              ")"
+
+m-relation ::= "(" m-relation-1
+
+m-relation-1 ::= "relation" m-relation-2
+
+m-relation-2 ::= " " m-decl-name m-relation-3
+
+m-relation-3 ::= " " m-name m-relation-3 |
+               " :why" m-relation-4 |
+               ")"
+
+m-relation-4 ::= " " m-text m-relation-5
+
+m-relation-5 ::= " :why" m-relation-4 |
+               ")"
+
+m-rule ::= "(" m-rule-1
+
+m-rule-1 ::= "rule" m-rule-2
+
+m-rule-2 ::= " " m-decl-name m-rule-3
+
+m-rule-3 ::= m-params m-rule-4
+
+m-rule-4 ::= ":match" m-rule-5 |
+           ":assert" m-rule-6 |
+           ":ein" m-rule-7 |
+           ":why" m-rule-8 |
+           ")"
+
+m-rule-5 ::= m-match m-rule-4
+
+m-rule-6 ::= m-assert m-rule-4
+
+m-rule-7 ::= " " m-name m-rule-9
+
+m-rule-8 ::= " " m-text m-rule-10
+
+m-rule-9 ::= " :match" m-rule-5 |
+           " :assert" m-rule-6 |
+           " :ein" m-rule-7 |
+           " :why" m-rule-8 |
+           ")"
+
+m-rule-10 ::= " :match" m-rule-5 |
+            " :assert" m-rule-6 |
+            " :ein" m-rule-7 |
+            " :why" m-rule-8 |
+            ")"
+
+m-params ::= "(" m-params-1
+
+m-params-1 ::= m-var m-params-2 |
+             ")"
+
+m-params-2 ::= " " m-var m-params-2 |
+             ")"
+
+m-match ::= "(" m-match-1 |
+          m-premise
+
+m-match-1 ::= ")"
+
+m-premise ::= "(" m-premise-1 |
+            "(" m-premise-2 |
+            m-connective
+
+m-premise-1 ::= m-premise-head m-premise-3
+
+m-premise-2 ::= "false" m-premise-4
+
+m-premise-3 ::= m-arg-p m-premise-5 |
+              " " m-arg-w m-premise-3 |
+              ")"
+
+m-premise-4 ::= ")"
+
+m-premise-5 ::= m-arg-p m-premise-5 |
+              m-arg-w m-premise-3 |
+              ")"
+
+m-connective ::= "(" m-connective-1 |
+               "(" m-connective-2 |
+               "(" m-connective-3 |
+               "(" m-connective-4 |
+               m-guard
+
+m-connective-1 ::= "and" m-connective-5
+
+m-connective-2 ::= "or" m-connective-5
+
+m-connective-3 ::= "not" m-connective-6
+
+m-connective-4 ::= "absent" m-connective-7
+
+m-connective-5 ::= m-premise m-connective-8
+
+m-connective-6 ::= m-negated m-connective-9
+
+m-connective-7 ::= m-absent-premise m-connective-9
+
+m-connective-8 ::= m-premise m-connective-8 |
+                 ")"
+
+m-connective-9 ::= ")"
+
+m-absent-premise ::= "(" m-absent-premise-1 |
+                   "(" m-absent-premise-2 |
+                   "(" m-absent-premise-3 |
+                   "(" m-absent-premise-4 |
+                   "(" m-absent-premise-5 |
+                   m-guard
+
+m-absent-premise-1 ::= m-premise-head m-absent-premise-6
+
+m-absent-premise-2 ::= "false" m-absent-premise-7
+
+m-absent-premise-3 ::= "and" m-absent-premise-8
+
+m-absent-premise-4 ::= "or" m-absent-premise-8
+
+m-absent-premise-5 ::= "not" m-absent-premise-9
+
+m-absent-premise-6 ::= m-arg-p m-absent-premise-10 |
+                     " " m-arg-w m-absent-premise-6 |
+                     ")"
+
+m-absent-premise-7 ::= ")"
+
+m-absent-premise-8 ::= m-premise m-absent-premise-11
+
+m-absent-premise-9 ::= m-negated m-absent-premise-12
+
+m-absent-premise-10 ::= m-arg-p m-absent-premise-10 |
+                      m-arg-w m-absent-premise-6 |
+                      ")"
+
+m-absent-premise-11 ::= m-premise m-absent-premise-11 |
+                      ")"
+
+m-absent-premise-12 ::= ")"
+
+m-negated ::= m-pattern |
+            m-neg-pattern |
+            "(" m-negated-1
+
+m-negated-1 ::= "eq" m-negated-2
+
+m-negated-2 ::= " " m-name m-negated-3 |
+              " " m-var m-negated-3 |
+              m-pattern m-negated-4 |
+              m-neg-pattern m-negated-4
+
+m-negated-3 ::= " " m-name m-negated-5 |
+              " " m-var m-negated-5 |
+              m-pattern m-negated-6 |
+              m-neg-pattern m-negated-6
+
+m-negated-4 ::= m-name m-negated-5 |
+              m-var m-negated-5 |
+              m-pattern m-negated-6 |
+              m-neg-pattern m-negated-6
+
+m-negated-5 ::= ")"
+
+m-negated-6 ::= ")"
+
+m-guard ::= "(" m-guard-1 |
+          "(" m-guard-2
+
+m-guard-1 ::= "eq" m-guard-3
+
+m-guard-2 ::= "neq" m-guard-3
+
+m-guard-3 ::= " " m-name m-guard-4 |
+            " " m-var m-guard-4 |
+            m-pattern m-guard-5 |
+            m-neg-pattern m-guard-5
+
+m-guard-4 ::= " " m-name m-guard-6 |
+            " " m-var m-guard-6 |
+            m-pattern m-guard-7 |
+            m-neg-pattern m-guard-7
+
+m-guard-5 ::= m-name m-guard-6 |
+            m-var m-guard-6 |
+            m-pattern m-guard-7 |
+            m-neg-pattern m-guard-7
+
+m-guard-6 ::= ")"
+
+m-guard-7 ::= ")"
+
+m-arg-p ::= "(" m-arg-p-1 |
+          "(" m-arg-p-2 |
+          m-connective
+
+m-arg-p-1 ::= m-arg-head m-arg-p-3
+
+m-arg-p-2 ::= "false" m-arg-p-4
+
+m-arg-p-3 ::= m-arg-p m-arg-p-5 |
+            " " m-arg-w m-arg-p-3 |
+            ")"
+
+m-arg-p-4 ::= ")"
+
+m-arg-p-5 ::= m-arg-p m-arg-p-5 |
+            m-arg-w m-arg-p-3 |
+            ")"
+
+m-arg-w ::= m-name |
+          m-var
+
+m-arg-head ::= m-open-head |
+             m-var
+
+m-pattern ::= "(" m-pattern-1 |
+            "(" m-pattern-2 |
+            "(" m-pattern-3
+
+m-pattern-1 ::= m-value-head m-pattern-4
+
+m-pattern-2 ::= m-var m-pattern-4
+
+m-pattern-3 ::= "false" m-pattern-5
+
+m-pattern-4 ::= " " m-name m-pattern-4 |
+              " " m-var m-pattern-4 |
+              m-pattern m-pattern-6 |
+              m-neg-pattern m-pattern-6 |
+              ")"
+
+m-pattern-5 ::= ")"
+
+m-pattern-6 ::= m-name m-pattern-4 |
+              m-var m-pattern-4 |
+              m-pattern m-pattern-6 |
+              m-neg-pattern m-pattern-6 |
+              ")"
+
+m-neg-pattern ::= "(" m-neg-pattern-1 |
+                "(" m-neg-pattern-2
+
+m-neg-pattern-1 ::= "not" m-neg-pattern-3
+
+m-neg-pattern-2 ::= "not" m-neg-pattern-4
+
+m-neg-pattern-3 ::= m-pattern m-neg-pattern-5
+
+m-neg-pattern-4 ::= m-neg-pattern m-neg-pattern-5
+
+m-neg-pattern-5 ::= ")"
+
+m-assert ::= "(" m-assert-1 |
+           m-conclusion
+
+m-assert-1 ::= ")"
+
+m-conclusion ::= "(" m-conclusion-1 |
+               "(" m-conclusion-2 |
+               "(" m-conclusion-3 |
+               "(" m-conclusion-4 |
+               "(" m-conclusion-5 |
+               "(" m-conclusion-6 |
+               m-guard
+
+m-conclusion-1 ::= m-conclusion-head m-conclusion-7
+
+m-conclusion-2 ::= "open" m-conclusion-8
+
+m-conclusion-3 ::= "and" m-conclusion-9
+
+m-conclusion-4 ::= "not" m-conclusion-10
+
+m-conclusion-5 ::= "not" m-conclusion-11
+
+m-conclusion-6 ::= "false" m-conclusion-12
+
+m-conclusion-7 ::= " " m-name m-conclusion-7 |
+                 " " m-var m-conclusion-7 |
+                 m-pattern m-conclusion-13 |
+                 m-neg-pattern m-conclusion-13 |
+                 ")"
+
+m-conclusion-8 ::= " " m-name m-conclusion-12 |
+                 " " m-var m-conclusion-12 |
+                 m-opened-pattern m-conclusion-14 |
+                 m-neg-pattern m-conclusion-14
+
+m-conclusion-9 ::= m-conclusion m-conclusion-15
+
+m-conclusion-10 ::= m-negated m-conclusion-14
+
+m-conclusion-11 ::= " " m-var m-conclusion-12
+
+m-conclusion-12 ::= ")"
+
+m-conclusion-13 ::= m-name m-conclusion-7 |
+                  m-var m-conclusion-7 |
+                  m-pattern m-conclusion-13 |
+                  m-neg-pattern m-conclusion-13 |
+                  ")"
+
+m-conclusion-14 ::= ")"
+
+m-conclusion-15 ::= m-conclusion m-conclusion-15 |
+                  ")"
+
+m-opened-pattern ::= "(" m-opened-pattern-1 |
+                   "(" m-opened-pattern-2 |
+                   "(" m-opened-pattern-3
+
+m-opened-pattern-1 ::= m-ordinary-head m-opened-pattern-4
+
+m-opened-pattern-2 ::= m-var m-opened-pattern-4
+
+m-opened-pattern-3 ::= "false" m-opened-pattern-5
+
+m-opened-pattern-4 ::= " " m-name m-opened-pattern-4 |
+                     " " m-var m-opened-pattern-4 |
+                     m-pattern m-opened-pattern-6 |
+                     m-neg-pattern m-opened-pattern-6 |
+                     ")"
+
+m-opened-pattern-5 ::= ")"
+
+m-opened-pattern-6 ::= m-name m-opened-pattern-4 |
+                     m-var m-opened-pattern-4 |
+                     m-pattern m-opened-pattern-6 |
+                     m-neg-pattern m-opened-pattern-6 |
+                     ")"
+
+m-query ::= "(" m-query-1
+
+m-query-1 ::= "query" m-query-2
+
+m-query-2 ::= " :goal" m-query-3 |
+            " :goal-text" m-query-4 |
+            " :over" m-query-5 |
+            " :expect" m-query-6
+
+m-query-3 ::= m-premise m-query-7
+
+m-query-4 ::= " " m-text m-query-8
+
+m-query-5 ::= " " m-name m-query-9
+
+m-query-6 ::= m-claim m-query-7
+
+m-query-7 ::= ":goal" m-query-3 |
+            ":goal-text" m-query-4 |
+            ":over" m-query-5 |
+            ":expect" m-query-6 |
+            ")"
+
+m-query-8 ::= " :goal" m-query-3 |
+            " :goal-text" m-query-4 |
+            " :over" m-query-5 |
+            " :expect" m-query-6 |
+            ")"
+
+m-query-9 ::= " :goal" m-query-3 |
+            " :goal-text" m-query-4 |
+            " :over" m-query-5 |
+            " :expect" m-query-6 |
+            ")"
+
+m-claim ::= m-model |
+          "(" m-claim-1 |
+          "(" m-claim-2
+
+m-claim-1 ::= "or" m-claim-3
+
+m-claim-2 ::= "false" m-claim-4
+
+m-claim-3 ::= m-model m-claim-5
+
+m-claim-4 ::= ")"
+
+m-claim-5 ::= m-model m-claim-5 |
+            ")"
+
+m-model ::= "(" m-model-1
+
+m-model-1 ::= "model" m-model-2
+
+m-model-2 ::= m-claim-fact m-model-3 |
+            ")"
+
+m-model-3 ::= m-claim-fact m-model-3 |
+            ")"
+
+m-claim-fact ::= m-claim-nested |
+               m-eq-fact |
+               m-neg-fact |
+               "(" m-claim-fact-1 |
+               "(" m-claim-fact-2 |
+               "(" m-claim-fact-3
+
+m-claim-fact-1 ::= "not" m-claim-fact-4
+
+m-claim-fact-2 ::= "absent" m-claim-fact-5
+
+m-claim-fact-3 ::= "neq" m-claim-fact-6
+
+m-claim-fact-4 ::= m-eq-fact m-claim-fact-7
+
+m-claim-fact-5 ::= m-claim-atom m-claim-fact-7
+
+m-claim-fact-6 ::= " " m-name m-claim-fact-8 |
+                 m-nested-fact m-claim-fact-9 |
+                 m-neg-fact m-claim-fact-9
+
+m-claim-fact-7 ::= ")"
+
+m-claim-fact-8 ::= " " m-name m-claim-fact-10 |
+                 m-nested-fact m-claim-fact-7 |
+                 m-neg-fact m-claim-fact-7
+
+m-claim-fact-9 ::= m-name m-claim-fact-10 |
+                 m-nested-fact m-claim-fact-7 |
+                 m-neg-fact m-claim-fact-7
+
+m-claim-fact-10 ::= ")"
+
+m-claim-atom ::= m-claim-nested |
+               m-eq-fact |
+               m-neg-fact |
+               "(" m-claim-atom-1
+
+m-claim-atom-1 ::= "not" m-claim-atom-2
+
+m-claim-atom-2 ::= m-eq-fact m-claim-atom-3
+
+m-claim-atom-3 ::= ")"
+
+m-claim-nested ::= "(" m-claim-nested-1 |
+                 "(" m-claim-nested-2
+
+m-claim-nested-1 ::= m-ordinary-head m-claim-nested-3
+
+m-claim-nested-2 ::= "false" m-claim-nested-4
+
+m-claim-nested-3 ::= " " m-name m-claim-nested-3 |
+                   m-nested-fact m-claim-nested-5 |
+                   m-neg-fact m-claim-nested-5 |
+                   ")"
+
+m-claim-nested-4 ::= ")"
+
+m-claim-nested-5 ::= m-name m-claim-nested-3 |
+                   m-nested-fact m-claim-nested-5 |
+                   m-neg-fact m-claim-nested-5 |
+                   ")"
+
+m-solve ::= "(" m-solve-1
+
+m-solve-1 ::= "solve" m-solve-2
+
+m-solve-2 ::= " :hypothesis-relations" m-solve-3 |
+            " :no-hypothesis" m-solve-3 |
+            " :no-search" m-solve-2 |
+            " :expect" m-solve-4 |
+            ")"
+
+m-solve-3 ::= m-name-list m-solve-5
+
+m-solve-4 ::= m-region-claim m-solve-5
+
+m-solve-5 ::= ":hypothesis-relations" m-solve-3 |
+            ":no-hypothesis" m-solve-3 |
+            ":no-search" m-solve-2 |
+            ":expect" m-solve-4 |
+            ")"
+
+m-region-claim ::= "(" m-region-claim-1 |
+                 "(" m-region-claim-2
+
+m-region-claim-1 ::= "region" m-region-claim-3
+
+m-region-claim-2 ::= "false" m-region-claim-4
+
+m-region-claim-3 ::= m-region-item m-region-claim-5 |
+                   ")"
+
+m-region-claim-4 ::= ")"
+
+m-region-claim-5 ::= m-region-item m-region-claim-5 |
+                   ")"
+
+m-region-item ::= m-model |
+                "(" m-region-item-1 |
+                "(" m-region-item-2
+
+m-region-item-1 ::= "merged" m-region-item-3
+
+m-region-item-2 ::= "owing" m-region-item-4
+
+m-region-item-3 ::= m-model m-region-item-5
+
+m-region-item-4 ::= m-model m-region-item-6
+
+m-region-item-5 ::= m-merged-from m-region-item-7
+
+m-region-item-6 ::= m-model m-region-item-6 |
+                  ")"
+
+m-region-item-7 ::= ")"
+
+m-merged-from ::= m-model |
+                "(" m-merged-from-1
+
+m-merged-from-1 ::= "or" m-merged-from-2
+
+m-merged-from-2 ::= m-model m-merged-from-3
+
+m-merged-from-3 ::= m-model m-merged-from-3 |
+                  ")"
+
+m-import ::= "(" m-import-1
+
+m-import-1 ::= "import" m-import-2
+
+m-import-2 ::= " " m-name m-import-3
+
+m-import-3 ::= " :symbols" m-import-4 |
+             " :as" m-import-5 |
+             ")"
+
+m-import-4 ::= m-name-list-plus m-import-6
+
+m-import-5 ::= " " m-decl-name m-import-3
+
+m-import-6 ::= ":symbols" m-import-4 |
+             ":as" m-import-5 |
+             ")"
+
+m-tok-name ::= "_" m-tok-name-1 |
+             "a" m-tok-name-2 |
+             "c" m-tok-name-3 |
+             "e" m-tok-name-4 |
+             "f" m-tok-name-5 |
+             "i" m-tok-name-6 |
+             "m" m-tok-name-7 |
+             "n" m-tok-name-8 |
+             "o" m-tok-name-9 |
+             "p" m-tok-name-10 |
+             "q" m-tok-name-11 |
+             "r" m-tok-name-12 |
+             "s" m-tok-name-13 |
+             "t" m-tok-name-14 |
+             [*+\-.0-9=A-Zbdghj-lu-z] m-tok-name-rest
+
+m-tok-name-1 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-2 ::= "" |
+               "b" m-tok-name-15 |
+               "n" m-tok-name-16 |
+               [*+\-.0-9=A-Z_ac-mo-z] m-tok-name-rest
+
+m-tok-name-3 ::= "" |
+               "o" m-tok-name-17 |
+               [*+\-.0-9=A-Z_a-np-z] m-tok-name-rest
+
+m-tok-name-4 ::= "" |
+               "q" m-tok-name-18 |
+               [*+\-.0-9=A-Z_a-pr-z] m-tok-name-rest
+
+m-tok-name-5 ::= "" |
+               "a" m-tok-name-19 |
+               [*+\-.0-9=A-Z_b-z] m-tok-name-rest
+
+m-tok-name-6 ::= "" |
+               "m" m-tok-name-20 |
+               [*+\-.0-9=A-Z_a-ln-z] m-tok-name-rest
+
+m-tok-name-7 ::= "" |
+               "a" m-tok-name-21 |
+               "e" m-tok-name-22 |
+               "o" m-tok-name-23 |
+               [*+\-.0-9=A-Z_b-df-np-z] m-tok-name-rest
+
+m-tok-name-8 ::= "" |
+               "e" m-tok-name-24 |
+               "o" m-tok-name-25 |
+               [*+\-.0-9=A-Z_a-df-np-z] m-tok-name-rest
+
+m-tok-name-9 ::= "" |
+               "p" m-tok-name-26 |
+               "r" m-tok-name-27 |
+               "w" m-tok-name-28 |
+               [*+\-.0-9=A-Z_a-oqs-vx-z] m-tok-name-rest
+
+m-tok-name-10 ::= "" |
+                "r" m-tok-name-29 |
+                [*+\-.0-9=A-Z_a-qs-z] m-tok-name-rest
+
+m-tok-name-11 ::= "" |
+                "u" m-tok-name-30 |
+                [*+\-.0-9=A-Z_a-tv-z] m-tok-name-rest
+
+m-tok-name-12 ::= "" |
+                "e" m-tok-name-31 |
+                "u" m-tok-name-32 |
+                [*+\-.0-9=A-Z_a-df-tv-z] m-tok-name-rest
+
+m-tok-name-13 ::= "" |
+                "o" m-tok-name-33 |
+                "t" m-tok-name-34 |
+                [*+\-.0-9=A-Z_a-np-su-z] m-tok-name-rest
+
+m-tok-name-14 ::= "" |
+                "r" m-tok-name-35 |
+                [*+\-.0-9=A-Z_a-qs-z] m-tok-name-rest
+
+m-tok-name-15 ::= "" |
+                "s" m-tok-name-36 |
+                [*+\-.0-9=A-Z_a-rt-z] m-tok-name-rest
+
+m-tok-name-16 ::= "" |
+                "d" m-tok-name-37 |
+                [*+\-.0-9=A-Z_a-ce-z] m-tok-name-rest
+
+m-tok-name-17 ::= "" |
+                "m" m-tok-name-38 |
+                "n" m-tok-name-39 |
+                [*+\-.0-9=A-Z_a-lo-z] m-tok-name-rest
+
+m-tok-name-18 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-19 ::= "" |
+                "l" m-tok-name-40 |
+                [*+\-.0-9=A-Z_a-km-z] m-tok-name-rest
+
+m-tok-name-20 ::= "" |
+                "p" m-tok-name-41 |
+                [*+\-.0-9=A-Z_a-oq-z] m-tok-name-rest
+
+m-tok-name-21 ::= "" |
+                "c" m-tok-name-42 |
+                [*+\-.0-9=A-Z_abd-z] m-tok-name-rest
+
+m-tok-name-22 ::= "" |
+                "r" m-tok-name-43 |
+                [*+\-.0-9=A-Z_a-qs-z] m-tok-name-rest
+
+m-tok-name-23 ::= "" |
+                "d" m-tok-name-44 |
+                [*+\-.0-9=A-Z_a-ce-z] m-tok-name-rest
+
+m-tok-name-24 ::= "" |
+                "q" m-tok-name-45 |
+                [*+\-.0-9=A-Z_a-pr-z] m-tok-name-rest
+
+m-tok-name-25 ::= "" |
+                "t" m-tok-name-46 |
+                [*+\-.0-9=A-Z_a-su-z] m-tok-name-rest
+
+m-tok-name-26 ::= "" |
+                "e" m-tok-name-47 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+m-tok-name-27 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-28 ::= "" |
+                "i" m-tok-name-48 |
+                [*+\-.0-9=A-Z_a-hj-z] m-tok-name-rest
+
+m-tok-name-29 ::= "" |
+                "o" m-tok-name-49 |
+                [*+\-.0-9=A-Z_a-np-z] m-tok-name-rest
+
+m-tok-name-30 ::= "" |
+                "e" m-tok-name-50 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+m-tok-name-31 ::= "" |
+                "g" m-tok-name-51 |
+                "l" m-tok-name-52 |
+                [*+\-.0-9=A-Z_a-fh-km-z] m-tok-name-rest
+
+m-tok-name-32 ::= "" |
+                "l" m-tok-name-53 |
+                [*+\-.0-9=A-Z_a-km-z] m-tok-name-rest
+
+m-tok-name-33 ::= "" |
+                "l" m-tok-name-54 |
+                [*+\-.0-9=A-Z_a-km-z] m-tok-name-rest
+
+m-tok-name-34 ::= "" |
+                "e" m-tok-name-55 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+m-tok-name-35 ::= "" |
+                "a" m-tok-name-56 |
+                "u" m-tok-name-57 |
+                [*+\-.0-9=A-Z_b-tv-z] m-tok-name-rest
+
+m-tok-name-36 ::= "" |
+                "e" m-tok-name-58 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+m-tok-name-37 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-38 ::= "" |
+                "m" m-tok-name-59 |
+                [*+\-.0-9=A-Z_a-ln-z] m-tok-name-rest
+
+m-tok-name-39 ::= "" |
+                "f" m-tok-name-60 |
+                [*+\-.0-9=A-Z_a-eg-z] m-tok-name-rest
+
+m-tok-name-40 ::= "" |
+                "s" m-tok-name-61 |
+                [*+\-.0-9=A-Z_a-rt-z] m-tok-name-rest
+
+m-tok-name-41 ::= "" |
+                "o" m-tok-name-62 |
+                [*+\-.0-9=A-Z_a-np-z] m-tok-name-rest
+
+m-tok-name-42 ::= "" |
+                "r" m-tok-name-63 |
+                [*+\-.0-9=A-Z_a-qs-z] m-tok-name-rest
+
+m-tok-name-43 ::= "" |
+                "g" m-tok-name-64 |
+                [*+\-.0-9=A-Z_a-fh-z] m-tok-name-rest
+
+m-tok-name-44 ::= "" |
+                "e" m-tok-name-65 |
+                "u" m-tok-name-66 |
+                [*+\-.0-9=A-Z_a-df-tv-z] m-tok-name-rest
+
+m-tok-name-45 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-46 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-47 ::= "" |
+                "n" m-tok-name-67 |
+                [*+\-.0-9=A-Z_a-mo-z] m-tok-name-rest
+
+m-tok-name-48 ::= "" |
+                "n" m-tok-name-68 |
+                [*+\-.0-9=A-Z_a-mo-z] m-tok-name-rest
+
+m-tok-name-49 ::= "" |
+                "g" m-tok-name-69 |
+                [*+\-.0-9=A-Z_a-fh-z] m-tok-name-rest
+
+m-tok-name-50 ::= "" |
+                "r" m-tok-name-70 |
+                [*+\-.0-9=A-Z_a-qs-z] m-tok-name-rest
+
+m-tok-name-51 ::= "" |
+                "i" m-tok-name-71 |
+                [*+\-.0-9=A-Z_a-hj-z] m-tok-name-rest
+
+m-tok-name-52 ::= "" |
+                "a" m-tok-name-72 |
+                [*+\-.0-9=A-Z_b-z] m-tok-name-rest
+
+m-tok-name-53 ::= "" |
+                "e" m-tok-name-73 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+m-tok-name-54 ::= "" |
+                "v" m-tok-name-74 |
+                [*+\-.0-9=A-Z_a-uw-z] m-tok-name-rest
+
+m-tok-name-55 ::= "" |
+                "p" m-tok-name-75 |
+                [*+\-.0-9=A-Z_a-oq-z] m-tok-name-rest
+
+m-tok-name-56 ::= "" |
+                "c" m-tok-name-76 |
+                [*+\-.0-9=A-Z_abd-z] m-tok-name-rest
+
+m-tok-name-57 ::= "" |
+                "e" m-tok-name-77 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+m-tok-name-58 ::= "" |
+                "n" m-tok-name-78 |
+                [*+\-.0-9=A-Z_a-mo-z] m-tok-name-rest
+
+m-tok-name-59 ::= "" |
+                "i" m-tok-name-79 |
+                [*+\-.0-9=A-Z_a-hj-z] m-tok-name-rest
+
+m-tok-name-60 ::= "" |
+                "i" m-tok-name-80 |
+                [*+\-.0-9=A-Z_a-hj-z] m-tok-name-rest
+
+m-tok-name-61 ::= "" |
+                "e" m-tok-name-81 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+m-tok-name-62 ::= "" |
+                "r" m-tok-name-82 |
+                [*+\-.0-9=A-Z_a-qs-z] m-tok-name-rest
+
+m-tok-name-63 ::= "" |
+                "o" m-tok-name-83 |
+                [*+\-.0-9=A-Z_a-np-z] m-tok-name-rest
+
+m-tok-name-64 ::= "" |
+                "e" m-tok-name-84 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+m-tok-name-65 ::= "" |
+                "l" m-tok-name-85 |
+                [*+\-.0-9=A-Z_a-km-z] m-tok-name-rest
+
+m-tok-name-66 ::= "" |
+                "l" m-tok-name-86 |
+                [*+\-.0-9=A-Z_a-km-z] m-tok-name-rest
+
+m-tok-name-67 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-68 ::= "" |
+                "g" m-tok-name-87 |
+                [*+\-.0-9=A-Z_a-fh-z] m-tok-name-rest
+
+m-tok-name-69 ::= "" |
+                "r" m-tok-name-88 |
+                [*+\-.0-9=A-Z_a-qs-z] m-tok-name-rest
+
+m-tok-name-70 ::= "" |
+                "y" m-tok-name-89 |
+                [*+\-.0-9=A-Z_a-xz] m-tok-name-rest
+
+m-tok-name-71 ::= "" |
+                "o" m-tok-name-90 |
+                [*+\-.0-9=A-Z_a-np-z] m-tok-name-rest
+
+m-tok-name-72 ::= "" |
+                "t" m-tok-name-91 |
+                [*+\-.0-9=A-Z_a-su-z] m-tok-name-rest
+
+m-tok-name-73 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-74 ::= "" |
+                "e" m-tok-name-92 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+m-tok-name-75 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-76 ::= "" |
+                "e" m-tok-name-93 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+m-tok-name-77 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-78 ::= "" |
+                "t" m-tok-name-94 |
+                [*+\-.0-9=A-Z_a-su-z] m-tok-name-rest
+
+m-tok-name-79 ::= "" |
+                "t" m-tok-name-95 |
+                [*+\-.0-9=A-Z_a-su-z] m-tok-name-rest
+
+m-tok-name-80 ::= "" |
+                "g" m-tok-name-96 |
+                [*+\-.0-9=A-Z_a-fh-z] m-tok-name-rest
+
+m-tok-name-81 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-82 ::= "" |
+                "t" m-tok-name-97 |
+                [*+\-.0-9=A-Z_a-su-z] m-tok-name-rest
+
+m-tok-name-83 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-84 ::= "" |
+                "d" m-tok-name-98 |
+                [*+\-.0-9=A-Z_a-ce-z] m-tok-name-rest
+
+m-tok-name-85 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-86 ::= "" |
+                "e" m-tok-name-99 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+m-tok-name-87 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-88 ::= "" |
+                "a" m-tok-name-100 |
+                [*+\-.0-9=A-Z_b-z] m-tok-name-rest
+
+m-tok-name-89 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-90 ::= "" |
+                "n" m-tok-name-101 |
+                [*+\-.0-9=A-Z_a-mo-z] m-tok-name-rest
+
+m-tok-name-91 ::= "" |
+                "i" m-tok-name-102 |
+                [*+\-.0-9=A-Z_a-hj-z] m-tok-name-rest
+
+m-tok-name-92 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-93 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-94 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-95 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-96 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-97 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-98 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-99 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-100 ::= "" |
+                 "m" m-tok-name-103 |
+                 [*+\-.0-9=A-Z_a-ln-z] m-tok-name-rest
+
+m-tok-name-101 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-102 ::= "" |
+                 "o" m-tok-name-104 |
+                 [*+\-.0-9=A-Z_a-np-z] m-tok-name-rest
+
+m-tok-name-103 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-104 ::= "" |
+                 "n" m-tok-name-105 |
+                 [*+\-.0-9=A-Z_a-mo-z] m-tok-name-rest
+
+m-tok-name-105 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-rest ::= [*+\-.0-9=A-Z_a-z]*
+
+m-tok-var ::= "?" ( "_" m-tok-var-1 | [*+\-.0-9=A-Za-z] m-tok-var-rest )
+
+m-tok-var-1 ::= [*+\-.0-9=A-Z_a-z] m-tok-var-rest
+
+m-tok-var-rest ::= [*+\-.0-9=A-Z_a-z]*
+
+m-tok-text ::= "\"" ( [^\"<>\\`|] | "\\" [\"\\nrt] | "\\u{" ( "0"{0,5} [0-9A-Fa-f] | "0"{0,4} [1-9A-Fa-f] [0-9A-Fa-f] | "0"{0,3} [1-9A-Fa-f] [0-9A-Fa-f]{2} | "0"{0,2} ( [1-9A-CEFa-cef] [0-9A-Fa-f]{3} | [Dd] [0-7] [0-9A-Fa-f]{2} ) | "0"? [1-9A-Fa-f] [0-9A-Fa-f]{4} | "10" [0-9A-Fa-f]{4} ) "}" )* "\""

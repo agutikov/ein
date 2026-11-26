@@ -1,0 +1,1 @@
+(p </think> <tool_call>)
