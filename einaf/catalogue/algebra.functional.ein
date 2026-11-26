@@ -1,0 +1,14 @@
+;;; Catalogue entry: (functional R), std.algebra.
+
+(import std.algebra :symbols (functional))
+
+(relation sits-in Person Seat :why "a {?3} sits in a {?4}")
+(sits-in Ann Front)
+
+;; A check: R a b and R a c with b and c two things is a contradiction, so a
+;; state that supposes Ann sits in a second seat is dead.
+(functional sits-in)
+
+(open (sits-in Ann Back))
+
+(query :goal (sits-in Ann ?s) :goal-text "Ann sits in the {?s} seat.")

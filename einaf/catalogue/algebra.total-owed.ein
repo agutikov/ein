@@ -1,0 +1,20 @@
+;;; Catalogue entry: (total-owed R isa), std.algebra.
+
+(import std.algebra :symbols (total-owed functional injective))
+
+(relation instance T T           :why "{?3} is a {?4}")
+(relation sits-in  Person Seat   :why "a {?3} sits in a {?4}")
+(instance Ann   Person)
+(instance Bob   Person)
+(instance Front Seat)
+(instance Back  Seat)
+(sits-in Ann Front)
+
+;; An obligation: every member of the first label owes a fact of R with a
+;; member of the second, by the membership relation isa. Its candidates are
+;; the hypotheses, so the program states no other mechanism.
+(total-owed sits-in instance)
+(functional sits-in)
+(injective  sits-in)
+
+(query :goal (sits-in Bob ?s) :goal-text "Bob sits in the {?s} seat.")

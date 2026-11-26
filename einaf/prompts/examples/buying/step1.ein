@@ -1,0 +1,12 @@
+;; The statements, in the text's own words. A number a rule computes with is
+;; a numeral.
+(costs Pen (n z 3) Coin :source "A pen costs 3 coins.")
+(buys  Ann (n z 4) Pen  :source "Ann buys 4 pens.")
+
+;; How many coins does Ann pay?
+(query :goal (pays Ann ?n Coin) :goal-text "Ann pays {?n} coins.")
+
+;; The ontology, partial.
+(relation costs Thing Number Money  :why "a {?3} costs a {?4} of {?5}s")
+(relation buys  Person Number Thing :why "a {?3} buys a {?4} of {?5}s")
+(relation pays  Person Number Money :why "a {?3} pays a {?4} of {?5}s")

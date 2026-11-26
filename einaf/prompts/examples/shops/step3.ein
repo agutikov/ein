@@ -1,0 +1,18 @@
+;; The read-back that makes the answer query answerable. Where a value is,
+;; in the verb of its kind: a seller has the stall it shares, goods are sold
+;; at it, and a stall has the colour it shares.
+(top  seller-and-stall instance Seller Stall)
+(meet same-stall seller-and-stall has)
+(top  good-and-stall   instance Good Stall)
+(meet same-stall good-and-stall are-sold-at)
+(top  stall-and-color  instance Stall Color)
+(meet same-stall stall-and-color stall-has-color)
+
+;; A verb and its passive are converses, and a verb of a seller goes through
+;; the stall the seller has: a seller sells what is sold at its stall, and has
+;; the colour of its stall.
+(converse are-sold-at stall-sells)
+(compose  has stall-sells     sells)
+(compose  has stall-has-color has)
+
+;; The hypothesis mechanism: the obligations of the theory step 2 selected.

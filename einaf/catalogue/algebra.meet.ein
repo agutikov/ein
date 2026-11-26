@@ -1,0 +1,16 @@
+;;; Catalogue entry: (meet R S T), std.algebra.
+
+(import std.algebra :symbols (meet))
+
+(relation lives-with Person Person :why "a {?3} lives with a {?4}")
+(relation works-with Person Person :why "a {?3} works with a {?4}")
+(relation is-close-to Person Person :why "a {?3} is close to a {?4}")
+(lives-with Ann Bob)
+(works-with Ann Bob)
+(works-with Ann Cy)
+
+;; Where both R a b and S a b hold, T a b.
+(meet lives-with works-with is-close-to)
+
+(query :goal (is-close-to Ann ?b) :goal-text "Ann is close to {?b}.")
+(solve :no-search)

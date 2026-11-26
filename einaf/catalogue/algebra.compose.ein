@@ -1,0 +1,14 @@
+;;; Catalogue entry: (compose R S T), std.algebra.
+
+(import std.algebra :symbols (compose))
+
+(relation is-parent-of      Person Person :why "a {?3} is a parent of a {?4}")
+(relation is-grandparent-of Person Person :why "a {?3} is a grandparent of a {?4}")
+(is-parent-of Ann Bob)
+(is-parent-of Bob Cy)
+
+;; R then S is T: R a b and S b c give T a c.
+(compose is-parent-of is-parent-of is-grandparent-of)
+
+(query :goal (is-grandparent-of ?g Cy) :goal-text "{?g} is a grandparent of Cy.")
+(solve :no-search)

@@ -1,0 +1,13 @@
+;; missing: what a buyer pays is the count times the price, asked of the calculator
+(rule buying-asks-the-product ()
+  :match  (and (buys ?who ?k ?thing) (costs ?thing ?p ?money))
+  :assert (mul ?k ?p)
+  :why    "{?who} buys {?k} {?thing}s at {?p} {?money}s each: ask {?k} times {?p}")
+;; missing: the product, read back as what the buyer pays
+(rule buying-pays-the-product ()
+  :match  (and (buys ?who ?k ?thing) (costs ?thing ?p ?money) (product-of ?k ?p ?t))
+  :assert (pays ?who ?t ?money)
+  :why    "{?k} {?thing}s at {?p} {?money}s each cost {?t}, which {?who} pays")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

@@ -1,0 +1,8 @@
+There are three stalls in a row.
+Ann has the blue stall.
+Apples are sold at the green stall.
+The green stall is immediately to the left of the blue stall.
+Ben sells fish.
+Cal has the stall next to Ben's.
+Who sells bread?
+Who has the red stall?

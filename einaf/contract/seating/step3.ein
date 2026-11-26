@@ -71,6 +71,7 @@
 ;; Synthesised: a person who does not sit in a chair does not share it. The
 ;; library reads a verb into the link (`includes`) and the link back into the
 ;; verb (`meet`), and carries no negation of the verb to the link.
+;; missing: a stored negation of the verb read into the link
 (rule not-sitting-is-not-sharing ()
   :match  (not (sits-in ?p ?c))
   :assert (not (same-chair ?p ?c))

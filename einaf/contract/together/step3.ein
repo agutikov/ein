@@ -38,28 +38,34 @@
 ;; Synthesised: what a giver has after giving is what the giver had less what
 ;; was given, and what the receiver has after is what the receiver had and
 ;; what was given; what two have together is the sum of what each has.
+;; missing: what a giver has after giving, asked of the calculator
 (rule giving-asks-the-difference ()
   :match  (and (gave ?who ?k ?kind ?whom ?t0 ?t1) (has ?who ?m ?kind ?t0))
   :assert (sub ?m ?k)
   :why    "{?who} had {?m} {?kind}s and gave {?k}: ask {?m} less {?k}")
+;; missing: what a giver has after giving, read back from the calculator
 (rule giving-leaves-the-difference ()
   :match  (and (gave ?who ?k ?kind ?whom ?t0 ?t1) (has ?who ?m ?kind ?t0)
                (diff-of ?m ?k ?d z))
   :assert (has ?who ?d ?kind ?t1)
   :why    "{?who} had {?m} {?kind}s and gave {?k}, so {?who} has {?d}")
+;; missing: what a receiver has after it is given, asked of the calculator
 (rule receiving-asks-the-sum ()
   :match  (and (gave ?who ?k ?kind ?whom ?t0 ?t1) (has ?whom ?m ?kind ?t0))
   :assert (add ?m ?k)
   :why    "{?whom} had {?m} {?kind}s and was given {?k}: ask {?m} and {?k}")
+;; missing: what a receiver has after it is given, read back from the calculator
 (rule receiving-adds-the-sum ()
   :match  (and (gave ?who ?k ?kind ?whom ?t0 ?t1) (has ?whom ?m ?kind ?t0)
                (sum-of ?m ?k ?s))
   :assert (has ?whom ?s ?kind ?t1)
   :why    "{?whom} had {?m} {?kind}s and was given {?k}, so {?whom} has {?s}")
+;; missing: what two have together, asked of the calculator
 (rule together-asks-the-sum ()
   :match  (and (has ?a ?x ?kind ?t) (has ?b ?y ?kind ?t) (neq ?a ?b))
   :assert (add ?x ?y)
   :why    "{?a} has {?x} {?kind}s and {?b} has {?y}: ask {?x} and {?y}")
+;; missing: what two have together, read back from the calculator
 (rule together-is-the-sum ()
   :match  (and (has ?a ?x ?kind ?t) (has ?b ?y ?kind ?t) (neq ?a ?b)
                (sum-of ?x ?y ?s))

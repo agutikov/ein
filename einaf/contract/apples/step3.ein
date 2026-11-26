@@ -32,10 +32,12 @@
 
 ;; Synthesised: what a giver has after giving is what the giver had less what
 ;; was given, asked of the calculator and read back.
+;; missing: what a giver has after giving, asked of the calculator
 (rule giving-asks-the-difference ()
   :match  (and (gave ?who ?k ?kind ?whom ?t0 ?t1) (has ?who ?m ?kind ?t0))
   :assert (sub ?m ?k)
   :why    "{?who} had {?m} {?kind}s and gave {?k}: ask {?m} less {?k}")
+;; missing: what a giver has after giving, read back from the calculator
 (rule giving-leaves-the-difference ()
   :match  (and (gave ?who ?k ?kind ?whom ?t0 ?t1) (has ?who ?m ?kind ?t0)
                (diff-of ?m ?k ?d z))

@@ -10,7 +10,7 @@
 //! kernel refuses at the read, the parse or the load is the refusal's
 //! findings.
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 use ein_ir::{Ast, Node, NodeId};
 use serde::{Deserialize, Serialize};
@@ -99,6 +99,10 @@ pub struct Library {
     /// The relations a rule of an imported module reads in its `:match`: a
     /// fact of one of them is read by the library.
     pub reads: BTreeSet<String>,
+    /// **Every relation the loaded program declares**, its own text's and its
+    /// modules', by the names the file writes, and the counts of the labels
+    /// each is declared with: what a fact and a pattern are held to.
+    pub declared: BTreeMap<String, BTreeSet<usize>>,
 }
 
 impl Forms {
@@ -202,6 +206,13 @@ pub fn forms(source: Source<'_>) -> Result<Forms, Vec<Finding>> {
                 library.reads.insert(terms.sym(r).to_string());
             }
         }
+    }
+    for d in &program.declarations {
+        library
+            .declared
+            .entry(terms.sym(d.name).to_string())
+            .or_default()
+            .insert(d.signature.len());
     }
     Ok(Forms {
         name,

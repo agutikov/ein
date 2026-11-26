@@ -34,17 +34,28 @@
 //!
 //! **And a program's vocabulary** ([`vocabulary()`]): what its text
 //! declares, imports and writes, read off its parse, which a step's grammar
-//! is rendered on; and the standard library's modules as texts
-//! ([`library()`]), which the grammars' catalogue is read from.
+//! is rendered on; the standard library's modules as texts
+//! ([`library()`]), which the grammars' catalogue is read from; and each
+//! rule a text writes with its parameters and its own `:why`
+//! ([`rule_docs()`]), the catalogue's generated part.
+//!
+//! **And root, with who wrote H** ([`root()`]): the program loaded, root
+//! saturated once under the call's bounds and the hypothesis set built at
+//! its fixpoint, as `ein show hyps` builds it; the writer of H the kernel
+//! reports, and root's own narration, each firing and each obligation owed,
+//! as values. What the contract's check reads a selection and a mechanism
+//! off.
 //!
 //! Nothing else in EinAf names an item of Ein's crates, and nothing here
 //! calls them but through [`call`], [`forms()`], [`shapes()`], [`parse()`],
-//! [`vocabulary()`] and [`library()`].
+//! [`vocabulary()`], [`library()`], [`rule_docs()`], [`stdlib_digest()`] and
+//! [`root()`].
 
 mod feedback;
 mod forms;
 mod outcome;
 mod program;
+mod root;
 mod vocab;
 
 pub use feedback::{
@@ -53,7 +64,8 @@ pub use feedback::{
 };
 pub use forms::{Form, Forms, Library, Shape, Written, forms, shapes};
 pub use outcome::{Outcome, Reading};
-pub use vocab::{Imported, Vocabulary, library, vocabulary};
+pub use root::{Fired, Root, root};
+pub use vocab::{Imported, RuleDoc, Vocabulary, library, rule_docs, vocabulary};
 
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::Path;
@@ -420,6 +432,13 @@ fn panic_message(payload: &(dyn std::any::Any + Send)) -> String {
     } else {
         "a panic with no message".to_string()
     }
+}
+
+/// **The standard library's digest**, `sha256:` of its manifest as this
+/// process resolves the library: `ein --version`'s `stdlib` line, and the
+/// feedback object's `kernel.stdlib`.
+pub fn stdlib_digest() -> Option<String> {
+    kernel_id().stdlib
 }
 
 /// **Which kernel this is**: the three things `ein --version` prints that a

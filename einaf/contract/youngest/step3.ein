@@ -30,6 +30,7 @@
 (transitive older)
 
 ;; Synthesised: the library has no rule for a least element.
+;; missing: the youngest, the one older than nobody
 (rule youngest-is-older-than-nobody ()
   :match  (and (person ?p) (absent (older ?p ?q)))
   :assert (youngest ?p)

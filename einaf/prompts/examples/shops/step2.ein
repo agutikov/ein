@@ -1,0 +1,61 @@
+;; The ontology, whole: step 1's declarations, and what the theory reads the
+;; verbs into, and the kinds.
+
+(relation instance    T T          :why "{?3} is a {?4}")
+(relation type        T T          :why "{?3} is a kind of {?4}")
+(relation has         Seller Stall :why "a {?3} has a {?4}")
+(relation are-sold-at Good Stall   :why "{?3}s are sold at a {?4}")
+(relation is-immediately-to-the-left-of Stall Stall
+  :why "a {?3} is immediately to the left of a {?4}")
+(relation sells       Seller Good  :why "a {?3} sells {?4}s")
+(relation has-the-stall-next-to Seller Seller
+  :why "a {?3} has the stall next to a {?4}")
+(relation same-stall  Attribute Attribute :why "a {?3} and a {?4} are at the same stall")
+(relation next-to     Attribute Attribute :why "a {?3} is at the stall next to a {?4}")
+(relation stall-sells Stall Good :why "a {?3} sells {?4}s")
+(relation stall-has-color Stall Color :why "a {?3} is {?4}")
+(relation seller-and-stall Seller Stall :why "a {?3} and a {?4}")
+(relation good-and-stall   Good Stall   :why "a {?3} and a {?4}")
+(relation stall-and-color  Stall Color  :why "a {?3} and a {?4}")
+
+;; The kinds, and their place.
+(type Attribute T)
+(type Stall     Attribute)
+(type Seller    Attribute)
+(type Color     Attribute)
+(type Good      Attribute)
+
+;; What kind of thing each name is: step 1's memberships.
+(instance Ann    Seller :source "Ann has the blue stall.")
+(instance Ben    Seller :source "Ben sells fish.")
+(instance Cal    Seller :source "Cal has the stall next to Ben's.")
+(instance Blue   Color  :source "Ann has the blue stall.")
+(instance Green  Color  :source "Apples are sold at the green stall.")
+(instance Red    Color  :source "Who has the red stall?")
+(instance Apples Good   :source "Apples are sold at the green stall.")
+(instance Fish   Good   :source "Ben sells fish.")
+(instance Bread  Good   :source "Who sells bread?")
+
+;; The row the text speaks of and never states.
+(is-immediately-to-the-left-of First  Second)
+(is-immediately-to-the-left-of Second Third)
+
+;; The theory: things in places, from the library.
+(import std.algebra :symbols (symmetric includes converse compose top meet))
+(import std.slots)
+
+;; A verb of one stall is a part of same-stall, a verb of a neighbour a part
+;; of next-to.
+(includes has         same-stall)
+(includes are-sold-at same-stall)
+(includes sells       same-stall)
+(includes is-immediately-to-the-left-of next-to)
+(includes has-the-stall-next-to         next-to)
+(symmetric same-stall)
+(symmetric next-to)
+
+;; The classes of same-stall are the stalls, each holding one value of every
+;; kind, and a stall names its class; its obligations write the hypotheses.
+(slot-partition same-stall instance type Attribute Stall)
+(slot-spatial   same-stall is-immediately-to-the-left-of instance Stall)
+(slot-spatial   same-stall next-to instance Stall)

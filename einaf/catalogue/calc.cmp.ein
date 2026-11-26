@@ -1,0 +1,23 @@
+;;; Catalogue entry: the calculator's cmp, std.math.decimal-arith.
+
+(import std.math.decimal-arith :symbols (cmp cmp-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation is-years-old Person Number :why "a {?3} is {?4} years old")
+(relation is-older-than Person Person :why "a {?3} is older than a {?4}")
+(is-years-old Ann (n z 9))
+(is-years-old Bob (n z 7))
+
+;; (cmp X Y) is answered by (cmp-of X Y O), O one of lt, eq and gt.
+(rule older-asks-the-comparison ()
+  :match  (and (is-years-old ?a ?x) (is-years-old ?b ?y) (neq ?a ?b))
+  :assert (cmp ?x ?y)
+  :why    "{?a} is {?x} and {?b} is {?y}: compare them")
+(rule older-is-greater ()
+  :match  (and (is-years-old ?a ?x) (is-years-old ?b ?y) (cmp-of ?x ?y gt))
+  :assert (is-older-than ?a ?b)
+  :why    "{?x} is more than {?y}, so {?a} is older than {?b}")
+
+(query :goal (is-older-than ?a ?b) :goal-text "{?a} is older than {?b}.")
+(solve :no-search)

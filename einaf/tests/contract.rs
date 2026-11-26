@@ -5,9 +5,10 @@
 //! every top-level form of every reference program in exactly one row, with
 //! the step that wrote it.
 //!
-//! H's writer and size are read off `ein show hyps`, from the binary the gate
-//! built (`$EIN_BIN`, or `ein.rs/target/gate/ein`): no value the bounded
-//! call returns says who wrote the candidates.
+//! H's writer and its candidates are read off `ein show hyps`, from the
+//! binary the gate built (`$EIN_BIN`, or `ein.rs/target/gate/ein`), and
+//! `einaf::kernel::root`, which a run of the steps reads the writer off, is
+//! held to it on every program here.
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -748,4 +749,30 @@ fn each_complete_program_answers_alike_with_its_forms_reversed() {
             assert_ne!(x.program.digest, y.program.digest, "{dir}: the same text");
         }
     }
+}
+
+/// **The writer of H `einaf::kernel::root` reads is `ein show hyps`'**, and
+/// so is H's size, on every program of `einaf/contract/`.
+#[test]
+fn the_writer_of_h_the_kernel_module_reads_is_ein_show_hyps() {
+    let mut seen = 0;
+    for entry in std::fs::read_dir(contract_dir()).expect("einaf/contract/") {
+        let dir = entry.expect("an entry").path();
+        for file in std::fs::read_dir(&dir).expect("a text's directory") {
+            let path = file.expect("a file").path();
+            if path.extension().is_none_or(|e| e != "ein") {
+                continue;
+            }
+            let (writer, candidates) = hypotheses(&path);
+            let root = kernel::root(Source::File(&path), Bounds::default());
+            assert_eq!(
+                (root.writer.as_deref(), root.candidates),
+                (Some(writer.as_str()), candidates.len()),
+                "{}",
+                path.display()
+            );
+            seen += 1;
+        }
+    }
+    assert!(seen >= 21, "the contract's programs: {seen}");
 }

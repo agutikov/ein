@@ -1,0 +1,13 @@
+;; missing: an age younger by some years is the other age less those years, asked of the calculator
+(rule younger-asks-the-difference ()
+  :match  (and (is-years-younger-than ?y ?k ?o) (is-years-old ?o ?a))
+  :assert (sub ?a ?k)
+  :why    "{?o} is {?a} and {?y} is {?k} years younger: ask {?a} less {?k}")
+;; missing: the difference, read back as the younger one's age
+(rule younger-is-the-difference ()
+  :match  (and (is-years-younger-than ?y ?k ?o) (is-years-old ?o ?a) (diff-of ?a ?k ?d z))
+  :assert (is-years-old ?y ?d)
+  :why    "{?a} less {?k} is {?d}, so {?y} is {?d} years old")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

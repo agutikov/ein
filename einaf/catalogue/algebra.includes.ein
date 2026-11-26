@@ -1,0 +1,13 @@
+;;; Catalogue entry: (includes R S), std.algebra.
+
+(import std.algebra :symbols (includes))
+
+(relation is-parent-of   Person Person :why "a {?3} is a parent of a {?4}")
+(relation is-ancestor-of Person Person :why "a {?3} is an ancestor of a {?4}")
+(is-parent-of Ann Bob)
+
+;; Every fact of R is a fact of S.
+(includes is-parent-of is-ancestor-of)
+
+(query :goal (is-ancestor-of ?a Bob) :goal-text "{?a} is an ancestor of Bob.")
+(solve :no-search)

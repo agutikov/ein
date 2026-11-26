@@ -1,0 +1,15 @@
+;;; Catalogue entry: (top R isa Dom Ran), std.algebra.
+
+(import std.algebra :symbols (top))
+
+(relation instance       T T           :why "{?3} is a {?4}")
+(relation person-and-pet Person Pet    :why "a {?3} and a {?4}")
+(instance Ann Person)
+(instance Rex Pet)
+
+;; R holds between every member of Dom and every member of Ran, by the
+;; membership relation isa.
+(top person-and-pet instance Person Pet)
+
+(query :goal (person-and-pet ?p ?q) :goal-text "{?p} and {?q} are a person and a pet.")
+(solve :no-search)

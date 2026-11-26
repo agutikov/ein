@@ -1,0 +1,22 @@
+;;; Catalogue entry: (bijective R) and (bijection-hierarchy isa), std.bijection.
+
+(import std.bijection)
+
+(relation instance T T         :why "{?3} is a {?4}")
+(relation wears    Person Color :why "a {?3} wears {?4}")
+(instance Ann  Person)
+(instance Bob  Person)
+(instance Cy   Person)
+(instance Red   Color)
+(instance Green Color)
+(instance Blue  Color)
+(wears Ann Red)
+(not (wears Bob Blue))
+
+;; R is one to one between its two labels: each member of the first has
+;; exactly one of the second and each of the second exactly one of the first.
+;; Its obligations propose the facts of R as hypotheses.
+(bijective wears)
+(bijection-hierarchy instance)
+
+(query :goal (wears Cy ?c) :goal-text "Cy wears {?c}.")

@@ -34,10 +34,12 @@
 ;; Synthesised: of two who have the same kind at one moment, the one who has
 ;; more is the one whose count less the other's is more than nothing, and by
 ;; that difference.
+;; missing: the difference of two counts, asked of the calculator
 (rule two-counts-ask-the-difference ()
   :match  (and (has ?a ?x ?kind ?t) (has ?b ?y ?kind ?t) (neq ?a ?b))
   :assert (sub ?x ?y)
   :why    "{?a} has {?x} {?kind}s and {?b} has {?y}: ask {?x} less {?y}")
+;; missing: who has more, and by how many
 (rule more-is-a-difference-past-nothing ()
   :match  (and (has ?a ?x ?kind ?t) (has ?b ?y ?kind ?t) (neq ?a ?b)
                (diff-of ?x ?y ?d z) (neq ?d z))

@@ -10,7 +10,10 @@
 //! And the model's ([`einaf::model`]): `einaf render` renders a request's
 //! prompt through a chat template, `einaf generate` makes one call and
 //! prints its record, `einaf model` loads the model and prints its pin, and
-//! `einaf probe` writes the probe's plan and runs it. A call is answered by
+//! `einaf probe` writes the probe's plan and runs it; `einaf steps` runs the
+//! formalization in steps ([`einaf::formalize`]) and the contract's check,
+//! and `einaf catalogue` prints the catalogue the steps select from. A call
+//! is answered by
 //! the model (`--model PATH` or `$EINAF_MODEL`, with the `llama` feature) or
 //! by a record (`--replay FILE`, always).
 
@@ -35,6 +38,11 @@ usage: einaf outcome FILE [QUESTION] [BOUNDS]
        einaf model --model PATH [--ctx N] [--verbose]
        einaf probe plan [--out FILE]
        einaf probe run --plan FILE --out FILE RUNTIME [--only PREFIX]...
+       einaf steps run TEXT --out DIR RUNTIME [--id ID] [--answer-line zebra|word|generic]
+                [--mode steps|whole] [--no-grammar] [--request-mode thinking-off]
+                [--catalogue whole|minimal] [--max-tokens N] [-T SECONDS]
+       einaf steps check PROGRAM [--text TEXT] [--step 1|2|3] [--catalogue whole|minimal]
+       einaf catalogue [--minimal] [--generated] [--grammar] [--tokens MODEL]
 
 outcome   the outcome of an Ein program under one question about its answer, R:
           invalid, flagged, not decided, inconsistent, incomplete, several or
@@ -72,6 +80,18 @@ grammar   the grammars: `write` writes einaf/grammars/ein.gbnf from ein.l and
           the GBNF llama.cpp writes for
           a JSON schema (`llama`)
 model     the model loaded, its pin, the runtime and the context as JSON
+steps     the formalization in steps: `run` writes a program for a text in three
+          calls of the model (or one, `--mode whole`), each under its step's
+          grammar inside a fenced block (`--no-grammar`: none), thinking off,
+          each step's program judged at root, and writes the run to --out
+          (calls.jsonl, every call, which --replay reads; run.json; each
+          step's output; program.ein); `check` runs the contract's check on
+          a program, its findings for a step's program
+catalogue the catalogue of the library the steps select from, as a prompt
+          shows it (`--minimal`: the relation algebra's alone); the library's
+          rules, generated (`--generated`); the catalogue the steps' grammars
+          are rendered on (`--grammar`); its length and the prompts' in the
+          model's tokens (`--tokens MODEL`, `llama`)
 probe     the probe of Ein written with no grammar: `plan` writes every run
           as JSON lines, `run` makes each call and judges its answer through
           the kernel, a line a run appended to --out (a run already there is
@@ -95,18 +115,21 @@ fn main() -> ExitCode {
         Some("model") => model_cmd::model(&args[1..]),
         Some("grammar") => grammar_cmd::grammar(&args[1..]),
         Some("probe") => model_cmd::probe(&args[1..]),
+        Some("steps") => steps_cmd::steps(&args[1..]),
+        Some("catalogue") => steps_cmd::catalogue_cmd(&args[1..]),
         Some("-h" | "--help") => {
             print!("{USAGE}");
             ExitCode::SUCCESS
         }
         _ => usage_error(
-            "expected a subcommand: outcome, feedback, render, generate, grammar, model or probe",
+            "expected a subcommand: outcome, feedback, render, generate, grammar, model, probe, steps or catalogue",
         ),
     }
 }
 
 mod grammar_cmd;
 mod model_cmd;
+mod steps_cmd;
 
 fn usage_error(why: &str) -> ExitCode {
     eprintln!("error: {why}\n\n{USAGE}");

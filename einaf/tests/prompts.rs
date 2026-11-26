@@ -54,6 +54,64 @@ fn every_program_the_excerpt_shows_loads() {
 }
 
 #[test]
+fn every_program_the_steps_excerpt_shows_loads() {
+    let b = blocks(einaf::prompts::EXCERPT.text);
+    assert_eq!(b.len(), 4, "the excerpt's blocks");
+    for (i, block) in b.iter().enumerate() {
+        assert_loads(block, &format!("ein-excerpt.v2.md block {}", i + 1));
+        assert!(
+            !block.contains(['`', '<', '>', '|']),
+            "a program the excerpt shows holds a character no grammar lets the model write"
+        );
+    }
+}
+
+#[test]
+fn every_template_renders_with_its_slots_and_no_other() {
+    use einaf::prompts::{STEP1, STEP2, STEP2B, STEP3, SYSTEM, WHOLE};
+    use std::collections::BTreeMap;
+    let fill = |names: &[&'static str]| -> BTreeMap<&'static str, String> {
+        names.iter().map(|n| (*n, format!("<{n}>"))).collect()
+    };
+    let cases: [(einaf::prompts::Template, &[&'static str]); 6] = [
+        (SYSTEM, &["excerpt"]),
+        (STEP1, &["examples", "text", "answer_line"]),
+        (STEP2, &["catalogue", "examples", "text", "program"]),
+        (
+            STEP2B,
+            &["markers", "catalogue", "examples", "text", "program"],
+        ),
+        (STEP3, &["catalogue", "examples", "text", "program"]),
+        (WHOLE, &["catalogue", "examples", "text", "answer_line"]),
+    ];
+    for (t, names) in cases {
+        let text = t.render(&fill(names)).expect("renders");
+        assert!(
+            !text.contains("%%"),
+            "{}: a note of the template is rendered",
+            t.file
+        );
+        assert!(!text.contains("{{"), "{}", t.file);
+        let mut more = fill(names);
+        more.insert("unknown", String::new());
+        assert!(
+            t.render(&more).is_err(),
+            "{}: a slot it has not is refused",
+            t.file
+        );
+        if let Some(first) = names.first() {
+            let mut fewer = fill(names);
+            fewer.remove(first);
+            assert!(
+                t.render(&fewer).is_err(),
+                "{}: a slot not filled is refused",
+                t.file
+            );
+        }
+    }
+}
+
+#[test]
 fn the_plan_quotes_only_programs_that_load() {
     let plan = probe::plan();
     assert_eq!(plan.len(), 87, "the plan's runs");

@@ -1,0 +1,33 @@
+;;; Catalogue entry: (slot-spatial R S isa Index), std.slots.
+
+(import std.algebra :symbols (symmetric includes top meet))
+(import std.slots)
+
+(relation lives-in       Person House    :why "a {?3} lives in a {?4}")
+(relation is-left-of     Attribute Attribute :why "a {?3} is left of a {?4}")
+(relation lives-left-of  Person Person   :why "a {?3} lives left of a {?4}")
+(relation same-house     Attribute Attribute :why "a {?3} and a {?4} are in the same house")
+(relation person-and-house Person House  :why "a {?3} and a {?4}")
+(relation instance       T T             :why "{?3} is a {?4}")
+(relation type           T T             :why "{?3} is a kind of {?4}")
+(type Attribute T)
+(type House     Attribute)
+(type Person    Attribute)
+(instance Left  House)
+(instance Right House)
+(instance Ann   Person)
+(instance Bob   Person)
+(is-left-of Left Right)
+(lives-left-of Bob Ann)
+
+(includes lives-in same-house)
+(includes lives-left-of is-left-of)
+(symmetric same-house)
+(slot-partition same-house instance type Attribute House)
+;; S holds between two values exactly where it holds between their places.
+(slot-spatial same-house is-left-of instance House)
+
+(top  person-and-house instance Person House)
+(meet same-house person-and-house lives-in)
+
+(query :goal (lives-in Ann ?h) :goal-text "Ann lives in the {?h} house.")

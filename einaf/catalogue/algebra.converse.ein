@@ -1,0 +1,13 @@
+;;; Catalogue entry: (converse R S), std.algebra.
+
+(import std.algebra :symbols (converse))
+
+(relation is-parent-of Person Person :why "a {?3} is a parent of a {?4}")
+(relation is-child-of  Person Person :why "a {?3} is a child of a {?4}")
+(is-parent-of Ann Bob)
+
+;; S is R turned round: R a b gives S b a, and S b a gives R a b.
+(converse is-parent-of is-child-of)
+
+(query :goal (is-child-of Bob ?p) :goal-text "Bob is a child of {?p}.")
+(solve :no-search)

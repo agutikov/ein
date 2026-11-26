@@ -1,0 +1,24 @@
+;;; Catalogue entry: the calculator's mul, std.math.decimal-arith.
+
+(import std.math.decimal-arith :symbols (mul product-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation has-rows  Room Number :why "a {?3} has {?4} rows")
+(relation row-seats Room Number :why "a row of a {?3} has {?4} seats")
+(relation seats     Room Number :why "a {?3} has {?4} seats")
+(has-rows  Hall (n z 4))
+(row-seats Hall (n z 6))
+
+;; (mul X Y) is answered by (product-of X Y P).
+(rule seats-asks-the-product ()
+  :match  (and (has-rows ?r ?k) (row-seats ?r ?m))
+  :assert (mul ?k ?m)
+  :why    "{?r} has {?k} rows of {?m}: ask {?k} times {?m}")
+(rule seats-is-the-product ()
+  :match  (and (has-rows ?r ?k) (row-seats ?r ?m) (product-of ?k ?m ?p))
+  :assert (seats ?r ?p)
+  :why    "{?k} rows of {?m} are {?p} seats")
+
+(query :goal (seats Hall ?p) :goal-text "The hall has {?p} seats.")
+(solve :no-search)

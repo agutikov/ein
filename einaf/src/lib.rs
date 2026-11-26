@@ -21,8 +21,12 @@
 //! Ein's two grammar files, a grammar a step of the formalization, and
 //! EinAf's acceptor and sampler of a grammar.
 
+pub mod catalogue;
+pub mod check;
 pub mod contract;
+pub mod formalize;
 pub mod grammar;
 pub mod kernel;
 pub mod model;
 pub mod probe;
+pub mod prompts;

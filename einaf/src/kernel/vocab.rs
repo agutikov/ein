@@ -203,3 +203,72 @@ pub fn library() -> Vec<(String, String)> {
     out.sort();
     out
 }
+
+/// **A rule a text writes**, as its own form says it.
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct RuleDoc {
+    pub name: String,
+    /// Its parameters, each a variable's name without its `?`; `[]` for a
+    /// rule that fires on every match.
+    pub params: Vec<String>,
+    /// Its own `:why`, as written; `null` where it has none.
+    pub why: Option<String>,
+    /// `rule` or `macro`.
+    pub form: String,
+    /// What it concludes: its `:assert` as `ein_ir::dump_canonical` prints
+    /// it, or `:ein` and the engine's word; `null` for a macro.
+    pub concludes: Option<String>,
+}
+
+/// **Each `rule` and `macro` form of `text`**, its name, its parameters and
+/// its `:why`, read off its parse; nothing loaded. The catalogue's generated
+/// part reads the library's modules so.
+pub fn rule_docs(text: &str, name: &str) -> Result<Vec<RuleDoc>, Vec<Finding>> {
+    let mut ast = Ast::new();
+    let forms = ein_ir::parse(&mut ast, text, Some(name))
+        .map_err(|e| e.diagnostics().iter().map(finding).collect::<Vec<_>>())?;
+    let mut out = Vec::new();
+    for &f in &forms {
+        let form = match ast.head_name(f) {
+            Some(h @ ("rule" | "macro")) => h.to_string(),
+            _ => continue,
+        };
+        let args = ast.form_args(f);
+        let Some(rule) = args.first().and_then(|&a| ast.atom_name(a)) else {
+            continue;
+        };
+        let params = args.get(1).map_or_else(Vec::new, |&p| {
+            ast.form_args(p)
+                .iter()
+                .filter_map(|&a| match ast.node(a) {
+                    Node::Var(s) => Some(ast.sym(s).trim_start_matches('?').to_string()),
+                    Node::Atom(s) => Some(ast.sym(s).to_string()),
+                    _ => None,
+                })
+                .collect()
+        });
+        let why = keyword(&ast, args, "why").and_then(|w| match ast.node(w) {
+            Node::Str(s) => Some(ast.sym(s).to_string()),
+            _ => None,
+        });
+        let concludes = keyword(&ast, args, "assert")
+            .map(|a| {
+                ein_ir::dump_canonical(&ast, &[a])
+                    .trim_end_matches('\n')
+                    .to_string()
+            })
+            .or_else(|| {
+                keyword(&ast, args, "ein")
+                    .and_then(|w| ast.atom_name(w))
+                    .map(|w| format!(":ein {w}"))
+            });
+        out.push(RuleDoc {
+            name: rule.to_string(),
+            params,
+            why,
+            form,
+            concludes,
+        });
+    }
+    Ok(out)
+}

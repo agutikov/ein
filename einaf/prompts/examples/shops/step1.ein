@@ -1,0 +1,41 @@
+;; The statements, in the text's own words.
+
+;; There are three stalls in a row: three things of one kind, named by their
+;; places in the row.
+(instance First  Stall :source "There are three stalls in a row.")
+(instance Second Stall :source "There are three stalls in a row.")
+(instance Third  Stall :source "There are three stalls in a row.")
+
+(has         Ann    Blue  :source "Ann has the blue stall.")
+(are-sold-at Apples Green :source "Apples are sold at the green stall.")
+(is-immediately-to-the-left-of Green Blue
+  :source "The green stall is immediately to the left of the blue stall.")
+(sells       Ben    Fish  :source "Ben sells fish.")
+(has-the-stall-next-to Cal Ben :source "Cal has the stall next to Ben's.")
+
+;; Who sells bread? Who has the red stall?
+(query
+  :goal (and (sells ?who_bread Bread) (has ?who_red Red))
+  :goal-text "{?who_bread} sells bread. {?who_red} has the red stall.")
+
+;; The ontology, partial: the relations the statements and the query use.
+
+(relation instance    T T          :why "{?3} is a {?4}")
+(relation has         Seller Stall :why "a {?3} has a {?4}")
+(relation are-sold-at Good Stall   :why "{?3}s are sold at a {?4}")
+(relation is-immediately-to-the-left-of Stall Stall
+  :why "a {?3} is immediately to the left of a {?4}")
+(relation sells       Seller Good  :why "a {?3} sells {?4}s")
+(relation has-the-stall-next-to Seller Seller
+  :why "a {?3} has the stall next to a {?4}")
+
+;; What kind of thing each name is, quoting the first sentence that names it.
+(instance Ann    Seller :source "Ann has the blue stall.")
+(instance Ben    Seller :source "Ben sells fish.")
+(instance Cal    Seller :source "Cal has the stall next to Ben's.")
+(instance Blue   Color  :source "Ann has the blue stall.")
+(instance Green  Color  :source "Apples are sold at the green stall.")
+(instance Red    Color  :source "Who has the red stall?")
+(instance Apples Good   :source "Apples are sold at the green stall.")
+(instance Fish   Good   :source "Ben sells fish.")
+(instance Bread  Good   :source "Who sells bread?")

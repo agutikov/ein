@@ -1,0 +1,13 @@
+;;; Catalogue entry: (transitive R), std.algebra.
+
+(import std.algebra :symbols (transitive))
+
+(relation ancestor-of Person Person :why "a {?3} is an ancestor of a {?4}")
+(ancestor-of Ann Bob)
+(ancestor-of Bob Cy)
+
+;; R a b and R b c give R a c.
+(transitive ancestor-of)
+
+(query :goal (ancestor-of Ann ?d) :goal-text "Ann is an ancestor of {?d}.")
+(solve :no-search)

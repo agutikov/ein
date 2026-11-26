@@ -487,8 +487,8 @@ fn canonical(form: &str) -> String {
 }
 
 /// **What a step wrote by hand**: the forms of its program that no earlier
-/// step's program holds, as written, in order; each rule after a marker
-/// naming it, where `markers`.
+/// step's program holds, as written, in order; where `markers`, each rule
+/// after the marker the file writes directly above it.
 fn part(dir: &str, step: usize, markers: bool) -> String {
     let before: BTreeSet<String> = if step == 1 {
         BTreeSet::new()
@@ -498,14 +498,22 @@ fn part(dir: &str, step: usize, markers: bool) -> String {
             .map(|f| canonical(f))
             .collect()
     };
+    let file = contract_file(dir, &format!("step{step}.ein"));
     let mut out = Vec::new();
-    for f in spans(&contract_file(dir, &format!("step{step}.ein"))) {
+    for f in spans(&file) {
         if before.contains(&canonical(&f)) {
             continue;
         }
         if markers && f.starts_with("(rule") {
-            let name = f.split_whitespace().nth(1).unwrap_or("").to_string();
-            out.push(format!(";; missing: {name}"));
+            let at = file.find(&f).expect("a form is in its file");
+            let above = file[..at].trim_end_matches('\n');
+            let line = above[above.rfind('\n').map_or(0, |i| i + 1)..].to_string();
+            assert!(
+                line.starts_with(steps::MARKER),
+                "{dir}/step{step}.ein: no marker directly above {}",
+                f.lines().next().unwrap_or("")
+            );
+            out.push(line);
         }
         out.push(f);
     }

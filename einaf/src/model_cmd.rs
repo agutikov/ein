@@ -14,7 +14,7 @@ use einaf::probe::{self, Line, Planned};
 use crate::usage_error;
 
 /// What answers a call, as the options name it.
-struct RuntimeArgs {
+pub(crate) struct RuntimeArgs {
     model: Option<PathBuf>,
     ctx: u32,
     verbose: bool,
@@ -22,7 +22,7 @@ struct RuntimeArgs {
 }
 
 impl RuntimeArgs {
-    fn new() -> Self {
+    pub(crate) fn new() -> Self {
         RuntimeArgs {
             model: None,
             ctx: 65_536,
@@ -32,7 +32,11 @@ impl RuntimeArgs {
     }
 
     /// Take a runtime option at `a`; `false` where `a` is none.
-    fn take(&mut self, a: &str, it: &mut std::slice::Iter<'_, String>) -> Result<bool, String> {
+    pub(crate) fn take(
+        &mut self,
+        a: &str,
+        it: &mut std::slice::Iter<'_, String>,
+    ) -> Result<bool, String> {
         match a {
             "--model" => self.model = Some(it.next().ok_or("--model takes a path")?.into()),
             "--replay" => self.replay = Some(it.next().ok_or("--replay takes a path")?.into()),
@@ -48,7 +52,7 @@ impl RuntimeArgs {
         Ok(true)
     }
 
-    fn open(&self) -> Result<Box<dyn Runtime>, Opened> {
+    pub(crate) fn open(&self) -> Result<Box<dyn Runtime>, Opened> {
         if let Some(path) = &self.replay {
             let replay = Replay::from_file(path).map_err(Opened::Usage)?;
             eprintln!("einaf: replaying {} recorded calls", replay.len());
@@ -95,7 +99,7 @@ impl RuntimeArgs {
 
 /// Why no runtime was opened: the model's file did not load, a failure of
 /// every call, which `generate` records; or the options name none.
-enum Opened {
+pub(crate) enum Opened {
     #[cfg_attr(not(feature = "llama"), allow(dead_code))]
     Failed(einaf::model::Failure),
     Usage(String),

@@ -1,0 +1,12 @@
+;;; Catalogue entry: (symmetric R), std.algebra.
+
+(import std.algebra :symbols (symmetric))
+
+(relation is-married-to Person Person :why "a {?3} is married to a {?4}")
+(is-married-to Ann Bob)
+
+;; R a b gives R b a.
+(symmetric is-married-to)
+
+(query :goal (is-married-to Bob ?w) :goal-text "Bob is married to {?w}.")
+(solve :no-search)

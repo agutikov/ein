@@ -95,13 +95,19 @@ pub struct Module {
     /// The relations its rules read that no module of the library declares,
     /// written as they are, and their counts (`slot-partition`).
     pub unlisted: BTreeMap<String, BTreeSet<usize>>,
+    /// Names its rules read as values, which no module declares and a
+    /// program writes as they are (`gt`, the calculator's order); a program
+    /// that imports the module may write them.
+    pub values: BTreeSet<String>,
 }
 
 /// **The catalogue a grammar is rendered on**: the library's modules a
-/// program may select a theory from. This one is read off the library's
-/// texts, every module and every rule of one parameter or more; the
-/// catalogue the steps' prompts show, each entry a program the kernel runs,
-/// is written with the prompts, and a grammar rendered on it is narrower.
+/// program may select a theory from. [`Catalogue::library`] reads it off the
+/// library's texts, every module and every rule of one parameter or more;
+/// the catalogue the steps' prompts show, each entry a program the kernel
+/// runs ([`crate::catalogue`]), gives a narrower one,
+/// [`crate::catalogue::Catalogue::grammar`], which is what a run of the steps
+/// renders its grammars on.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Catalogue {
     pub modules: Vec<Module>,
@@ -145,6 +151,7 @@ impl Catalogue {
                     })
                     .map(|(r, c)| (r.clone(), c.clone()))
                     .collect(),
+                values: BTreeSet::new(),
             })
             .collect();
         Catalogue { modules }
@@ -763,6 +770,7 @@ fn closed(p: &Params) -> Closed {
                 .extend(counts.iter().copied());
         }
         names.extend(m.symbols.iter().map(|s| written(s)));
+        names.extend(m.values.iter().cloned());
     }
     Closed {
         relations,

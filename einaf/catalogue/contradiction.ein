@@ -1,0 +1,14 @@
+;;; Catalogue entry: std.contradiction, imported.
+
+(import std.contradiction)
+
+(relation sits-in Person Seat :why "a {?3} sits in a {?4}")
+(sits-in Ann Back)
+
+;; With the module imported, a fact beside its stored negation is a
+;; contradiction, for every relation the program declares: here root holds
+;; both, and root is dead.
+(not (sits-in Ann Back))
+
+(query :goal (sits-in Ann ?s) :goal-text "Ann sits in the {?s} seat.")
+(solve :no-search)

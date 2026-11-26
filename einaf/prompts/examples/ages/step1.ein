@@ -1,0 +1,10 @@
+;; The statements, in the text's own words. His sister is Sister; him is Tom.
+(is-years-old          Tom    (n (n z 1) 2)  :source "Tom is 12 years old.")
+(is-years-younger-than Sister (n z 5) Tom    :source "His sister is 5 years younger than him.")
+
+;; How old is his sister?
+(query :goal (is-years-old Sister ?n) :goal-text "His sister is {?n} years old.")
+
+;; The ontology, partial.
+(relation is-years-old          Person Number        :why "a {?3} is a {?4} years old")
+(relation is-years-younger-than Person Number Person :why "a {?3} is a {?4} years younger than a {?5}")

@@ -1,0 +1,24 @@
+;;; Catalogue entry: the calculator's add, std.math.decimal-arith.
+
+(import std.math.decimal-arith :symbols (add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+(relation has     Person Number :why "a {?3} has a {?4} of apples")
+(relation have-together Number  :why "they have {?3} apples together")
+(has Ann (n z 5))
+(has Bob (n z 7))
+
+;; A request (add X Y) is answered by (sum-of X Y S): a rule states the
+;; request and another reads the result back.
+(rule together-asks-the-sum ()
+  :match  (and (has Ann ?a) (has Bob ?b))
+  :assert (add ?a ?b)
+  :why    "Ann has {?a} and Bob {?b}: ask {?a} plus {?b}")
+(rule together-is-the-sum ()
+  :match  (and (has Ann ?a) (has Bob ?b) (sum-of ?a ?b ?s))
+  :assert (have-together ?s)
+  :why    "{?a} and {?b} make {?s}")
+
+(query :goal (have-together ?s) :goal-text "They have {?s} apples together.")
+(solve :no-search)

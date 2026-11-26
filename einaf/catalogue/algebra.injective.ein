@@ -1,0 +1,14 @@
+;;; Catalogue entry: (injective R), std.algebra.
+
+(import std.algebra :symbols (injective))
+
+(relation sits-in Person Seat :why "a {?3} sits in a {?4}")
+(sits-in Ann Front)
+
+;; A check: R a c and R b c with a and b two things is a contradiction, so a
+;; state that supposes Bob sits in Ann's seat is dead.
+(injective sits-in)
+
+(open (sits-in Bob Front))
+
+(query :goal (sits-in ?p Front) :goal-text "{?p} sits in the front seat.")
