@@ -8,8 +8,10 @@ runs; the **Level C gate**.
 **Feeds:** [the evaluation of Ein](../evaluation/README.md): each ablation of the feedback is also a measurement of
 one thing the kernel says.
 **Research plan:** [`EinAf.md` § Stage G](../EinAf.md#stage-g--ablation-program), G1 to G9.
-**Depth:** one stage file, [S2.6.4](s2.6.4_representation_ablations.md), which carries the link-grammar
-experiment whole. The other three stages are the paragraphs below, written to stage depth when
+**Depth:** one stage file, [S2.6.4](s2.6.4_representation_ablations.md), which carried the link-grammar
+experiment whole until [Q11](../open_questions/formalizer/Q11-link-grammar-value.md) was ruled (2026-11-27: no link
+grammar, no strictly pre-defined grammar); its input-side arm is now what
+[P2.2f](../p2.2f_text_analysis/README.md) finds feasible, an analysis of the text by trained networks. The other three stages are the paragraphs below, written to stage depth when
 [S2.5.4](../p2.5_harness/s2.5.4_first_table.md)'s table exists and says which of them matter.
 
 ---
@@ -26,7 +28,7 @@ an ablation is two configs and not two systems.
 Every ablation is **pre-registered**: before it runs, its stage writes the reading each outcome would have (*if
 G3 shows no gain from the core, the renderer of the core is not the contribution*), so that the table is read by
 a rule written before it. The template is the rule the old plan wrote for link grammar, a sign and a threshold
-with a consequence each, which [S2.6.4](s2.6.4_representation_ablations.md) keeps.
+with a consequence each, which [S2.6.4](s2.6.4_representation_ablations.md) keeps for the arm that replaces it.
 
 An ablation runs **as an experiment, by hand**, with its records, in no tier, as the main table does. Its budget
 is the main table's: generated tokens, thinking included. A level that says more costs **prompt** tokens, which
@@ -61,11 +63,12 @@ by the kernel against one reading committed and caught by the loop
 ([S2.4.5](../p2.4_loop/s2.4.5_alternatives_as_hypotheses.md); [Q8](../open_questions/formalizer/Q8-ambiguous-parses.md)).
 **Thinking before the program** is the third way (below).
 
-**[S2.6.4](s2.6.4_representation_ablations.md) — Representation and library (G8, G9, the link-grammar arm, the
+**[S2.6.4](s2.6.4_representation_ablations.md) — Representation and library (G8, G9, the analysis arm, the
 grammar off).** Direct generation of Ein against *text, then a structured semantic representation, then Ein*
 (G8), with the user's four oracle ablations from [F13](../../followups/f13_puzzles_beyond_zebra/ideas.md) (*text
-or program, known or unknown theory*) made arms; the link-grammar arm, which is the same question about the
-input side, [Q11](../open_questions/formalizer/Q11-link-grammar-value.md); the library's three conditions (G9), which
+or program, known or unknown theory*) made arms; the analysis arm, which is the same question about the
+input side, an analysis of the text by trained networks if [P2.2f](../p2.2f_text_analysis/README.md) finds one
+feasible (link grammar until [Q11](../open_questions/formalizer/Q11-link-grammar-value.md)'s ruling, which rules it out); the library's three conditions (G9), which
 answers *how much of the performance is reusable theory a person wrote* and also reads on
 [F8](../../followups/f8_FCA_RCA_odis_tptp/ideas.md)'s `C(n)`; and **the filter with its grammar off** (below).
 
@@ -96,7 +99,7 @@ the kernel stands, so that a pre-registered reading does not rest on something t
 | **G5** | a count, and two states | `--single` stops at the second state and lists the two; the count is the maximal line's listing or `k_s` under a description, which a budget can stop first. Which count the level says is S2.4.3's. **Nothing in the kernel computes what differs between two states**: the difference, and which part of it is *relevant*, are EinAf's |
 | **G6** | the region trace, whole or pruned to the goal's slice | the size is prompt tokens and has to fit the context, which is a field of the record |
 | **G7** | the transcript | nothing more |
-| **G8**, **G9**, link grammar, the grammar off | [S2.6.4](s2.6.4_representation_ablations.md) | |
+| **G8**, **G9**, the analysis arm, the grammar off | [S2.6.4](s2.6.4_representation_ablations.md) | |
 
 ## What P2.2 hands this phase
 
@@ -146,8 +149,9 @@ question, the question's default stands.
 - Every table shows both conditional probabilities under each reading of *certified*
   ([Q-M2.10](../open_questions/answer/Q-M2.10-what-does-ein-certifies-a-unique-model-mean-on-r.md)), and the flagged in
   a column of its own.
-- [Q11](../open_questions/formalizer/Q11-link-grammar-value.md) is resolved by the old rule, and the code matches the
-  verdict.
+- The analysis arm, where [P2.2f](../p2.2f_text_analysis/README.md) passed one, is read by its pre-registered rule,
+  and the code matches the verdict ([Q11](../open_questions/formalizer/Q11-link-grammar-value.md) is ruled: no link
+  grammar).
 - What each ablation showed of the kernel (a level that did not help, a thing the kernel could not say, a cost)
   is in [the evaluation of Ein](../evaluation/README.md).
 
@@ -198,7 +202,8 @@ Each is this re-plan's, recorded so that it can be corrected; none is a ruling.
 6. **A family's own modules are importable under G9's full condition only**, and the word problems run under
    it only: their theory is the calculator and the family's four modules, which no smaller condition holds and
    no model is asked to write.
-7. **The link-grammar arm uses the installed `link-parser` through its command line**, with no submodule and no
-   binding, and puts a linkage into the prompt as plain text, never as Ein.
+7. ~~**The link-grammar arm uses the installed `link-parser` through its command line**~~: struck by
+   [Q11](../open_questions/formalizer/Q11-link-grammar-value.md)'s ruling (2026-11-27); the arm is
+   [P2.2f](../p2.2f_text_analysis/README.md)'s analysis, in the form P2.2f measured, text or Ein facts.
 8. **`C(n)` under the smallest library is counted at more than one reading of *the same shape***, each named:
    which reading is kept is [M12](../../m12_rules_as_data/README.md)'s open question, and the user's.

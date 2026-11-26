@@ -12,10 +12,10 @@ line here. It is the process's, and no page of `docs/einaf/` cites it. Notes on 
 - llama.cpp, [`grammars/README.md`](https://github.com/ggml-org/llama.cpp/blob/master/grammars/README.md): GBNF as llama.cpp compiles it, and the lazy grammar `llama-server` starts at a trigger rather than the first token, which is where a grammar after the thinking begins.
 - [`analysis/host.md`](analysis/host.md#what-the-model-does-through-llama-server-a-probe): the host probe, `llama-server` on the GPU honouring a GBNF and a thinking model and a grammar not composing as they stand.
 
-## Semantic parsing: a parser's reading of a sentence as the facts' source — informs the link-grammar arm of [S2.6.4](p2.6_ablations/s2.6.4_representation_ablations.md)
+## Semantic parsing: a parser's reading of a sentence as the facts' source — informs [P2.2f](p2.2f_text_analysis/README.md) and the analysis arm of [S2.6.4](p2.6_ablations/s2.6.4_representation_ablations.md)
 
 - [`docs/lib/10-nlp-semantic-parsing.md`](../../docs/lib/10-nlp-semantic-parsing.md): link grammar, dependency and semantic parsers, and what each gives a formalizer.
-- [`nl2smt/README.md`](../../nl2smt/README.md): the Zebra puzzle's sentences through NLTK or link grammar to SMT, the proof of concept the arm starts from.
+- [`nl2smt/README.md`](../../nl2smt/README.md): the Zebra puzzle's sentences through NLTK or link grammar to SMT, a proof of concept outside Ein and EinAf; link grammar and NLTK's grammars are not used by EinAf ([Q11](open_questions/formalizer/Q11-link-grammar-value.md), ruled).
 
 ## Autoformalization: what a formalization is held to, and how its faithfulness is judged — informs the contract ([S2.2.1](p2.2_formalizer/s2.2.1_contract.md)), [S2.4.4](p2.4_loop/s2.4.4_faithfulness.md) and [M5](../m5_presentation/README.md)
 

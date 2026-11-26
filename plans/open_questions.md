@@ -23,7 +23,7 @@ file it keeps its id; do not reuse a closed id.
 | Q8  | Where do ambiguous NL parses go — branched on the IR, or rejected?      | [M2](m2_nl_to_ir/open_questions/README.md) |
 | Q9  | Per-puzzle declared ontology vs ontology inferred from text             | [M2](m2_nl_to_ir/open_questions/README.md) |
 | Q10 | When is direct LLM → constraint emission acceptable (no IR)?            | [M2](m2_nl_to_ir/open_questions/README.md) |
-| Q11 | Does link-grammar enrich LLM input usefully, or is it dead weight?      | [M2](m2_nl_to_ir/open_questions/README.md) |
+| Q11 | Does link-grammar enrich LLM input usefully, or is it dead weight?      | [M2](m2_nl_to_ir/open_questions/README.md); ruled 2026-11-27: not used |
 | Q12 | Which CT reading does the design commit to (A free / B schema / C functor)? | [followups F1](followups/f1_categorical_formulation.md) |
 | Q13 | Self-modifying constraint language — feasibility + bounded problem      | [followups F2](followups/f2_self_modifying_language.md) |
 | Q14 | Rule learning source — hand-written, library, LLM-suggested, or learned from walkthroughs? | [followups F4](followups/f4_cross_cutting.md) |
