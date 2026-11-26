@@ -13,3 +13,4 @@ topic; what is closed goes with the phase's folder.
 | id | finding | topic | status |
 |---|---|---|---|
 | [L-M2.5](process/L-M2.5-agents-md-names-the-slow-set-test-as-corpus-cli-s.md) | AGENTS.md names the slow-set test as `corpus_cli`'s; it is `ein-corpus`'s | `process` | closed |
+| [L-M2.6](einaf/L-M2.6-the-bounded-call-returns-no-writer-of-h.md) | The bounded call returns no writer of H | `einaf` | open |

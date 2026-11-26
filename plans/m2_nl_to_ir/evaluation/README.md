@@ -20,7 +20,7 @@ hand; this page is what it finds of the kernel, kept for the iteration of Ein th
 - **One file an entry**, `<topic>/E-<n>-<slug>.md`, under the topic it is about: its id and its bold sentence as
   the title; its kind, its status (open, or closed and by what; a strength stands), where it was filed and its
   owner; then the cells of its row, each a section, as they were written. This page is the index. **The ids are one
-  sequence for the milestone and its phases**, and the next free id is **E-114**.
+  sequence for the milestone and its phases**, and the next free id is **E-117**.
 - **An entry filed by a phase lives in the phase's `evaluation/`** (every phase's folder has one) until the phase
   closes. Then, if it is open or a strength, it moves here under the same topic; a closed one goes with the phase's
   folder, where `git log` keeps it.
@@ -53,14 +53,14 @@ module path its fix left the binary's.
 
 | topic | what it holds | here | in a phase's folder |
 |---|---|---:|---:|
-| [`answer/`](answer/) | R and what is said of it: the outcomes, the questions, cores, claims, counts, flagged programs | 26 | 0 |
-| [`diagnostics/`](diagnostics/) | what the kernel says beside an answer or instead of one: refusals, kinds, messages, places, the summary's lines | 17 | 0 |
-| [`bounds/`](bounds/) | how far and how long a run goes: termination, the clock, the caps, memory, time | 20 | 0 |
+| [`answer/`](answer/) | R and what is said of it: the outcomes, the questions, cores, claims, counts, flagged programs | 26 | 3 |
+| [`diagnostics/`](diagnostics/) | what the kernel says beside an answer or instead of one: refusals, kinds, messages, places, the summary's lines | 17 | 1 |
+| [`bounds/`](bounds/) | how far and how long a run goes: termination, the clock, the caps, memory, time | 20 | 2 |
 | [`library/`](library/) | Ein as a library: the API, building against it, embedding it, what its values hold | 7 | 0 |
-| [`language/`](language/) | the language: relations, modules, imports, names | 4 | 0 |
-| [`stdlib/`](stdlib/) | the standard library's theories, and how a program selects one | 6 | 0 |
-| [`hypotheses/`](hypotheses/) | H and the hypothesis mechanisms, the blind enumerator among them | 4 | 0 |
-| [`natural-language/`](natural-language/) | text: `:why`, `:source`, `:goal-text`, a value's words, a sentence for an answer | 6 | 0 |
+| [`language/`](language/) | the language: relations, modules, imports, names | 4 | 2 |
+| [`stdlib/`](stdlib/) | the standard library's theories, and how a program selects one | 6 | 3 |
+| [`hypotheses/`](hypotheses/) | H and the hypothesis mechanisms, the blind enumerator among them | 4 | 1 |
+| [`natural-language/`](natural-language/) | text: `:why`, `:source`, `:goal-text`, a value's words, a sentence for an answer | 6 | 1 |
 
 ## Strengths
 
@@ -192,6 +192,6 @@ One line a phase whose `evaluation/` holds entries, so that every id is found fr
   thirteen it closed went with its folder (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`):
   E-62, E-64, E-65, E-67, E-74, E-76 to E-79, E-88, E-90, E-99 (as far as *faster than the square*, the rest E-102)
   and E-101.
-- **E-104 to E-113 are P2.2's**, filed by S2.2.0a on the Zebra encodings, in
-  [its evaluation](../p2.2_formalizer/evaluation/README.md).
+- **E-104 to E-116 are P2.2's**, in [its evaluation](../p2.2_formalizer/evaluation/README.md): E-104 to E-113 filed
+  by S2.2.0a on the Zebra encodings, E-114 to E-116 by S2.2.1 on the steps by hand.
 - P2.3 to P2.10: none yet.

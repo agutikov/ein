@@ -13,6 +13,11 @@
 
 [`contract_example.ein`](../../analysis/probes/p2.2/contract_example.ein), [`contract_example_no_mechanism.ein`](../../analysis/probes/p2.2/contract_example_no_mechanism.ein), [`contract_example_closed.ein`](../../analysis/probes/p2.2/contract_example_closed.ein), each under `--single`
 
+Confirmed by S2.2.1, 2026-11-26: the three forms are `einaf/contract/youngest/step3.ein`, `no-mechanism.ein` and
+`closed.ein`, the program in synthesis order, and EinAf's gate step holds them (`einaf/tests/contract.rs`'s
+`the_worked_example_turns_on_its_mechanism_line`): `no-search` and *one*, *Cy is the youngest*; 5 blind candidates
+and *flagged* on `older`; 2 blind candidates, `(youngest Ann)` and `(youngest Bob)`, *several*, 4 states.
+
 ## What it costs the application
 
 the hypothesis mechanism is a part of the formalization a model has to get right, and the contract makes it one

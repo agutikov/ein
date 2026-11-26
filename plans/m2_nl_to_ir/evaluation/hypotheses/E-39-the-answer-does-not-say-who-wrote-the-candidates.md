@@ -13,6 +13,9 @@
 
 [`youngest_absent_nosolve.ein`](../../analysis/probes/p2.3/youngest_absent_nosolve.ein)
 
+Confirmed by S2.2.1, 2026-11-26: EinAf's feedback object holds no writer either, and the contract's tests read it off
+`ein show hyps` ([L-M2.6](../../p2.2_formalizer/findings/einaf/L-M2.6-the-bounded-call-returns-no-writer-of-h.md)).
+
 ## What it costs the application
 
 with E-13: the feedback cannot say *you named no hypothesis mechanism* from the answer alone

@@ -10,7 +10,7 @@ milestone was *NL → IR*; they keep their numbers. **Q-M2.n** is the milestone-
 ([`analysis/`](../analysis/README.md)), Q-M2.12–13 with the user's answers of that day, Q-M2.14–15 with the
 answers that followed them, Q-M2.16 with the re-plan, Q-M2.17 with the user's answers to the re-plan, Q-M2.18–21 with
 P2.1's report, filed in the phase's folder and moved here at its close ([below](#questions-of-a-phase)), Q-M2.22 with P2.2's re-plan to the
-user's steps, and Q-M2.23 and Q-M2.24 with S2.2.0a, filed in that phase's folder.
+user's steps, Q-M2.23 and Q-M2.24 with S2.2.0a, and Q-M2.25 and Q-M2.26 with S2.2.1, filed in that phase's folder.
 
 **Q-M2.5, Q-M2.6 and Q-M2.7 were this ledger's Q23, Q24 and Q25 until 2026-11-25.** Those three ids were already the
 root ledger's, given to questions of M1's, and two of them are decision files under `docs/decisions/` (a premise
@@ -91,7 +91,7 @@ same topic, and what is ruled goes with the phase's folder, where `git log` keep
 | phase | its questions |
 |---|---|
 | P2.1 | none: Q-M2.18 to Q-M2.21, raised by its report, moved here open at its close, 2026-11-26, its folder deleted (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`) |
-| [P2.2](../p2.2_formalizer/README.md) | Q-M2.22, raised by the re-plan to the user's steps, and Q-M2.23 and Q-M2.24, raised by S2.2.0a: [its open questions](../p2.2_formalizer/open_questions/README.md) |
+| [P2.2](../p2.2_formalizer/README.md) | Q-M2.22, raised by the re-plan to the user's steps, Q-M2.23 and Q-M2.24, raised by S2.2.0a, and Q-M2.25 and Q-M2.26, raised by S2.2.1: [its open questions](../p2.2_formalizer/open_questions/README.md) |
 | [P2.3](../p2.3_benchmark/README.md) to [P2.10](../p2.10_result_artifact_demo/README.md) | none yet |
 
-**The next free id is Q-M2.25.**
+**The next free id is Q-M2.27.**
