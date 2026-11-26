@@ -458,7 +458,9 @@ paragraph, no register count, no measurement (the user's rule).
   **P2.1 is closed on the user's word and its plans deleted**
   (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`);
   **P2.2 is started on the user's word, runs its stages to its end and stops
-  there for review; no other phase of M2 starts until the user says so.** M1f, the structure of the hypothesis
+  there for review; no other phase of M2 starts until the user says so.**
+  [P2.2b](plans/m2_nl_to_ir/p2.2b_guided_thinking/README.md), guided thinking,
+  is planned on the user's word and not started. M1f, the structure of the hypothesis
   set and the documentation, is closed on the user's word and its plans deleted
   (`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation`): its
   answers are decisions under `docs/decisions/`, its rulings about the process
