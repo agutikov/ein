@@ -84,8 +84,8 @@ writes, in the order it writes them ([the contract § 3.1](04-contract.md#31-eac
 | step | what its grammar allows, in order | rendered on |
 |---|---|---|
 | **1** | statements (facts and stored negations with `:source`) and queries, the answer query, with `:goal-text`, exactly once among them; then `relation` forms, `:why` required, its references `{?2}` to `{?n+2}` for `n` labels, and memberships, `:source` where there is one | the input's sentences, so that a `:source` is one of them verbatim; or nothing |
-| **2** | the ontology, `relation` forms and facts; `import` forms of the catalogue's modules, listing names each declares; the catalogue's activating facts, each at its count, and the marker of a missing property; no `rule` | the catalogue |
-| **2b**, step 2's second call | `rule` forms, each pattern and conclusion of a relation the program or a module it imports declares, at a count it is declared at, over the program's names and variables | the catalogue; the program of the steps before |
+| **2** | the ontology, `relation` forms and facts; `import` forms of the catalogue's modules, listing names each declares but those step 1's program declares itself, which a list would bind twice; the catalogue's activating facts, each at its count, and the marker of a missing property; no `rule` | the catalogue; step 1's program |
+| **2b**, step 2's second call | `rule` forms, each after a marker, each pattern and conclusion of a relation the program or a module it imports declares, at a count it is declared at, over the program's names and variables | the catalogue; the program of the steps before |
 | **3** | the activating facts of the modules the program imports, at their counts, over its names; a marker before each `rule` form, closed as step 2b's; the hypothesis mechanism: `(solve :no-search)`, `(solve :hypothesis-relations (…))` of the program's relations, a written `(open F)` | the catalogue; the program of the steps before |
 
 **The catalogue** a grammar is rendered on is read off the library's texts, `einaf::grammar::steps::Catalogue`:
@@ -95,31 +95,38 @@ declares (`slot-partition`). `einaf grammar catalogue` lists it.
 
 **What a step's vocabulary closes.** Step 1 writes its facts before their declarations, so it closes none of them. Step
 2 declares relations in the same output as the facts of them, so its ontology is open, and its imports and activating
-facts are the catalogue's. Steps 2b and 3 are rendered on the program of the steps before them: a fact, a pattern or
+facts are the catalogue's, an import listing no name step 1 declared. Steps 2b and 3 are rendered on the program of the steps before them: a fact, a pattern or
 a conclusion they write is of a relation that program or a module it imports declares, at a declared count, and its
 names are the program's. No grammar holds an argument to a label: a label is no type
 ([Q-M1f.372](../decisions/language/Q-M1f.372-ein-has-no-types-a-declarations-slot-names-are.md)).
 
 **The layout is the model's.** A paren hugs what it holds; a separator between two tokens is a run of up to 24 spaces,
-or a line break and an indentation as long; forms are a line break or a blank line apart; no comment is written but
-**the marker**, a line of its own, `;; missing: ` and the property's words; a name is a run of letters, digits, `_`
-and `-` that is no word of Ein's; a string holds no `"`, `\` or line break, and a template's braces only its
-references. **The marker is a comment**: a program the kernel reads is the same with it or without it.
+or a line break and an indentation as long; forms are a line break or a blank line apart; a comment is a line of its
+own between forms, before the first and after the last; a name is a run of letters, digits, `_` and `-` that is no
+word of Ein's; a string holds no `"`, `\` or line break, and a template's braces only its references. **The marker**
+of a missing property is the comment line `;; missing: ` and the property's words, which steps 2b and 3 write directly
+above each rule and step 2 writes as any comment. A program the kernel reads is the same with its comments or
+without them.
 
 ## 4. Where a grammar begins, and how an output ends
 
-**Thinking off, from the first token** (`{"at": "first"}`): the grammar holds the whole output, and the model's first
-choice, a Markdown fence, is no token the grammar allows.
+**Thinking off, from the first token** (`{"at": "first"}`): the grammar holds the whole output. **A grammar begins
+where the program begins**: where the prompt asks for the program in one fenced block, the grammar a request carries
+is the grammar with a root added, `fenced ::= "```" [a-z]* "\n" root "\n" "\n"? "```"`, so that the model's first
+token is the fence it means to write, the program is held inside it, and the turn ends at the closing fence. A grammar
+that leaves the fence out refuses the model's first choice, and the model's next is the program the prompt shows
+nearest, not the one it was asked for (the stage's record has the runs).
 
 **Thinking on, after the thinking**: a grammar from the first token takes the thinking too
 ([the model's runtime § 6](05-model.md#6-a-grammar-and-where-it-begins)), so the grammar a request carries is the
 grammar with a root added, `after-thinking ::= "</think>" "\n"? "\n"? root`, begun lazily at the trigger
 `[\s\S]*?(</think>)[\s\S]*`: llama.cpp feeds a lazy grammar the text from its trigger's first group, so the trigger
 is the grammar's own first text, and the white space after it is bounded. `einaf::grammar::request_grammar` writes
-both.
+each frame, `einaf::grammar::Frame`'s `fence` and `after_thinking`, alone or together (`after-thinking` then holds
+`fenced`).
 
-**The end.** The root of a step's grammar is the step's part in synthesis order, so that the end of the turn is
-allowed only after a whole part: step 1 after its ontology, with its one answer query written; steps 2, 2b and 3
+**The end.** The root of a step's grammar is the step's part in synthesis order, inside the fence where there is
+one, so that the end of the turn is allowed only after a whole part (and its closing fence): step 1 after its ontology, with its one answer query written; steps 2, 2b and 3
 after any whole form of theirs, and step 3, which may have nothing to add, before its first too. The model ends its turn where the grammar allows the end of turn and the model takes it.
 Reaching the token budget is the runtime's stop `max-tokens`, a truncated output, never a refusal of the grammar.
 
@@ -143,13 +150,14 @@ A request's grammar carries `check` ([the model's runtime § 3](05-model.md#3-a-
 einaf grammar write [--check]                          # einaf/grammars/ein.gbnf and its manifest, or exit 1 where they differ
 einaf grammar accept [--grammar G] [--root R] FILE...  # EinAf's acceptor: each file accepted, or refused at a line and column
 einaf grammar sample [--grammar G] [--root R] [--seed N] [--count N]   # texts the grammar allows
-einaf grammar render whole|1|2|2b|3 [--program P] [--text T] [--after-thinking] [--request]   # a grammar, or the one a request carries
+einaf grammar render whole|1|2|2b|3 [--program P] [--text T] [--fence] [--after-thinking] [--request]   # a grammar in its frame, or the one a request carries
 einaf grammar catalogue                                # the catalogue the steps' grammars are rendered on
 einaf grammar llama --model M [--grammar G] [--root R] [--list L] FILE...   # llama.cpp's reading beside EinAf's (`llama`)
 ```
 
 Without `--grammar`, `accept`, `sample` and `llama` read the whole grammar from its root `program`. `render 1` is
-rendered on `--text`'s sentences; `render 2b` and `render 3` on `--program`, the program of the steps before.
+rendered on `--text`'s sentences; `render 2`, `render 2b` and `render 3` on `--program`, the program of the steps
+before.
 
 ## 7. Held by
 
@@ -162,7 +170,7 @@ rendered on `--text`'s sentences; `render 2b` and `render 3` on `--program`, the
 | `the_grammar_accepts_a_corpus_file_exactly_when_the_parser_does` | § 2's first test, every corpus file; `--nocapture` prints the counts and its time |
 | `every_shape_of_the_kernels_table_is_refused_by_the_grammar` | every row of `ein-ir/tests/golden/grammar_table.txt` refused by the parser and by the grammar |
 | `every_text_sampled_from_the_whole_grammar_parses` | § 2's second test, 2 000 texts from a stated seed, and that they reach the hand-written rules |
-| `each_steps_grammar_accepts_the_steps_written_by_hand` | each step's grammar, rendered for each text of [the steps by hand](04-contract.md#7-the-steps-by-hand), accepts what that step wrote, a marker before each rule of step 3; step 2b's the rules step 3 wrote |
+| `each_steps_grammar_accepts_the_steps_written_by_hand` | each step's grammar, rendered for each text of [the steps by hand](04-contract.md#7-the-steps-by-hand), accepts what that step wrote, a marker before each rule of step 3; step 2b's the rules step 3 wrote, each after a marker |
 | `every_text_sampled_from_a_steps_grammar_parses_and_is_of_its_step` | texts sampled from each step's grammar, for each of those texts, parse, and are of the forms the step writes in its order |
 
 The unit tests of [`gbnf.rs`](../../einaf/src/grammar/gbnf.rs) and [`whole.rs`](../../einaf/src/grammar/whole.rs)

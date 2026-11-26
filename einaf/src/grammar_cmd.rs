@@ -265,21 +265,22 @@ fn catalogue() -> ExitCode {
     ExitCode::SUCCESS
 }
 
-/// `einaf grammar render GRAMMAR [--program FILE] [--text FILE]
+/// `einaf grammar render GRAMMAR [--program FILE] [--text FILE] [--fence]
 /// [--after-thinking] [--request]`: the whole grammar (`whole`), or a step's
 /// (`1`, `2`, `2b`, `3`) rendered for the program of the steps before it and
-/// the input's sentences; with `--request`, the grammar as a request carries
-/// it, as JSON, begun after the thinking where `--after-thinking`.
+/// the input's sentences, in its frame (inside a fence, after the thinking);
+/// with `--request`, the grammar as a request carries it, as JSON.
 fn render(args: &[String]) -> ExitCode {
     let mut n = None;
     let (mut program, mut text) = (None, None);
-    let (mut after, mut request) = (false, false);
+    let (mut after, mut request, mut fence) = (false, false, false);
     let mut it = args.iter();
     while let Some(a) = it.next() {
         match a.as_str() {
             "--program" => program = it.next().cloned(),
             "--text" => text = it.next().cloned(),
             "--after-thinking" => after = true,
+            "--fence" => fence = true,
             "--request" => request = true,
             s if n.is_none() && !s.starts_with('-') => n = Some(s.to_string()),
             s => return usage_error(&format!("unknown argument {s}")),
@@ -314,16 +315,15 @@ fn render(args: &[String]) -> ExitCode {
         }
         None => return usage_error("render takes whole, 1, 2, 2b or 3"),
     };
+    let frame = einaf::grammar::Frame {
+        after_thinking: after,
+        fence,
+    };
+    let g = einaf::grammar::request_grammar(&gbnf, &root, frame);
     if request {
-        let g = einaf::grammar::request_grammar(&gbnf, &root, after);
         println!("{}", serde_json::to_string(&g).expect("a grammar is JSON"));
-    } else if after {
-        print!(
-            "{}",
-            einaf::grammar::request_grammar(&gbnf, &root, true).text
-        );
     } else {
-        print!("{gbnf}");
+        print!("{}", g.text);
     }
     ExitCode::SUCCESS
 }

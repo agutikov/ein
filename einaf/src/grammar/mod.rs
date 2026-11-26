@@ -57,17 +57,41 @@ pub const THINK_END: &str = "</think>";
 /// generated text, its first group the closing tag.
 pub const THINK_TRIGGER: &str = "[\\s\\S]*?(</think>)[\\s\\S]*";
 
+/// The root of a grammar whose program stands in a fenced block.
+pub const FENCED: &str = "fenced";
+
+/// **Where a grammar begins, in a model's output.**
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct Frame {
+    /// After the model's thinking, at its closing tag, where thinking is on.
+    pub after_thinking: bool,
+    /// Inside a fenced block: three backticks, a word, a line break, the
+    /// program, a line break or two, three backticks. The frame a prompt that
+    /// asks for one block gets, so that the model's first token is its own.
+    pub fence: bool,
+}
+
 /// **A grammar as a request carries it**: `text` at `root`, from the first
-/// token; or, `after_thinking`, with the root [`AFTER_THINKING`] added and
-/// begun at [`THINK_TRIGGER`]. A token is held to it by the chain's choice
-/// first ([`crate::model::GrammarCheck::ChosenFirst`]).
-pub fn request_grammar(text: &str, root: &str, after_thinking: bool) -> crate::model::Grammar {
+/// token; inside a fence, with the root [`FENCED`] added; after the
+/// thinking, with the root [`AFTER_THINKING`] added and begun at
+/// [`THINK_TRIGGER`]. A token is held to it by the chain's choice first
+/// ([`crate::model::GrammarCheck::ChosenFirst`]).
+pub fn request_grammar(text: &str, root: &str, frame: Frame) -> crate::model::Grammar {
     use crate::model::{Grammar, GrammarCheck, GrammarStart};
-    if after_thinking {
+    let mut text = text.to_string();
+    let mut root = root.to_string();
+    if frame.fence {
+        text.push_str(&format!(
+            "\n{FENCED} ::= \"```\" [a-z]* \"\\n\" {root} \"\\n\" \"\\n\"? \"```\"\n"
+        ));
+        root = FENCED.to_string();
+    }
+    if frame.after_thinking {
+        text.push_str(&format!(
+            "\n{AFTER_THINKING} ::= \"{THINK_END}\" \"\\n\"? \"\\n\"? {root}\n"
+        ));
         Grammar {
-            text: format!(
-                "{text}\n{AFTER_THINKING} ::= \"{THINK_END}\" \"\\n\"? \"\\n\"? {root}\n"
-            ),
+            text,
             root: AFTER_THINKING.to_string(),
             start: GrammarStart::Patterns {
                 patterns: vec![THINK_TRIGGER.to_string()],
@@ -76,8 +100,8 @@ pub fn request_grammar(text: &str, root: &str, after_thinking: bool) -> crate::m
         }
     } else {
         Grammar {
-            text: text.to_string(),
-            root: root.to_string(),
+            text,
+            root,
             start: GrammarStart::First,
             check: GrammarCheck::ChosenFirst,
         }

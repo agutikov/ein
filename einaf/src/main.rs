@@ -28,7 +28,7 @@ usage: einaf outcome FILE [QUESTION] [BOUNDS]
        einaf grammar write [--check]
        einaf grammar accept [--grammar FILE] [--root NAME] FILE...
        einaf grammar sample [--grammar FILE] [--root NAME] [--seed N] [--count N]
-       einaf grammar render whole|1|2|2b|3 [--program FILE] [--text FILE] [--after-thinking] [--request]
+       einaf grammar render whole|1|2|2b|3 [--program FILE] [--text FILE] [--fence] [--after-thinking] [--request]
        einaf grammar catalogue
        einaf grammar llama RUNTIME [--grammar FILE] [--root NAME] [--list FILE] FILE...
        einaf grammar --json-schema FILE

@@ -502,11 +502,12 @@ fn params(dir: &str, program_of: Option<usize>, catalogue: &Catalogue) -> Params
 }
 
 /// A step's grammar, rendered for a text's hand-written steps: step 1 on
-/// the input's sentences; step 2 on the catalogue; steps 2b and 3 on the
-/// program of steps 1 and 2.
+/// the input's sentences; step 2 on the catalogue and step 1's program;
+/// steps 2b and 3 on the program of steps 1 and 2.
 fn rendered(dir: &str, step: Step, catalogue: &Catalogue) -> steps::Rendered {
     let program = match step {
-        Step::One | Step::Two => None,
+        Step::One => None,
+        Step::Two => Some(1),
         Step::TwoRules | Step::Three => Some(2),
     };
     steps::render(step, &params(dir, program, catalogue))
@@ -514,7 +515,7 @@ fn rendered(dir: &str, step: Step, catalogue: &Catalogue) -> steps::Rendered {
 
 /// **Each step's grammar accepts that step's hand-written part**, rendered
 /// on its vocabulary, for every text of the contract's steps by hand; step
-/// 2's second call is held to the rules step 3 wrote.
+/// 2's second call is held to the rules step 3 wrote, each after a marker.
 #[test]
 fn each_steps_grammar_accepts_the_steps_written_by_hand() {
     let catalogue = Catalogue::library();
@@ -529,6 +530,10 @@ fn each_steps_grammar_accepts_the_steps_written_by_hand() {
                 Step::TwoRules => spans(&part(dir, 3, false))
                     .into_iter()
                     .filter(|f| f.starts_with("(rule"))
+                    .map(|f| {
+                        let name = f.split_whitespace().nth(1).unwrap_or("").to_string();
+                        format!(";; missing: {name}\n{f}")
+                    })
                     .collect::<Vec<_>>()
                     .join("\n"),
             };

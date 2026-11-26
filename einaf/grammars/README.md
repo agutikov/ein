@@ -9,16 +9,18 @@ request time by a function of `einaf`, and a record names each by its text's SHA
 | **the whole grammar**, root `program` | every text Ein's parser takes, every form `ein.y`'s `Program` takes, with Ein's lexer's separators and comments; held to the parser on the corpus | the acceptance test of the grammar against the parser | nothing: generated from `ein.l` and `ein.y` | [`ein.gbnf`](ein.gbnf), `einaf grammar write` |
 | **the whole grammar**, root `root` | the forms the contract admits, in any order: `relation`, `rule`, `import`, `solve`, `query`, a fact, a stored negation, a written `(open F)`; no `config`, `trace`, macro or saved file's wrapper | a whole program in one call | nothing | [`ein.gbnf`](ein.gbnf) |
 | **step 1** | statements (facts and stored negations with `:source`) and queries, exactly one with `:goal-text`; then `relation` forms with `:why` and memberships | the formalization's step 1 | the input's sentences (a `:source` is one of them verbatim), or nothing | `einaf::grammar::steps`, `einaf grammar render 1` |
-| **step 2** | `relation` forms and facts (the ontology); `import` forms of the catalogue's modules with names each declares; the catalogue's activating facts at their counts, and the marker of a missing property; no `rule` | step 2's first call | the catalogue | `einaf grammar render 2` |
-| **step 2b** | `rule` forms, every pattern and conclusion of a relation the program or a module it imports declares, at a count it is declared at | step 2's second call, on a marker | the catalogue; the program of the steps before | `einaf grammar render 2b` |
+| **step 2** | `relation` forms and facts (the ontology); `import` forms of the catalogue's modules with names each declares but those step 1's program declares; the catalogue's activating facts at their counts, and the marker of a missing property; no `rule` | step 2's first call | the catalogue; step 1's program | `einaf grammar render 2` |
+| **step 2b** | `rule` forms, each after a marker, every pattern and conclusion of a relation the program or a module it imports declares, at a count it is declared at | step 2's second call, on a marker | the catalogue; the program of the steps before | `einaf grammar render 2b` |
 | **step 3** | the activating facts of the modules the program imports, over its names; a marker before each `rule` form, closed as step 2b's; the hypothesis mechanism, `(solve :no-search)`, `(solve :hypothesis-relations (…))`, written `(open F)` | step 3 | the catalogue; the program of the steps before | `einaf grammar render 3` |
 
 Every grammar but the whole one is written in the model's layout: a paren hugs what it holds, a separator between two
 tokens is a run of up to 24 spaces or a line break and an indentation as long, forms are a line break or a blank line
-apart, no comment but the marker (`;; missing: …`), a name of letters, digits, `_` and `-`, a string with no `"`,
-`\` or line break. A grammar that begins after the model's thinking is any of them with the root `after-thinking`
-added, `"</think>"`, at most two line breaks, and the grammar's root, begun at the trigger
-`[\s\S]*?(</think>)[\s\S]*` (`einaf::grammar::request_grammar`).
+apart, a comment a line of its own between forms (the marker, `;; missing: …`, one of them), a name of letters,
+digits, `_` and `-`, a string with no `"`, `\` or line break. **Each is carried in a frame**
+(`einaf::grammar::request_grammar`): inside the fenced block a prompt asks for, the root `fenced` added, `"```"`, a
+word, a line break, the grammar's root, one or two line breaks, `"```"`; and after the model's thinking, the root
+`after-thinking` added, `"</think>"`, at most two line breaks, and the root, begun at the trigger
+`[\s\S]*?(</think>)[\s\S]*`.
 
 ## The hand-written rules of the whole grammar
 

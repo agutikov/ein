@@ -6,14 +6,16 @@
 //! | step | what it allows, in order | rendered on |
 //! |---|---|---|
 //! | 1 | statements (facts and stored negations, `:source` required) and queries, the answer query among them once; then `relation` forms, `:why` required and its references held to the declaration's arrows, and memberships | the input's sentences, or nothing |
-//! | 2 | the ontology (`relation` forms and facts); imports of the catalogue's modules with the names each lists; the catalogue's activating facts at their counts, and the marker of a missing property | the catalogue |
+//! | 2 | the ontology (`relation` forms and facts); imports of the catalogue's modules with the names each declares but those the program declares; the catalogue's activating facts at their counts, and the marker of a missing property | the catalogue; step 1's program, where given |
 //! | 2b | `rule` forms, closed over the program's vocabulary | the catalogue; the program so far |
 //! | 3 | the activating facts of the modules the program imports, at their counts, over the program's names; a marker before each `rule` form; the hypothesis mechanism, `(solve …)` and written `(open F)` | the catalogue; the program so far |
 //!
 //! **The layout is the model's**: a paren hugs what it holds, a separator
 //! between two tokens is a run of up to [`SPACES`] spaces or a line break and
 //! an indentation as long, forms are a line break or a blank line apart, and
-//! no comment is written but the marker, `;; missing: …`, a line of its own.
+//! a comment is a line of its own between forms; the marker of a missing
+//! property is the comment line `;; missing: …`, which step 3 writes directly
+//! above each rule.
 //! A name is a run of letters, digits, `_` and `-` that is no word of
 //! Ein's; a string holds no `"`, `\` or line break, and a template's braces
 //! only its references.
@@ -159,7 +161,8 @@ pub struct Params {
     pub sentences: Option<Vec<String>>,
     /// Steps 2, 2b and 3.
     pub catalogue: Catalogue,
-    /// Steps 2b and 3: the program of the steps before.
+    /// Steps 2, 2b and 3: the program of the steps before (step 2's, step
+    /// 1's), empty where none is given.
     pub program: Vocabulary,
 }
 
@@ -175,13 +178,14 @@ pub struct Rendered {
 
 /// The root of every step's grammar.
 pub const ROOT: &str = "root";
+/// The step's forms, which the root holds between comment lines.
+const BODY: &str = "body";
 
 impl Rendered {
-    /// **The grammar of a request**, held to by the chain's choice first:
-    /// from the first token, or begun after the thinking
-    /// ([`super::request_grammar`]).
-    pub fn request(&self, after_thinking: bool) -> crate::model::Grammar {
-        super::request_grammar(&self.text, &self.root, after_thinking)
+    /// **The grammar of a request**, held to by the chain's choice first, in
+    /// its frame ([`super::request_grammar`]).
+    pub fn request(&self, frame: super::Frame) -> crate::model::Grammar {
+        super::request_grammar(&self.text, &self.root, frame)
     }
 }
 
@@ -204,6 +208,18 @@ pub fn render(step: Step, p: &Params) -> Rendered {
         Step::TwoRules => step_rules(&mut g, p),
         Step::Three => step_three(&mut g, p),
     }
+    g.rules.insert(
+        0,
+        Rule::new(
+            ROOT,
+            seq(vec![
+                Expr::star(seq(vec![r("comment"), r("nl")])),
+                r(BODY),
+                Expr::star(seq(vec![r("nl"), r("comment")])),
+            ]),
+        )
+        .doc("the step's forms, comment lines before and after them"),
+    );
     layout(&mut g);
     let text = g.text();
     Rendered {
@@ -312,9 +328,23 @@ fn layout(g: &mut Grammar) {
         .doc("between two tokens: a run of spaces, or a line break and an indentation"),
     );
     g.push(
-        Rule::new("nl", seq(vec![lit("\n"), Expr::opt(lit("\n"))]))
-            .doc("between two forms: a line break, or a blank line"),
+        Rule::new(
+            "nl",
+            seq(vec![
+                lit("\n"),
+                Expr::opt(lit("\n")),
+                Expr::star(seq(vec![r("comment"), lit("\n"), Expr::opt(lit("\n"))])),
+            ]),
+        )
+        .doc("between two forms: a line break or a blank line, and comment lines, each a line of its own"),
     );
+    g.push(Rule::new(
+        "comment",
+        seq(vec![
+            lit(";"),
+            Expr::star(Expr::class(true, &[('\n', '\n')])),
+        ]),
+    ));
     let lx = whole::lexical(whole::EIN_L).expect("ein.l reads");
     let set: Vec<(u32, u32)> = NAME_CHARS
         .iter()
@@ -416,7 +446,7 @@ fn var_refs() -> Expr {
 
 fn step_one(g: &mut Grammar, p: &Params) {
     g.push(
-        Rule::new(ROOT, seq(vec![r("statements"), r("nl"), r("ontology")]))
+        Rule::new(BODY, seq(vec![r("statements"), r("nl"), r("ontology")]))
             .doc("step 1: the statements with the answer query among them, then the ontology"),
     );
     g.push(Rule::new(
@@ -544,15 +574,22 @@ fn step_one(g: &mut Grammar, p: &Params) {
 // ── Step 2 ──────────────────────────────────────────────────────────
 
 /// An import of a module of the catalogue, with the names it lists.
-fn imports(g: &mut Grammar, c: &Catalogue) {
+/// An import of a module of the catalogue, listing names it declares but
+/// the ones the program declares itself, which a list would bind twice.
+fn imports(g: &mut Grammar, c: &Catalogue, own: &Vocabulary) {
     let mut alts = Vec::new();
     for (i, m) in c.modules.iter().enumerate() {
         let syms = format!("symbol-{}", i + 1);
-        let list = if m.symbols.is_empty() {
+        let listable: Vec<&String> = m
+            .symbols
+            .iter()
+            .filter(|s| !own.declared.contains_key(*s) && !own.rules.contains_key(*s))
+            .collect();
+        let list = if listable.is_empty() {
             Expr::Empty
         } else {
             g.push(
-                Rule::new(&syms, alt(m.symbols.iter().map(|s| lit(s)).collect()))
+                Rule::new(&syms, alt(listable.iter().map(|s| lit(s)).collect()))
                     .doc(&format!("a name {} declares", m.module)),
             );
             Expr::opt(seq(vec![
@@ -608,11 +645,15 @@ fn catalogue_heads(c: &Catalogue) -> BTreeMap<String, BTreeSet<usize>> {
     heads
 }
 
-/// **The marker of a missing property**: a comment line of its own, the one
-/// comment a step's grammar allows, the property's words after it.
+/// **The marker of a missing property**: a comment line of its own, the
+/// property's words after it, which step 3 writes directly above each rule.
 pub const MARKER: &str = ";; missing: ";
 
 fn marker(g: &mut Grammar) {
+    g.push(
+        Rule::new("marked", seq(vec![r("marker"), lit("\n"), r("rule")]))
+            .doc("a rule, the marker of the property it supplies on the line above it"),
+    );
     g.push(
         Rule::new(
             "marker",
@@ -621,7 +662,7 @@ fn marker(g: &mut Grammar) {
                 Expr::plus(Expr::class(true, &[('\n', '\n')])),
             ]),
         )
-        .doc("the marker of a missing property: a comment line, the one comment written"),
+        .doc("the marker of a missing property: a comment line"),
     );
 }
 
@@ -629,7 +670,7 @@ fn step_two(g: &mut Grammar, p: &Params) {
     let block = |item: &str| seq(vec![r(item), Expr::star(seq(vec![r("nl"), r(item)]))]);
     g.push(
         Rule::new(
-            ROOT,
+            BODY,
             alt(vec![
                 seq(vec![
                     r("ontology"),
@@ -659,7 +700,7 @@ fn step_two(g: &mut Grammar, p: &Params) {
     ));
     g.push(Rule::new("imports", block("import")));
     g.push(Rule::new("selection", block("select")));
-    g.push(Rule::new("select", alt(vec![r("activator"), r("marker")])));
+    g.push(Rule::new("select", r("activator")));
     g.push(
         Rule::new(
             "activator",
@@ -667,8 +708,7 @@ fn step_two(g: &mut Grammar, p: &Params) {
         )
         .doc("an activating fact of the catalogue, at its count, over any names"),
     );
-    imports(g, &p.catalogue);
-    marker(g);
+    imports(g, &p.catalogue, &p.program);
     open_args(g);
     g.push(Rule::new("source", string(text_char(false), None)));
     declaration(g, "");
@@ -862,11 +902,15 @@ fn step_rules(g: &mut Grammar, p: &Params) {
     let c = closed(p);
     g.push(
         Rule::new(
-            ROOT,
-            seq(vec![r("rule"), Expr::star(seq(vec![r("nl"), r("rule")]))]),
+            BODY,
+            seq(vec![
+                r("marked"),
+                Expr::star(seq(vec![r("nl"), r("marked")])),
+            ]),
         )
         .doc("step 2's second call: the rules for the property its marker names"),
     );
+    marker(g);
     rule_form(g);
     closed_rules(g, &c);
 }
@@ -876,7 +920,7 @@ fn step_three(g: &mut Grammar, p: &Params) {
     let block = |item: &str| seq(vec![r(item), Expr::star(seq(vec![r("nl"), r(item)]))]);
     g.push(
         Rule::new(
-            ROOT,
+            BODY,
             alt(vec![
                 Expr::Empty,
                 seq(vec![
@@ -898,10 +942,8 @@ fn step_three(g: &mut Grammar, p: &Params) {
     g.push(Rule::new(
         "synthesis",
         seq(vec![
-            r("marker"),
-            r("nl"),
-            r("rule"),
-            Expr::star(seq(vec![r("nl"), r("marker"), r("nl"), r("rule")])),
+            r("marked"),
+            Expr::star(seq(vec![r("nl"), r("marked")])),
         ]),
     ));
     g.push(Rule::new("mechanism", block("mechanism-form")));
