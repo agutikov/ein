@@ -1,7 +1,14 @@
 # P2.2f — The text analysed by trained networks before it is formalized: AMR first
 
 **Status:** **planned 2026-11-27** on the user's word, *"Ok, add new phase for investigation of this approach,
-especially AMR"*. **Not started**: no stage runs, not even a survey, until the user says so.
+especially AMR"*; **started the same day** on the user's word, *"start p2.2f in worktree"*, and, asked whether
+the stage's agent or the user makes the environment, *"a, let the agent create build/nlp and start p2.2f"*. Its
+stages run one by one, each in a subagent in a git worktree of its own whose branch is merged into `master` when
+the stage ends, beside [P2.2e](../p2.2e_kernel_fixes/README.md), which runs in the main checkout. S2.2f.1 and
+S2.2f.2 run; **S2.2f.3 waits** for [S2.2c.1](../p2.2c_decoding_and_model_alone/s2.2c.1_a_generation_that_ends.md),
+whose phase is not started, so the phase stops there for the user, or at S2.2f.1 if no tool passes the check.
+**Ids reserved for it while it runs beside P2.2e**, so that two branches never take one id: L-M2.40 to L-M2.49,
+Q-M2.50 to Q-M2.59, E-140 to E-149; the milestone's sequence on `master` goes on below them.
 **Depends on:** [P2.2](../p2.2_formalizer/README.md), closed: the steps by hand of six texts
 ([`docs/einaf/04-contract.md` § 7](../../../docs/einaf/04-contract.md#7-the-steps-by-hand), `einaf/contract/`), which
 are the reference a reading is checked against, and step 1 with the model, whose failures are what this phase asks

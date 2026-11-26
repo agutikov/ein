@@ -489,9 +489,10 @@ paragraph, no register count, no measurement (the user's rule).
   formalizer corrected; [P2.2e](plans/m2_nl_to_ir/p2.2e_kernel_fixes/README.md),
   Ein's two bugs and a clock, the one of the four that changes Ein
   ([the order](plans/m2_nl_to_ir/README.md#the-order-before-p23)); and, not in
-  that order and not started,
-  [P2.2f](plans/m2_nl_to_ir/p2.2f_text_analysis/README.md), the text analysed
-  by trained networks before it is formalized, AMR first. **No phase
+  that order, [P2.2f](plans/m2_nl_to_ir/p2.2f_text_analysis/README.md), the
+  text analysed by trained networks before it is formalized, AMR first,
+  started on the user's word in git worktrees beside P2.2e; its environment
+  is the gitignored `build/nlp/`, every cache there and nothing under `~`. **No phase
   of M2 starts until the user says so.** M1f, the structure of the hypothesis
   set and the documentation, is closed on the user's word and its plans deleted
   (`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation`): its
