@@ -390,7 +390,17 @@ says Ein; `c/`, `nl2smt/` and `docs/lib/` are outside both projects.
   corpus; and `root`, what a model writes under, narrower than Ein: names of
   `[A-Za-z0-9_.*+=-]`, no block comment, and no `<`, `>`, `|` or backtick in
   a string or a comment, so that no chat-template marker and no fence can be
-  written; every step grammar holds the same. Its tests are
+  written; every step grammar holds the same. **The steps**
+  ([`07-steps.md`](docs/einaf/07-steps.md)): `einaf::catalogue`, the
+  catalogue of the library the steps select from, its entry programs under
+  `einaf/catalogue/`, each held to its effect through the bounded call by
+  `einaf/tests/catalogue.rs`; `einaf::prompts`, the templates under
+  `einaf/prompts/`, filled by named slots; `einaf::check`, the contract's
+  check on each step's program; and `einaf::formalize`, the three steps or
+  the whole program in one call, each step's program judged at root with the
+  writer of H (`einaf::kernel::root`, held to `ein show hyps` on every
+  contract program); a recorded run replays from
+  `einaf/tests/fixtures/steps/`. Its tests are
   a step of the gate after Ein's: one test an outcome, the command, every
   refused fixture, and every corpus program that is not `slow` under every
   question, held to its group, its exit, its claims and the engine's static
@@ -891,6 +901,9 @@ einaf/target/release/einaf generate --model GGUF REQUEST.json…   # one call a 
 einaf/target/release/einaf probe run --plan PLAN.jsonl --out OUT.jsonl (--model GGUF | --replay RECORD.jsonl) [--only PREFIX]   # the probe of Ein written with no grammar
 einaf/target/release/einaf grammar write [--check]                # the whole grammar, einaf/grammars/ein.gbnf, from ein.l and ein.y
 einaf/target/release/einaf grammar render STEP (--text T | --program P) [--fence]   # a step's grammar for a text or a program; accept, sample and catalogue beside it, llama (feature) through llama.cpp's sampler
+einaf/target/release/einaf steps run TEXT --out DIR (--model GGUF | --replay RECORD.jsonl) [--mode steps|whole] [--no-grammar] [--answer-line zebra|word|generic]   # a text formalized in three steps (or one call), each judged at root, the check on each
+einaf/target/release/einaf steps check PROGRAM [--text TEXT] [--step 1|2|3]   # the contract's check on one program
+einaf/target/release/einaf catalogue [--minimal|--generated|--grammar|--tokens GGUF]   # the catalogue the steps select from, as a prompt shows it
 EIN_TEST_JOBS=1   cargo test … --profile gate --workspace    # the corpus sweeps one unit at a time; the verdicts are the default's
 EIN_TEST_UNITS=u.tsv EIN_TEST_JOBS=1 cargo test … --test id_order_invariance   # every unit's cost and peak memory, one line each
 EIN_CORPUS_SLOW=1 EIN_TEST_SHARD=2/4 cargo test … --test corpus_cores   # one shard of a nightly step

@@ -15,7 +15,7 @@ end; its plans are deleted (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_k
 left open is the milestone's, and [the defaults it took](defaults/p2.1.md) stand. **P2.2 is started
 2026-11-26** on the user's word, *"start next phase plans/m2_nl_to_ir/p2.2_formalizer, execute s2.2.0a and pause"*; S2.2.0a ran to its end, and then, *"Ok, I like what I see, after s2.2.0a continue with other stages of the phase"*,
 **the phase runs its other stages to its end and stops there for the user's review; no other phase starts until the
-user says so.** S2.2.1 to S2.2.3 have run to their end; S2.2.4, stopped on the user's word while the user asked about the grammar, runs again on *"continue the phase"*. **[P2.2b](p2.2b_guided_thinking/README.md), guided thinking, is planned 2026-11-26** on the user's word, *"add new phase p2.2b for guided thinking"*, and not started.
+user says so.** S2.2.1 to S2.2.4 have run to their end (S2.2.4, stopped on the user's word while the user asked about the grammar, ran again on *"continue the phase"*); S2.2.5 is next. **[P2.2b](p2.2b_guided_thinking/README.md), guided thinking, is planned 2026-11-26** on the user's word, *"add new phase p2.2b for guided thinking"*, and not started.
 **Depends on:** the kernel as it stands after M1f's close
 ([Q-M2.1](open_questions/kernel/Q-M2.1-when-is-the-kernel-frozen.md)). No other milestone runs for it:
 [M1p](../m1p_ein_to_natural_language/README.md), Ein to natural language, stays unstarted
@@ -221,6 +221,15 @@ them.
 | `docs/einaf/` | EinAf's documentation |
 
 The model's file is not in the repository: a record names it by its SHA, and a run is given its path.
+
+**What a run commits** (the user's ruling of 2026-11-26, asked *"Do you think we need to commit all artefacts?"*,
+answering *"1"*: leave S2.2.4's records as committed, and commit less from S2.2.5 on): what cannot be made again
+cheaply, and what a reader needs without a build. Committed: the plan, before the first generation; the scripts and
+the texts; for each call, the request's digest, the tokens' digest and the generation, with no request body, since
+replay renders the request again from the versioned prompts and finds the call by its digest; for each run, its
+program and the live run's stderr (its times); the report, with its tables written by replay. Not committed: the
+request bodies, a run's JSON and summary, the replay's stderr and a step's output, which is a generation's text;
+`replay` writes each on demand. S2.2.4's records (`c7f81431`) and the stages' before it stay as committed.
 
 ### The defaults the re-plan took
 
