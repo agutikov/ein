@@ -310,9 +310,9 @@ fn the_check_finds_what_the_kernel_loads_in_silence() {
     let step1 = check::Step1 {
         statements: vec![(
             "(older Ann Bob :source \"Ann is older than Bob.\")".to_string(),
+            "older".to_string(),
             Some("Ann is older than Bob.".to_string()),
         )],
-        memberships: Default::default(),
     };
     let checked = check::check(&check::Input {
         program,
@@ -370,6 +370,8 @@ fn the_check_finds_what_the_kernel_loads_in_silence() {
     let program = r#"
 (older Ann Bob :source "Ann is older than Bob.")
 (older Bob Ann :source "Ann is older than Bob.")
+(person Ann :source "Ann is older than Bob.")
+(relation person Person :why "{?3} is a person")
 (relation older Person Person :why "a {?3} is older than a {?4}")
 (relation youngest Person :why "a {?3} is the youngest")
 (query :goal (youngest ?w ?z) :goal-text "{?w} is younger than Ann")
@@ -408,6 +410,14 @@ fn the_check_finds_what_the_kernel_loads_in_silence() {
             checked.findings
         );
     }
+    // The membership step 2 adds for a stated sentence is a fact added, not
+    // the statement written again: one finding, `(older Bob Ann …)`.
+    assert_eq!(
+        found.iter().filter(|k| **k == Kind::Rewritten).count(),
+        1,
+        "{:#?}",
+        checked.findings
+    );
     assert!(!found.contains(&Kind::MechanismNotStated));
 
     // `(solve :no-search)` beside a selected obligation: the writer is

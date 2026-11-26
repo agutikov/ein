@@ -30,9 +30,10 @@
 //!    writes a name of the program's facts the goal does not hold, which is
 //!    an answer written without the kernel;
 //! 7. a step-1 statement written again otherwise (from step 2): a fact a later
-//!    step writes with the `:source` of a sentence step 1 stated, of no
-//!    relation step 1's memberships are of, and not among step 1's
-//!    statements.
+//!    step writes with the `:source` of a sentence step 1 stated, of the
+//!    relation step 1 stated it in, and not among step 1's statements; a
+//!    fact of another relation with that sentence (a membership of a thing it
+//!    names) is a fact added, not a statement written again.
 
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -143,10 +144,8 @@ pub struct Finding {
 /// **What step 1 stated**, which finding 7 holds a later step to.
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Step1 {
-    /// Each statement's canonical text and its `:source`.
-    pub statements: Vec<(String, Option<String>)>,
-    /// The relations step 1's ontology wrote facts of: its memberships'.
-    pub memberships: BTreeSet<String>,
+    /// Each statement's canonical text, its relation and its `:source`.
+    pub statements: Vec<(String, String, Option<String>)>,
 }
 
 /// **The mechanism**: what the kernel reports and what the program states.
@@ -234,9 +233,8 @@ pub fn check(input: &Input<'_>) -> Checked {
     out
 }
 
-/// **Step 1's statements and memberships**, read off step 1's output: the
-/// statements are the forms before its first `relation` form, the
-/// memberships the facts after it.
+/// **Step 1's statements**, read off step 1's output: the facts before its
+/// first `relation` form.
 pub fn step1_of(output: &str) -> Step1 {
     let Ok(forms) = kernel::shapes(output, "step 1") else {
         return Step1::default();
@@ -246,16 +244,13 @@ pub fn step1_of(output: &str) -> Step1 {
         .position(|f| matches!(f.shape, Shape::Relation { .. }))
         .unwrap_or(forms.len());
     let mut s = Step1::default();
-    for (i, f) in forms.iter().enumerate() {
+    for f in &forms[..first] {
         if let Shape::Fact {
             relation, source, ..
         } = &f.shape
         {
-            if i < first {
-                s.statements.push((f.canonical.clone(), source.clone()));
-            } else {
-                s.memberships.insert(relation.clone());
-            }
+            s.statements
+                .push((f.canonical.clone(), relation.clone(), source.clone()));
         }
     }
     s
@@ -856,11 +851,16 @@ fn atoms(sx: &Sx, out: &mut BTreeSet<String>) {
 // ── 7 ───────────────────────────────────────────────────────────────
 
 fn rewritten(forms: &Forms, step1: &Step1, out: &mut Vec<Finding>) {
-    let stated: BTreeSet<&str> = step1.statements.iter().map(|(c, _)| c.as_str()).collect();
-    let by_source: BTreeMap<&str, &str> = step1
+    let stated: BTreeSet<&str> = step1
         .statements
         .iter()
-        .filter_map(|(c, s)| s.as_deref().map(|s| (s, c.as_str())))
+        .map(|(c, _, _)| c.as_str())
+        .collect();
+    // Each sentence and relation step 1 stated, and the statement.
+    let by_source: BTreeMap<(&str, &str), &str> = step1
+        .statements
+        .iter()
+        .filter_map(|(c, r, s)| s.as_deref().map(|s| ((s, r.as_str()), c.as_str())))
         .collect();
     for f in &forms.forms {
         let Shape::Fact {
@@ -871,10 +871,10 @@ fn rewritten(forms: &Forms, step1: &Step1, out: &mut Vec<Finding>) {
         else {
             continue;
         };
-        if stated.contains(f.canonical.as_str()) || step1.memberships.contains(relation) {
+        if stated.contains(f.canonical.as_str()) {
             continue;
         }
-        if let Some(was) = by_source.get(source.as_str()) {
+        if let Some(was) = by_source.get(&(source.as_str(), relation.as_str())) {
             out.push(Finding {
                 kind: Kind::Rewritten,
                 from_step: 2,

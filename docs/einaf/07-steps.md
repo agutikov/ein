@@ -131,7 +131,7 @@ finding applies to a step's program from the step that could have avoided it.
 | 4 | a fact or a pattern of a relation the program does not declare and no imported module has, or at a count it is not declared at | `undeclared`, `wrong-count` | 1 for a top-level fact and a goal, 2 for a fact inside a fact, 3 for a rule's |
 | 5 | a number written as a name, outside a numeral's digit | `number-as-name` | 1 |
 | 6 | of the answer query: none, or more than one; a `:goal-text` reference the goal does not bind; a template with no reference, or one that writes a name of the program's facts the goal does not hold | `no-answer-query`, `several-answer-queries`, `unbound-reference`, `answer-in-template` | 1 |
-| 7 | a step-1 statement written again otherwise: a fact a later step writes with the `:source` of a sentence step 1 stated, of no relation step 1's memberships are of, and not among step 1's statements | `rewritten` | 2 |
+| 7 | a step-1 statement written again otherwise: a fact a later step writes with the `:source` of a sentence step 1 stated, of the relation step 1 stated it in, and not among step 1's statements; a fact of another relation with that sentence, a membership of a thing it names, is a fact added | `rewritten` | 2 |
 
 **What the second reading of finding 2 says and does not**: a rule that derives only from facts a state adds above
 root fires at no root, so a selection whose premises root does not hold is `selection-inactive` though a state
