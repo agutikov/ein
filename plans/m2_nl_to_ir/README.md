@@ -25,6 +25,9 @@ written; Stage O's result and Stage Q's artifact are [P2.10](p2.10_result_artifa
 **Feeds:** the next iteration of Ein's own development, by [the evaluation of Ein](evaluation/README.md) this
 milestone keeps ([Q-M2.15](open_questions/milestone/Q-M2.15-where-does-m2-stop-for-the-next-iteration-of-ein.md)).
 **Id:** M2 throughout. The folder keeps its name, *NL → IR*, which is Level B of this milestone.
+**Read beside it:** [the reading list](reading.md), with notes on papers under [`reading/`](reading/), and
+[the registry of benchmarks](benchmarks.md): every benchmark M2 names, its source, where it is named and what M2
+does with it.
 
 ---
 

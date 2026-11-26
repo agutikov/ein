@@ -300,6 +300,8 @@ plans/
 │   ├── defaults/                     the defaults a closed phase took that still stand, one file a phase (P2.1's)
 │   ├── analysis/                     the plan against the project, 2026-11-25: what the re-plan was written from (six audits, the host, the probes)
 │   ├── EinAf.md                      the research plan, verbatim (the ideas/11 precedent)
+│   ├── reading.md, reading/          the reading list by question; the user's notes on papers, one file a paper by its arXiv id
+│   ├── benchmarks.md                 the registry of benchmarks: every one M2 names, its source, where it is named, what M2 does with it
 │   ├── p2.2_formalizer/                  Stage B   (6: S2.2.0a and S2.2.1–5, under the user's notes on the steps; Q-M2.22 in its open_questions/)
 │   ├── p2.2b_guided_thinking/            (3: S2.2b.1–3; planned 2026-11-26 on the user's word, not started)
 │   ├── p2.3_benchmark/                   Stage C   (4)
