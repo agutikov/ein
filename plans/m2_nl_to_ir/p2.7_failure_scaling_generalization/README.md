@@ -200,6 +200,39 @@ field of every record ([S2.5.1](../p2.5_harness/s2.5.1_experiment_record.md)), a
 sizes a prompt saw has to be kept with the prompt from [P2.2](../p2.2_formalizer/README.md) on. Where it was not
 kept, the set is reported as no test.
 
+## What P2.2 hands this phase
+
+*Written 2026-11-27, at [P2.2's close](../p2.2_formalizer/README.md#the-close-2026-11-27).* This phase was planned
+before P2.2 ran. What that phase found that
+bears on its three stages is below. None of it is a ruling.
+
+- **S2.7.1, the taxonomy, has a first sample**: the seven independent defects of the model's Zebra program
+  ([L-M2.24](../findings/model/L-M2.24-the-model-s-zebra-program-has-seven-defects-and-three-repairs-leave-r-empty.md)).
+  Read by the plan's five classes, two are of the model's reading (a description made a thing, *next
+  to* read as *in*), three of the interface (one answer query for two questions,
+  [L-M2.21](../findings/model/L-M2.21-the-model-s-zebra-answer-query-asks-one-person-both-questions.md); a mechanism
+  a grammar
+  offered against the selection; a partial ontology never revised,
+  [L-M2.25](../findings/einaf/L-M2.25-the-steps-partial-parts-are-written-twice-never-revised-and-a-step-early.md)),
+  and two of the representation (four
+  rules to read one answer back, kinds a partition needs filled:
+  [E-110](../evaluation/stdlib/E-110-the-library-has-no-reading-of-a-literal-vocabulary.md),
+  [E-128](../evaluation/stdlib/E-128-a-library-cannot-say-what-a-selecting-fact-is-for-or-what-it-needs.md)). The
+  split is the coordinator's
+  reading of one program, not a classified sample.
+- **S2.7.2, scaling.** Where the model stops solving alone (the analysis' proposal 23): the model reasoning in
+  text on generated attribute puzzles of three to eight places, set beside what stating a puzzle costs, which the
+  analysis expects to be nearly the same for five houses and for eight and nobody has measured. Where the two cross
+  for this model is the number the milestone
+  turns on, and [S2.2c.2](../p2.2c_decoding_and_model_alone/s2.2c.2_the_model_alone.md) has it for one size, on five
+  texts. For the solver's curve: the text's own words cost
+  twice the facts ([E-111](../evaluation/bounds/E-111-the-answer-in-the-statements-own-words-costs-the-kernel.md)),
+  and a root that dies on a link several rules derive takes its time past the clock
+  ([E-126](../evaluation/bounds/E-126-a-root-that-dies-on-a-link-several-rules-derive-takes-its-time-past-every-clock.md)).
+- **S2.7.3, K4, novel vocabulary.** The model named the Zebra puzzle and brought kinds no sentence states
+  ([L-M2.29](../findings/model/L-M2.29-the-model-alone-solves-the-zebra-puzzle-in-its-thinking-and-names-it.md));
+  [S2.2c.2](../p2.2c_decoding_and_model_alone/s2.2c.2_the_model_alone.md)'s renamed puzzle is K4 on one text.
+
 ## The Level C gate
 
 The gate closes here, with [P2.5](../p2.5_harness/README.md)'s table and [P2.6](../p2.6_ablations/README.md)'s

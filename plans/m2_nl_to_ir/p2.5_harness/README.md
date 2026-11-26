@@ -123,6 +123,25 @@ faithfulness and satisfiability as a number, and every table that shows one show
 numbers of [the evaluation of Ein](../evaluation/README.md), taken by [S2.5.3](s2.5.3_metrics.md) and shown at the
 phase's close.
 
+## What P2.2 hands this phase
+
+*Written 2026-11-27, at [P2.2's close](../p2.2_formalizer/README.md#the-close-2026-11-27).* The files of this phase
+were planned before P2.2 ran. What that
+phase found that bears on them is in each stage's file, under *What P2.2 hands this stage*; this is the map. None of
+it is a ruling: where an item rests on a question, the question's default stands.
+
+**Two stages of this phase were to run before P2.2's numbers and did not** ([§ Order](#order)): the record, and
+the first part of the metrics. P2.2 took its numbers with a stand-in for each, and says so. By [the order
+before P2.3](../README.md#the-order-before-p23) both come before [P2.2d](../p2.2d_formalizer_corrected/README.md)'s
+run of the plan's 29 again, and before the benchmark's check of an
+instance's printed answer.
+
+| stage | what it reads |
+|---|---|
+| [S2.5.1](s2.5.1_experiment_record.md) | P2.2's stand-in layout and its four schemas; the slim call; `kernel.commit` ([L-M2.27](../findings/einaf/L-M2.27-a-record-s-kernel-commit-is-null.md)) and a refused program's categories ([L-M2.26](../findings/einaf/L-M2.26-a-program-the-kernel-refuses-carries-no-categories.md)); how a generation ended ([S2.2c.1](../p2.2c_decoding_and_model_alone/s2.2c.1_a_generation_that_ends.md)); what is committed |
+| [S2.5.2](s2.5.2_baselines.md) | B1 taken early on five texts ([S2.2c.2](../p2.2c_decoding_and_model_alone/s2.2c.2_the_model_alone.md)); the chain and a grammar under it ([Q-M2.27](../open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md), [Q-M2.28](../open_questions/model/Q-M2.28-is-a-token-held-to-its-grammar-by-the-chain-s-choice-first.md)); B2's mode and cut ([Q-M2.32](../open_questions/formalizer/Q-M2.32-which-mode-does-baseline-b2-run-with.md), [Q-M2.36](../open_questions/formalizer/Q-M2.36-how-are-the-three-steps-cut.md)); a puzzle the model knows by name ([L-M2.29](../findings/model/L-M2.29-the-model-alone-solves-the-zebra-puzzle-in-its-thinking-and-names-it.md)) |
+| [S2.5.3](s2.5.3_metrics.md) | the stand-in reader; several rows in one class ([Q-M2.33](../open_questions/answer/Q-M2.33-is-a-class-with-several-rows-an-answer-of-several-values-or-the-undetermined-text.md), [E-124](../evaluation/answer/E-124-one-state-may-answer-a-question-of-one-value-with-a-row-a-pass.md)); the second count ([L-M2.22](../findings/model/L-M2.22-a-fixed-text-scored-right-can-rest-on-a-contradiction-of-the-model-s-own.md), [S2.2d.1](../p2.2d_formalizer_corrected/s2.2d.1_a_query_a_question.md)); a score a question ([Q-M2.35](../open_questions/formalizer/Q-M2.35-is-there-an-answer-query-for-each-question-of-the-text.md)); which text a dead root prints ([E-118](../evaluation/stdlib/E-118-a-numeral-written-with-two-digits-in-one-place-is-refuted-as-a-contradiction.md), [E-107](../evaluation/diagnostics/E-107-a-theory-s-missing-activating-fact-is-reported-as-the.md)) |
+
 ## Stages
 
 | ID | title | ends with |

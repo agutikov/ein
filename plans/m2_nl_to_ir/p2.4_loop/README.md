@@ -158,6 +158,32 @@ The ladder is where the kernel's diagnostics are judged as feedback, and the too
 nothing between them. Each stage has a task that writes what it found (a strength, a weakness, a gap, a bug, a
 limit) into [the evaluation of Ein](../evaluation/README.md), and the phase shows the page at its close.
 
+## What P2.2 hands this phase
+
+*Written 2026-11-27, at [P2.2's close](../p2.2_formalizer/README.md#the-close-2026-11-27).* The files of this phase
+were planned before P2.2 ran. What that
+phase found that bears on them is in each stage's file, under *What P2.2 hands this stage*; this is the map. None of
+it is a ruling: where an item rests on a question, the question's default stands.
+
+**What the one shot says of the loop** ([the analysis of P2.2](../p2.2_formalizer/report/ANALYSIS.md), § 6). As a
+baseline B2 is near zero on
+P2.2's texts: no Zebra, no word problem answered for the text's reason. The loop inherits more than a repair: of
+the seven defects of the model's Zebra program the kernel speaks of two, one at a time, its core naming a sentence
+by the accident of which house it took, and the other five it cannot point at
+([L-M2.24](../findings/model/L-M2.24-the-model-s-zebra-program-has-seven-defects-and-three-repairs-leave-r-empty.md)).
+Feedback made of the
+kernel's word alone would not carry the model from that program to the reference; the contract's check and the
+faithfulness judge have to carry most of it, and *the theory before the facts* meets a case where the facts are
+what is wrong ([Q-M2.41](../open_questions/formalizer/Q-M2.41-is-a-misread-statement-repaired-before-any-theory.md)).
+
+| stage | what it reads |
+|---|---|
+| [S2.4.1](s2.4.1_state_machine.md) | GENERATE and how a generation ends ([S2.2c.1](../p2.2c_decoding_and_model_alone/s2.2c.1_a_generation_that_ends.md), [Q-M2.36](../open_questions/formalizer/Q-M2.36-how-are-the-three-steps-cut.md)); the bounded call's clock a question's ([L-M2.10](../findings/einaf/L-M2.10-a-program-with-no-fixpoint-costs-the-bounded-call-its-clock-once-a-saturation.md)) and its leak ([E-126](../evaluation/bounds/E-126-a-root-that-dies-on-a-link-several-rules-derive-takes-its-time-past-every-clock.md), [Q-M2.34](../open_questions/kernel/Q-M2.34-does-einaf-s-kernel-call-set-the-lever-that-keeps-one-justification.md)); root alone on an unfinished program ([E-114](../evaluation/hypotheses/E-114-a-partial-program-s-h-is-set-by-its-relations-count-of-places.md)); *one* that is not one value ([E-124](../evaluation/answer/E-124-one-state-may-answer-a-question-of-one-value-with-a-row-a-pass.md)); a kept context ([L-M2.8](../findings/model/L-M2.8-a-kept-context-and-a-whole-evaluation-of-one-prompt-part.md)) |
+| [S2.4.2](s2.4.2_repair.md) | the principle's hard case ([Q-M2.41](../open_questions/formalizer/Q-M2.41-is-a-misread-statement-repaired-before-any-theory.md)); regenerate under the cut that stands ([L-M2.25](../findings/einaf/L-M2.25-the-steps-partial-parts-are-written-twice-never-revised-and-a-step-early.md)); the repairs nothing points at ([E-124](../evaluation/answer/E-124-one-state-may-answer-a-question-of-one-value-with-a-row-a-pass.md), [L-M2.18](../findings/model/L-M2.18-a-sentence-s-polarity-and-a-thing-s-kind-go-wrong-in-silence.md)) |
+| [S2.4.3](s2.4.3_feedback_ladder.md) | the check's findings as lints ([S2.2d.3](../p2.2d_formalizer_corrected/s2.2d.3_entries_described.md), [S2.2d.4](../p2.2d_formalizer_corrected/s2.2d.4_check_findings.md)); the ladder by hand ([S2.2d.6](../p2.2d_formalizer_corrected/s2.2d.6_run_again_and_nearest_miss.md), [L-M2.24](../findings/model/L-M2.24-the-model-s-zebra-program-has-seven-defects-and-three-repairs-leave-r-empty.md)); what the kernel's word does not say ([E-107](../evaluation/diagnostics/E-107-a-theory-s-missing-activating-fact-is-reported-as-the.md), [E-116](../evaluation/answer/E-116-a-query-with-no-row-does-not-say-which-of-its-premises-matched.md), [E-118](../evaluation/stdlib/E-118-a-numeral-written-with-two-digits-in-one-place-is-refuted-as-a-contradiction.md), [E-123](../evaluation/diagnostics/E-123-no-value-says-whether-a-selecting-fact-was-taken-up.md), [E-109](../evaluation/natural-language/E-109-a-sentence-written-as-a-rule-s-activating-fact-is-in-no.md)) and what it does ([E-125](../evaluation/diagnostics/E-125-a-dead-root-s-core-names-the-sentence-the-model-misread.md)) |
+| [S2.4.4](s2.4.4_faithfulness.md) | what no check reads ([L-M2.18](../findings/model/L-M2.18-a-sentence-s-polarity-and-a-thing-s-kind-go-wrong-in-silence.md), [E-108](../evaluation/answer/E-108-a-clue-with-its-arguments-swapped-is-answered-one-with.md)); the unit's two questions ([Q-M2.22](../open_questions/answer/Q-M2.22-is-a-membership-no-sentence-states-a-faithfulness-event.md), [Q-M2.25](../open_questions/answer/Q-M2.25-is-a-clause-of-a-sentence-a-source-or-only-the-whole.md)); a refused program's categories ([L-M2.26](../findings/einaf/L-M2.26-a-program-the-kernel-refuses-carries-no-categories.md)); a right string for a wrong reason ([L-M2.22](../findings/model/L-M2.22-a-fixed-text-scored-right-can-rest-on-a-contradiction-of-the-model-s-own.md)) |
+| [S2.4.6](s2.4.6_ein_as_a_tool.md) | the tool probed first ([S2.2c.3](../p2.2c_decoding_and_model_alone/s2.2c.3_the_tool_probed.md)); Ein written with no grammar; thinking that loops ([Q-M2.27](../open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md)); a third arrangement ([Q-M2.40](../open_questions/einaf/Q-M2.40-is-the-model-reasons-and-ein-checks-its-answer-an-arm.md), [L-M2.29](../findings/model/L-M2.29-the-model-alone-solves-the-zebra-puzzle-in-its-thinking-and-names-it.md)) |
+
 ## Stages
 
 | ID | title | ends with |

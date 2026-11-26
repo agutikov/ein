@@ -98,6 +98,41 @@ the kernel stands, so that a pre-registered reading does not rest on something t
 | **G7** | the transcript | nothing more |
 | **G8**, **G9**, link grammar, the grammar off | [S2.6.4](s2.6.4_representation_ablations.md) | |
 
+## What P2.2 hands this phase
+
+*Written 2026-11-27, at [P2.2's close](../p2.2_formalizer/README.md#the-close-2026-11-27).* This phase was planned
+before P2.2 ran. What that phase found that
+bears on its stages is below; [S2.6.4](s2.6.4_representation_ablations.md)'s file holds its own list. None of it is
+a ruling: where an item rests on a
+question, the question's default stands.
+
+- **S2.6.3, thinking before the program.** As planned it measures unguided thinking, which under greedy decoding
+  wrote no program in 36 runs of P2.2's: every one looped to its budget
+  ([Q-M2.27](../open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md),
+  [S2.2c.1](../p2.2c_decoding_and_model_alone/s2.2c.1_a_generation_that_ends.md)).
+  [P2.2b](../p2.2b_guided_thinking/README.md) measures
+  guided thinking first, and its verdict says whether this ablation measures it beside the unguided.
+- **S2.6.3, a step shown its own judgement before the next.** P2.2's default 39 left it here as an arm: in a one
+  shot nobody reads a step's judgement, and the first signal of a misread step 1 is step 2's dead root. It is the
+  loop's first rung, and
+  [Q-M2.41](../open_questions/formalizer/Q-M2.41-is-a-misread-statement-repaired-before-any-theory.md) bears on it.
+- **[S2.6.4](s2.6.4_representation_ablations.md)**: G8 and the cut of the steps
+  ([S2.2d.2](../p2.2d_formalizer_corrected/s2.2d.2_the_cut.md),
+  [L-M2.25](../findings/einaf/L-M2.25-the-steps-partial-parts-are-written-twice-never-revised-and-a-step-early.md));
+  G9 and how a library is described ([S2.2d.3](../p2.2d_formalizer_corrected/s2.2d.3_entries_described.md),
+  [L-M2.30](../findings/model/L-M2.30-modules-shown-with-no-description-were-imported-by-no-run.md),
+  [E-128](../evaluation/stdlib/E-128-a-library-cannot-say-what-a-selecting-fact-is-for-or-what-it-needs.md)); the
+  grammar off, measured on sixteen texts by S2.2.4
+  ([L-M2.19](../findings/model/L-M2.19-a-grammar-s-refusal-sends-greedy-decoding-into-a-loop-it-does-not-enter-free.md));
+  [Q-M2.29](../open_questions/formalizer/Q-M2.29-are-step-2-s-facts-held-to-the-relations-step-2-declares.md) and
+  [Q-M2.30](../open_questions/model/Q-M2.30-does-a-grammar-the-model-writes-under-fix-its-layout.md).
+- **G3, the core.** A dead root's core named the misread sentence on each of four runs of S2.2.4
+  ([E-125](../evaluation/diagnostics/E-125-a-dead-root-s-core-names-the-sentence-the-model-misread.md)), and
+  where root dies of several faults it names one, the lever of
+  [Q-M2.34](../open_questions/kernel/Q-M2.34-does-einaf-s-kernel-call-set-the-lever-that-keeps-one-justification.md)
+  changing which: the record pins the
+  lever, as this page's table already asks.
+
 ## Acceptance
 
 - Twelve ablations, the research plan's nine and the rulings' three, and the two strategy rows: each a

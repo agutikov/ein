@@ -9,6 +9,10 @@ model's token `</think>`, and the narrowed root a model writes under ([S2.2.3](.
 the steps' prompts, the catalogue, the contract's check and the steps' command, whose runs with thinking off are
 this phase's baseline ([S2.2.4](../p2.2_formalizer/s2.2.4_passes.md)); `einaf from-text`
 ([S2.2.5](../p2.2_formalizer/s2.2.5_from_text.md)).
+**Since P2.2's close, 2026-11-27, also on:** [S2.2c.1](../p2.2c_decoding_and_model_alone/s2.2c.1_a_generation_that_ends.md), a generation that ends when it loops, which the *budgeted*
+way and every greedy run with thinking on read; and, for its runs with the model, [P2.2d](../p2.2d_formalizer_corrected/README.md), the formalizer corrected:
+this phase's baseline is taken on that formalizer, and its questions are dealt to the steps as they are then cut
+([the order before P2.3](../README.md#the-order-before-p23)).
 **Informs:** [the arms](../README.md#the-arms) (B1, a chain of thought; B2 to B5, the filter with thinking off);
 [P2.6](../p2.6_ablations/README.md)'s *thinking before the program*, which as planned measures unguided thinking;
 [Q-M2.27](../open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md),
@@ -52,6 +56,64 @@ S2.2.4 runs as it is planned, thinking off, and its runs are this phase's baseli
   arguments, the passives made active, none of the hand's 44 facts; on the seating, placements no sentence states;
   on the word problems, a number taken out of its fact or written as a name. Coreference was mostly right
   ([S2.2.2's record](../p2.2_formalizer/s2.2.2_model_runtime.md#record), T2.2.2.8).
+
+## What P2.2 hands this phase
+
+*Written 2026-11-27, at [P2.2's close](../p2.2_formalizer/README.md#the-close-2026-11-27).* The phase was planned
+while P2.2 ran, from S2.2.2's and S2.2.3's
+records. This is what the rest of that phase and [the analysis of it](../p2.2_formalizer/report/ANALYSIS.md) add,
+for the phase to read when it
+starts. None of it is a ruling: where an item rests on a question, the question's default stands.
+
+- **The premise has its evidence.** The same model on the same seventeen lines, in two modes: reasoning in text,
+  thinking on, it names five kinds before it reads a clue, reads *the blue house* as a colour of one of five houses
+  and uses *next to* both ways; writing the program, thinking off, it writes one kind `Thing` for every drink, pet
+  and cigarette, `BlueHouse` a house of its own, and `(lives-in Norwegian BlueHouse)`
+  ([L-M2.29](../findings/model/L-M2.29-the-model-alone-solves-the-zebra-puzzle-in-its-thinking-and-names-it.md),
+  [the analysis § 10.1](../p2.2_formalizer/report/ANALYSIS.md#101-what-the-records-show)). **The two modes never
+  met**: no run has the model reason and then write a program. *Think, then state* (the analysis' proposal 20) is
+  what this phase measures.
+- **Which of the one shot's defects the questions are aimed at.** Of the seven of the model's Zebra program
+  ([L-M2.24](../findings/model/L-M2.24-the-model-s-zebra-program-has-seven-defects-and-three-repairs-leave-r-empty.md)):
+  a description made a thing (the *objects* question, and which words name the same thing), one kind
+  for three (the *kinds* question), *next to* read as *in* (the *relations* question). A denial written as a
+  statement and a person written as a chair
+  ([L-M2.18](../findings/model/L-M2.18-a-sentence-s-polarity-and-a-thing-s-kind-go-wrong-in-silence.md)) are the
+  same two questions on the seating.
+- **Thinking that solves is thinking that recalls, on this text.** The measure *whether the thinking solved* reads
+  a value of the answer in the thinking. On the Zebra text the model opens by naming the puzzle.
+  [S2.2c.2](../p2.2c_decoding_and_model_alone/s2.2c.2_the_model_alone.md) writes
+  two texts it cannot recall, the puzzle renamed and a puzzle of its size, which are items for this phase too.
+- **A thinking that loops is stopped by
+  [S2.2c.1](../p2.2c_decoding_and_model_alone/s2.2c.1_a_generation_that_ends.md)**, where today it runs to its
+  budget and the step's grammar never
+  begins. Whether a thinking with a shape still loops under greedy decoding stays this phase's measurement, and
+  [Q-M2.27](../open_questions/model/Q-M2.27-do-the-phase-s-thinking-runs-stay-greedy-when-greedy-thinking-loops.md)
+  reads it.
+- **With thinking off the model thinks in comment lines**
+  ([L-M2.16](../findings/model/L-M2.16-with-thinking-off-the-model-thinks-in-comment-lines.md)): the *off* condition
+  is not a model that
+  does not reason, and a bound on those lines
+  ([Q-M2.31](../open_questions/model/Q-M2.31-does-a-step-s-grammar-bound-the-comment-lines-the-model-writes.md)) is
+  measured by [S2.2c.1](../p2.2c_decoding_and_model_alone/s2.2c.1_a_generation_that_ends.md).
+- **The baseline moves.** *Off* is S2.2.4's runs, *taken again only if their inputs changed*:
+  [P2.2d](../p2.2d_formalizer_corrected/README.md) changes the
+  contract's answer queries
+  ([Q-M2.35](../open_questions/formalizer/Q-M2.35-is-there-an-answer-query-for-each-question-of-the-text.md)), the
+  check, the grammars and two prompt parts, so on the order proposed
+  *off* is taken again on that formalizer.
+- **The questions are dealt to the steps as they are cut** (design question 3). Under a strict cut
+  ([Q-M2.36](../open_questions/formalizer/Q-M2.36-how-are-the-three-steps-cut.md),
+  measured by [S2.2d.2](../p2.2d_formalizer_corrected/s2.2d.2_the_cut.md)) the kinds and the memberships are step
+  2's and step 1 asks only the sentences, the
+  objects, the relations and the questions; and with a query for each question the last row of
+  [the table](#the-questions) asks an answer sentence a question.
+- **What a selection is for.** Steps 2 and 3's questions ask it before the model makes one;
+  [S2.2d.3](../p2.2d_formalizer_corrected/s2.2d.3_entries_described.md) writes it
+  into each catalogue entry, with what the entry needs
+  ([E-128](../evaluation/stdlib/E-128-a-library-cannot-say-what-a-selecting-fact-is-for-or-what-it-needs.md)), which
+  is what a structure the thinking named is
+  held against in [S2.2b.3](s2.2b.3_steps_and_verdict.md).
 
 ## The questions
 
@@ -120,9 +182,16 @@ EinAf renders the chat template itself and owns the loop over tokens
 
 ### Order
 
-**The phase starts on the user's word, by default after P2.2 has run its stages**: its baseline is S2.2.4's runs
-with thinking off and S2.2.5's `einaf from-text`. S2.2b.1 needs only S2.2.1 and S2.2.3 and can run before S2.2.4 if
-the user says so. S2.2b.2 follows S2.2b.1 and S2.2.4; S2.2b.3 follows S2.2b.2 and S2.2.5.
+**The phase starts on the user's word.** It was planned to start after P2.2 had run its stages, which it has, and
+P2.2 is closed. Its baseline is S2.2.4's runs with thinking off and S2.2.5's `einaf from-text`. S2.2b.1 needs only
+S2.2.1 and S2.2.3, no model, and can run at any time. S2.2b.2 follows S2.2b.1 and S2.2.4; S2.2b.3 follows S2.2b.2
+and S2.2.5.
+
+**Since P2.2's close**, by [the order the routing of its results proposed](../README.md#the-order-before-p23),
+which is the user's to change: S2.2b.2 and S2.2b.3, the runs with the model, come after
+[S2.2c.1](../p2.2c_decoding_and_model_alone/s2.2c.1_a_generation_that_ends.md), the stop on a loop, and after
+[P2.2d](../p2.2d_formalizer_corrected/README.md), so that the baseline and the cut of the steps are the corrected
+formalizer's ([what P2.2 hands this phase](#what-p22-hands-this-phase)).
 
 **How the phase reaches the model and the kernel** is P2.2's: the runtime `einaf::model`, built with the feature
 `cuda`, the model `qwen3.5:4b` and only it (the user, 2026-11-26: *"Ok, then continue with 4B"*); every program

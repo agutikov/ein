@@ -190,6 +190,24 @@ of the package, under `einaf/src/`, and subcommands of `einaf bench`.
   [Q-M1f.252](../../../docs/decisions/imports/Q-M1f.252-a-modules-name-has-no-empty-segment-and-no-slash.md)), so
   a family that keeps a theory of its own in a module, as the word problems do, keeps its instances beside it.
 
+## What P2.2 hands this phase
+
+*Written 2026-11-27, at [P2.2's close](../p2.2_formalizer/README.md#the-close-2026-11-27).* The files of this phase
+were planned before P2.2 ran. What that
+phase found that bears on them is in each stage's file, under *What P2.2 hands this stage*; this is the map. None of
+it is a ruling: where an item rests on a question, the question's default stands.
+
+| stage | what it reads |
+|---|---|
+| [S2.3.1](s2.3.1_families_and_seed_set.md) | the contract's answer queries ([Q-M2.35](../open_questions/formalizer/Q-M2.35-is-there-an-answer-query-for-each-question-of-the-text.md)); what a `:source` quotes and what a membership is ([Q-M2.25](../open_questions/answer/Q-M2.25-is-a-clause-of-a-sentence-a-source-or-only-the-whole.md), [Q-M2.22](../open_questions/answer/Q-M2.22-is-a-membership-no-sentence-states-a-faithfulness-event.md), [Q-M2.26](../open_questions/answer/Q-M2.26-does-zebra3-1-quote-in-each-membership-the-sentence-that-names.md)); the target shape ([Q-M2.38](../open_questions/formalizer/Q-M2.38-is-a-description-abbreviated-to-its-word-or-written-as-a-term.md)); `std.slots`' count on an under-determined puzzle ([E-105](../evaluation/stdlib/E-105-std-slots-lets-two-values-stated-next-to-each-other-share-a.md)) and a relation declared twice under an import ([E-104](../evaluation/language/E-104-a-relation-declared-at-a-second-count-is-refused-where-the.md)); the answer's comparison ([S2.5.3](../p2.5_harness/s2.5.3_metrics.md)); the two texts [S2.2c.2](../p2.2c_decoding_and_model_alone/s2.2c.2_the_model_alone.md) writes |
+| [S2.3.2](s2.3.2_generators.md) | the attribute generator's count against the kernel's ([E-105](../evaluation/stdlib/E-105-std-slots-lets-two-values-stated-next-to-each-other-share-a.md)); a change over time ([E-124](../evaluation/answer/E-124-one-state-may-answer-a-question-of-one-value-with-a-row-a-pass.md), [Q-M2.33](../open_questions/answer/Q-M2.33-is-a-class-with-several-rows-an-answer-of-several-values-or-the-undetermined-text.md)); the sizes [P2.7](../p2.7_failure_scaling_generalization/README.md)'s scaling asks for |
+| [S2.3.4](s2.3.4_splits.md) | what a prompt quotes and the families the examples are of ([L-M2.28](../findings/model/L-M2.28-the-prompts-first-example-is-the-zebra-puzzle-s-theory-in-miniature.md)); the texts development has seen; the formalizer the Level B run opens `test` with ([P2.2d](../p2.2d_formalizer_corrected/README.md)); the three classes told apart by accident ([L-M2.22](../findings/model/L-M2.22-a-fixed-text-scored-right-can-rest-on-a-contradiction-of-the-model-s-own.md)); the record ([L-M2.27](../findings/einaf/L-M2.27-a-record-s-kernel-commit-is-null.md)) |
+
+**Before this phase**, by [the order the routing proposed](../README.md#the-order-before-p23):
+[S2.2e.2](../p2.2e_kernel_fixes/s2.2e.2_slots_neighbours.md), so that no claim of an attribute
+instance is written against a library rule known wrong; and [P2.2d](../p2.2d_formalizer_corrected/README.md), whose
+contract an instance is shaped by.
+
 ## Stages
 
 | ID | title | ends with |
