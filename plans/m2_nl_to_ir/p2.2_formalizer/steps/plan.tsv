@@ -1,0 +1,70 @@
+# S2.2.4's plan of runs with the model, fixed before its first generation: a line a run, in the order run.
+# condition, item (texts/ITEM.txt), answer line, the options of `einaf steps run` beside --id, --answer-line, --out and --model.
+# Every run: qwen3.5:4b, thinking off (--request-mode thinking-off), greedy, seed 1, a context of 65 536 tokens,
+# 12 288 generated tokens a call at most, the whole catalogue, each kernel call under a clock of 60 s.
+# steps: the three steps, each under its step's grammar inside the fence; whole: the program in one call under the
+# whole grammar's root inside the fence; steps-free and whole-free: the same with no grammar, run if the room allows.
+steps	zebra	zebra	
+steps	youngest	generic	
+steps	seating	generic	
+steps	bob1	word	
+steps	gap	word	
+steps	gap_fact	word	
+steps	contra	word	
+steps	unused	word	
+steps	bystander	word	
+steps	before	word	
+steps	kinds	word	
+steps	kinds_full	word	
+steps	more	word	
+steps	boxes12	word	
+steps	boxes13	word	
+steps	pencils	word	
+whole	zebra	zebra	--mode whole
+whole	youngest	generic	--mode whole
+whole	seating	generic	--mode whole
+whole	bob1	word	--mode whole
+whole	gap	word	--mode whole
+whole	gap_fact	word	--mode whole
+whole	contra	word	--mode whole
+whole	unused	word	--mode whole
+whole	bystander	word	--mode whole
+whole	before	word	--mode whole
+whole	kinds	word	--mode whole
+whole	kinds_full	word	--mode whole
+whole	more	word	--mode whole
+whole	boxes12	word	--mode whole
+whole	boxes13	word	--mode whole
+whole	pencils	word	--mode whole
+steps-free	zebra	zebra	--no-grammar
+steps-free	youngest	generic	--no-grammar
+steps-free	seating	generic	--no-grammar
+steps-free	bob1	word	--no-grammar
+steps-free	gap	word	--no-grammar
+steps-free	gap_fact	word	--no-grammar
+steps-free	contra	word	--no-grammar
+steps-free	unused	word	--no-grammar
+steps-free	bystander	word	--no-grammar
+steps-free	before	word	--no-grammar
+steps-free	kinds	word	--no-grammar
+steps-free	kinds_full	word	--no-grammar
+steps-free	more	word	--no-grammar
+steps-free	boxes12	word	--no-grammar
+steps-free	boxes13	word	--no-grammar
+steps-free	pencils	word	--no-grammar
+whole-free	zebra	zebra	--mode whole --no-grammar
+whole-free	youngest	generic	--mode whole --no-grammar
+whole-free	seating	generic	--mode whole --no-grammar
+whole-free	bob1	word	--mode whole --no-grammar
+whole-free	gap	word	--mode whole --no-grammar
+whole-free	gap_fact	word	--mode whole --no-grammar
+whole-free	contra	word	--mode whole --no-grammar
+whole-free	unused	word	--mode whole --no-grammar
+whole-free	bystander	word	--mode whole --no-grammar
+whole-free	before	word	--mode whole --no-grammar
+whole-free	kinds	word	--mode whole --no-grammar
+whole-free	kinds_full	word	--mode whole --no-grammar
+whole-free	more	word	--mode whole --no-grammar
+whole-free	boxes12	word	--mode whole --no-grammar
+whole-free	boxes13	word	--mode whole --no-grammar
+whole-free	pencils	word	--mode whole --no-grammar

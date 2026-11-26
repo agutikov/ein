@@ -1,0 +1,1 @@
+Bob has 5 apples. Carol has 9 apples. Bob gave 2 apples to Alice. How many apples does Carol have?

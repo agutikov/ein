@@ -1,0 +1,1 @@
+Bob gave Alice 2 apples. Now Bob has 5. How many apples did Bob have before?
