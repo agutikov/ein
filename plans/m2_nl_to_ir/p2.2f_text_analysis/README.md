@@ -141,9 +141,13 @@ the phase's `runs/` or `out/`. **An analysis that a test of EinAf replays is a t
   parser does with it and does not assume.
 - **The alignment.** An AMR node does not say which words it came from; an aligner does, and its errors are its
   own. A node with no sentence cannot carry a `:source`, so the stage says how many nodes are aligned.
-- **A mapping by rules is close to a grammar.** S2.2f.3's arm that reads AMR into step 1's facts with no model is a
-  hand-written mapping from graphs to facts, not a grammar of English; it measures how far the parse alone goes.
-  If the user reads it as one of the *strictly pre-defined grammars* Q11 rules out, it is struck.
+- **A mapping by rules must not become a grammar of English.** S2.2f.3's arm that reads AMR into step 1's facts with
+  no model is kept on the user's condition (2026-11-27): *"it is an option, if rules relies on finite amount of terms
+  that AMR uses, not rely on NL words"*. Its rules match only AMR's own closed vocabulary (its roles, `:ARG0` to
+  `:ARG5`, `:polarity`, `:name` and `:op1`…, `:quant`, `:location`, and its fixed special concepts such as `name`,
+  `and`, `have-rel-role-91`), and carry a concept such as `drink-01` or a name's words through as data, never
+  matching an English word. A rule that would have to name a word is not written, and the case is counted as one
+  the parse alone does not reach.
 - **The analysis may mislead.** A parse that is wrong is followed; the check counts what each tool reads wrong, not
   only what it reads right.
 - **Scope.** The loop, repair and the benchmark are other phases'. This phase measures feasibility on the texts
@@ -162,8 +166,9 @@ Each is the plan's, recorded so that the user can correct it; none is a ruling.
    link-grammar arm's fragment was plain text and never Ein; a graph reads as facts, so here both are tried.)
 5. **The model's own analysis is an arm**: the same markup written by `qwen3.5:4b` before step 1, which answers the
    user's first question (*can the LLM do the analysis instead?*) beside the trained tools.
-6. **AMR read into step 1's facts by rules, with no model, is an arm**, struck if the user reads it as a
-   pre-defined grammar (§ Risks).
+6. **AMR read into step 1's facts by rules, with no model, is an arm**, on the user's condition (2026-11-27): its
+   rules rely on AMR's finite vocabulary and on no word of English (§ Risks). *Was a default; the user's word
+   since.*
 7. **The parsers run in Python outside EinAf**, and EinAf reads what they wrote from a file; EinAf's gate needs no
    Python and no GPU.
 8. **The model runs as P2.2's did**: `qwen3.5:4b`, thinking off, greedy, the stop on a loop; every plan of
