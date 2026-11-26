@@ -1,7 +1,9 @@
 # P2.2 — The formalizer (Stage B)
 
-**Status:** **started 2026-11-26** on the user's word, *"start next phase plans/m2_nl_to_ir/p2.2_formalizer, execute s2.2.0a and pause"*. S2.2.0a runs to its end in a subagent, which commits
-its work, and the phase pauses there for the user; no other stage starts until the user says so.
+**Status:** **started 2026-11-26** on the user's word, *"start next phase plans/m2_nl_to_ir/p2.2_formalizer, execute s2.2.0a and pause"*. S2.2.0a ran to its end in a subagent, which committed
+its work; then, on the user's word the same day, *"Ok, I like what I see, after s2.2.0a continue with other stages of the phase"*, **the phase runs its other stages to its end**, S2.2.1 to
+S2.2.5, one by one, each in a subagent that commits its work, and stops there for the user's review with a phase
+report; it is not closed until the user says so.
 **Depends on:** P2.1:
 [S2.1.1](../../../docs/einaf/README.md#the-package) creates `einaf/`, the Cargo package every
 stage here adds to, and writes the operational test of the seven outcomes;

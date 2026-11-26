@@ -1,6 +1,6 @@
 # L-M2.5 — AGENTS.md names the slow-set test as `corpus_cli`'s; it is `ein-corpus`'s
 
-**Status:** open
+**Status:** closed: AGENTS.md says `ein-corpus`'s, by the coordinator's commit after S2.2.0a
 **Found:** by S2.2.0a, 2026-11-26, adding four corpus entries and checking whether one of them is `slow`
 **Owner:** none (AGENTS.md is the coordinator's to edit)
 

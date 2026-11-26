@@ -12,4 +12,4 @@ topic; what is closed goes with the phase's folder.
 
 | id | finding | topic | status |
 |---|---|---|---|
-| [L-M2.5](process/L-M2.5-agents-md-names-the-slow-set-test-as-corpus-cli-s.md) | AGENTS.md names the slow-set test as `corpus_cli`'s; it is `ein-corpus`'s | `process` | open |
+| [L-M2.5](process/L-M2.5-agents-md-names-the-slow-set-test-as-corpus-cli-s.md) | AGENTS.md names the slow-set test as `corpus_cli`'s; it is `ein-corpus`'s | `process` | closed |
