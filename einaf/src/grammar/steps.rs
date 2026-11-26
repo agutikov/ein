@@ -18,7 +18,9 @@
 //! above each rule.
 //! A name is a run of letters, digits, `_` and `-` that is no word of
 //! Ein's; a string holds no `"`, `\` or line break, and a template's braces
-//! only its references.
+//! only its references; a string and a comment hold none of
+//! [`super::EXCLUDED`], `<`, `>`, `|` and the backtick, but a sentence of
+//! the input quoted verbatim as step 1's `:source`.
 //!
 //! **What a step's vocabulary closes**: step 1 writes its facts before their
 //! declarations, so it closes none of them; step 2 declares relations in the
@@ -301,14 +303,23 @@ fn string(chars: Expr, refs: Option<Expr>) -> Expr {
     seq(vec![lit("\""), Expr::star(body), lit("\"")])
 }
 
-/// A character of a string: not `"`, `\` or a line break, and in a
-/// template not a brace.
+/// A character of a string: not `"`, `\` or a line break, none of
+/// [`super::EXCLUDED`], and in a template not a brace.
 fn text_char(template: bool) -> Expr {
     let mut no = vec![('"', '"'), ('\\', '\\'), ('\n', '\n')];
     if template {
         no.push(('{', '{'));
         no.push(('}', '}'));
     }
+    no.extend(super::EXCLUDED.iter().map(|&c| (c, c)));
+    Expr::class(true, &no)
+}
+
+/// A character of a comment: not a line break, and none of
+/// [`super::EXCLUDED`].
+fn comment_char() -> Expr {
+    let mut no = vec![('\n', '\n')];
+    no.extend(super::EXCLUDED.iter().map(|&c| (c, c)));
     Expr::class(true, &no)
 }
 
@@ -340,10 +351,7 @@ fn layout(g: &mut Grammar) {
     );
     g.push(Rule::new(
         "comment",
-        seq(vec![
-            lit(";"),
-            Expr::star(Expr::class(true, &[('\n', '\n')])),
-        ]),
+        seq(vec![lit(";"), Expr::star(comment_char())]),
     ));
     let lx = whole::lexical(whole::EIN_L).expect("ein.l reads");
     let set: Vec<(u32, u32)> = NAME_CHARS
@@ -655,14 +663,8 @@ fn marker(g: &mut Grammar) {
             .doc("a rule, the marker of the property it supplies on the line above it"),
     );
     g.push(
-        Rule::new(
-            "marker",
-            seq(vec![
-                lit(MARKER),
-                Expr::plus(Expr::class(true, &[('\n', '\n')])),
-            ]),
-        )
-        .doc("the marker of a missing property: a comment line"),
+        Rule::new("marker", seq(vec![lit(MARKER), Expr::plus(comment_char())]))
+            .doc("the marker of a missing property: a comment line"),
     );
 }
 

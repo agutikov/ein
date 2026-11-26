@@ -217,6 +217,111 @@ impl Expr {
             _ => self.atom(),
         }
     }
+
+    /// The rules the expression names, each once, in the order met.
+    pub fn refs(&self, out: &mut Vec<String>) {
+        match self {
+            Expr::Ref(n) => {
+                if !out.contains(n) {
+                    out.push(n.clone());
+                }
+            }
+            Expr::Seq(v) | Expr::Alt(v) => v.iter().for_each(|x| x.refs(out)),
+            Expr::Star(x) | Expr::Plus(x) | Expr::Opt(x) | Expr::Times { expr: x, .. } => {
+                x.refs(out)
+            }
+            Expr::Empty | Expr::Lit(_) | Expr::Class { .. } | Expr::Any => {}
+        }
+    }
+
+    /// The expression with every rule it names renamed by `f`.
+    pub fn renamed(&self, f: &dyn Fn(&str) -> String) -> Expr {
+        let boxed = |x: &Expr| Box::new(x.renamed(f));
+        match self {
+            Expr::Ref(n) => Expr::Ref(f(n)),
+            Expr::Seq(v) => Expr::Seq(v.iter().map(|x| x.renamed(f)).collect()),
+            Expr::Alt(v) => Expr::Alt(v.iter().map(|x| x.renamed(f)).collect()),
+            Expr::Star(x) => Expr::Star(boxed(x)),
+            Expr::Plus(x) => Expr::Plus(boxed(x)),
+            Expr::Opt(x) => Expr::Opt(boxed(x)),
+            Expr::Times { expr, min, max } => Expr::Times {
+                expr: boxed(expr),
+                min: *min,
+                max: *max,
+            },
+            other => other.clone(),
+        }
+    }
+
+    /// **The expression with `chars` taken out of every character it
+    /// allows**: a class less them, a negated class with them added, `.`
+    /// every character but them. A literal that holds one of them is an
+    /// error: no text it allows is left.
+    pub fn without(&self, chars: &[char]) -> Result<Expr, String> {
+        let out: Vec<(char, char)> = chars.iter().map(|&c| (c, c)).collect();
+        Ok(match self {
+            Expr::Lit(s) => {
+                if let Some(c) = s.chars().find(|c| chars.contains(c)) {
+                    return Err(format!("the literal {s:?} holds {c:?}"));
+                }
+                self.clone()
+            }
+            Expr::Class {
+                negated: true,
+                ranges,
+            } => {
+                let mut all = ranges.clone();
+                all.extend(out);
+                Expr::class(true, &all)
+            }
+            Expr::Class {
+                negated: false,
+                ranges,
+            } => {
+                let mut left: Vec<(char, char)> = Vec::new();
+                for &(a, b) in ranges {
+                    let mut lo = u32::from(a);
+                    let hi = u32::from(b);
+                    let mut cut: Vec<u32> = chars
+                        .iter()
+                        .map(|&c| u32::from(c))
+                        .filter(|&c| lo <= c && c <= hi)
+                        .collect();
+                    cut.sort_unstable();
+                    cut.push(hi + 1);
+                    for c in cut {
+                        if lo < c
+                            && let (Some(x), Some(y)) = (char::from_u32(lo), char::from_u32(c - 1))
+                        {
+                            left.push((x, y));
+                        }
+                        lo = c + 1;
+                    }
+                }
+                Expr::class(false, &left)
+            }
+            Expr::Any => Expr::class(true, &out),
+            Expr::Seq(v) => Expr::Seq(
+                v.iter()
+                    .map(|x| x.without(chars))
+                    .collect::<Result<_, _>>()?,
+            ),
+            Expr::Alt(v) => Expr::Alt(
+                v.iter()
+                    .map(|x| x.without(chars))
+                    .collect::<Result<_, _>>()?,
+            ),
+            Expr::Star(x) => Expr::Star(Box::new(x.without(chars)?)),
+            Expr::Plus(x) => Expr::Plus(Box::new(x.without(chars)?)),
+            Expr::Opt(x) => Expr::Opt(Box::new(x.without(chars)?)),
+            Expr::Times { expr, min, max } => Expr::Times {
+                expr: Box::new(expr.without(chars)?),
+                min: *min,
+                max: *max,
+            },
+            Expr::Empty | Expr::Ref(_) => self.clone(),
+        })
+    }
 }
 
 /// A character as GBNF writes it in a literal or a class: the escapes
@@ -308,6 +413,28 @@ impl Grammar {
 
     pub fn has(&self, name: &str) -> bool {
         self.rules.iter().any(|r| r.name == name)
+    }
+
+    /// **The grammar of the rules `root` reaches**, in the order written,
+    /// under `head`.
+    pub fn reachable(&self, root: &str, head: Vec<String>) -> Grammar {
+        let mut seen: Vec<String> = vec![root.to_string()];
+        let mut i = 0;
+        while i < seen.len() {
+            if let Some(r) = self.rules.iter().find(|r| r.name == seen[i]) {
+                r.body.refs(&mut seen);
+            }
+            i += 1;
+        }
+        Grammar {
+            head,
+            rules: self
+                .rules
+                .iter()
+                .filter(|r| seen.contains(&r.name))
+                .cloned()
+                .collect(),
+        }
     }
 
     /// **The grammar as GBNF text**: its head's comments, then each rule

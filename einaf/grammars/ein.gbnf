@@ -1,35 +1,1426 @@
 # Ein's grammar as GBNF: generated from ein.l and ein.y, and the hand-written rules
 # that stand for what Ein's lexer does beside them. Do not edit: regenerate.
 #
-# Two roots: `root`, the forms a program the formalization contract admits is written
-# from, and `program`, every form ein.y's Program takes.
+# Two roots. `root`: the forms a program the formalization contract admits, in the
+# characters a model writes: a name or a variable of letters, digits and `_ . * + = -`,
+# no block comment, and no `<`, `>`, `|` or backtick in a string or a comment; the rules
+# it alone reaches are named `m-…`. `program`: every form ein.y's Program takes, as
+# Ein's lexer and parser read it.
 
-# hand-written: a text of the forms the contract admits, between separators
-root ::= gap-end |
-       gap root-forms gap-end
+# hand-written: a text of the forms the contract admits, between separators, in the characters a model writes
+root ::= m-gap-end |
+       m-gap root-forms m-gap-end
+
+root-forms ::= m-relation root-forms-1 |
+             m-rule root-forms-1 |
+             m-query root-forms-1 |
+             m-solve root-forms-1 |
+             m-import root-forms-1 |
+             m-not-fact root-forms-1 |
+             m-fact root-forms-1 |
+             m-open-fact root-forms-1
+
+root-forms-1 ::= m-gap m-relation root-forms-1 |
+               m-gap m-rule root-forms-1 |
+               m-gap m-query root-forms-1 |
+               m-gap m-solve root-forms-1 |
+               m-gap m-import root-forms-1 |
+               m-gap m-not-fact root-forms-1 |
+               m-gap m-fact root-forms-1 |
+               m-gap m-open-fact root-forms-1 |
+               ""
+
+# ein.y: Name
+m-name ::= m-head-name |
+         "not"
+
+# ein.y: HeadName
+m-head-name ::= m-tok-name |
+              "relation" |
+              "step" |
+              "eq" |
+              "absent" |
+              "false" |
+              "true" |
+              "open" |
+              "model" |
+              "region" |
+              "merged" |
+              "owing" |
+              "program" |
+              "module" |
+              "commit"
+
+# ein.y: DeclName
+m-decl-name ::= m-tok-name |
+              "false" |
+              "not" |
+              "step" |
+              "true" |
+              "model" |
+              "region" |
+              "merged" |
+              "owing" |
+              "program" |
+              "module" |
+              "commit"
+
+# ein.y: FactHead
+m-fact-head ::= m-tok-name |
+              "step" |
+              "eq" |
+              "true" |
+              "model"
+
+# ein.y: ValueHead
+m-value-head ::= m-open-head |
+               "absent"
+
+# ein.y: OpenHead
+m-open-head ::= m-ordinary-head |
+              "open"
+
+# ein.y: OrdinaryHead
+m-ordinary-head ::= m-tok-name |
+                  "relation" |
+                  "step" |
+                  "true" |
+                  "model" |
+                  "region" |
+                  "merged" |
+                  "owing" |
+                  "program" |
+                  "module" |
+                  "commit"
+
+# ein.y: PremiseHead
+m-premise-head ::= m-open-head |
+                 m-var
+
+# ein.y: ConclusionHead
+m-conclusion-head ::= m-ordinary-head |
+                    m-var
+
+# ein.y: Var
+m-var ::= m-tok-var
+
+# ein.y: Text
+m-text ::= m-tok-text
+
+# ein.y: NameList
+m-name-list ::= "(" m-name-list-1 |
+              "(" m-name-list-2
+
+m-name-list-1 ::= m-gap ")"
+
+m-name-list-2 ::= m-gap m-name m-name-list-3
+
+m-name-list-3 ::= m-gap-word m-name m-name-list-3 |
+                m-gap ")"
+
+# ein.y: NameListPlus
+m-name-list-plus ::= "(" m-name-list-plus-1
+
+m-name-list-plus-1 ::= m-gap m-name m-name-list-plus-2
+
+m-name-list-plus-2 ::= m-gap-word m-name m-name-list-plus-2 |
+                     m-gap ")"
+
+# ein.y: Fact
+m-fact ::= "(" m-fact-1 |
+         "(" m-fact-2
+
+m-fact-1 ::= m-gap m-fact-head m-fact-3
+
+m-fact-2 ::= m-gap "false" m-fact-4
+
+m-fact-3 ::= m-gap-word m-name m-fact-3 |
+           m-gap m-nested-fact m-fact-5 |
+           m-gap m-neg-fact m-fact-5 |
+           m-gap-word ":source" m-fact-6 |
+           m-gap-word ":rule" m-fact-7 |
+           m-gap-word ":using" m-fact-8 |
+           m-gap ")"
+
+m-fact-4 ::= m-gap-word ":source" m-fact-6 |
+           m-gap-word ":rule" m-fact-7 |
+           m-gap-word ":using" m-fact-8 |
+           m-gap ")"
+
+m-fact-5 ::= m-gap m-name m-fact-3 |
+           m-gap m-nested-fact m-fact-5 |
+           m-gap m-neg-fact m-fact-5 |
+           m-gap ":source" m-fact-6 |
+           m-gap ":rule" m-fact-7 |
+           m-gap ":using" m-fact-8 |
+           m-gap ")"
+
+m-fact-6 ::= m-gap-word m-text m-fact-9
+
+m-fact-7 ::= m-gap-word m-name m-fact-4
+
+m-fact-8 ::= m-gap "(" m-fact-10
+
+m-fact-9 ::= m-gap-word ":source" m-fact-6 |
+           m-gap-word ":rule" m-fact-7 |
+           m-gap-word ":using" m-fact-8 |
+           m-gap ")"
+
+m-fact-10 ::= m-gap m-nested-fact m-fact-11
+
+m-fact-11 ::= m-gap m-nested-fact m-fact-11 |
+            m-gap ")" m-fact-12
+
+m-fact-12 ::= m-gap ":source" m-fact-6 |
+            m-gap ":rule" m-fact-7 |
+            m-gap ":using" m-fact-8 |
+            m-gap ")"
+
+# ein.y: OpenFact
+m-open-fact ::= "(" m-open-fact-1
+
+m-open-fact-1 ::= m-gap "open" m-open-fact-2
+
+m-open-fact-2 ::= m-gap-word m-name m-open-fact-3 |
+                m-gap m-opened-fact m-open-fact-4 |
+                m-gap m-neg-fact m-open-fact-4
+
+m-open-fact-3 ::= m-gap-word ":source" m-open-fact-5 |
+                m-gap-word ":rule" m-open-fact-6 |
+                m-gap-word ":using" m-open-fact-7 |
+                m-gap ")"
+
+m-open-fact-4 ::= m-gap ":source" m-open-fact-5 |
+                m-gap ":rule" m-open-fact-6 |
+                m-gap ":using" m-open-fact-7 |
+                m-gap ")"
+
+m-open-fact-5 ::= m-gap-word m-text m-open-fact-8
+
+m-open-fact-6 ::= m-gap-word m-name m-open-fact-3
+
+m-open-fact-7 ::= m-gap "(" m-open-fact-9
+
+m-open-fact-8 ::= m-gap-word ":source" m-open-fact-5 |
+                m-gap-word ":rule" m-open-fact-6 |
+                m-gap-word ":using" m-open-fact-7 |
+                m-gap ")"
+
+m-open-fact-9 ::= m-gap m-nested-fact m-open-fact-10
+
+m-open-fact-10 ::= m-gap m-nested-fact m-open-fact-10 |
+                 m-gap ")" m-open-fact-4
+
+# ein.y: OpenedFact
+m-opened-fact ::= "(" m-opened-fact-1 |
+                "(" m-opened-fact-2
+
+m-opened-fact-1 ::= m-gap m-ordinary-head m-opened-fact-3
+
+m-opened-fact-2 ::= m-gap "false" m-opened-fact-4
+
+m-opened-fact-3 ::= m-gap-word m-name m-opened-fact-3 |
+                  m-gap m-nested-fact m-opened-fact-5 |
+                  m-gap m-neg-fact m-opened-fact-5 |
+                  m-gap ")"
+
+m-opened-fact-4 ::= m-gap ")"
+
+m-opened-fact-5 ::= m-gap m-name m-opened-fact-3 |
+                  m-gap m-nested-fact m-opened-fact-5 |
+                  m-gap m-neg-fact m-opened-fact-5 |
+                  m-gap ")"
+
+# ein.y: NotFact
+m-not-fact ::= "(" m-not-fact-1 |
+             "(" m-not-fact-2 |
+             "(" m-not-fact-3
+
+m-not-fact-1 ::= m-gap "not" m-not-fact-4
+
+m-not-fact-2 ::= m-gap "not" m-not-fact-5
+
+m-not-fact-3 ::= m-gap "not" m-not-fact-6
+
+m-not-fact-4 ::= m-gap m-nested-fact m-not-fact-7
+
+m-not-fact-5 ::= m-gap m-neg-fact m-not-fact-7
+
+m-not-fact-6 ::= m-gap m-eq-fact m-not-fact-7
+
+m-not-fact-7 ::= m-gap ":source" m-not-fact-8 |
+               m-gap ":rule" m-not-fact-9 |
+               m-gap ":using" m-not-fact-10 |
+               m-gap ")"
+
+m-not-fact-8 ::= m-gap-word m-text m-not-fact-11
+
+m-not-fact-9 ::= m-gap-word m-name m-not-fact-12
+
+m-not-fact-10 ::= m-gap "(" m-not-fact-13
+
+m-not-fact-11 ::= m-gap-word ":source" m-not-fact-8 |
+                m-gap-word ":rule" m-not-fact-9 |
+                m-gap-word ":using" m-not-fact-10 |
+                m-gap ")"
+
+m-not-fact-12 ::= m-gap-word ":source" m-not-fact-8 |
+                m-gap-word ":rule" m-not-fact-9 |
+                m-gap-word ":using" m-not-fact-10 |
+                m-gap ")"
+
+m-not-fact-13 ::= m-gap m-nested-fact m-not-fact-14
+
+m-not-fact-14 ::= m-gap m-nested-fact m-not-fact-14 |
+                m-gap ")" m-not-fact-7
+
+# ein.y: NegFact
+m-neg-fact ::= "(" m-neg-fact-1 |
+             "(" m-neg-fact-2
+
+m-neg-fact-1 ::= m-gap "not" m-neg-fact-3
+
+m-neg-fact-2 ::= m-gap "not" m-neg-fact-4
+
+m-neg-fact-3 ::= m-gap m-nested-fact m-neg-fact-5
+
+m-neg-fact-4 ::= m-gap m-neg-fact m-neg-fact-5
+
+m-neg-fact-5 ::= m-gap ")"
+
+# ein.y: NestedFact
+m-nested-fact ::= "(" m-nested-fact-1 |
+                "(" m-nested-fact-2
+
+m-nested-fact-1 ::= m-gap m-value-head m-nested-fact-3
+
+m-nested-fact-2 ::= m-gap "false" m-nested-fact-4
+
+m-nested-fact-3 ::= m-gap-word m-name m-nested-fact-3 |
+                  m-gap m-nested-fact m-nested-fact-5 |
+                  m-gap m-neg-fact m-nested-fact-5 |
+                  m-gap ")"
+
+m-nested-fact-4 ::= m-gap ")"
+
+m-nested-fact-5 ::= m-gap m-name m-nested-fact-3 |
+                  m-gap m-nested-fact m-nested-fact-5 |
+                  m-gap m-neg-fact m-nested-fact-5 |
+                  m-gap ")"
+
+# ein.y: EqFact
+m-eq-fact ::= "(" m-eq-fact-1
+
+m-eq-fact-1 ::= m-gap "eq" m-eq-fact-2
+
+m-eq-fact-2 ::= m-gap-word m-name m-eq-fact-2 |
+              m-gap m-nested-fact m-eq-fact-3 |
+              m-gap m-neg-fact m-eq-fact-3 |
+              m-gap ")"
+
+m-eq-fact-3 ::= m-gap m-name m-eq-fact-2 |
+              m-gap m-nested-fact m-eq-fact-3 |
+              m-gap m-neg-fact m-eq-fact-3 |
+              m-gap ")"
+
+# ein.y: Relation
+m-relation ::= "(" m-relation-1
+
+m-relation-1 ::= m-gap "relation" m-relation-2
+
+m-relation-2 ::= m-gap-word m-decl-name m-relation-3
+
+m-relation-3 ::= m-gap-word m-name m-relation-3 |
+               m-gap-word ":why" m-relation-4 |
+               m-gap ")"
+
+m-relation-4 ::= m-gap-word m-text m-relation-5
+
+m-relation-5 ::= m-gap-word ":why" m-relation-4 |
+               m-gap ")"
+
+# ein.y: Rule
+m-rule ::= "(" m-rule-1
+
+m-rule-1 ::= m-gap "rule" m-rule-2
+
+m-rule-2 ::= m-gap-word m-decl-name m-rule-3
+
+m-rule-3 ::= m-gap m-params m-rule-4
+
+m-rule-4 ::= m-gap ":match" m-rule-5 |
+           m-gap ":assert" m-rule-6 |
+           m-gap ":ein" m-rule-7 |
+           m-gap ":why" m-rule-8 |
+           m-gap ")"
+
+m-rule-5 ::= m-gap m-match m-rule-4
+
+m-rule-6 ::= m-gap m-assert m-rule-4
+
+m-rule-7 ::= m-gap-word m-name m-rule-9
+
+m-rule-8 ::= m-gap-word m-text m-rule-10
+
+m-rule-9 ::= m-gap-word ":match" m-rule-5 |
+           m-gap-word ":assert" m-rule-6 |
+           m-gap-word ":ein" m-rule-7 |
+           m-gap-word ":why" m-rule-8 |
+           m-gap ")"
+
+m-rule-10 ::= m-gap-word ":match" m-rule-5 |
+            m-gap-word ":assert" m-rule-6 |
+            m-gap-word ":ein" m-rule-7 |
+            m-gap-word ":why" m-rule-8 |
+            m-gap ")"
+
+# ein.y: Params
+m-params ::= "(" m-params-1
+
+m-params-1 ::= m-gap m-var m-params-2 |
+             m-gap ")"
+
+m-params-2 ::= m-gap-word m-var m-params-2 |
+             m-gap ")"
+
+# ein.y: Match
+m-match ::= "(" m-match-1 |
+          m-premise
+
+m-match-1 ::= m-gap ")"
+
+# ein.y: Premise
+m-premise ::= "(" m-premise-1 |
+            "(" m-premise-2 |
+            m-connective
+
+m-premise-1 ::= m-gap m-premise-head m-premise-3
+
+m-premise-2 ::= m-gap "false" m-premise-4
+
+m-premise-3 ::= m-gap m-arg-p m-premise-5 |
+              m-gap-word m-arg-w m-premise-3 |
+              m-gap ")"
+
+m-premise-4 ::= m-gap ")"
+
+m-premise-5 ::= m-gap m-arg-p m-premise-5 |
+              m-gap m-arg-w m-premise-3 |
+              m-gap ")"
+
+# ein.y: Connective
+m-connective ::= "(" m-connective-1 |
+               "(" m-connective-2 |
+               "(" m-connective-3 |
+               "(" m-connective-4 |
+               m-guard
+
+m-connective-1 ::= m-gap "and" m-connective-5
+
+m-connective-2 ::= m-gap "or" m-connective-5
+
+m-connective-3 ::= m-gap "not" m-connective-6
+
+m-connective-4 ::= m-gap "absent" m-connective-7
+
+m-connective-5 ::= m-gap m-premise m-connective-8
+
+m-connective-6 ::= m-gap m-negated m-connective-9
+
+m-connective-7 ::= m-gap m-absent-premise m-connective-9
+
+m-connective-8 ::= m-gap m-premise m-connective-8 |
+                 m-gap ")"
+
+m-connective-9 ::= m-gap ")"
+
+# ein.y: AbsentPremise
+m-absent-premise ::= "(" m-absent-premise-1 |
+                   "(" m-absent-premise-2 |
+                   "(" m-absent-premise-3 |
+                   "(" m-absent-premise-4 |
+                   "(" m-absent-premise-5 |
+                   m-guard
+
+m-absent-premise-1 ::= m-gap m-premise-head m-absent-premise-6
+
+m-absent-premise-2 ::= m-gap "false" m-absent-premise-7
+
+m-absent-premise-3 ::= m-gap "and" m-absent-premise-8
+
+m-absent-premise-4 ::= m-gap "or" m-absent-premise-8
+
+m-absent-premise-5 ::= m-gap "not" m-absent-premise-9
+
+m-absent-premise-6 ::= m-gap m-arg-p m-absent-premise-10 |
+                     m-gap-word m-arg-w m-absent-premise-6 |
+                     m-gap ")"
+
+m-absent-premise-7 ::= m-gap ")"
+
+m-absent-premise-8 ::= m-gap m-premise m-absent-premise-11
+
+m-absent-premise-9 ::= m-gap m-negated m-absent-premise-12
+
+m-absent-premise-10 ::= m-gap m-arg-p m-absent-premise-10 |
+                      m-gap m-arg-w m-absent-premise-6 |
+                      m-gap ")"
+
+m-absent-premise-11 ::= m-gap m-premise m-absent-premise-11 |
+                      m-gap ")"
+
+m-absent-premise-12 ::= m-gap ")"
+
+# ein.y: Negated
+m-negated ::= m-pattern |
+            m-neg-pattern |
+            "(" m-negated-1
+
+m-negated-1 ::= m-gap "eq" m-negated-2
+
+m-negated-2 ::= m-gap-word m-name m-negated-3 |
+              m-gap-word m-var m-negated-3 |
+              m-gap m-pattern m-negated-4 |
+              m-gap m-neg-pattern m-negated-4
+
+m-negated-3 ::= m-gap-word m-name m-negated-5 |
+              m-gap-word m-var m-negated-5 |
+              m-gap m-pattern m-negated-6 |
+              m-gap m-neg-pattern m-negated-6
+
+m-negated-4 ::= m-gap m-name m-negated-5 |
+              m-gap m-var m-negated-5 |
+              m-gap m-pattern m-negated-6 |
+              m-gap m-neg-pattern m-negated-6
+
+m-negated-5 ::= m-gap ")"
+
+m-negated-6 ::= m-gap ")"
+
+# ein.y: Guard
+m-guard ::= "(" m-guard-1 |
+          "(" m-guard-2
+
+m-guard-1 ::= m-gap "eq" m-guard-3
+
+m-guard-2 ::= m-gap "neq" m-guard-3
+
+m-guard-3 ::= m-gap-word m-name m-guard-4 |
+            m-gap-word m-var m-guard-4 |
+            m-gap m-pattern m-guard-5 |
+            m-gap m-neg-pattern m-guard-5
+
+m-guard-4 ::= m-gap-word m-name m-guard-6 |
+            m-gap-word m-var m-guard-6 |
+            m-gap m-pattern m-guard-7 |
+            m-gap m-neg-pattern m-guard-7
+
+m-guard-5 ::= m-gap m-name m-guard-6 |
+            m-gap m-var m-guard-6 |
+            m-gap m-pattern m-guard-7 |
+            m-gap m-neg-pattern m-guard-7
+
+m-guard-6 ::= m-gap ")"
+
+m-guard-7 ::= m-gap ")"
+
+# ein.y: Arg, its alternatives that begin with a paren and end with a paren
+m-arg-p ::= "(" m-arg-p-1 |
+          "(" m-arg-p-2 |
+          m-connective
+
+m-arg-p-1 ::= m-gap m-arg-head m-arg-p-3
+
+m-arg-p-2 ::= m-gap "false" m-arg-p-4
+
+m-arg-p-3 ::= m-gap m-arg-p m-arg-p-5 |
+            m-gap-word m-arg-w m-arg-p-3 |
+            m-gap ")"
+
+m-arg-p-4 ::= m-gap ")"
+
+m-arg-p-5 ::= m-gap m-arg-p m-arg-p-5 |
+            m-gap m-arg-w m-arg-p-3 |
+            m-gap ")"
+
+# ein.y: Arg, its alternatives that begin with a word and end with a word
+m-arg-w ::= m-name |
+          m-var
+
+# ein.y: ArgHead
+m-arg-head ::= m-open-head |
+             m-var
+
+# ein.y: Pattern
+m-pattern ::= "(" m-pattern-1 |
+            "(" m-pattern-2 |
+            "(" m-pattern-3
+
+m-pattern-1 ::= m-gap m-value-head m-pattern-4
+
+m-pattern-2 ::= m-gap m-var m-pattern-4
+
+m-pattern-3 ::= m-gap "false" m-pattern-5
+
+m-pattern-4 ::= m-gap-word m-name m-pattern-4 |
+              m-gap-word m-var m-pattern-4 |
+              m-gap m-pattern m-pattern-6 |
+              m-gap m-neg-pattern m-pattern-6 |
+              m-gap ")"
+
+m-pattern-5 ::= m-gap ")"
+
+m-pattern-6 ::= m-gap m-name m-pattern-4 |
+              m-gap m-var m-pattern-4 |
+              m-gap m-pattern m-pattern-6 |
+              m-gap m-neg-pattern m-pattern-6 |
+              m-gap ")"
+
+# ein.y: NegPattern
+m-neg-pattern ::= "(" m-neg-pattern-1 |
+                "(" m-neg-pattern-2
+
+m-neg-pattern-1 ::= m-gap "not" m-neg-pattern-3
+
+m-neg-pattern-2 ::= m-gap "not" m-neg-pattern-4
+
+m-neg-pattern-3 ::= m-gap m-pattern m-neg-pattern-5
+
+m-neg-pattern-4 ::= m-gap m-neg-pattern m-neg-pattern-5
+
+m-neg-pattern-5 ::= m-gap ")"
+
+# ein.y: Assert
+m-assert ::= "(" m-assert-1 |
+           m-conclusion
+
+m-assert-1 ::= m-gap ")"
+
+# ein.y: Conclusion
+m-conclusion ::= "(" m-conclusion-1 |
+               "(" m-conclusion-2 |
+               "(" m-conclusion-3 |
+               "(" m-conclusion-4 |
+               "(" m-conclusion-5 |
+               "(" m-conclusion-6 |
+               m-guard
+
+m-conclusion-1 ::= m-gap m-conclusion-head m-conclusion-7
+
+m-conclusion-2 ::= m-gap "open" m-conclusion-8
+
+m-conclusion-3 ::= m-gap "and" m-conclusion-9
+
+m-conclusion-4 ::= m-gap "not" m-conclusion-10
+
+m-conclusion-5 ::= m-gap "not" m-conclusion-11
+
+m-conclusion-6 ::= m-gap "false" m-conclusion-12
+
+m-conclusion-7 ::= m-gap-word m-name m-conclusion-7 |
+                 m-gap-word m-var m-conclusion-7 |
+                 m-gap m-pattern m-conclusion-13 |
+                 m-gap m-neg-pattern m-conclusion-13 |
+                 m-gap ")"
+
+m-conclusion-8 ::= m-gap-word m-name m-conclusion-12 |
+                 m-gap-word m-var m-conclusion-12 |
+                 m-gap m-opened-pattern m-conclusion-14 |
+                 m-gap m-neg-pattern m-conclusion-14
+
+m-conclusion-9 ::= m-gap m-conclusion m-conclusion-15
+
+m-conclusion-10 ::= m-gap m-negated m-conclusion-14
+
+m-conclusion-11 ::= m-gap-word m-var m-conclusion-12
+
+m-conclusion-12 ::= m-gap ")"
+
+m-conclusion-13 ::= m-gap m-name m-conclusion-7 |
+                  m-gap m-var m-conclusion-7 |
+                  m-gap m-pattern m-conclusion-13 |
+                  m-gap m-neg-pattern m-conclusion-13 |
+                  m-gap ")"
+
+m-conclusion-14 ::= m-gap ")"
+
+m-conclusion-15 ::= m-gap m-conclusion m-conclusion-15 |
+                  m-gap ")"
+
+# ein.y: OpenedPattern
+m-opened-pattern ::= "(" m-opened-pattern-1 |
+                   "(" m-opened-pattern-2 |
+                   "(" m-opened-pattern-3
+
+m-opened-pattern-1 ::= m-gap m-ordinary-head m-opened-pattern-4
+
+m-opened-pattern-2 ::= m-gap m-var m-opened-pattern-4
+
+m-opened-pattern-3 ::= m-gap "false" m-opened-pattern-5
+
+m-opened-pattern-4 ::= m-gap-word m-name m-opened-pattern-4 |
+                     m-gap-word m-var m-opened-pattern-4 |
+                     m-gap m-pattern m-opened-pattern-6 |
+                     m-gap m-neg-pattern m-opened-pattern-6 |
+                     m-gap ")"
+
+m-opened-pattern-5 ::= m-gap ")"
+
+m-opened-pattern-6 ::= m-gap m-name m-opened-pattern-4 |
+                     m-gap m-var m-opened-pattern-4 |
+                     m-gap m-pattern m-opened-pattern-6 |
+                     m-gap m-neg-pattern m-opened-pattern-6 |
+                     m-gap ")"
+
+# ein.y: Query
+m-query ::= "(" m-query-1
+
+m-query-1 ::= m-gap "query" m-query-2
+
+m-query-2 ::= m-gap-word ":goal" m-query-3 |
+            m-gap-word ":goal-text" m-query-4 |
+            m-gap-word ":over" m-query-5 |
+            m-gap-word ":expect" m-query-6
+
+m-query-3 ::= m-gap m-premise m-query-7
+
+m-query-4 ::= m-gap-word m-text m-query-8
+
+m-query-5 ::= m-gap-word m-name m-query-9
+
+m-query-6 ::= m-gap m-claim m-query-7
+
+m-query-7 ::= m-gap ":goal" m-query-3 |
+            m-gap ":goal-text" m-query-4 |
+            m-gap ":over" m-query-5 |
+            m-gap ":expect" m-query-6 |
+            m-gap ")"
+
+m-query-8 ::= m-gap-word ":goal" m-query-3 |
+            m-gap-word ":goal-text" m-query-4 |
+            m-gap-word ":over" m-query-5 |
+            m-gap-word ":expect" m-query-6 |
+            m-gap ")"
+
+m-query-9 ::= m-gap-word ":goal" m-query-3 |
+            m-gap-word ":goal-text" m-query-4 |
+            m-gap-word ":over" m-query-5 |
+            m-gap-word ":expect" m-query-6 |
+            m-gap ")"
+
+# ein.y: Claim
+m-claim ::= m-model |
+          "(" m-claim-1 |
+          "(" m-claim-2
+
+m-claim-1 ::= m-gap "or" m-claim-3
+
+m-claim-2 ::= m-gap "false" m-claim-4
+
+m-claim-3 ::= m-gap m-model m-claim-5
+
+m-claim-4 ::= m-gap ")"
+
+m-claim-5 ::= m-gap m-model m-claim-5 |
+            m-gap ")"
+
+# ein.y: Model
+m-model ::= "(" m-model-1
+
+m-model-1 ::= m-gap "model" m-model-2
+
+m-model-2 ::= m-gap m-claim-fact m-model-3 |
+            m-gap ")"
+
+m-model-3 ::= m-gap m-claim-fact m-model-3 |
+            m-gap ")"
+
+# ein.y: ClaimFact
+m-claim-fact ::= m-claim-nested |
+               m-eq-fact |
+               m-neg-fact |
+               "(" m-claim-fact-1 |
+               "(" m-claim-fact-2 |
+               "(" m-claim-fact-3
+
+m-claim-fact-1 ::= m-gap "not" m-claim-fact-4
+
+m-claim-fact-2 ::= m-gap "absent" m-claim-fact-5
+
+m-claim-fact-3 ::= m-gap "neq" m-claim-fact-6
+
+m-claim-fact-4 ::= m-gap m-eq-fact m-claim-fact-7
+
+m-claim-fact-5 ::= m-gap m-claim-atom m-claim-fact-7
+
+m-claim-fact-6 ::= m-gap-word m-name m-claim-fact-8 |
+                 m-gap m-nested-fact m-claim-fact-9 |
+                 m-gap m-neg-fact m-claim-fact-9
+
+m-claim-fact-7 ::= m-gap ")"
+
+m-claim-fact-8 ::= m-gap-word m-name m-claim-fact-10 |
+                 m-gap m-nested-fact m-claim-fact-7 |
+                 m-gap m-neg-fact m-claim-fact-7
+
+m-claim-fact-9 ::= m-gap m-name m-claim-fact-10 |
+                 m-gap m-nested-fact m-claim-fact-7 |
+                 m-gap m-neg-fact m-claim-fact-7
+
+m-claim-fact-10 ::= m-gap ")"
+
+# ein.y: ClaimAtom
+m-claim-atom ::= m-claim-nested |
+               m-eq-fact |
+               m-neg-fact |
+               "(" m-claim-atom-1
+
+m-claim-atom-1 ::= m-gap "not" m-claim-atom-2
+
+m-claim-atom-2 ::= m-gap m-eq-fact m-claim-atom-3
+
+m-claim-atom-3 ::= m-gap ")"
+
+# ein.y: ClaimNested
+m-claim-nested ::= "(" m-claim-nested-1 |
+                 "(" m-claim-nested-2
+
+m-claim-nested-1 ::= m-gap m-ordinary-head m-claim-nested-3
+
+m-claim-nested-2 ::= m-gap "false" m-claim-nested-4
+
+m-claim-nested-3 ::= m-gap-word m-name m-claim-nested-3 |
+                   m-gap m-nested-fact m-claim-nested-5 |
+                   m-gap m-neg-fact m-claim-nested-5 |
+                   m-gap ")"
+
+m-claim-nested-4 ::= m-gap ")"
+
+m-claim-nested-5 ::= m-gap m-name m-claim-nested-3 |
+                   m-gap m-nested-fact m-claim-nested-5 |
+                   m-gap m-neg-fact m-claim-nested-5 |
+                   m-gap ")"
+
+# ein.y: Solve
+m-solve ::= "(" m-solve-1
+
+m-solve-1 ::= m-gap "solve" m-solve-2
+
+m-solve-2 ::= m-gap-word ":hypothesis-relations" m-solve-3 |
+            m-gap-word ":no-hypothesis" m-solve-3 |
+            m-gap-word ":no-search" m-solve-2 |
+            m-gap-word ":expect" m-solve-4 |
+            m-gap ")"
+
+m-solve-3 ::= m-gap m-name-list m-solve-5
+
+m-solve-4 ::= m-gap m-region-claim m-solve-5
+
+m-solve-5 ::= m-gap ":hypothesis-relations" m-solve-3 |
+            m-gap ":no-hypothesis" m-solve-3 |
+            m-gap ":no-search" m-solve-2 |
+            m-gap ":expect" m-solve-4 |
+            m-gap ")"
+
+# ein.y: RegionClaim
+m-region-claim ::= "(" m-region-claim-1 |
+                 "(" m-region-claim-2
+
+m-region-claim-1 ::= m-gap "region" m-region-claim-3
+
+m-region-claim-2 ::= m-gap "false" m-region-claim-4
+
+m-region-claim-3 ::= m-gap m-region-item m-region-claim-5 |
+                   m-gap ")"
+
+m-region-claim-4 ::= m-gap ")"
+
+m-region-claim-5 ::= m-gap m-region-item m-region-claim-5 |
+                   m-gap ")"
+
+# ein.y: RegionItem
+m-region-item ::= m-model |
+                "(" m-region-item-1 |
+                "(" m-region-item-2
+
+m-region-item-1 ::= m-gap "merged" m-region-item-3
+
+m-region-item-2 ::= m-gap "owing" m-region-item-4
+
+m-region-item-3 ::= m-gap m-model m-region-item-5
+
+m-region-item-4 ::= m-gap m-model m-region-item-6
+
+m-region-item-5 ::= m-gap m-merged-from m-region-item-7
+
+m-region-item-6 ::= m-gap m-model m-region-item-6 |
+                  m-gap ")"
+
+m-region-item-7 ::= m-gap ")"
+
+# ein.y: MergedFrom
+m-merged-from ::= m-model |
+                "(" m-merged-from-1
+
+m-merged-from-1 ::= m-gap "or" m-merged-from-2
+
+m-merged-from-2 ::= m-gap m-model m-merged-from-3
+
+m-merged-from-3 ::= m-gap m-model m-merged-from-3 |
+                  m-gap ")"
+
+# ein.y: Import
+m-import ::= "(" m-import-1
+
+m-import-1 ::= m-gap "import" m-import-2
+
+m-import-2 ::= m-gap-word m-name m-import-3
+
+m-import-3 ::= m-gap-word ":symbols" m-import-4 |
+             m-gap-word ":as" m-import-5 |
+             m-gap ")"
+
+m-import-4 ::= m-gap m-name-list-plus m-import-6
+
+m-import-5 ::= m-gap-word m-decl-name m-import-3
+
+m-import-6 ::= m-gap ":symbols" m-import-4 |
+             m-gap ":as" m-import-5 |
+             m-gap ")"
+
+# hand-written: a run of the name characters less `_`, `absent`, `and`, `commit`, `config`, `eq`, `false`, `import`, `macro`, `merged`, `model`, `module`, `neq`, `not`, `open`, `or`, `owing`, `program`, `query`, `region`, `relation`, `rule`, `solve`, `step`, `trace`, `true`
+m-tok-name ::= "_" m-tok-name-1 |
+             "a" m-tok-name-2 |
+             "c" m-tok-name-3 |
+             "e" m-tok-name-4 |
+             "f" m-tok-name-5 |
+             "i" m-tok-name-6 |
+             "m" m-tok-name-7 |
+             "n" m-tok-name-8 |
+             "o" m-tok-name-9 |
+             "p" m-tok-name-10 |
+             "q" m-tok-name-11 |
+             "r" m-tok-name-12 |
+             "s" m-tok-name-13 |
+             "t" m-tok-name-14 |
+             [*+\-.0-9=A-Zbdghj-lu-z] m-tok-name-rest
+
+# after `_`
+m-tok-name-1 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `a`
+m-tok-name-2 ::= "" |
+               "b" m-tok-name-15 |
+               "n" m-tok-name-16 |
+               [*+\-.0-9=A-Z_ac-mo-z] m-tok-name-rest
+
+# after `c`
+m-tok-name-3 ::= "" |
+               "o" m-tok-name-17 |
+               [*+\-.0-9=A-Z_a-np-z] m-tok-name-rest
+
+# after `e`
+m-tok-name-4 ::= "" |
+               "q" m-tok-name-18 |
+               [*+\-.0-9=A-Z_a-pr-z] m-tok-name-rest
+
+# after `f`
+m-tok-name-5 ::= "" |
+               "a" m-tok-name-19 |
+               [*+\-.0-9=A-Z_b-z] m-tok-name-rest
+
+# after `i`
+m-tok-name-6 ::= "" |
+               "m" m-tok-name-20 |
+               [*+\-.0-9=A-Z_a-ln-z] m-tok-name-rest
+
+# after `m`
+m-tok-name-7 ::= "" |
+               "a" m-tok-name-21 |
+               "e" m-tok-name-22 |
+               "o" m-tok-name-23 |
+               [*+\-.0-9=A-Z_b-df-np-z] m-tok-name-rest
+
+# after `n`
+m-tok-name-8 ::= "" |
+               "e" m-tok-name-24 |
+               "o" m-tok-name-25 |
+               [*+\-.0-9=A-Z_a-df-np-z] m-tok-name-rest
+
+# after `o`
+m-tok-name-9 ::= "" |
+               "p" m-tok-name-26 |
+               "r" m-tok-name-27 |
+               "w" m-tok-name-28 |
+               [*+\-.0-9=A-Z_a-oqs-vx-z] m-tok-name-rest
+
+# after `p`
+m-tok-name-10 ::= "" |
+                "r" m-tok-name-29 |
+                [*+\-.0-9=A-Z_a-qs-z] m-tok-name-rest
+
+# after `q`
+m-tok-name-11 ::= "" |
+                "u" m-tok-name-30 |
+                [*+\-.0-9=A-Z_a-tv-z] m-tok-name-rest
+
+# after `r`
+m-tok-name-12 ::= "" |
+                "e" m-tok-name-31 |
+                "u" m-tok-name-32 |
+                [*+\-.0-9=A-Z_a-df-tv-z] m-tok-name-rest
+
+# after `s`
+m-tok-name-13 ::= "" |
+                "o" m-tok-name-33 |
+                "t" m-tok-name-34 |
+                [*+\-.0-9=A-Z_a-np-su-z] m-tok-name-rest
+
+# after `t`
+m-tok-name-14 ::= "" |
+                "r" m-tok-name-35 |
+                [*+\-.0-9=A-Z_a-qs-z] m-tok-name-rest
+
+# after `ab`
+m-tok-name-15 ::= "" |
+                "s" m-tok-name-36 |
+                [*+\-.0-9=A-Z_a-rt-z] m-tok-name-rest
+
+# after `an`
+m-tok-name-16 ::= "" |
+                "d" m-tok-name-37 |
+                [*+\-.0-9=A-Z_a-ce-z] m-tok-name-rest
+
+# after `co`
+m-tok-name-17 ::= "" |
+                "m" m-tok-name-38 |
+                "n" m-tok-name-39 |
+                [*+\-.0-9=A-Z_a-lo-z] m-tok-name-rest
+
+# after `eq`
+m-tok-name-18 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `fa`
+m-tok-name-19 ::= "" |
+                "l" m-tok-name-40 |
+                [*+\-.0-9=A-Z_a-km-z] m-tok-name-rest
+
+# after `im`
+m-tok-name-20 ::= "" |
+                "p" m-tok-name-41 |
+                [*+\-.0-9=A-Z_a-oq-z] m-tok-name-rest
+
+# after `ma`
+m-tok-name-21 ::= "" |
+                "c" m-tok-name-42 |
+                [*+\-.0-9=A-Z_abd-z] m-tok-name-rest
+
+# after `me`
+m-tok-name-22 ::= "" |
+                "r" m-tok-name-43 |
+                [*+\-.0-9=A-Z_a-qs-z] m-tok-name-rest
+
+# after `mo`
+m-tok-name-23 ::= "" |
+                "d" m-tok-name-44 |
+                [*+\-.0-9=A-Z_a-ce-z] m-tok-name-rest
+
+# after `ne`
+m-tok-name-24 ::= "" |
+                "q" m-tok-name-45 |
+                [*+\-.0-9=A-Z_a-pr-z] m-tok-name-rest
+
+# after `no`
+m-tok-name-25 ::= "" |
+                "t" m-tok-name-46 |
+                [*+\-.0-9=A-Z_a-su-z] m-tok-name-rest
+
+# after `op`
+m-tok-name-26 ::= "" |
+                "e" m-tok-name-47 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+# after `or`
+m-tok-name-27 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `ow`
+m-tok-name-28 ::= "" |
+                "i" m-tok-name-48 |
+                [*+\-.0-9=A-Z_a-hj-z] m-tok-name-rest
+
+# after `pr`
+m-tok-name-29 ::= "" |
+                "o" m-tok-name-49 |
+                [*+\-.0-9=A-Z_a-np-z] m-tok-name-rest
+
+# after `qu`
+m-tok-name-30 ::= "" |
+                "e" m-tok-name-50 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+# after `re`
+m-tok-name-31 ::= "" |
+                "g" m-tok-name-51 |
+                "l" m-tok-name-52 |
+                [*+\-.0-9=A-Z_a-fh-km-z] m-tok-name-rest
+
+# after `ru`
+m-tok-name-32 ::= "" |
+                "l" m-tok-name-53 |
+                [*+\-.0-9=A-Z_a-km-z] m-tok-name-rest
+
+# after `so`
+m-tok-name-33 ::= "" |
+                "l" m-tok-name-54 |
+                [*+\-.0-9=A-Z_a-km-z] m-tok-name-rest
+
+# after `st`
+m-tok-name-34 ::= "" |
+                "e" m-tok-name-55 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+# after `tr`
+m-tok-name-35 ::= "" |
+                "a" m-tok-name-56 |
+                "u" m-tok-name-57 |
+                [*+\-.0-9=A-Z_b-tv-z] m-tok-name-rest
+
+# after `abs`
+m-tok-name-36 ::= "" |
+                "e" m-tok-name-58 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+# after `and`
+m-tok-name-37 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `com`
+m-tok-name-38 ::= "" |
+                "m" m-tok-name-59 |
+                [*+\-.0-9=A-Z_a-ln-z] m-tok-name-rest
+
+# after `con`
+m-tok-name-39 ::= "" |
+                "f" m-tok-name-60 |
+                [*+\-.0-9=A-Z_a-eg-z] m-tok-name-rest
+
+# after `fal`
+m-tok-name-40 ::= "" |
+                "s" m-tok-name-61 |
+                [*+\-.0-9=A-Z_a-rt-z] m-tok-name-rest
+
+# after `imp`
+m-tok-name-41 ::= "" |
+                "o" m-tok-name-62 |
+                [*+\-.0-9=A-Z_a-np-z] m-tok-name-rest
+
+# after `mac`
+m-tok-name-42 ::= "" |
+                "r" m-tok-name-63 |
+                [*+\-.0-9=A-Z_a-qs-z] m-tok-name-rest
+
+# after `mer`
+m-tok-name-43 ::= "" |
+                "g" m-tok-name-64 |
+                [*+\-.0-9=A-Z_a-fh-z] m-tok-name-rest
+
+# after `mod`
+m-tok-name-44 ::= "" |
+                "e" m-tok-name-65 |
+                "u" m-tok-name-66 |
+                [*+\-.0-9=A-Z_a-df-tv-z] m-tok-name-rest
+
+# after `neq`
+m-tok-name-45 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `not`
+m-tok-name-46 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `ope`
+m-tok-name-47 ::= "" |
+                "n" m-tok-name-67 |
+                [*+\-.0-9=A-Z_a-mo-z] m-tok-name-rest
+
+# after `owi`
+m-tok-name-48 ::= "" |
+                "n" m-tok-name-68 |
+                [*+\-.0-9=A-Z_a-mo-z] m-tok-name-rest
+
+# after `pro`
+m-tok-name-49 ::= "" |
+                "g" m-tok-name-69 |
+                [*+\-.0-9=A-Z_a-fh-z] m-tok-name-rest
+
+# after `que`
+m-tok-name-50 ::= "" |
+                "r" m-tok-name-70 |
+                [*+\-.0-9=A-Z_a-qs-z] m-tok-name-rest
+
+# after `reg`
+m-tok-name-51 ::= "" |
+                "i" m-tok-name-71 |
+                [*+\-.0-9=A-Z_a-hj-z] m-tok-name-rest
+
+# after `rel`
+m-tok-name-52 ::= "" |
+                "a" m-tok-name-72 |
+                [*+\-.0-9=A-Z_b-z] m-tok-name-rest
+
+# after `rul`
+m-tok-name-53 ::= "" |
+                "e" m-tok-name-73 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+# after `sol`
+m-tok-name-54 ::= "" |
+                "v" m-tok-name-74 |
+                [*+\-.0-9=A-Z_a-uw-z] m-tok-name-rest
+
+# after `ste`
+m-tok-name-55 ::= "" |
+                "p" m-tok-name-75 |
+                [*+\-.0-9=A-Z_a-oq-z] m-tok-name-rest
+
+# after `tra`
+m-tok-name-56 ::= "" |
+                "c" m-tok-name-76 |
+                [*+\-.0-9=A-Z_abd-z] m-tok-name-rest
+
+# after `tru`
+m-tok-name-57 ::= "" |
+                "e" m-tok-name-77 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+# after `abse`
+m-tok-name-58 ::= "" |
+                "n" m-tok-name-78 |
+                [*+\-.0-9=A-Z_a-mo-z] m-tok-name-rest
+
+# after `comm`
+m-tok-name-59 ::= "" |
+                "i" m-tok-name-79 |
+                [*+\-.0-9=A-Z_a-hj-z] m-tok-name-rest
+
+# after `conf`
+m-tok-name-60 ::= "" |
+                "i" m-tok-name-80 |
+                [*+\-.0-9=A-Z_a-hj-z] m-tok-name-rest
+
+# after `fals`
+m-tok-name-61 ::= "" |
+                "e" m-tok-name-81 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+# after `impo`
+m-tok-name-62 ::= "" |
+                "r" m-tok-name-82 |
+                [*+\-.0-9=A-Z_a-qs-z] m-tok-name-rest
+
+# after `macr`
+m-tok-name-63 ::= "" |
+                "o" m-tok-name-83 |
+                [*+\-.0-9=A-Z_a-np-z] m-tok-name-rest
+
+# after `merg`
+m-tok-name-64 ::= "" |
+                "e" m-tok-name-84 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+# after `mode`
+m-tok-name-65 ::= "" |
+                "l" m-tok-name-85 |
+                [*+\-.0-9=A-Z_a-km-z] m-tok-name-rest
+
+# after `modu`
+m-tok-name-66 ::= "" |
+                "l" m-tok-name-86 |
+                [*+\-.0-9=A-Z_a-km-z] m-tok-name-rest
+
+# after `open`
+m-tok-name-67 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `owin`
+m-tok-name-68 ::= "" |
+                "g" m-tok-name-87 |
+                [*+\-.0-9=A-Z_a-fh-z] m-tok-name-rest
+
+# after `prog`
+m-tok-name-69 ::= "" |
+                "r" m-tok-name-88 |
+                [*+\-.0-9=A-Z_a-qs-z] m-tok-name-rest
+
+# after `quer`
+m-tok-name-70 ::= "" |
+                "y" m-tok-name-89 |
+                [*+\-.0-9=A-Z_a-xz] m-tok-name-rest
+
+# after `regi`
+m-tok-name-71 ::= "" |
+                "o" m-tok-name-90 |
+                [*+\-.0-9=A-Z_a-np-z] m-tok-name-rest
+
+# after `rela`
+m-tok-name-72 ::= "" |
+                "t" m-tok-name-91 |
+                [*+\-.0-9=A-Z_a-su-z] m-tok-name-rest
+
+# after `rule`
+m-tok-name-73 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `solv`
+m-tok-name-74 ::= "" |
+                "e" m-tok-name-92 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+# after `step`
+m-tok-name-75 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `trac`
+m-tok-name-76 ::= "" |
+                "e" m-tok-name-93 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+# after `true`
+m-tok-name-77 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `absen`
+m-tok-name-78 ::= "" |
+                "t" m-tok-name-94 |
+                [*+\-.0-9=A-Z_a-su-z] m-tok-name-rest
+
+# after `commi`
+m-tok-name-79 ::= "" |
+                "t" m-tok-name-95 |
+                [*+\-.0-9=A-Z_a-su-z] m-tok-name-rest
+
+# after `confi`
+m-tok-name-80 ::= "" |
+                "g" m-tok-name-96 |
+                [*+\-.0-9=A-Z_a-fh-z] m-tok-name-rest
+
+# after `false`
+m-tok-name-81 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `impor`
+m-tok-name-82 ::= "" |
+                "t" m-tok-name-97 |
+                [*+\-.0-9=A-Z_a-su-z] m-tok-name-rest
+
+# after `macro`
+m-tok-name-83 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `merge`
+m-tok-name-84 ::= "" |
+                "d" m-tok-name-98 |
+                [*+\-.0-9=A-Z_a-ce-z] m-tok-name-rest
+
+# after `model`
+m-tok-name-85 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `modul`
+m-tok-name-86 ::= "" |
+                "e" m-tok-name-99 |
+                [*+\-.0-9=A-Z_a-df-z] m-tok-name-rest
+
+# after `owing`
+m-tok-name-87 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `progr`
+m-tok-name-88 ::= "" |
+                "a" m-tok-name-100 |
+                [*+\-.0-9=A-Z_b-z] m-tok-name-rest
+
+# after `query`
+m-tok-name-89 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `regio`
+m-tok-name-90 ::= "" |
+                "n" m-tok-name-101 |
+                [*+\-.0-9=A-Z_a-mo-z] m-tok-name-rest
+
+# after `relat`
+m-tok-name-91 ::= "" |
+                "i" m-tok-name-102 |
+                [*+\-.0-9=A-Z_a-hj-z] m-tok-name-rest
+
+# after `solve`
+m-tok-name-92 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `trace`
+m-tok-name-93 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `absent`
+m-tok-name-94 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `commit`
+m-tok-name-95 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `config`
+m-tok-name-96 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `import`
+m-tok-name-97 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `merged`
+m-tok-name-98 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `module`
+m-tok-name-99 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `progra`
+m-tok-name-100 ::= "" |
+                 "m" m-tok-name-103 |
+                 [*+\-.0-9=A-Z_a-ln-z] m-tok-name-rest
+
+# after `region`
+m-tok-name-101 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `relati`
+m-tok-name-102 ::= "" |
+                 "o" m-tok-name-104 |
+                 [*+\-.0-9=A-Z_a-np-z] m-tok-name-rest
+
+# after `program`
+m-tok-name-103 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+# after `relatio`
+m-tok-name-104 ::= "" |
+                 "n" m-tok-name-105 |
+                 [*+\-.0-9=A-Z_a-mo-z] m-tok-name-rest
+
+# after `relation`
+m-tok-name-105 ::= [*+\-.0-9=A-Z_a-z] m-tok-name-rest
+
+m-tok-name-rest ::= [*+\-.0-9=A-Z_a-z]*
+
+# hand-written: ?a run of the name characters less `?_`
+m-tok-var ::= "?" ( "_" m-tok-var-1 | [*+\-.0-9=A-Za-z] m-tok-var-rest )
+
+# after `?_`
+m-tok-var-1 ::= [*+\-.0-9=A-Z_a-z] m-tok-var-rest
+
+m-tok-var-rest ::= [*+\-.0-9=A-Z_a-z]*
+
+# ein.l: TEXT, node for node, less `<`, `>`, `|` and the backtick
+m-tok-text ::= "\"" ( [^\"<>\\`|] | "\\" [\"\\nrt] | "\\u{" ( "0"{0,5} [0-9A-Fa-f] | "0"{0,4} [1-9A-Fa-f] [0-9A-Fa-f] | "0"{0,3} [1-9A-Fa-f] [0-9A-Fa-f]{2} | "0"{0,2} ( [1-9A-CEFa-cef] [0-9A-Fa-f]{3} | [Dd] [0-7] [0-9A-Fa-f]{2} ) | "0"? [1-9A-Fa-f] [0-9A-Fa-f]{4} | "10" [0-9A-Fa-f]{4} ) "}" )* "\""
+
+# ein.l: the skip rule's line comment, node for node, less `<`, `>`, `|` and the backtick
+m-comment-line ::= ";" [^\n<>`|]*
+
+# hand-written: a line comment runs to the end of its line
+m-comment-line-ended ::= m-comment-line "\n"
+
+# hand-written: any separator of white space and line comments, none too: after a paren, or before one
+m-gap ::= ( space | m-comment-line-ended )*
+
+# hand-written: between two tokens that are no paren, a separator is required
+m-gap-word ::= ( space | m-comment-line-ended )+
+
+# hand-written: the text's last separator, which may end in a line comment with no line break
+m-gap-end ::= m-gap m-comment-line?
 
 # hand-written: a text of every form ein.y's Program takes, between separators
 program ::= gap-end |
           gap program-forms gap-end
-
-root-forms ::= relation root-forms-1 |
-             rule root-forms-1 |
-             query root-forms-1 |
-             solve root-forms-1 |
-             import root-forms-1 |
-             not-fact root-forms-1 |
-             fact root-forms-1 |
-             open-fact root-forms-1
-
-root-forms-1 ::= gap relation root-forms-1 |
-               gap rule root-forms-1 |
-               gap query root-forms-1 |
-               gap solve root-forms-1 |
-               gap import root-forms-1 |
-               gap not-fact root-forms-1 |
-               gap fact root-forms-1 |
-               gap open-fact root-forms-1 |
-               ""
 
 program-forms ::= top-form program-forms-1
 

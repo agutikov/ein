@@ -653,18 +653,53 @@ impl Vocab {
             .collect()
     }
 
+    /// A text's tokens with the model's special tokens parsed: a marker of
+    /// the chat template that is one token of the vocabulary (`</think>`) is
+    /// that token, as the model generates it, not its characters.
+    pub fn special_tokens(&self, text: &str) -> Vec<i32> {
+        self.model
+            .vocab()
+            .tokenize(text.as_bytes(), false, true)
+            .into_iter()
+            .map(|t| t.0)
+            .collect()
+    }
+
+    /// A token's piece as llama.cpp's grammar sampler reads it, a special
+    /// token's text written out, and whether it is a special token (a
+    /// control token or one the vocabulary's makers added).
+    pub fn piece(&self, id: i32) -> (String, bool) {
+        let vocab = self.model.vocab();
+        let piece = vocab.token_to_piece(LlamaToken(id), true, None);
+        let attr = vocab.attr(LlamaToken(id));
+        let special = attr.contains(llama_cpp_2::token_type::LlamaTokenAttr::Control)
+            || attr.contains(llama_cpp_2::token_type::LlamaTokenAttr::UserDefined);
+        (String::from_utf8_lossy(&piece).into_owned(), special)
+    }
+
     /// **Feed `text`'s tokens to llama.cpp's grammar sampler** made from
     /// `grammar` at `root`: each token is offered alone and refused where
     /// the sampler sets its logit to minus infinity, else accepted; after the
     /// last, the end of turn is offered.
     pub fn read(&self, grammar: &str, root: &str, text: &str) -> Result<GrammarRead, String> {
+        self.read_tokens(grammar, root, text, &self.tokens(text))
+    }
+
+    /// [`Vocab::read`], of `text` as these tokens: its own, or its
+    /// [`Vocab::special_tokens`].
+    pub fn read_tokens(
+        &self,
+        grammar: &str,
+        root: &str,
+        text: &str,
+        tokens: &[i32],
+    ) -> Result<GrammarRead, String> {
         let t0 = Instant::now();
         let mut g = LlamaSampler::grammar(self.model, grammar, root)
             .map_err(|e| format!("llama.cpp makes no sampler of the grammar: {e}"))?;
         let build_ms = t0.elapsed().as_secs_f64() * 1e3;
         let t1 = Instant::now();
         let vocab = self.model.vocab();
-        let tokens = self.tokens(text);
         let mut bytes = Vec::with_capacity(text.len());
         let mut refused = None;
         let mut refused_len = 0;

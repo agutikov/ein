@@ -33,6 +33,16 @@
 //! kind at its start and one at its end is written into the rules that use
 //! it, and one that is recursive through such rules is written once for each
 //! kind it starts and ends with (`template-w`, `template-p`).
+//!
+//! **Two roots, two sets of rules.** `program` is Ein's language exactly,
+//! as its lexer and parser read it. `root`, the root a model writes a
+//! program under, is the contract's forms in **the characters a model
+//! writes**: a name and a variable of [`ROOT_NAME_CHARS`], no block comment,
+//! and no character of [`super::EXCLUDED`] in a string or a line comment,
+//! so that no marker of the chat template and no fence can stand in what the
+//! model writes. Its rules are `ein.y`'s compiled again, each named with
+//! [`ROOT_PREFIX`] (`m-relation`, `m-tok-name`), over its own lexical rules
+//! and separators ([`root_lexical`]).
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::str::FromStr as _;
@@ -57,8 +67,25 @@ pub const EIN_Y: &str = include_str!("../../../ein.rs/crates/ein-ir/src/ein.y");
 pub const PROGRAM: &str = "program";
 /// **The root a model's program is written from**: what the contract
 /// admits, `relation`, `rule`, `import`, `solve`, `query`, a fact, a stored
-/// negation and a written `(open F)`.
+/// negation and a written `(open F)`, in the characters a model writes.
 pub const ROOT: &str = "root";
+
+/// **The characters of a name and a variable a model writes under
+/// [`ROOT`]**: letters, digits, `_`, `.`, `*`, `+`, `=` and `-`, the
+/// characters the library's names are written in and the examples' too;
+/// none of [`super::EXCLUDED`], and no `/`.
+pub const ROOT_NAME_CHARS: [(char, char); 7] = [
+    ('*', '+'),
+    ('-', '.'),
+    ('0', '9'),
+    ('=', '='),
+    ('A', 'Z'),
+    ('_', '_'),
+    ('a', 'z'),
+];
+
+/// The prefix of the rules [`ROOT`] alone reaches.
+pub const ROOT_PREFIX: &str = "m-";
 
 /// The forms of `ein.y`'s `Form` the contract's root takes.
 const CONTRACT_FORMS: [&str; 8] = [
@@ -91,7 +118,22 @@ pub const HAND_WRITTEN: &[(&str, &str, &str)] = &[
     (
         "program, root",
         "ein.y `Program`, `TopForm` and `Form`",
-        "a text is a separator, its forms with separators between them, and a separator; `root` takes the forms the contract admits (`relation`, `rule`, `import`, `solve`, `query`, a fact, a stored negation, a written `(open F)`), `program` every form `Program` takes",
+        "a text is a separator, its forms with separators between them, and a separator; `root` takes the forms the contract admits (`relation`, `rule`, `import`, `solve`, `query`, a fact, a stored negation, a written `(open F)`) in the characters a model writes, over the rules named `m-…`, `program` every form `Program` takes",
+    ),
+    (
+        "m-tok-name, m-tok-var",
+        "ein.l `NAME` and `VAR`, under `root`",
+        "a name the model writes is a run of letters, digits and `_ . * + = -` less the 26 words of those characters (`m-tok-name-N`, `m-tok-name-rest`): no writeback name can begin, so none is left out; a variable is `?` and the same run, less `?_`",
+    ),
+    (
+        "m-tok-text, m-comment-line",
+        "ein.l `TEXT` and the skip rule's `;[^\\n]*`, under `root`",
+        "a string or a line comment the model writes is Ein's, less `<`, `>`, `|` and the backtick, the characters of the chat template's markers and of the fence",
+    ),
+    (
+        "m-gap, m-gap-word, m-gap-end, m-comment-line-ended",
+        "ein.l's skip rule and `AFTER_WORD`, under `root`",
+        "the separators of `gap`, `gap-word`, `comment-line-ended` and `gap-end` with no block comment: white space and line comments only, so that a separator after a string is the one after a word",
     ),
     (
         "(left out)",
@@ -401,6 +443,11 @@ pub enum Flavor {
     /// As Ein's lexer reads a text: any white space and any comment, where
     /// a separator is allowed at all.
     Exact,
+    /// As Ein's lexer reads a text with no block comment, under [`ROOT`]:
+    /// no separator begins with `#`, so the one after a string is the one
+    /// after a word (`gap`, `gap-word`, each named with [`ROOT_PREFIX`]
+    /// where it is written).
+    Root,
     /// As a model writes a program: a run of spaces, or a line break and an
     /// indentation, each bounded, and no comment; the rules `sp` and `sp0`
     /// of the grammar it is written into.
@@ -416,6 +463,10 @@ impl Flavor {
                 (Kind::Word, _) => Expr::r("gap-word"),
                 (Kind::Text, Kind::Paren) => Expr::r("gap-after-text"),
                 (Kind::Text, _) => Expr::r("gap-text"),
+            },
+            Flavor::Root => match (prev, next) {
+                (_, Kind::Paren) | (Kind::Paren, _) => Expr::r("gap"),
+                _ => Expr::r("gap-word"),
             },
             Flavor::Model => match (prev, next) {
                 (Kind::Paren, _) | (_, Kind::Paren) => Expr::r("sp0"),
@@ -1239,8 +1290,13 @@ pub struct Lexical {
     pub text: Rule,
     /// The name characters.
     pub name_class: Expr,
+    /// The name characters and a variable's after its `?`, as code points.
+    pub name_set: Vec<(u32, u32)>,
+    pub var_set: Vec<(u32, u32)>,
     /// The words no name is: every word of a rule before the name rule.
     pub words: BTreeSet<String>,
+    /// The words no variable is, after its `?`: `_`.
+    pub var_words: BTreeSet<String>,
     /// The words that are tokens of their own, by their text.
     pub literals: BTreeSet<String>,
     /// The separator pieces: white space, a line comment, a block comment.
@@ -1344,12 +1400,73 @@ pub fn lexical(l_src: &str) -> Result<Lexical, String> {
         var: exclusion_rules("tok-var", "?", &vclass, &var_words),
         text: Rule::new("tok-text", rules[text_i].expr.clone()).doc("ein.l: TEXT, node for node"),
         name_class,
+        name_set: nclass,
+        var_set: vclass,
         words: name_words,
+        var_words,
         literals,
         space,
         comment_line,
         comment_block,
     })
+}
+
+/// **The lexical rules and separators of [`ROOT`]**, each named with
+/// [`ROOT_PREFIX`]: a name and a variable of [`ROOT_NAME_CHARS`] less the
+/// words of those characters, a string and a line comment less
+/// [`super::EXCLUDED`], and the separators with no block comment, white
+/// space (`space`) shared with `program`.
+pub fn root_lexical(lx: &Lexical) -> Result<Vec<Rule>, String> {
+    let chars: Set = norm(
+        ROOT_NAME_CHARS
+            .iter()
+            .map(|&(a, b)| (u32::from(a), u32::from(b)))
+            .collect(),
+    );
+    let of = |words: &BTreeSet<String>, set: &Set| -> BTreeSet<String> {
+        words
+            .iter()
+            .filter(|w| w.chars().all(|c| contains(set, u32::from(c))))
+            .cloned()
+            .collect()
+    };
+    let (nset, vset) = (
+        intersect(&lx.name_set, &chars),
+        intersect(&lx.var_set, &chars),
+    );
+    let p = |n: &str| format!("{ROOT_PREFIX}{n}");
+    let mut rules = exclusion_rules(&p("tok-name"), "", &nset, &of(&lx.words, &nset));
+    rules.extend(exclusion_rules(
+        &p("tok-var"),
+        "?",
+        &vset,
+        &of(&lx.var_words, &vset),
+    ));
+    let excluded = &super::EXCLUDED;
+    rules.push(
+        Rule::new(&p("tok-text"), lx.text.body.without(excluded)?)
+            .doc("ein.l: TEXT, node for node, less `<`, `>`, `|` and the backtick"),
+    );
+    let piece = Expr::alt(vec![Expr::r("space"), Expr::r(&p("comment-line-ended"))]);
+    rules.extend([
+        Rule::new(&p("comment-line"), lx.comment_line.without(excluded)?)
+            .doc("ein.l: the skip rule's line comment, node for node, less `<`, `>`, `|` and the backtick"),
+        Rule::new(
+            &p("comment-line-ended"),
+            Expr::seq(vec![Expr::r(&p("comment-line")), Expr::lit("\n")]),
+        )
+        .doc("hand-written: a line comment runs to the end of its line"),
+        Rule::new(&p("gap"), Expr::star(piece.clone()))
+            .doc("hand-written: any separator of white space and line comments, none too: after a paren, or before one"),
+        Rule::new(&p("gap-word"), Expr::plus(piece))
+            .doc("hand-written: between two tokens that are no paren, a separator is required"),
+        Rule::new(
+            &p("gap-end"),
+            Expr::seq(vec![Expr::r(&p("gap")), Expr::opt(Expr::r(&p("comment-line")))]),
+        )
+        .doc("hand-written: the text's last separator, which may end in a line comment with no line break"),
+    ]);
+    Ok(rules)
 }
 
 /// The separators of Ein's lexer, hand-written over the skip rule's pieces.
@@ -1421,39 +1538,71 @@ pub fn whole_grammar(l_src: &str, y_src: &str) -> Result<Grammar, String> {
                 .to_string(),
             String::new(),
             format!(
-                "Two roots: `{ROOT}`, the forms a program the formalization contract admits is written"
+                "Two roots. `{ROOT}`: the forms a program the formalization contract admits, in the"
             ),
-            format!("from, and `{PROGRAM}`, every form ein.y's Program takes."),
+            "characters a model writes: a name or a variable of letters, digits and `_ . * + = -`,"
+                .to_string(),
+            "no block comment, and no `<`, `>`, `|` or backtick in a string or a comment; the rules"
+                .to_string(),
+            format!(
+                "it alone reaches are named `{ROOT_PREFIX}…`. `{PROGRAM}`: every form ein.y's Program takes, as"
+            ),
+            "Ein's lexer and parser read it.".to_string(),
         ],
         rules: Vec::new(),
     };
-    let text_rule = |name: &str, forms: &str, doc: &str| {
+    let text_rule = |name: &str, forms: &str, p: &str, doc: &str| {
         Rule::new(
             name,
             Expr::alt(vec![
-                Expr::r("gap-end"),
-                Expr::seq(vec![Expr::r("gap"), Expr::r(forms), Expr::r("gap-end")]),
+                Expr::r(&format!("{p}gap-end")),
+                Expr::seq(vec![
+                    Expr::r(&format!("{p}gap")),
+                    Expr::r(forms),
+                    Expr::r(&format!("{p}gap-end")),
+                ]),
             ]),
         )
         .doc(doc)
     };
+    // The root's rules: ein.y's compiled again, every rule they name but
+    // `space` named with the prefix.
+    let prefixed = |n: &str| format!("{ROOT_PREFIX}{n}");
     g.push(text_rule(
         ROOT,
         "root-forms",
-        "hand-written: a text of the forms the contract admits, between separators",
+        ROOT_PREFIX,
+        "hand-written: a text of the forms the contract admits, between separators, in the characters a model writes",
     ));
+    for mut r in compile("root-forms", &contract_forms, &Flavor::Root, None, None) {
+        r.body = r.body.renamed(&|n| {
+            if n.starts_with("root-forms") {
+                n.to_string()
+            } else {
+                prefixed(n)
+            }
+        });
+        g.push(r);
+    }
+    for mut r in ph.compile_from(std::slice::from_ref(&contract_forms), &Flavor::Root) {
+        r.name = prefixed(&r.name);
+        r.body = r.body.renamed(&prefixed);
+        g.push(r);
+    }
+    for r in root_lexical(&lx)? {
+        g.push(r);
+    }
+    // The program's rules: Ein's language exactly.
     g.push(text_rule(
         PROGRAM,
         "program-forms",
+        "",
         "hand-written: a text of every form ein.y's Program takes, between separators",
     ));
-    for r in compile("root-forms", &contract_forms, &flavor, None, None) {
-        g.push(r);
-    }
     for r in compile("program-forms", &program, &flavor, None, None) {
         g.push(r);
     }
-    for r in ph.compile_from(&[contract_forms.clone(), program.clone()], &flavor) {
+    for r in ph.compile_from(std::slice::from_ref(&program), &flavor) {
         g.push(r);
     }
     for r in lx.name.iter().chain(lx.var.iter()) {
@@ -1464,6 +1613,20 @@ pub fn whole_grammar(l_src: &str, y_src: &str) -> Result<Grammar, String> {
         g.push(r);
     }
     Ok(g)
+}
+
+/// **The text of the root [`ROOT`] alone**: the whole grammar's rules it
+/// reaches, under a head that says so.
+pub fn root_text(l_src: &str, y_src: &str) -> Result<String, String> {
+    let g = whole_grammar(l_src, y_src)?;
+    let head = vec![
+        format!(
+            "The root `{ROOT}` of Ein's grammar as GBNF (einaf/grammars/ein.gbnf), the rules it reaches:"
+        ),
+        "the forms the formalization contract admits, in the characters a model writes."
+            .to_string(),
+    ];
+    Ok(g.reachable(ROOT, head).text())
 }
 
 #[cfg(test)]
@@ -1493,5 +1656,30 @@ mod tests {
         assert!(!ok("(p _)"));
         assert!(ok("(p __closed__ _x)"));
         assert!(!ok("(p a"));
+        // The root: the contract's forms in the characters a model writes.
+        let root = |t: &str| c.accepts(ROOT, t).unwrap().accepted();
+        assert!(root("(p a.b *x+ =y- _z)"));
+        assert!(root("(relation p T :why \"{?3} is p/q\")"));
+        assert!(root("(p a) ; a comment"));
+        assert!(root("(query :goal-text \"x\" :goal (p ?a))"));
+        assert!(!root("(query :goal-text \"x\":goal (p ?a))"));
+        assert!(ok("(query :goal-text \"x\" :goal (p ?a))"));
+        assert!(!root("(p a/b)"));
+        assert!(!root("(p </think>)"));
+        assert!(!root("(p ``` x)"));
+        assert!(!root("(p _)"));
+        assert!(!root("(p and)"));
+        assert!(root("(p nota and-1)"));
+        assert!(!root("(p a #|c|# b)"));
+        assert!(!root("(p a) ; `a`"));
+        assert!(!root("(relation p T :why \"{?3} is <p>\")"));
+        assert!(!root("(config :record-alternative-justifications false)"));
+        // The root's rules are all its own but white space.
+        let g = whole_grammar(EIN_L, EIN_Y).unwrap();
+        let mine = g.reachable(ROOT, Vec::new());
+        assert!(mine.rules.iter().all(|r| r.name == ROOT
+            || r.name == "space"
+            || r.name.starts_with("root-forms")
+            || r.name.starts_with(ROOT_PREFIX)));
     }
 }

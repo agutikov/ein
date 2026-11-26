@@ -4,8 +4,9 @@
 //! - [`whole`]: **the whole grammar**, generated from `ein.l` and `ein.y`
 //!   through grmtools' readers, with the hand-written rules that stand for
 //!   what Ein's lexer does beside them; written by `einaf grammar write` to
-//!   [`WHOLE_FILE`], with two roots, `root` (what the contract admits) and
-//!   `program` (every form `ein.y`'s `Program` takes).
+//!   [`WHOLE_FILE`], with two roots, `root` (what the contract admits, in
+//!   the characters a model writes: none of [`EXCLUDED`]) and `program`
+//!   (every form `ein.y`'s `Program` takes, exactly).
 //! - [`steps`]: **a grammar a step** of the formalization, written at
 //!   request time from the program's own vocabulary.
 //! - [`gbnf`]: GBNF itself: the model a grammar is written from, and the text
@@ -24,8 +25,26 @@ pub mod whole;
 /// **The rules a sample of the whole grammar favours**: the hand-written
 /// name and variable, a name where a position word could stand, and white
 /// space among the separators' pieces, so that a sampled text holds names
-/// beside the words no name is, and comments without being made of them.
-pub const FAVOURED: &[&str] = &["tok-name", "tok-var", "head-name", "space"];
+/// beside the words no name is, and comments without being made of them;
+/// each of the two roots' own.
+pub const FAVOURED: &[&str] = &[
+    "tok-name",
+    "tok-var",
+    "head-name",
+    "m-tok-name",
+    "m-tok-var",
+    "m-head-name",
+    "space",
+];
+
+/// **The characters no grammar a model writes under lets it write**, but
+/// inside a sentence of the input quoted as a `:source`: `<`, `>` and `|`,
+/// of which every marker of the chat template is made (`</think>`,
+/// `<tool_call>`, `<|im_end|>`), and the backtick, of which the fence is. A
+/// name and a variable the model writes hold none of them, nor `/`
+/// ([`whole::ROOT_NAME_CHARS`], and a step's names); a string and a comment
+/// none of these four.
+pub const EXCLUDED: [char; 4] = ['<', '>', '|', '`'];
 
 /// Where the whole grammar is written, from the package's root.
 pub const WHOLE_FILE: &str = "grammars/ein.gbnf";
@@ -33,9 +52,16 @@ pub const WHOLE_FILE: &str = "grammars/ein.gbnf";
 pub const MANIFEST_FILE: &str = "grammars/MANIFEST.sha256";
 
 /// **The whole grammar's text**, from the `ein.l` and `ein.y` this package
-/// was built with.
+/// was built with: both roots.
 pub fn whole_text() -> String {
     whole::whole(whole::EIN_L, whole::EIN_Y).expect("ein.l and ein.y make a grammar")
+}
+
+/// **The text of the whole grammar's root `root` alone**, the rules it
+/// reaches: what a request for a whole program carries
+/// (`einaf grammar render whole`).
+pub fn root_text() -> String {
+    whole::root_text(whole::EIN_L, whole::EIN_Y).expect("ein.l and ein.y make a grammar")
 }
 
 /// **The manifest's text**: each generated file's SHA-256 and its path.

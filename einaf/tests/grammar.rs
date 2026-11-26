@@ -11,11 +11,19 @@
 //!   refused shapes, `ein-ir/tests/golden/grammar_table.txt`, is refused by
 //!   the grammar.
 //! - **The grammar's own texts through the parser** (test 2): texts sampled
-//!   from the whole grammar, a stated number from a stated seed, each parses.
+//!   from the whole grammar, a stated number from a stated seed, each parses;
+//!   those of the root `root`, and of each step's grammar, hold none of
+//!   [`einaf::grammar::EXCLUDED`] but in a sentence of the input, and no `/`
+//!   outside a string or a comment.
+//! - **The root a model writes under** refuses the chat template's markers,
+//!   the fence, a block comment and those characters in a string or a
+//!   comment, and accepts the contract's programs and every corpus file the
+//!   parser takes that holds none of them, its comments emptied or as
+//!   written.
 //!
 //! `--nocapture` prints the counts and what each test cost.
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::PathBuf;
 use std::time::Instant;
 
@@ -62,6 +70,14 @@ fn the_inventory_names_every_hand_written_rule() {
         .expect("the grammars' inventory");
     let words = whole::lexical(whole::EIN_L).expect("ein.l reads").words;
     assert_eq!(words.len(), 29, "the inventory counts the words no name is");
+    let root_words = words
+        .iter()
+        .filter(|w| w.chars().all(root_name_char))
+        .count();
+    assert_eq!(
+        root_words, 26,
+        "the inventory counts the words no name the model writes is"
+    );
     for (rule, stands_for, _) in whole::HAND_WRITTEN {
         let cell = if rule.starts_with('(') || rule.starts_with("the ") {
             rule.to_string()
@@ -281,6 +297,11 @@ fn every_text_sampled_from_the_whole_grammar_parses() {
                 .accepted(),
             "{text}"
         );
+        if root == whole::ROOT
+            && let Some(e) = excluded_outside(&text, &[])
+        {
+            refused.push(format!("{text}\n  {e}"));
+        }
         let parsed = kernel::parse(&text, "<sample>");
         if parsed.forms.is_none() {
             refused.push(format!(
@@ -295,7 +316,8 @@ fn every_text_sampled_from_the_whole_grammar_parses() {
         }
     }
     println!(
-        "test 2: {SAMPLES} texts from the seed {SEED}, {chars} characters, {} refused; {:.1} s\n  \
+        "test 2: {SAMPLES} texts from the seed {SEED}, {chars} characters, {} refused or holding a \
+         character the root leaves out; {:.1} s\n  \
          what they hold: {} words no name is, standing as tokens; {} names that begin with \
          one or are one cut short; {} tokens glued to a paren; {} line comments, {} block comments",
         refused.len(),
@@ -678,11 +700,15 @@ fn every_text_sampled_from_a_steps_grammar_parses_and_is_of_its_step() {
         for step in Step::ALL {
             let g = rendered(dir, step, &catalogue);
             let c = Compiled::parse(&g.text).expect("a step's grammar reads");
+            let sentences = einaf::contract::sentences(&contract_file(dir, "text.txt"));
             for _ in 0..STEP_SAMPLES {
                 let text = c
                     .sample(&g.root, &mut rng, 12, 1_500, &[])
                     .expect("the root derives a text");
                 n += 1;
+                if let Some(e) = excluded_outside(&text, &sentences) {
+                    bad.push(format!("{dir}, step {}: {e}\n{text}", step.word()));
+                }
                 if text.trim().is_empty() {
                     continue;
                 }
@@ -705,7 +731,8 @@ fn every_text_sampled_from_a_steps_grammar_parses_and_is_of_its_step() {
         }
     }
     println!(
-        "test 2 of the steps' grammars: {n} texts, {STEP_SAMPLES} a grammar from the seed {SEED}, {} refused; {:.1} s",
+        "test 2 of the steps' grammars: {n} texts, {STEP_SAMPLES} a grammar from the seed {SEED}, {} refused or \
+         holding a character the model's grammars leave out; {:.1} s",
         bad.len(),
         t0.elapsed().as_secs_f64()
     );
@@ -717,5 +744,398 @@ fn every_text_sampled_from_a_steps_grammar_parses_and_is_of_its_step() {
             .cloned()
             .collect::<Vec<_>>()
             .join("\n---\n")
+    );
+}
+
+// ── The root a model writes under ───────────────────────────────────
+
+use einaf::grammar::EXCLUDED;
+
+/// Whether a character may stand in a name or a variable the model writes.
+fn root_name_char(c: char) -> bool {
+    whole::ROOT_NAME_CHARS
+        .iter()
+        .any(|&(a, b)| a <= c && c <= b)
+}
+
+/// **Where a text holds a character the model's grammars leave out**: one of
+/// [`EXCLUDED`] anywhere but in a sentence of `sentences` quoted as a string,
+/// or `/` outside a string and a comment.
+fn excluded_outside(text: &str, sentences: &[String]) -> Option<String> {
+    let mut t = text.to_string();
+    for s in sentences {
+        let quoted = format!("\"{}\"", s.replace('\\', "\\\\").replace('"', "\\\""));
+        t = t.replace(&quoted, "\"\"");
+    }
+    if let Some(c) = t.chars().find(|c| EXCLUDED.contains(c)) {
+        return Some(format!("holds {c:?} outside a sentence of the input"));
+    }
+    let (b, mut i) = (t.as_bytes(), 0);
+    while i < b.len() {
+        match b[i] {
+            b';' => {
+                while i < b.len() && b[i] != b'\n' {
+                    i += 1;
+                }
+            }
+            b'"' => {
+                i += 1;
+                while i < b.len() && b[i] != b'"' {
+                    i += if b[i] == b'\\' { 2 } else { 1 };
+                }
+                i += 1;
+            }
+            b'/' => return Some("holds `/` outside a string and a comment".to_string()),
+            _ => i += 1,
+        }
+    }
+    None
+}
+
+/// The forms of `ein.y`'s `Form` and `TopForm` the contract's root does not
+/// take, by their head.
+const NOT_THE_CONTRACTS: [&str; 6] = ["config", "trace", "macro", "program", "module", "commit"];
+
+/// **Why the root refuses a text the parser takes**, read off its tokens:
+/// a form the contract does not admit, a block comment, or the first
+/// character a name, a variable, a string or a line comment holds that the
+/// model's characters leave out; `None` where it holds none of these.
+fn outside_the_root(text: &str) -> Option<String> {
+    for f in spans(text) {
+        let head = f[1..]
+            .split(|c: char| c.is_whitespace() || "()\";".contains(c))
+            .next()
+            .unwrap_or("");
+        if NOT_THE_CONTRACTS.contains(&head) {
+            return Some(format!("a `{head}` form"));
+        }
+    }
+    let (b, mut i) = (text.as_bytes(), 0);
+    let excluded = |s: &str, what: &str| {
+        s.chars()
+            .find(|c| EXCLUDED.contains(c))
+            .map(|c| format!("{c:?} in a {what}"))
+    };
+    while i < b.len() {
+        match b[i] {
+            b';' => {
+                let start = i;
+                while i < b.len() && b[i] != b'\n' {
+                    i += 1;
+                }
+                if let Some(e) = excluded(&text[start..i], "comment") {
+                    return Some(e);
+                }
+            }
+            b'#' if b.get(i + 1) == Some(&b'|') => return Some("a block comment".to_string()),
+            b'"' => {
+                let start = i;
+                i += 1;
+                while i < b.len() && b[i] != b'"' {
+                    i += if b[i] == b'\\' { 2 } else { 1 };
+                }
+                i += 1;
+                if let Some(e) = excluded(&text[start..i.min(b.len())], "string") {
+                    return Some(e);
+                }
+            }
+            b'(' | b')' => i += 1,
+            c if c.is_ascii_whitespace() => i += 1,
+            _ => {
+                let start = i;
+                while i < b.len()
+                    && !(b[i].is_ascii_whitespace()
+                        || b"();\"".contains(&b[i])
+                        || (b[i] == b'#' && b.get(i + 1) == Some(&b'|')))
+                {
+                    i += 1;
+                }
+                let tok = &text[start..i];
+                let body = tok.strip_prefix('?').unwrap_or(tok);
+                if !tok.starts_with(':')
+                    && let Some(c) = body.chars().find(|&c| !root_name_char(c))
+                {
+                    return Some(format!("{c:?} in the name `{tok}`"));
+                }
+            }
+        }
+    }
+    None
+}
+
+/// **A text with its comments emptied**: each line comment its `;` alone,
+/// each block comment a space; nothing else of it changed.
+fn comments_emptied(text: &str) -> String {
+    let (b, mut i) = (text.as_bytes(), 0);
+    let mut out = String::with_capacity(text.len());
+    let mut from = 0;
+    while i < b.len() {
+        match b[i] {
+            b';' => {
+                out.push_str(&text[from..=i]);
+                while i < b.len() && b[i] != b'\n' {
+                    i += 1;
+                }
+                from = i;
+            }
+            b'#' if b.get(i + 1) == Some(&b'|') => {
+                out.push_str(&text[from..i]);
+                out.push(' ');
+                i += 2;
+                while i + 1 < b.len() && !(b[i] == b'|' && b[i + 1] == b'#') {
+                    i += 1;
+                }
+                i = (i + 2).min(b.len());
+                from = i;
+            }
+            b'"' => {
+                i += 1;
+                while i < b.len() && b[i] != b'"' {
+                    i += if b[i] == b'\\' { 2 } else { 1 };
+                }
+                i += 1;
+            }
+            _ => i += 1,
+        }
+    }
+    out.push_str(&text[from.min(text.len())..]);
+    out
+}
+
+/// **The root refuses what would let the model write the chat template's
+/// markers or the fence**: a name of `<`, `>`, `/` or backticks, a block
+/// comment, and `<`, `>`, `|` or a backtick in a string or a comment; each
+/// text a program Ein's parser takes, and the root `program` too. And each
+/// step's grammar refuses a comment line holding a marker where it takes
+/// one with none.
+#[test]
+fn the_root_refuses_the_chat_templates_markers_the_fence_and_a_block_comment() {
+    let c = compiled();
+    let refused = [
+        "(p </think>)",
+        "(p <tool_call>)",
+        "(p ``` x)",
+        "(p ```\nx)",
+        "(p a/b)",
+        "(query :goal (p ?x/y))",
+        "(p a #| a comment |# b)",
+        "#| a comment |#\n(p a)",
+        "(relation p T :why \"{?3} is <p>\")",
+        "(relation p T :why \"{?3} is `p`\")",
+        "(relation p T :why \"{?3} | p\")",
+        "(p a :source \"</think>\")",
+        "(p a) ; </think>",
+        ";; ```\n(p a)",
+    ];
+    for t in refused {
+        assert!(
+            kernel::parse(t, "<text>").forms.is_some(),
+            "the parser takes {t:?}"
+        );
+        assert!(
+            c.accepts(whole::PROGRAM, t).unwrap().accepted(),
+            "`program` takes {t:?}"
+        );
+        assert!(
+            !c.accepts(whole::ROOT, t).unwrap().accepted(),
+            "`root` refuses {t:?}"
+        );
+    }
+    let taken = [
+        "(p a.b *x+ =y- _z)",
+        "(query :goal (p ?v.w+ ?_x))",
+        "(relation p T :why \"{?3} is p/q, {braces} and all\")",
+        "(p a) ; a comment, a/b",
+    ];
+    for t in taken {
+        assert!(
+            c.accepts(whole::ROOT, t).unwrap().accepted(),
+            "`root` takes {t:?}"
+        );
+    }
+    // A step's comment lines, and its marker.
+    let catalogue = Catalogue::library();
+    for step in [Step::One, Step::Three] {
+        let g = rendered("zebra", step, &catalogue);
+        let c = Compiled::parse(&g.text).expect("a step's grammar reads");
+        let body = part(
+            "zebra",
+            if step == Step::One { 1 } else { 3 },
+            step == Step::Three,
+        );
+        let ok = |t: &str| c.accepts(&g.root, t).unwrap().accepted();
+        assert!(ok(&format!(";; a comment\n{body}")), "step {}", step.word());
+        assert!(!ok(&format!(";; </think>\n{body}")), "step {}", step.word());
+        assert!(!ok(&format!(";; `x`\n{body}")), "step {}", step.word());
+    }
+    // A marker holding one, in the step 3 of each text that writes a rule.
+    let mut markers = 0;
+    for dir in TEXTS {
+        let body = part(dir, 3, true);
+        let marked = body.replacen(";; missing: ", ";; missing: <x> ", 1);
+        if marked == body {
+            continue;
+        }
+        let g = rendered(dir, Step::Three, &catalogue);
+        let c = Compiled::parse(&g.text).expect("step 3's grammar reads");
+        assert!(c.accepts(&g.root, &body).unwrap().accepted(), "{dir}");
+        assert!(!c.accepts(&g.root, &marked).unwrap().accepted(), "{dir}");
+        markers += 1;
+    }
+    assert!(markers > 0, "a text's step 3 writes a rule");
+    println!(
+        "the root refuses {} texts `program` takes, and takes {}; each step's comment and marker hold no marker",
+        refused.len(),
+        taken.len()
+    );
+}
+
+/// **The root takes the contract's programs and every corpus file the parser
+/// takes that holds none of what it leaves out**, and refuses the rest:
+/// each file as written, and with its comments emptied, which the hand-written
+/// programs fill with backticks. A file the parser refuses is test 1's.
+#[test]
+fn the_root_accepts_the_contracts_programs_and_the_corpus_in_its_characters() {
+    let t0 = Instant::now();
+    let c = compiled();
+    let repo = ein_corpus::repo_root();
+    let mut files: Vec<PathBuf> = ein_corpus::corpus_files();
+    let contract = package().join("contract");
+    let mut programs: Vec<PathBuf> = Vec::new();
+    for dir in std::fs::read_dir(&contract).expect("the contract's programs") {
+        let dir = dir.expect("a directory").path();
+        for f in std::fs::read_dir(&dir).expect("a text's programs") {
+            let f = f.expect("a file").path();
+            if f.extension().is_some_and(|e| e == "ein") {
+                programs.push(f);
+            }
+        }
+    }
+    programs.sort();
+    assert!(programs.len() >= 18, "the contract's programs are read");
+    let n_corpus = files.len();
+    files.extend(programs.iter().cloned());
+    // Each file: its name, whether a contract's program, and for each
+    // reading (as written, comments emptied) why the root should refuse it
+    // and whether it does.
+    type Reading = (Option<String>, bool);
+    let reads: Vec<Option<(String, bool, Reading, Reading)>> = ein_corpus::pool::map(
+        "grammar-root",
+        &files,
+        |p: &PathBuf| (p.display().to_string(), "root".to_string()),
+        |p: &PathBuf| {
+            let rel = p.strip_prefix(&repo).unwrap_or(p).display().to_string();
+            let text = std::fs::read_to_string(p).ok()?;
+            kernel::parse(&text, &rel).forms.as_ref()?;
+            let emptied = comments_emptied(&text);
+            assert!(
+                kernel::parse(&emptied, &rel).forms.is_some(),
+                "{rel}: the parser takes it with its comments emptied"
+            );
+            let read = |t: &str| -> Reading {
+                (
+                    outside_the_root(t),
+                    c.accepts(whole::ROOT, t)
+                        .expect("the acceptor runs")
+                        .accepted(),
+                )
+            };
+            Some((rel, p.starts_with(&contract), read(&text), read(&emptied)))
+        },
+    );
+    let mut wrong = Vec::new();
+    let mut tally: BTreeMap<(bool, &str), Vec<String>> = BTreeMap::new();
+    let mut parsed = 0;
+    for (rel, of_contract, written, emptied) in reads.iter().flatten() {
+        parsed += usize::from(!of_contract);
+        for (reading, (why, accepted)) in [("as written", written), ("comments emptied", emptied)] {
+            if why.is_none() != *accepted {
+                wrong.push(format!(
+                    "{rel}, {reading}: the root {} it, the scan finds {why:?}",
+                    if *accepted { "takes" } else { "refuses" }
+                ));
+            }
+            let kind = match why.as_deref() {
+                None => "taken",
+                Some(w) if w.ends_with("form") => "a form the contract does not admit",
+                Some("a block comment") => "a block comment",
+                Some(w) if w.ends_with("comment") => "a character left out, in a comment",
+                Some(w) if w.ends_with("string") => "a character left out, in a string",
+                Some(_) => "a character left out, in a name",
+            };
+            let label = if reading == "as written" {
+                "as written: "
+            } else {
+                "emptied: "
+            };
+            let key = (*of_contract, kind);
+            let entry = tally.entry(key).or_default();
+            entry.push(format!(
+                "{label}{rel}{}",
+                why.as_ref().map(|w| format!(" ({w})")).unwrap_or_default()
+            ));
+        }
+    }
+    let count = |of_contract: bool, label: &str, kind: &str| {
+        tally
+            .get(&(of_contract, kind))
+            .map_or(0, |v| v.iter().filter(|l| l.starts_with(label)).count())
+    };
+    let kinds = [
+        "taken",
+        "a form the contract does not admit",
+        "a block comment",
+        "a character left out, in a comment",
+        "a character left out, in a string",
+        "a character left out, in a name",
+    ];
+    for (of_contract, what, n) in [
+        (false, "corpus files the parser takes", parsed),
+        (true, "contract's programs", programs.len()),
+    ] {
+        for label in ["as written: ", "emptied: "] {
+            let parts: Vec<String> = kinds
+                .iter()
+                .map(|k| format!("{} {k}", count(of_contract, label, k)))
+                .collect();
+            println!("the root on the {n} {what}, {label}{}", parts.join("; "));
+        }
+    }
+    for kind in [
+        "a character left out, in a string",
+        "a character left out, in a name",
+    ] {
+        for l in tally.get(&(false, kind)).into_iter().flatten() {
+            if l.starts_with("emptied: ") {
+                println!("  refused, {l}");
+            }
+        }
+    }
+    for l in tally
+        .get(&(true, "a character left out, in a comment"))
+        .into_iter()
+        .flatten()
+    {
+        println!("  refused, {l}");
+    }
+    println!(
+        "  of {n_corpus} corpus files, {} the parser refuses are test 1's; {:.1} s",
+        n_corpus - parsed,
+        t0.elapsed().as_secs_f64()
+    );
+    assert!(
+        wrong.is_empty(),
+        "the root and the scan part ways on {} readings:\n{}",
+        wrong.len(),
+        wrong.join("\n")
+    );
+    assert_eq!(
+        count(true, "emptied: ", "taken"),
+        programs.len(),
+        "every contract program is taken with its comments emptied"
+    );
+    assert!(
+        count(false, "emptied: ", "taken") > 750,
+        "the corpus's forms are read"
     );
 }

@@ -243,20 +243,25 @@ pub fn grammar(args: &[String]) -> ExitCode {
 }
 
 /// `einaf grammar llama --model PATH [--grammar FILE] [--root NAME]
-/// [--list FILE] FILE...`: **each file read by llama.cpp's own grammar
-/// sampler**, token by token with the model's vocabulary, and by EinAf's
-/// acceptor; a JSON line a file, with whether the two agree, and a count on
-/// stderr. Exits 0 where every file agrees.
+/// [--list FILE] [--special] FILE...`: **each file read by llama.cpp's own
+/// grammar sampler**, token by token with the model's vocabulary, and by
+/// EinAf's acceptor; a JSON line a file, with whether the two agree, and a
+/// count on stderr. With `--special` a file is tokenised with the model's
+/// special tokens parsed, so that `</think>` is the one token the model
+/// generates, and its line adds the token ids and the special tokens among
+/// them. Exits 0 where every file agrees.
 #[cfg(feature = "llama")]
 pub fn grammar_llama(args: &[String]) -> ExitCode {
     use einaf::grammar::gbnf::{Compiled, Verdict};
     use einaf::model::llama::Vocab;
     let (mut model, mut grammar, mut root) = (None, None, "program".to_string());
+    let mut special = false;
     let mut files: Vec<String> = Vec::new();
     let mut it = args.iter();
     while let Some(a) = it.next() {
         match a.as_str() {
             "--model" => model = it.next().map(PathBuf::from),
+            "--special" => special = true,
             "--grammar" => grammar = it.next().cloned(),
             "--root" => match it.next() {
                 Some(r) => root = r.clone(),
@@ -309,7 +314,12 @@ pub fn grammar_llama(args: &[String]) -> ExitCode {
             }
         };
         let ours = compiled.accepts(&root, &input);
-        let theirs = vocab.read(&text, &root, &input);
+        let tokens = if special {
+            vocab.special_tokens(&input)
+        } else {
+            vocab.tokens(&input)
+        };
+        let theirs = vocab.read_tokens(&text, &root, &input, &tokens);
         let same = match (&ours, &theirs) {
             (Ok(Verdict::Accepted), Ok(r)) => r.refused.is_none() && r.can_end,
             (Ok(Verdict::Refused { at, .. }), Ok(r)) => match r.refused {
@@ -334,10 +344,22 @@ pub fn grammar_llama(args: &[String]) -> ExitCode {
             Ok(r) => serde_json::to_value(r).expect("JSON"),
             Err(e) => serde_json::json!({"error": e}),
         };
-        println!(
-            "{}",
-            serde_json::json!({"file": f, "agree": same, "einaf": einaf, "llama": llama})
-        );
+        let mut line =
+            serde_json::json!({"file": f, "agree": same, "einaf": einaf, "llama": llama});
+        if special {
+            // The special tokens the text holds, by index, id and piece.
+            let held: Vec<serde_json::Value> = tokens
+                .iter()
+                .enumerate()
+                .filter_map(|(i, &id)| {
+                    let (piece, special) = vocab.piece(id);
+                    special.then(|| serde_json::json!({"index": i, "id": id, "piece": piece}))
+                })
+                .collect();
+            line["ids"] = serde_json::json!(tokens);
+            line["special"] = serde_json::json!(held);
+        }
+        println!("{line}");
     }
     eprintln!(
         "einaf grammar llama: {} files, {agree} read alike, {differ} not",

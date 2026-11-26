@@ -30,7 +30,7 @@ usage: einaf outcome FILE [QUESTION] [BOUNDS]
        einaf grammar sample [--grammar FILE] [--root NAME] [--seed N] [--count N]
        einaf grammar render whole|1|2|2b|3 [--program FILE] [--text FILE] [--fence] [--after-thinking] [--request]
        einaf grammar catalogue
-       einaf grammar llama RUNTIME [--grammar FILE] [--root NAME] [--list FILE] FILE...
+       einaf grammar llama RUNTIME [--grammar FILE] [--root NAME] [--list FILE] [--special] FILE...
        einaf grammar --json-schema FILE
        einaf model --model PATH [--ctx N] [--verbose]
        einaf probe plan [--out FILE]
@@ -63,11 +63,13 @@ grammar   the grammars: `write` writes einaf/grammars/ein.gbnf from ein.l and
           ein.y and its manifest (`--check`: write nothing, exit 1 where they
           differ); `accept` runs EinAf's acceptor of a grammar on files (the
           whole grammar from its root `program` by default); `sample` writes
-          texts a grammar allows; `render` writes the whole grammar or a
-          step's for a program, or the grammar a request carries; `catalogue`
-          the catalogue the steps' grammars are rendered on; `llama` reads
-          files through llama.cpp's grammar sampler with the model's
-          vocabulary (`llama`); `--json-schema` the GBNF llama.cpp writes for
+          texts a grammar allows; `render` writes the whole grammar's root
+          `root` or a step's grammar for a program, or the grammar a request
+          carries; `catalogue` the catalogue the steps' grammars are rendered
+          on; `llama` reads files through llama.cpp's grammar sampler with
+          the model's vocabulary (`llama`; `--special`: a marker of the chat
+          template one token, as the model generates it); `--json-schema`
+          the GBNF llama.cpp writes for
           a JSON schema (`llama`)
 model     the model loaded, its pin, the runtime and the context as JSON
 probe     the probe of Ein written with no grammar: `plan` writes every run

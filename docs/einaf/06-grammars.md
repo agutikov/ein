@@ -10,7 +10,7 @@ is [`einaf/grammars/README.md`](../../einaf/grammars/README.md).
 
 | section | what |
 |---|---|
-| [1. The whole grammar](#1-the-whole-grammar) | generated from `ein.l` and `ein.y`; what is translated and what is written by hand; the two roots |
+| [1. The whole grammar](#1-the-whole-grammar) | generated from `ein.l` and `ein.y`; what is translated and what is written by hand; the two roots, and the characters a model writes |
 | [2. Held to the parser](#2-held-to-the-parser) | the corpus through EinAf's acceptor, the grammar's own texts through the parser, llama.cpp's reading |
 | [3. A grammar a step](#3-a-grammar-a-step) | what each step's grammar allows, what it is rendered on, what its vocabulary closes |
 | [4. Where a grammar begins, and how an output ends](#4-where-a-grammar-begins-and-how-an-output-ends) | from the first token, or after the thinking; the end of a turn |
@@ -49,9 +49,23 @@ more than one kind of token is written into the rules that use it, and the one s
 `Template`, is written once a kind (`template-w`, `template-p`).
 
 **Two roots.** `program` takes every text Ein's parser takes: every form `ein.y`'s `Program` takes, between
-separators. **`root` takes what the contract admits** ([the contract § 1.4](04-contract.md#14-what-a-program-may-not-hold)):
+separators, Ein's language exactly. **`root` takes what the contract admits** ([the contract § 1.4](04-contract.md#14-what-a-program-may-not-hold)):
 `relation`, `rule`, `import`, `solve`, `query`, a fact, a stored negation and a written `(open F)`, and not
-`config`, `trace`, a macro or a saved file's wrapper; it is the root of a whole program written in one call.
+`config`, `trace`, a macro or a saved file's wrapper; it is the root of a whole program written in one call, and
+**it takes them in the characters a model writes**:
+
+- **a name and a variable** are runs of letters, digits and `_ . * + = -` (`einaf::grammar::whole::ROOT_NAME_CHARS`),
+  less Ein's words of those characters, where Ein's names may also hold ``$ % ^ < > ! & @ ~ / ' ` [ ] { }``;
+- **no block comment**, only line comments;
+- **no `<`, `>`, `|` or backtick in a string or a line comment** (`einaf::grammar::EXCLUDED`).
+
+So none of the chat template's markers (`</think>`, `<tool_call>`, `<|im_end|>`), each of `<`, `>` and `|`, and no
+fence, of backticks, can stand anywhere in a program written under `root`: neither as a name, where Ein's language
+takes `</think>` as one, nor in a comment or a string. llama.cpp's grammar sampler reads a special token by its text,
+so a grammar that takes the text `</think>` takes the token `</think>` too. The root's rules are `ein.y`'s compiled a
+second time over these lexical rules, each named `m-…` (`m-relation`, `m-tok-name`); `program`'s are Ein's, and the
+two share `space`. A request for a whole program carries `root` and the rules it reaches alone
+(`einaf grammar render whole`).
 
 ## 2. Held to the parser
 
@@ -59,7 +73,9 @@ separators. **`root` takes what the contract admits** ([the contract § 1.4](04-
 
 1. **The corpus through EinAf's acceptor.** Every `.ein` file under `examples/`, `stdlib/` and `tests/` is accepted
    by the whole grammar from `program` exactly when Ein's parser, reached through `einaf::kernel::parse`, reports no
-   error. Two refusals are not a context-free grammar's to state and are named where they occur: a text nested past
+   error. **From `root`**, a corpus file the parser takes, and every program of the contract, is accepted exactly when
+   it holds no form the contract does not admit, no block comment and no character the root leaves out, as written
+   and with its comments emptied (the hand-written programs write code in backticks in their comments). Two refusals are not a context-free grammar's to state and are named where they occur: a text nested past
    1 000 parentheses ([§ 1.7 of the diagnostics](../ein/user/04-reference/07-diagnostics.md#17-a-text-nested-past-1-000-parentheses-is-refused-before-it-is-parsed))
    and a byte that is not UTF-8. And every shape of the parser's own banked table of the shapes it refuses is refused
    by the grammar. **EinAf's acceptor** is `einaf::grammar::gbnf::Compiled`: the grammar's text read as llama.cpp's
@@ -68,12 +84,14 @@ separators. **`root` takes what the contract admits** ([the contract § 1.4](04-
 2. **The grammar's own texts through the parser.** A sampler walks the grammar's rules from a stated seed and writes
    texts, an alternative that begins with a name, a variable or white space weighted above the rest so that the texts
    hold names beside the words no name is, a position word in each place, tokens glued to parens and comments; every
-   text parses.
+   text parses, and every text of `root` holds none of the characters it leaves out.
 3. **llama.cpp's reading**, by hand, with the model: `einaf grammar llama` (the `llama` feature) loads the model's
    vocabulary alone, tokenises each file, and feeds its tokens one by one to llama.cpp's own grammar sampler made from
    the same text, each token offered alone and refused where the sampler sets its logit to minus infinity, the end of
    turn offered after the last; a file is read alike where the sampler refuses the token that holds the character
-   EinAf's acceptor refuses, or takes every token and the end where the acceptor accepts.
+   EinAf's acceptor refuses, or takes every token and the end where the acceptor accepts. With `--special` a text is
+   tokenised with the model's special tokens parsed, so that `</think>` is offered as the one token the model
+   generates, not as its characters.
 
 ## 3. A grammar a step
 
@@ -103,7 +121,9 @@ names are the program's. No grammar holds an argument to a label: a label is no 
 **The layout is the model's.** A paren hugs what it holds; a separator between two tokens is a run of up to 24 spaces,
 or a line break and an indentation as long; forms are a line break or a blank line apart; a comment is a line of its
 own between forms, before the first and after the last; a name is a run of letters, digits, `_` and `-` that is no
-word of Ein's; a string holds no `"`, `\` or line break, and a template's braces only its references. **The marker**
+word of Ein's; a string holds no `"`, `\` or line break, and a template's braces only its references; **a string, a
+comment and the marker hold no `<`, `>`, `|` or backtick**, as under the whole grammar's `root`, but a sentence of the
+input quoted verbatim as step 1's `:source`, which is the input's. **The marker**
 of a missing property is the comment line `;; missing: ` and the property's words, which steps 2b and 3 write directly
 above each rule and step 2 writes as any comment. A program the kernel reads is the same with its comments or
 without them.
@@ -152,12 +172,13 @@ A request's grammar carries `check` ([the model's runtime § 3](05-model.md#3-a-
 einaf grammar write [--check]                          # einaf/grammars/ein.gbnf and its manifest, or exit 1 where they differ
 einaf grammar accept [--grammar G] [--root R] FILE...  # EinAf's acceptor: each file accepted, or refused at a line and column
 einaf grammar sample [--grammar G] [--root R] [--seed N] [--count N]   # texts the grammar allows
-einaf grammar render whole|1|2|2b|3 [--program P] [--text T] [--fence] [--after-thinking] [--request]   # a grammar in its frame, or the one a request carries
+einaf grammar render whole|1|2|2b|3 [--program P] [--text T] [--fence] [--after-thinking] [--request]   # a grammar in its frame (`whole`: `root` and its rules), or the one a request carries
 einaf grammar catalogue                                # the catalogue the steps' grammars are rendered on
-einaf grammar llama --model M [--grammar G] [--root R] [--list L] FILE...   # llama.cpp's reading beside EinAf's (`llama`)
+einaf grammar llama --model M [--grammar G] [--root R] [--list L] [--special] FILE...   # llama.cpp's reading beside EinAf's (`llama`); --special: a marker one token
 ```
 
-Without `--grammar`, `accept`, `sample` and `llama` read the whole grammar from its root `program`. `render 1` is
+Without `--grammar`, `accept`, `sample` and `llama` read the whole grammar from its root `program`; `--root root`
+reads it from the model's root. `render 1` is
 rendered on `--text`'s sentences; `render 2`, `render 2b` and `render 3` on `--program`, the program of the steps
 before.
 
@@ -168,12 +189,14 @@ before.
 | test | what it holds |
 |---|---|
 | `the_grammar_file_is_what_einaf_grammar_write_writes` | the file and the manifest are what the command writes from `ein.l` and `ein.y` |
-| `the_inventory_names_every_hand_written_rule` | the inventory's table has a row for each hand-written rule |
+| `the_inventory_names_every_hand_written_rule` | the inventory's table has a row for each hand-written rule, and the counts of the words no name is, in Ein's characters and in the model's |
 | `the_grammar_accepts_a_corpus_file_exactly_when_the_parser_does` | § 2's first test, every corpus file; `--nocapture` prints the counts and its time |
 | `every_shape_of_the_kernels_table_is_refused_by_the_grammar` | every row of `ein-ir/tests/golden/grammar_table.txt` refused by the parser and by the grammar |
-| `every_text_sampled_from_the_whole_grammar_parses` | § 2's second test, 2 000 texts from a stated seed, and that they reach the hand-written rules |
+| `every_text_sampled_from_the_whole_grammar_parses` | § 2's second test, 2 000 texts from a stated seed, half from each root, and that they reach the hand-written rules; those of `root` hold none of the characters it leaves out |
+| `the_root_refuses_the_chat_templates_markers_the_fence_and_a_block_comment` | texts Ein's parser and `program` take that `root` refuses: `(p </think>)`, `(p <tool_call>)`, a fence, `/` in a name, a block comment, `<`, `|` or a backtick in a `:why`, a marker in a comment; and each step's comment and marker refusing a marker |
+| `the_root_accepts_the_contracts_programs_and_the_corpus_in_its_characters` | § 2's first test from `root`: every corpus file the parser takes and every program of the contract, as written and with its comments emptied, accepted exactly when it holds none of what `root` leaves out; `--nocapture` names each file refused for a character of a name or a string, and each contract program refused as written |
 | `each_steps_grammar_accepts_the_steps_written_by_hand` | each step's grammar, rendered for each text of [the steps by hand](04-contract.md#7-the-steps-by-hand), accepts what that step wrote, a marker before each rule of step 3; step 2b's the rules step 3 wrote, each after a marker |
-| `every_text_sampled_from_a_steps_grammar_parses_and_is_of_its_step` | texts sampled from each step's grammar, for each of those texts, parse, and are of the forms the step writes in its order |
+| `every_text_sampled_from_a_steps_grammar_parses_and_is_of_its_step` | texts sampled from each step's grammar, for each of those texts, parse, are of the forms the step writes in its order, and hold no `<`, `>`, `|` or backtick but in a sentence of the input |
 
 The unit tests of [`gbnf.rs`](../../einaf/src/grammar/gbnf.rs) and [`whole.rs`](../../einaf/src/grammar/whole.rs)
 hold the reader, the acceptor, the sampler and a few texts of the whole grammar. llama.cpp's reading (§ 2's third

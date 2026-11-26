@@ -1,8 +1,9 @@
 //! `einaf grammar`: the grammars' subcommands. `write` writes the whole
 //! grammar and its manifest (`--check` writes nothing and says whether the
 //! files are what it would write); `accept` runs EinAf's acceptor on files;
-//! `sample` writes texts a grammar allows; `render` writes the whole grammar
-//! or a step's for a program, or the grammar a request carries; `catalogue`
+//! `sample` writes texts a grammar allows; `render` writes the whole
+//! grammar's root `root` with the rules it reaches, or a step's grammar for a
+//! program, or the grammar a request carries; `catalogue`
 //! lists the catalogue the steps' grammars are rendered on; and, with the
 //! `llama` feature, `llama` runs files through llama.cpp's own grammar
 //! sampler, token by token, and `--json-schema` the GBNF llama.cpp writes
@@ -266,7 +267,8 @@ fn catalogue() -> ExitCode {
 }
 
 /// `einaf grammar render GRAMMAR [--program FILE] [--text FILE] [--fence]
-/// [--after-thinking] [--request]`: the whole grammar (`whole`), or a step's
+/// [--after-thinking] [--request]`: the whole grammar's root `root` and the
+/// rules it reaches (`whole`), or a step's
 /// (`1`, `2`, `2b`, `3`) rendered for the program of the steps before it and
 /// the input's sentences, in its frame (inside a fence, after the thinking);
 /// with `--request`, the grammar as a request carries it, as JSON.
@@ -299,7 +301,7 @@ fn render(args: &[String]) -> ExitCode {
         }
     };
     let (gbnf, root) = match n.as_deref() {
-        Some("whole") => (einaf::grammar::whole_text(), whole::ROOT.to_string()),
+        Some("whole") => (einaf::grammar::root_text(), whole::ROOT.to_string()),
         Some(s) => {
             let Some(step) = steps::Step::parse(s) else {
                 return usage_error("render takes whole, 1, 2, 2b or 3");
