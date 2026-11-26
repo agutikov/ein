@@ -1236,11 +1236,17 @@ loader refuses the rest, one line each, `; `-joined with every other loader line
 
 | the program | the line, behind `kb load error: ` |
 |---|---|
-| a rule named as a rule before it, whichever kind of rule each is | `duplicate rule name 'r' at None` |
-| a macro named as a macro before it | `duplicate macro 'm' at None` |
+| a rule named as a rule before it, whichever kind of rule each is, in a program that imports nothing | `duplicate rule name 'r' at None` |
+| a macro named as a macro before it, in a program that imports nothing | `duplicate macro 'm' at None` |
 | a rule with no `:match`, or with neither an `:assert` nor an `:ein` | `(rule r) missing :match or :assert at None` |
 | a relation, a rule, a macro or an import's alias that binds a name the kernel keeps and the grammar reads as a name, `__closed__` | `relation '__closed__' shadows a reserved kernel name at None` (`rule '…'`, `macro '…'`); `(import m :as __closed__) — alias '__closed__' shadows a reserved kernel name at None` |
-| a module that declares one name twice, with two bodies | `conflicting definitions of 'm.g': same name, different body (at <file>:<line>:<col>)`, placed in the module |
+| a rule or a macro written twice under one name with two bodies, in a module or in a program that imports one; the same rule or macro written twice there is read once | `conflicting definitions of 'm.g': same name, different body (at <file>:<line>:<col>)`, placed at the second one's name, in the file that writes it |
+
+What two bodies refuse is a rule's or a macro's, never a relation's declarations: a relation a file declares may be
+declared more than once in it, at one count or at several, with the same labels or others, in a program that imports
+or in one that does not, and each declaration is a fact of `relation`, which any rule may read
+([Q-M1f.447](../../../decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)). A file's
+declaration of a short name it also lists from a module is § 2.27's, one short name bound to two full names.
 
 The fixtures are `rule_duplicate_name`, `hrule_duplicate_name`, `macro_duplicate`, `rule_missing_match`,
 `rule_missing_assert` and `rule_half_declarators` in [`examples/broken/load/`](../../../../examples/broken/load/).

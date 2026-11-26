@@ -12,6 +12,7 @@
 //! | one module under two spellings is one copy | [`one_module_under_two_spellings_is_one_copy`] |
 //! | what each import form brings of a module's relations, rules, macros and facts | [`what_each_import_form_brings_of_a_module`] |
 //! | a facts library reached by two flat paths | [`a_diamond_of_flat_imports_yields_each_fact_once`] |
+//! | a relation's every declaration comes as written, a rule or a macro written twice the same once, and one with two bodies refused | [`every_declaration_of_a_relation_comes_and_a_rule_or_a_macro_once`] |
 //! | the 9 `.expected` fixtures of the resolver and the expander | [`the_import_and_macro_failures_are_byte_identical`]; three more, refused at the parse, are under `examples/broken/` |
 
 use std::path::{Path, PathBuf};
@@ -729,6 +730,74 @@ fn resolved(modules: &[(&str, &str)], src: &str) -> Result<Vec<String>, String> 
             }
         })
         .collect())
+}
+
+/// **Every declaration of a relation comes, and a rule or a macro once**
+/// (Q-M1f.447). The resolved list drops a rule or a macro a file writes twice
+/// the same and refuses one written twice with two bodies, placed where the
+/// second is written; a relation's declarations it leaves as they are
+/// written, at one count or at several, the same one twice among them, each
+/// a fact of `relation`. So a program that imports reads its own declarations
+/// as a program that imports nothing does, and a module its own as the
+/// module read as a program does.
+#[test]
+fn every_declaration_of_a_relation_comes_and_a_rule_or_a_macro_once() {
+    let declarations = "(relation likes Person Drink :why \"{?3} likes {?4}\")\n\
+         (relation likes Person Thing :why \"{?3} is fond of {?4}\")\n\
+         (relation likes Person :why \"{?3} likes something\")\n\
+         (relation likes Person Drink :why \"{?3} likes {?4}\")\n";
+    let written = |p: &str| -> Vec<String> {
+        vec![
+            format!("(relation {p}likes Person Drink)"),
+            format!("(relation {p}likes Person Thing)"),
+            format!("(relation {p}likes Person)"),
+            format!("(relation {p}likes Person Drink)"),
+        ]
+    };
+    let m = "(relation owns Person Thing :why \"{?3} owns {?4}\")\n";
+    // The program's, with no import and with one.
+    assert_eq!(resolved(&[], declarations).expect("resolves"), written(""));
+    let mut with = vec!["(relation m.owns Person Thing)".to_string()];
+    with.extend(written(""));
+    assert_eq!(
+        resolved(&[("m", m)], &format!("(import m)\n{declarations}")).expect("resolves"),
+        with
+    );
+    // A module's, under its full names, and under the names a list gives.
+    assert_eq!(
+        resolved(&[("k", declarations)], "(import k)").expect("resolves"),
+        written("k.")
+    );
+    assert_eq!(
+        resolved(&[("k", declarations)], "(import k :symbols (likes))").expect("resolves"),
+        written("")
+    );
+    // A rule and a macro: the same form twice comes once, two bodies are
+    // refused.
+    let rule = "(rule r () :match (p ?a) :assert (q ?a) :why \"q holds of {?a}\")\n";
+    let other_rule = "(rule r () :match (p ?a) :assert (s ?a) :why \"s holds of {?a}\")\n";
+    let mac = "(macro pp (?a) (p ?a) :why \"pp of {?a}\")\n";
+    let other_mac = "(macro pp (?a) (q ?a) :why \"pp of {?a}\")\n";
+    assert_eq!(
+        resolved(&[("k", &format!("{rule}{rule}{mac}{mac}"))], "(import k)").expect("resolves"),
+        [
+            "(rule k.r () :match (p ?a) :assert (q ?a))",
+            "(macro k.pp (?a) (p ?a))",
+        ]
+    );
+    // Placed at the second one's name.
+    for (module, name, at) in [
+        (format!("{rule}{other_rule}"), "k.r", "k.ein:2:7)"),
+        (format!("{mac}{other_mac}"), "k.pp", "k.ein:2:8)"),
+    ] {
+        let refused = resolved(&[("k", &module)], "(import k)").expect_err("refused");
+        assert!(
+            refused.starts_with(&format!(
+                "conflicting definitions of '{name}': same name, different body (at "
+            )) && refused.ends_with(at),
+            "{refused}"
+        );
+    }
 }
 
 /// **What each import form brings of a module**, a case per cell, one

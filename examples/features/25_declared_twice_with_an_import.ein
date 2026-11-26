@@ -1,0 +1,51 @@
+;;; A relation declared twice, and at two counts, in a program that imports a
+;;; module: it loads as `22_declared_twice.ein`, which imports none, loads
+;;; (Q-M1f.447).
+;;;
+;;; An import brings its module whole, and the program's own forms beside it
+;;; are read as they are with no import: each declaration of `likes` is a fact
+;;; of `relation`, here two at two arguments with two lists of labels and one
+;;; at one. What reads a declaration reads each. The module imported is
+;;; `std.contradiction`, whose `clash-of-N` rules read every declaration and
+;;; activate the contradiction rule of its count: `likes` gets the rule of two
+;;; arguments and the rule of one, and `fan` the rule of one.
+;;;
+;;; Each count is its own set of facts: `(likes Bob)` stands beside
+;;; `(not (likes Bob Tea))`, a fact of one argument beside the negation of
+;;; one of two, and neither rule joins them, since a rule matches a fact with
+;;; as many arguments as its pattern writes.
+;;;
+;;; ── The answer, by hand ────────────────────────────────────────────────
+;;;
+;;; Root holds `(likes Ann Tea)`, `(likes Bob)`, the stored negation, the
+;;; rule's `(fan Ann)`, and each declaration as its fact. No fact stands
+;;; beside its own negation, so root is alive, and with no search R is root
+;;; alone.
+
+(import std.contradiction :symbols (clash-1 clash-2))
+
+(relation likes Person Drink :why "{?3} likes {?4}")
+(relation likes Person Thing :why "{?3} is fond of {?4}")
+(relation likes Person       :why "{?3} likes something")
+(relation fan   Person       :why "{?3} is a fan")
+
+(likes Ann Tea)
+(likes Bob)
+(not (likes Bob Tea))
+
+(rule fond ()
+  :match  (likes ?who ?what)
+  :assert (fan ?who)
+  :why    "{?who} likes {?what}, so {?who} is a fan")
+
+(solve :no-search)
+
+(query :goal (likes ?who ?what) :expect (model (likes Ann Tea)))
+(query :goal (likes ?who)       :expect (model (likes Bob)))
+(query :goal (fan ?who)         :expect (model (fan Ann)))
+(query :goal (relation likes ?a ?b)
+  :expect (model (relation likes Person Drink) (relation likes Person Thing)))
+(query :goal (relation likes ?t)
+  :expect (model (relation likes Person)))
+(query :goal (clash-2 ?r) :expect (model (clash-2 likes)))
+(query :goal (clash-1 ?r) :expect (model (clash-1 fan) (clash-1 likes)))

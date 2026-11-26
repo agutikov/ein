@@ -13,7 +13,15 @@
 //! loads on every command that answers a program; the seven witnesses of
 //! `corpus/regressions.toml` that held the refusal load; a relation declared
 //! twice, and at two counts, loads, and a query at each count answers that
-//! count's facts.
+//! count's facts; what reads a declaration reads each, the blind
+//! enumerator at each count and `std.contradiction`'s activators; and a
+//! program and a module that declare one short name, under a bare import or
+//! an alias, declare two relations.
+//!
+//! **Each case is held as written and with an import**, [`IMPORT`] written
+//! first: a program that imports is read by the pass that brings its modules,
+//! which a program that imports nothing never meets, and it reads a
+//! program's own declarations as they are written.
 
 use std::path::Path;
 use std::process::Command;
@@ -38,6 +46,14 @@ fn ein(args: &[&str]) -> Run {
         err: String::from_utf8_lossy(&out.stderr).into_owned(),
     }
 }
+
+/// An import that brings its module whole and activates nothing a case here
+/// reads: `std.algebra` declares no relation, and its rules wait for an
+/// activator no case writes. Every case is run with this line first too.
+const IMPORT: &str = "(import std.algebra)\n";
+
+/// A case as written, and the same with [`IMPORT`] first: `(suffix, prefix)`.
+const WITH_AND_WITHOUT: [(&str, &str); 2] = [("", ""), ("-imported", IMPORT)];
 
 /// Two declared relations, a fact of each, and a rule `r`.
 const HEAD: &str = "(relation likes Person Drink :why \"{?3} likes {?4}\")\n\
@@ -157,17 +173,21 @@ fn a_form_of_another_count_loads_on_every_command() {
     let scratch = Scratch::new("ein-declared-counts");
     let mut bad = Vec::new();
     for (shape, added) in OTHER_COUNTS {
-        let file = scratch.path().join(format!("{shape}.ein"));
-        std::fs::write(&file, format!("{HEAD}{added}")).expect("written");
-        for b in loads_everywhere(&file, scratch.path()) {
-            bad.push(format!("{shape}: {b}"));
+        for (suffix, import) in WITH_AND_WITHOUT {
+            let file = scratch.path().join(format!("{shape}{suffix}.ein"));
+            std::fs::write(&file, format!("{import}{HEAD}{added}")).expect("written");
+            for b in loads_everywhere(&file, scratch.path()) {
+                bad.push(format!("{shape}{suffix}: {b}"));
+            }
         }
     }
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
 /// The regressions' seven witnesses of a form at another count than its
-/// relation's declaration, each read from its file: each loads.
+/// relation's declaration, each read from its file, and a copy with
+/// [`IMPORT`] first (each imports only the library, which is found from any
+/// directory): each loads.
 #[test]
 fn the_regressions_witnesses_load_on_every_command() {
     let scratch = Scratch::new("ein-declared-count-witnesses");
@@ -185,37 +205,133 @@ fn the_regressions_witnesses_load_on_every_command() {
         for b in loads_everywhere(Path::new(&shown), scratch.path()) {
             bad.push(format!("{stem}: {b}"));
         }
+        let text = std::fs::read_to_string(repo_root().join(&shown)).expect("readable");
+        let imported = scratch.path().join(format!("{stem}-imported.ein"));
+        std::fs::write(&imported, format!("{IMPORT}{text}")).expect("written");
+        for b in loads_everywhere(&imported, scratch.path()) {
+            bad.push(format!("{stem}-imported: {b}"));
+        }
     }
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
 /// **A relation declared twice, and at two counts**: every declaration loads,
 /// each is a fact of `relation`, and a query at each count answers that
-/// count's facts alone: overloading by the count of arguments.
+/// count's facts alone: overloading by the count of arguments. At two
+/// arguments the relation is declared three times, twice the same labels
+/// with two `:why`s and once with other labels.
 #[test]
 fn a_relation_declared_twice_loads_and_each_count_answers_its_own() {
     let scratch = Scratch::new("ein-declared-twice");
-    let file = scratch.path().join("twice.ein");
-    std::fs::write(
-        &file,
-        "(relation likes Person Drink :why \"{?3} likes {?4}\")\n\
-         (relation likes Person Drink :why \"{?3} is fond of {?4}\")\n\
-         (relation likes Person :why \"{?3} likes something\")\n\
-         (likes Ann Tea)\n(likes Bob)\n\
-         (rule fond () :match (likes ?a ?b) :assert (fan ?a) :why \"{?a} likes {?b}\")\n\
-         (solve :no-search)\n\
-         (query :goal (likes ?a ?b) :expect (model (likes Ann Tea)))\n\
-         (query :goal (likes ?a) :expect (model (likes Bob)))\n\
-         (query :goal (fan ?a) :expect (model (fan Ann)))\n\
-         (query :goal (relation likes ?t) :expect (model (relation likes Person)))\n",
-    )
-    .expect("written");
-    let f = file.display().to_string();
-    let r = ein(&["test", &f]);
-    assert_eq!(r.code, 0, "{}{}", r.out, r.err);
-    assert!(r.out.contains("4 held, 0 FAILED"), "{}", r.out);
-    let bad = loads_everywhere(&file, scratch.path());
-    assert!(bad.is_empty(), "{}", bad.join("\n"));
+    for (suffix, import) in WITH_AND_WITHOUT {
+        let file = scratch.path().join(format!("twice{suffix}.ein"));
+        std::fs::write(
+            &file,
+            format!(
+                "{import}(relation likes Person Drink :why \"{{?3}} likes {{?4}}\")\n\
+                 (relation likes Person Drink :why \"{{?3}} is fond of {{?4}}\")\n\
+                 (relation likes Person Thing :why \"{{?3}} likes the thing {{?4}}\")\n\
+                 (relation likes Person :why \"{{?3}} likes something\")\n\
+                 (likes Ann Tea)\n(likes Bob)\n\
+                 (rule fond () :match (likes ?a ?b) :assert (fan ?a) :why \"{{?a}} likes {{?b}}\")\n\
+                 (solve :no-search)\n\
+                 (query :goal (likes ?a ?b) :expect (model (likes Ann Tea)))\n\
+                 (query :goal (likes ?a) :expect (model (likes Bob)))\n\
+                 (query :goal (fan ?a) :expect (model (fan Ann)))\n\
+                 (query :goal (relation likes ?t) :expect (model (relation likes Person)))\n"
+            ),
+        )
+        .expect("written");
+        let f = file.display().to_string();
+        let r = ein(&["test", &f]);
+        assert_eq!(r.code, 0, "{suffix}: {}{}", r.out, r.err);
+        assert!(r.out.contains("4 held, 0 FAILED"), "{suffix}: {}", r.out);
+        let bad = loads_everywhere(&file, scratch.path());
+        assert!(bad.is_empty(), "{suffix}: {}", bad.join("\n"));
+    }
+}
+
+/// **What reads a declaration reads each, with an import as without**
+/// (Q-M1f.447). The blind enumerator guesses `likes` at both the counts it
+/// is declared at, and proposes the same candidates with an import as with
+/// none. `std.contradiction`, which only an import brings, activates the
+/// contradiction rule of each declared count from that count's declaration:
+/// a fact beside its negation kills root at either count, and at a count no
+/// declaration names it does not, since no rule of that count is activated.
+#[test]
+fn what_reads_a_declaration_reads_each_with_an_import_as_without() {
+    let scratch = Scratch::new("ein-declared-readers");
+    let declared = "(relation likes Person Drink :why \"{?3} likes {?4}\")\n\
+         (relation likes Person Thing :why \"{?3} is fond of {?4}\")\n\
+         (relation likes Person :why \"{?3} likes something\")\n";
+
+    // The blind enumerator, at each count.
+    let mut hyps = Vec::new();
+    for (suffix, import) in WITH_AND_WITHOUT {
+        let file = scratch.path().join(format!("blind{suffix}.ein"));
+        std::fs::write(
+            &file,
+            format!(
+                "{import}{declared}(likes Ann Tea)\n(likes Bob)\n\
+                 (solve :hypothesis-relations (likes))\n"
+            ),
+        )
+        .expect("written");
+        let r = ein(&["show", "hyps", &file.display().to_string()]);
+        assert_eq!(r.code, 0, "{suffix}: {}", r.err);
+        hyps.push(r.out);
+    }
+    assert_eq!(hyps[0], hyps[1], "H with an import and without");
+    let counts: std::collections::BTreeSet<usize> = hyps[0]
+        .lines()
+        .map(|l| l.trim_matches(['(', ')']).split(' ').count() - 1)
+        .collect();
+    assert_eq!(
+        counts.into_iter().collect::<Vec<_>>(),
+        [1, 2],
+        "H at each declared count:\n{}",
+        hyps[0]
+    );
+
+    // `std.contradiction`'s activators, one rule each declared count.
+    let import = "(import std.contradiction :symbols (clash-1 clash-2 clash-3))\n";
+    let root = |name: &str, text: String| -> String {
+        let file = scratch.path().join(format!("{name}.ein"));
+        std::fs::write(&file, text).expect("written");
+        let summary = scratch.path().join(format!("{name}.json"));
+        let r = ein(&[
+            "solve",
+            &file.display().to_string(),
+            "--json-summary",
+            &summary.display().to_string(),
+        ]);
+        assert_eq!(r.code, 0, "{name}: {}", r.err);
+        let v: serde_json::Value =
+            serde_json::from_str(&std::fs::read_to_string(&summary).expect("a summary"))
+                .expect("JSON");
+        v["region"]["root"]
+            .as_str()
+            .expect("root's verdict")
+            .to_string()
+    };
+    for (name, pair, verdict) in [
+        ("two", "(likes Ann Tea)\n(not (likes Ann Tea))\n", "dead"),
+        ("one", "(likes Bob)\n(not (likes Bob))\n", "dead"),
+        (
+            "three",
+            "(likes Ann Tea Cup)\n(not (likes Ann Tea Cup))\n",
+            "in-r",
+        ),
+    ] {
+        assert_eq!(
+            root(
+                name,
+                format!("{import}{declared}{pair}(solve :no-search)\n")
+            ),
+            verdict,
+            "a fact beside its negation, {name}"
+        );
+    }
 }
 
 /// What a declaration's count never read, each of which loads on every
@@ -277,31 +393,95 @@ fn what_is_not_a_declared_relations_form_loads() {
     ];
     let mut bad = Vec::new();
     for (shape, added) in accepted {
-        let file = scratch.path().join(format!("{shape}.ein"));
-        std::fs::write(&file, format!("{HEAD}{added}")).expect("written");
-        let f = file.display().to_string();
-        let einb = scratch
-            .path()
-            .join(format!("{shape}.einb"))
-            .display()
-            .to_string();
-        let runs: [Vec<&str>; 5] = [
-            vec!["saturate", &f],
-            vec!["solve", "--count", &f],
-            vec!["oracle", &f],
-            vec!["render", "program", &f],
-            vec!["kb", "save", &f, &einb],
-        ];
-        for argv in runs {
-            let r = ein(&argv);
-            if r.code != 0 {
-                bad.push(format!(
-                    "{shape}: ein {argv:?}: exit {}: {}",
-                    r.code,
-                    r.err.lines().next().unwrap_or("")
-                ));
+        for (suffix, import) in WITH_AND_WITHOUT {
+            let file = scratch.path().join(format!("{shape}{suffix}.ein"));
+            std::fs::write(&file, format!("{import}{HEAD}{added}")).expect("written");
+            let f = file.display().to_string();
+            let einb = scratch
+                .path()
+                .join(format!("{shape}{suffix}.einb"))
+                .display()
+                .to_string();
+            let runs: [Vec<&str>; 5] = [
+                vec!["saturate", &f],
+                vec!["solve", "--count", &f],
+                vec!["oracle", &f],
+                vec!["render", "program", &f],
+                vec!["kb", "save", &f, &einb],
+            ];
+            for argv in runs {
+                let r = ein(&argv);
+                if r.code != 0 {
+                    bad.push(format!(
+                        "{shape}{suffix}: ein {argv:?}: exit {}: {}",
+                        r.code,
+                        r.err.lines().next().unwrap_or("")
+                    ));
+                }
             }
         }
     }
     assert!(bad.is_empty(), "{}", bad.join("\n"));
+}
+
+/// **A program and a module that declare one short name, under a bare
+/// import or an alias, declare two relations** (Q-M1f.231, Q-M1f.236): the
+/// module's is `m.likes`, written `a.likes` under `(import m :as a)`, and the
+/// program's own is `likes`, two atoms. Neither declaration is refused, at
+/// the module's count or at another, and neither file's rule reads the
+/// other's facts.
+#[test]
+fn under_a_bare_import_or_an_alias_a_program_and_a_module_declare_two_relations() {
+    let scratch = Scratch::new("ein-declared-beside-a-module");
+    std::fs::write(
+        scratch.path().join("m.ein"),
+        "(relation likes Person Drink :why \"{?3} likes {?4}\")\n\
+         (rule mfan () :match (likes ?a ?b) :assert (mfan ?a) :why \"{?a} likes {?b}\")\n\
+         (likes Cy Milk)\n",
+    )
+    .expect("written");
+    for (import, m) in [("(import m)", "m"), ("(import m :as a)", "a")] {
+        for (count, declared, fact, pattern, other) in [
+            (
+                "one",
+                "likes Person",
+                "(likes Ann)",
+                "(likes ?a)",
+                "(likes ?a ?b)",
+            ),
+            (
+                "two",
+                "likes Person Drink",
+                "(likes Ann Tea)",
+                "(likes ?a ?b)",
+                "(likes ?a)",
+            ),
+        ] {
+            let file = scratch.path().join(format!("{m}-{count}.ein"));
+            std::fs::write(
+                &file,
+                format!(
+                    "{import}\n\
+                     (relation {declared} :why \"{{?3}} likes\")\n\
+                     {fact}\n\
+                     (rule pfan () :match {pattern} :assert (pfan ?a) :why \"{{?a}} likes\")\n\
+                     (solve :no-search)\n\
+                     (query :goal (pfan ?a) :expect (model (pfan Ann)))\n\
+                     (query :goal ({m}.mfan ?a) :expect (model ({m}.mfan Cy)))\n\
+                     (query :goal ({m}.likes ?a ?b) :expect (model ({m}.likes Cy Milk)))\n\
+                     (query :goal {other} :expect (model))\n\
+                     (query :goal (relation {m}.likes ?a ?b) \
+                        :expect (model (relation {m}.likes Person Drink)))\n"
+                ),
+            )
+            .expect("written");
+            let r = ein(&["test", &file.display().to_string()]);
+            assert_eq!(r.code, 0, "{import}, {count}: {}{}", r.out, r.err);
+            assert!(
+                r.out.contains("5 held, 0 FAILED"),
+                "{import}, {count}: {}",
+                r.out
+            );
+        }
+    }
 }

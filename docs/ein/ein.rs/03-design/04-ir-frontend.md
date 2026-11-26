@@ -372,8 +372,12 @@ it is refused with the line its path would be refused with as a program
    its own imports at theirs. A module's `query`, `solve`, `config` and `trace` forms (`DIRECTIVES`) are left out:
    they are a program's own
    ([Q-M1f.215](../../../decisions/imports/Q-M1f.215-no-import-brings-a-modules-query-solve-config.md)).
-4. `dedup_declarations` drops a repeated identical declaration, keyed by its kind and its name, keeping the first,
-   and refuses a second one with another body.
+4. `dedup_declarations` drops a repeated identical rule or macro, keyed by its kind and its name, keeping the
+   first, and refuses a second one with another body. A relation's declarations it leaves as they are written: each
+   is a fact of `relation`, and a relation may be declared more than once, at one count or at several
+   ([Q-M1f.447](../../../decisions/language/Q-M1f.447-a-relation-is-overloaded-by-its-count-of.md)), so a program
+   that imports reads its own declarations as one that imports nothing, whose forms skip the pass
+   (`ein-ir/tests/imports_semantics.rs`: `every_declaration_of_a_relation_comes_and_a_rule_or_a_macro_once`).
 5. `display_names` renames once more, each full name to the main file's spelling: a listed short name, else its
    first alias's, else the full name; a spelling another file already uses as a name is not taken
    ([Q-M1f.237](../../../decisions/imports/Q-M1f.237-a-name-prints-as-the-main-file-writes-it-else.md),

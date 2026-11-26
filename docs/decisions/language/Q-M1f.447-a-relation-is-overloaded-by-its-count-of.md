@@ -19,5 +19,8 @@ rule may read as it likes. A program that is not well-formed is the program's to
 
 **Held by.** `ein-cli/tests/declared_counts.rs`: `a_form_of_another_count_loads_on_every_command`,
 `the_regressions_witnesses_load_on_every_command`,
-`a_relation_declared_twice_loads_and_each_count_answers_its_own`, `what_is_not_a_declared_relations_form_loads`;
-the seven `arity-*` witnesses of `corpus/regressions.toml`.
+`a_relation_declared_twice_loads_and_each_count_answers_its_own`, `what_is_not_a_declared_relations_form_loads`,
+each in a program that imports and in one that does not, and
+`what_reads_a_declaration_reads_each_with_an_import_as_without`; `ein-ir/tests/imports_semantics.rs`:
+`every_declaration_of_a_relation_comes_and_a_rule_or_a_macro_once`; the seven `arity-*` witnesses of
+`corpus/regressions.toml`; `examples/features/22_declared_twice.ein` and `25_declared_twice_with_an_import.ein`.

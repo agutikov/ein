@@ -21,11 +21,8 @@
 ;;; water is drunk by, `(same ?who (the Water (is drunk by) Man))`.
 ;;;
 ;;; `the` is written at two counts, `(the Red House)` and `(the Coffee (is
-;;; drunk in) House)`. A program that imports a module is refused a second
-;;; declaration of one relation at another count (`conflicting definitions of
-;;; 'the': same name, different body`), so the one below is of three
-;;; arguments, and the descriptions of two are of a relation no declaration
-;;; names.
+;;; drunk in) House)`, and declared at each: a relation is overloaded by its
+;;; count of arguments (Q-M1f.447).
 ;;;
 ;;; The file is written in the order a formalization makes it: the
 ;;; statements in the text's order, each with its sentence as `:source`, and
@@ -93,6 +90,7 @@
 
 ;; The words of the sentences.
 (relation same        T T     :why "{?3} is {?4}")
+(relation the         T T     :why "the {?3} {?4}")
 (relation the         T T T   :why "the {?5} {?3} {?4}")
 (relation is          T T     :why "is {?3} {?4}")
 (relation are         T T     :why "are {?3} {?4}")

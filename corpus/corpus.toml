@@ -344,6 +344,12 @@ runs   = ["solve", "test", "saturate", "saturate --dump"]
 note   = "A relation declared twice at two arguments and once at one (Q-M1f.447): every declaration loads, each a fact of `relation`, and a fact of each count is its own, a pattern of two arguments matching the one of two and a pattern of one the one of one. Four claims, computed by hand."
 
 [[entry]]
+path   = "examples/features/25_declared_twice_with_an_import.ein"
+group  = "positive"
+runs   = ["solve", "test", "saturate", "saturate --dump"]
+note   = "`22_declared_twice.ein` in a program that imports a module, `std.contradiction` with a list (Q-M1f.447): a relation declared twice at two arguments, with two lists of labels, and once at one loads as it does with no import, and what reads a declaration reads each, `clash-of-2` and `clash-of-1` activating the contradiction rule of each count for `likes`. A fact of one argument beside the negation of one of two is no contradiction. Seven claims, computed by hand."
+
+[[entry]]
 path   = "examples/arith/add.ein"
 group  = "positive"
 runs   = ["solve", "test", "saturate", "saturate --dump", "solve --trace {out}/trace.md"]
@@ -1014,7 +1020,7 @@ path   = "examples/zebra3.2.ein"
 group  = "positive"
 runs   = ["solve", "solve --single", "saturate"]
 cost_ms = 791
-note   = "the puzzle's statements in the text's own words as descriptions, facts of `the` with the verb phrase a fact inside (`(same (the Coffee (is drunk in) House) (the Green House))`), and the three sentences of the row as its relations between descriptions. Four rules read a description as the name it is built on, one reads two names that are the same as `same-house`, which std.slots partitions, and one answers the questions in the statements' own form. `the` is written at two counts and declared at one, since a program that imports a module is refused a second count. Its runs are the other literal encodings'."
+note   = "the puzzle's statements in the text's own words as descriptions, facts of `the` with the verb phrase a fact inside (`(same (the Coffee (is drunk in) House) (the Green House))`), and the three sentences of the row as its relations between descriptions. Four rules read a description as the name it is built on, one reads two names that are the same as `same-house`, which std.slots partitions, and one answers the questions in the statements' own form. `the` is written at two counts and declared at each (Q-M1f.447). Its runs are the other literal encodings'."
 
 [[entry]]
 path   = "examples/zebra3.3.ein"

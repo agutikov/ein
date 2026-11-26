@@ -1362,6 +1362,10 @@
 0    examples/features/24_written_hypotheses.ein :: solve --single
 0    examples/features/24_written_hypotheses.ein :: solve -n 2
 0    examples/features/24_written_hypotheses.ein :: test
+0    examples/features/25_declared_twice_with_an_import.ein :: saturate
+0    examples/features/25_declared_twice_with_an_import.ein :: saturate --dump
+0    examples/features/25_declared_twice_with_an_import.ein :: solve
+0    examples/features/25_declared_twice_with_an_import.ein :: test
 0    examples/lattice/01_subset_pruned.ein :: render constraints
 0    examples/lattice/01_subset_pruned.ein :: render lattice
 0    examples/lattice/01_subset_pruned.ein :: render rules

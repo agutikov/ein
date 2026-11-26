@@ -1406,17 +1406,22 @@ fn first_loc(ast: &Ast, node: NodeId) -> Option<Loc> {
     })
 }
 
-/// Drop repeated **identical** declarations, keeping the first; a second
-/// declaration of one kind and one name with another body is refused.
+/// Drop a repeated **identical** rule or macro, keeping the first; a second
+/// rule or macro of one name with another body is refused.
 ///
 /// Every module is one copy, so two declarations of one full name come from
 /// one file's text: a file that writes one declaration twice. A fact that
 /// arrives twice is the same node and kept once (Q-M1f.143); a fact the
 /// program writes twice is two nodes, and is left to the loader.
 ///
+/// **A relation's declaration is neither dropped nor refused here**: it is a
+/// fact of `relation`, and a relation may be declared more than once, at one
+/// count or at several, each declaration read (Q-M1f.447). Each comes as it
+/// is written, as it does in a program that imports nothing, whose forms do
+/// not pass through here.
+///
 /// The key is `(kind, name)`, not the name alone: a `(rule undefeated …)` and
-/// a `(relation undefeated …)` share a name but are distinct declarations — a
-/// rule that produces a same-named relation is idiomatic.
+/// a `(macro undefeated …)` share a name but are distinct declarations.
 fn dedup_declarations(ast: &Ast, forms: &[NodeId]) -> Result<Vec<NodeId>, LoadError> {
     let mut seen: BTreeMap<(String, String), NodeId> = BTreeMap::new();
     let mut facts: BTreeSet<NodeId> = BTreeSet::new();
@@ -1432,6 +1437,10 @@ fn dedup_declarations(ast: &Ast, forms: &[NodeId]) -> Result<Vec<NodeId>, LoadEr
             .head_name(f)
             .expect("a declarator has an atom head")
             .to_string();
+        if kind == "relation" {
+            out.push(f);
+            continue;
+        }
         match seen.get(&(kind.clone(), name.clone())) {
             None => {
                 seen.insert((kind, name), f);

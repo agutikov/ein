@@ -232,14 +232,15 @@ fn a_class_mismatch_names_the_class_it_did_not_list() {
 /// finish is not coverage" — the entry whose lattice view blindly enumerates
 /// an unbounded domain and which the sweep marks `slow` for it. It carries no
 /// `:expect`, so `ein test` must never solve it, and the whole directory has
-/// to come back in the time the eight fixtures take (among them
+/// to come back in the time the twelve fixtures take (among them
 /// `13_mixed_solution_and_open.ein`, `14_unicode_text.ein` and
 /// `15_unicode_escapes.ein`, the two examples of natural-language text,
 /// `16_eq_neq_goal.ein`, nine claims about `eq` and `neq` in a goal,
 /// `17_eq_neq_premise.ein`, four about them in a premise,
-/// `22_declared_twice.ein`, four about a relation declared at two counts, and
+/// `22_declared_twice.ein`, four about a relation declared at two counts,
 /// `24_written_hypotheses.ein`, two about a program that writes its
-/// hypotheses).
+/// hypotheses, and `25_declared_twice_with_an_import.ein`, seven about a
+/// relation declared at two counts in a program that imports).
 #[test]
 fn a_query_with_no_expectation_is_never_solved() {
     let started = std::time::Instant::now();
@@ -252,7 +253,7 @@ fn a_query_with_no_expectation_is_never_solved() {
         r.out
     );
     assert!(
-        r.summary().contains("26 held") && r.summary().contains("12 files state no expectations"),
+        r.summary().contains("33 held") && r.summary().contains("12 files state no expectations"),
         "{}",
         r.summary()
     );
