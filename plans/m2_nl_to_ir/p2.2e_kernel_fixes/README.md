@@ -2,7 +2,10 @@
 
 **Status:** **planned 2026-11-27** on the user's word, *"Ok I agree, do it"*, to the routing of P2.2's results at
 its close (the two bugs of Ein that P2.2 filed with no owner, fixed in a short phase before the benchmark is
-built). **Not started**: no stage runs, not even a survey, until the user says so.
+built). **Started 2026-11-27** on the user's word, *"start p2.2e"*: its stages run one by one, each in a subagent
+that commits its work, S2.2e.1 to S2.2e.3 and S2.2e.4's second half; S2.2e.4's first half waits for the user's
+ruling of [Q-M2.24](../open_questions/kernel/Q-M2.24-does-ein-hold-that-an-answer-does-not-depend-on-the-order.md).
+The phase stops at its end with a report for the user's review, and is not closed until the user says so.
 **Depends on:** the kernel as it stands; [P2.2](../p2.2_formalizer/README.md), closed, for the probes that hold
 the evidence ([`zebra_formulations/probes/`](../p2.2_formalizer/zebra_formulations/probes/README.md)) and the
 model's Zebra program that shows the clock's leak.
