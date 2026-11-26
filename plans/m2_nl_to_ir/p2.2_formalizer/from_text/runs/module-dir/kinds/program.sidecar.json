@@ -1,0 +1,46 @@
+{
+  "schema": "einaf-sidecar/1",
+  "categories": [],
+  "findings": [
+    {
+      "step": "1",
+      "findings": [
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(query\n  :goal (sum-of (n z 5) (n z 3) ?n)\n  :goal-text \"They have {?n} apples together.\")",
+          "message": "a goal of n, which the program does not declare and no imported module has"
+        }
+      ],
+      "writer": "blind"
+    },
+    {
+      "step": "2",
+      "findings": [
+        {
+          "kind": "name-not-listed",
+          "from_step": 2,
+          "form": null,
+          "message": "the program writes sum-of, which std.math.decimal-arith declares and its import does not list: the module's facts are std.math.decimal-arith.sum-of, and the program's sum-of is its own"
+        }
+      ],
+      "writer": "blind"
+    },
+    {
+      "step": "3",
+      "findings": [],
+      "writer": null
+    },
+    {
+      "step": "complete",
+      "findings": [],
+      "writer": null
+    }
+  ],
+  "ontology_change": {
+    "kept": 2,
+    "dropped": [],
+    "added": [],
+    "redeclared": []
+  }
+}

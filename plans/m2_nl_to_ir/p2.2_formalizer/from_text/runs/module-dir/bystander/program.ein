@@ -1,0 +1,65 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples.")
+(has Carol (n z 9) Apple :source "Carol has 9 apples.")
+(gave Bob (n z 2) Apple Alice :source "Bob gave 2 apples to Alice.")
+
+;; How many apples does Carol have?
+(query :goal (has Carol ?n Apple) :goal-text "Carol has {?n} apples.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, and what the theory reads the
+;; verbs into, and the kinds.
+
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation gave Person Number Thing Person :why "a {?3} gave a {?4} of {?5}s to a {?6}")
+(relation has-more Person Number Thing :why "a {?3} has more {?4} than {?5}s")
+(relation same-amount Person Person Thing :why "a {?3} and a {?4} have equally many {?5}s")
+(relation total Person Number Thing :why "a {?3} has a total of {?4} {?5}s")
+
+;; The kinds, and their place.
+(type Thing T)
+(type Person T)
+(type Number T)
+
+;; What kind of thing each name is: step 1's memberships.
+(instance Bob Person :source "Bob has 5 apples.")
+(instance Carol Person :source "Carol has 9 apples.")
+(instance Alice Person :source "Bob gave 2 apples to Alice.")
+(instance Apple Thing :source "Bob has 5 apples.")
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (sub diff-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; missing: what a giver has less is the amount they have after giving, asked of the calculator
+(rule giving-asks-the-difference ()
+  :match  (and (gave ?giver ?k ?thing ?receiver) (has ?giver ?a ?thing))
+  :assert (sub ?a ?k)
+  :why    "{?giver} had {?a} and gave {?k}: ask {?a} less {?k}")
+
+;; missing: the difference, read back as what the giver has left
+(rule giving-is-the-difference ()
+  :match  (and (gave ?giver ?k ?thing ?receiver) (has ?giver ?a ?thing) (diff-of ?a ?k ?d z))
+  :assert (has ?giver ?d ?thing)
+  :why    "{?a} less {?k} is {?d}, so {?giver} has {?d} left")
+
+;; missing: what a receiver has more is the amount they have after receiving, asked of the calculator
+(rule receiving-asks-the-sum ()
+  :match  (and (gave ?giver ?k ?thing ?receiver) (has ?receiver ?a ?thing))
+  :assert (sub ?k ?a)
+  :why    "{?receiver} had {?a} and got {?k}: ask {?k} less {?a} (negative difference)")
+
+;; missing: the sum, read back as what the receiver has
+(rule receiving-is-the-sum ()
+  :match  (and (gave ?giver ?k ?thing ?receiver) (has ?receiver ?a ?thing) (sub ?k ?a) (sub ?a ?k) (diff-of ?a ?k ?d z))
+  :assert (has ?receiver ?d ?thing)
+  :why    "{?a} plus {?k} is {?d}, so {?receiver} has {?d} now")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

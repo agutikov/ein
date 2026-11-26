@@ -1,0 +1,48 @@
+{
+  "schema": "einaf-sidecar/1",
+  "categories": [],
+  "findings": [
+    {
+      "step": "1",
+      "findings": [],
+      "writer": "blind"
+    },
+    {
+      "step": "2",
+      "findings": [],
+      "writer": null
+    },
+    {
+      "step": "3",
+      "findings": [],
+      "writer": null
+    },
+    {
+      "step": "complete",
+      "findings": [],
+      "writer": null
+    }
+  ],
+  "ontology_change": {
+    "kept": 3,
+    "dropped": [],
+    "added": [
+      "(instance Alice Person :source \"Alice has 7 apples.\")",
+      "(instance Apple Thing :source \"Bob has 5 apples.\")",
+      "(instance Bob Person :source \"Bob has 5 apples.\")",
+      "(instance Box Thing :source \"Carol has 9 apples and a box that holds 3.\")",
+      "(instance Carol Person :source \"Carol has 9 apples and a box that holds 3.\")",
+      "(relation\n  transferred-from\n  Person\n  Number\n  Thing\n  Person\n  :why \"a {?3} transferred a {?4} of {?5}s from a {?6}\")",
+      "(relation\n  transferred-to\n  Person\n  Number\n  Thing\n  Person\n  :why \"a {?3} transferred a {?4} of {?5}s to a {?6}\")",
+      "(relation apple-and-thing Apple Thing :why \"a {?3} is a {?4}\")",
+      "(relation instance T T :why \"{?3} is a {?4}\")",
+      "(relation type T T :why \"{?3} is a kind of {?4}\")",
+      "(type Apple Thing)",
+      "(type Attribute T)",
+      "(type Box Thing)",
+      "(type Person Attribute)",
+      "(type Thing Attribute)"
+    ],
+    "redeclared": []
+  }
+}

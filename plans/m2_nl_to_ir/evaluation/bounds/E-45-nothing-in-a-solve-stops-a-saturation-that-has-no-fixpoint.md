@@ -15,6 +15,12 @@
 
 Its closing held on the first programs a model wrote (S2.2.2, 2026-11-26): the probe's `library.off.bob1` concludes `(has ?giver (sub ?have ?given) ?kind ?time)` from `(has ?giver ?have ?kind ?time)`, a fact one deeper than the one it matched, and the bounded call returned it *not decided* at its clock of 30 seconds, under `--no-search` and `--single` alike; the cap on firings, 2^20, did not stop it first ([the probe's record](../../p2.2_formalizer/model_runtime/README.md)).
 
+And again by S2.2.5, 2026-11-26: `einaf from-text`, its program the one shot's, on
+`einaf/tests/fixtures/grow.ein`, prints *No answer: not decided.* with *stopped by the bound steps in a saturation of
+root* beneath it, within the call's bound; `ein solve --max-steps` exists, so *only `ein saturate --max-steps` stops
+it*, the re-plan's line, no longer holds. What the clock does not stop is
+[E-126](../../p2.2_formalizer/evaluation/bounds/E-126-a-root-that-dies-on-a-link-several-rules-derive-takes-its-time-past-every-clock.md).
+
 ## What it bounds
 
 a model's program can take the caller with it. **Closed** by S2.1.2, T2.1.2.5b (`83b82833`), by [Q-M2.16](../../open_questions/kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md): the clock and a cap on firings, `--max-steps` (default 2^20), reach every saturation of a question about R, root's first; past the cap the run is not decided and establishes nothing of R, at the clock it aborts as before; the decision is [`Q-M2.16`](../../../../docs/decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md). The word of its own for *did not stop* and a bound on the saturation by default stay [M1g](../../../m1g_logic/README.md)'s; [F26](../../../followups/f26_consistency_and_completeness.md)

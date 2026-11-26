@@ -1,0 +1,133 @@
+{
+  "schema": "einaf-sidecar/1",
+  "categories": [
+    {
+      "canonical": "(has Bob (n z 5) Apple :source \"Bob has 5 apples and 2 pears.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(has Bob (n z 2) Pear :source \"Bob has 5 apples and 2 pears.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(has Alice (n z 3) Apple :source \"Alice has 3 apples and 4 pears.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(has Alice (n z 4) Pear :source \"Alice has 3 apples and 4 pears.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(query\n  :goal (sum-of (n z 5) (n z 3) ?n)\n  :goal-text \"They have {?n} apples together.\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation has Person Number Thing :why \"a {?3} has a {?4} of {?5}s\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation sum-of Number Number Number :why \"a {?3} plus a {?4} is a {?5}\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.decimal-arith :symbols (add product-of))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.decimal :symbols (n))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.arith :symbols (z))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(rule\n  together-is-the-sum\n  ()\n  :match (and (has Bob ?a Apple) (has Alice ?b Apple) (sum-of ?a ?b ?s))\n  :assert (has (n z 2) ?s Apple)\n  :why \"{?a} and {?b} make {?s}, so they have {?s} apples together\")",
+      "category": "generated-rule",
+      "step": 3,
+      "judged": "generated-rule"
+    },
+    {
+      "canonical": "(solve :no-search)",
+      "category": "frame",
+      "step": 3,
+      "judged": null
+    }
+  ],
+  "findings": [
+    {
+      "step": "1",
+      "findings": [
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(query\n  :goal (sum-of (n z 5) (n z 3) ?n)\n  :goal-text \"They have {?n} apples together.\")",
+          "message": "a goal of n, which the program does not declare and no imported module has"
+        }
+      ],
+      "writer": "blind"
+    },
+    {
+      "step": "2",
+      "findings": [
+        {
+          "kind": "name-not-listed",
+          "from_step": 2,
+          "form": null,
+          "message": "the program writes sum-of, which std.math.decimal-arith declares and its import does not list: the module's facts are std.math.decimal-arith.sum-of, and the program's sum-of is its own"
+        }
+      ],
+      "writer": "blind"
+    },
+    {
+      "step": "3",
+      "findings": [
+        {
+          "kind": "name-not-listed",
+          "from_step": 2,
+          "form": null,
+          "message": "the program writes sum-of, which std.math.decimal-arith declares and its import does not list: the module's facts are std.math.decimal-arith.sum-of, and the program's sum-of is its own"
+        }
+      ],
+      "writer": "no-search"
+    },
+    {
+      "step": "complete",
+      "findings": [
+        {
+          "kind": "name-not-listed",
+          "from_step": 2,
+          "form": null,
+          "message": "the program writes sum-of, which std.math.decimal-arith declares and its import does not list: the module's facts are std.math.decimal-arith.sum-of, and the program's sum-of is its own"
+        }
+      ],
+      "writer": "no-search"
+    }
+  ],
+  "ontology_change": {
+    "kept": 2,
+    "dropped": [],
+    "added": [],
+    "redeclared": []
+  }
+}

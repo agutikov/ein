@@ -1,0 +1,32 @@
+{
+  "schema": "einaf-sidecar/1",
+  "categories": [],
+  "findings": [
+    {
+      "step": "1",
+      "findings": [],
+      "writer": null
+    },
+    {
+      "step": "2",
+      "findings": [],
+      "writer": null
+    },
+    {
+      "step": "3",
+      "findings": [],
+      "writer": null
+    },
+    {
+      "step": "complete",
+      "findings": [],
+      "writer": null
+    }
+  ],
+  "ontology_change": {
+    "kept": 1,
+    "dropped": [],
+    "added": [],
+    "redeclared": []
+  }
+}

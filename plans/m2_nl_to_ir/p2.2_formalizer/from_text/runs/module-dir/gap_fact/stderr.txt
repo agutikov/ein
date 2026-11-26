@@ -1,0 +1,12 @@
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 7857 MiB):
+  Device 0: NVIDIA GeForce RTX 4060 Laptop GPU, compute capability 8.9, VMM: yes, VRAM: 7857 MiB
+einaf: qwen35 4.2B (sha256:a9d0a3e1d8c91732a3812becd31f8d4a8ff57414903f226306069f0437e2ac50), 32 layers on CUDA0 (NVIDIA GeForce RTX 4060 Laptop GPU), a context of 65536 tokens
+step 1     4656 prompt tokens, 241 generated (end-of-turn, 3.9 s), 7 forms; at root not decided; H from blind (0); 0 findings
+step 2     14661 prompt tokens, 314 generated (end-of-turn, 5.6 s), 16 forms; at root not decided; H from blind (480); 1 findings
+step 3     15590 prompt tokens, 486 generated (end-of-turn, 8.7 s), 5 forms
+the program: H from none (0); 0 findings of the check
+  --no-search: invalid (refused at the load (unbound-conclusion): rule 'together-asks-the-sum': its :assert writes ?s, which no premise or parameter binds — to conclude it of the objects a relation holds of, bind it with a premise such as (R ?s), or of every name of the program with (eq ?s ?s)), 0.0 s
+  --single: invalid (refused at the load (unbound-conclusion): rule 'together-asks-the-sum': its :assert writes ?s, which no premise or parameter binds — to conclude it of the objects a relation holds of, bind it with a premise such as (R ?s), or of every name of the program with (eq ?s ?s)), 0.0 s
+the answer: invalid (from einaf)
+einaf from-text: 34.7 s
+against the gold answer "Bob 3|Alice 6|9": no-answer (invalid is no answer)

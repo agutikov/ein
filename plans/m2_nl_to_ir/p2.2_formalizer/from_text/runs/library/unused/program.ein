@@ -1,0 +1,62 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples.")
+(has Alice (n z 7) Apple :source "Alice has 7 apples.")
+(has Carol (n z 9) Apple :source "Carol has 9 apples and a box that holds 3.")
+(has Carol (n z 3) Box :source "Carol has 9 apples and a box that holds 3.")
+(gave Bob (n z 2) Apple Alice :source "Bob gave 2 apples to Alice.")
+
+;; How many apples does Bob have?
+(query :goal (has Bob ?n Apple) :goal-text "Bob has {?n} apples.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, completed with the theory's
+;; relations (the verb 'gave' is read into 'transferred-to' and 'gave' is
+;; read into 'transferred-from' and 'gave' is read into 'transferred-to',
+;; and the kinds).
+
+(relation instance    T T          :why "{?3} is a {?4}")
+(relation type        T T          :why "{?3} is a kind of {?4}")
+(relation has         Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation has         Person Number Box :why "a {?3} has a {?4} of {?5}s")
+(relation gave        Person Number Thing Person :why "a {?3} gave a {?4} of {?5}s to a {?6}")
+(relation transferred-from Person Number Thing Person :why "a {?3} transferred a {?4} of {?5}s from a {?6}")
+(relation transferred-to Person Number Thing Person :why "a {?3} transferred a {?4} of {?5}s to a {?6}")
+(relation apple-and-thing Apple Thing :why "a {?3} is a {?4}")
+
+;; The kinds, and their place.
+(type Attribute T)
+(type Thing     Attribute)
+(type Apple     Thing)
+(type Box       Thing)
+(type Person    Attribute)
+
+;; What kind of thing each name is: step 1's memberships.
+(instance Bob    Person :source "Bob has 5 apples.")
+(instance Alice  Person :source "Alice has 7 apples.")
+(instance Carol  Person :source "Carol has 9 apples and a box that holds 3.")
+(instance Apple  Thing  :source "Bob has 5 apples.")
+(instance Box    Thing  :source "Carol has 9 apples and a box that holds 3.")
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (sub diff-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; missing: the transfer, read back as what Bob has left
+(rule transfer-asks-the-difference ()
+  :match  (and (gave ?giver ?k ?thing ?receiver) (has ?giver ?a ?thing))
+  :assert (sub ?a ?k)
+  :why    "{?giver} gave {?k} {?thing}s to {?receiver}, who had {?a}: ask {?a} less {?k}")
+;; missing: the difference, read back as what the giver has left
+(rule transfer-is-the-difference ()
+  :match  (and (gave ?giver ?k ?thing ?receiver) (has ?giver ?a ?thing) (diff-of ?a ?k ?d z))
+  :assert (has ?giver ?d ?thing)
+  :why    "{?a} less {?k} is {?d}, so {?giver} has {?d} {?thing}s left")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

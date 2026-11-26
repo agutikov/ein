@@ -1,0 +1,35 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples, Alice has 7.")
+(has Alice (n z 7) :source "Bob has 5 apples, Alice has 7.")
+(holds Box (n z 3) :source "A box holds 3.")
+
+;; How many boxes do they need?
+(query :goal (need-boxes Bob Alice ?n) :goal-text "They need {?n} boxes.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, complete as it stands.
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation holds Thing Number :why "a {?3} holds a {?4}")
+(relation need-boxes Person Person Number :why "a {?3} and a {?4} need a {?5} boxes")
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; The sum of apples held by Bob and Alice is the total apples.
+;; The total apples divided by the capacity of a box is the number of boxes needed.
+;; (add X Y) is answered by (sum-of X Y S).
+;; (div X Y) is answered by (quot-of X Y Q R).
+;; We assert the sum and the division to derive the result.
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; missing: the total apples, read back as the sum of what Bob and Alice have
+(rule apples-are-the-sum ()
+  :match  (and (has Bob ?a Apple) (has Alice ?b Apple) (sum-of ?a ?b ?t))
+  :assert (has Bob ?t Apple)
+  :why    "{?a} and {?b} make {?t}")

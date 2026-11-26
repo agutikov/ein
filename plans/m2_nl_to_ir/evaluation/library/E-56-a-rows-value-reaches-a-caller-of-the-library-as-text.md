@@ -13,6 +13,14 @@
 
 `ein_infer::read_out`'s `Row` and `Query`
 
+
+Confirmed by S2.2.5, 2026-11-26 (`8c2037b0`): the answer's formatters, `einaf::format`, read each value's text back
+as a term and resolve its names to their full names from the program's imports (`einaf::format::Names`), so that the
+decimal formatter matches `std.math.decimal.n` whether the file prints `(n z 3)`, `(imp3.n imp4.z 3)` or the full
+names; held on the sixteen word problems' own programs under the three forms of an import
+(`einaf/tests/from_text.rs`, `the_word_problems_print_no_numeral_as_a_term_under_every_import_form`). The template is
+read off the program's parse by `einaf::kernel` (the feedback object's `queries[].goal_text`), not off the read-out.
+
 ## What it costs the application
 
 a formatter *over the library's values* parses `(n z 3)` again

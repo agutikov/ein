@@ -59,6 +59,14 @@ imports (**A**), is no part of the main arms and is the widest condition of the 
   family's own module (*a theory given*, thinking off): 13 parsed, 11 loaded, 10 were *one*, and none printed the
   answer the corpus's README states ([the probe's record](../../p2.2_formalizer/model_runtime/README.md)).
 
+- **A, given beside the library, was not taken up** (S2.2.5, 2026-11-26, `einaf from-text --module-dir
+  examples/word_problems`, [its report](../../p2.2_formalizer/from_text/README.md)): steps 2 and 3 were shown the four
+  modules of the word theory by their forms, beside the catalogue, and the steps' grammars offered their imports; no
+  program of the thirteen imported one, every one importing the calculator as under B with C. One text printed the
+  right answer under it (`bystander`, *Carol has 9 apples.*) and none under B with C alone; what made the difference
+  was the longer prompt, under which step 2 ran to its budget and was read as the forms written before the cut, and
+  step 3 wrote another theory over them, not an import of a module given.
+
 **What would change it**: a family whose canonical vocabulary is a theory's own where B with C cannot reach the
 answer and A can, on the benchmark (S2.6.4's library ablation); and the user's word on whether the word problems'
 moments are the text's to state or the theory's to supply ([Q-M2.23](../../p2.2_formalizer/open_questions/kernel/Q-M2.23-does-the-library-grow-a-reading-of-a-literal-vocabulary.md)).

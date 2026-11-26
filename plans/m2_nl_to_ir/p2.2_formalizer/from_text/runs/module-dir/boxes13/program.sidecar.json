@@ -1,0 +1,155 @@
+{
+  "schema": "einaf-sidecar/1",
+  "categories": [
+    {
+      "canonical": "(has Bob (n z 5) Apple :source \"Bob has 5 apples, Alice has 8.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(has Alice (n z 8) :source \"Bob has 5 apples, Alice has 8.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(holds Box (n z 3) :source \"A box holds 3.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(query :goal (need-boxes Bob Alice ?n) :goal-text \"They need {?n} boxes.\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation has Person Number Thing :why \"a {?3} has a {?4} of {?5}s\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation holds Thing Number :why \"a {?3} holds a {?4}\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation\n  need-boxes\n  Person\n  Person\n  Number\n  :why \"a {?3} and a {?4} need {?5} boxes\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation capacity Thing Number :why \"a {?3} has a capacity of {?4}\")",
+      "category": "generated-relation",
+      "step": 2,
+      "judged": "generated-relation"
+    },
+    {
+      "canonical": "(type Thing T)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(type Number T)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(import std.math.decimal-arith :symbols (add sum-of))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.decimal :symbols (n))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.arith :symbols (z))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    }
+  ],
+  "findings": [
+    {
+      "step": "1",
+      "findings": [],
+      "writer": null
+    },
+    {
+      "step": "2",
+      "findings": [
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Number T)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Thing T)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "wrong-count",
+          "from_step": 1,
+          "form": "(has Alice (n z 8) :source \"Bob has 5 apples, Alice has 8.\")",
+          "message": "a fact of has with 2 arguments, which is declared with 3"
+        }
+      ],
+      "writer": "blind"
+    },
+    {
+      "step": "complete",
+      "findings": [
+        {
+          "kind": "mechanism-not-stated",
+          "from_step": 3,
+          "form": null,
+          "message": "the program states no hypothesis mechanism, and the blind enumerator wrote H: 612 candidates"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Number T)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Thing T)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "wrong-count",
+          "from_step": 1,
+          "form": "(has Alice (n z 8) :source \"Bob has 5 apples, Alice has 8.\")",
+          "message": "a fact of has with 2 arguments, which is declared with 3"
+        }
+      ],
+      "writer": "blind"
+    }
+  ],
+  "ontology_change": {
+    "kept": 2,
+    "dropped": [],
+    "added": [
+      "(relation\n  need-boxes\n  Person\n  Person\n  Number\n  :why \"a {?3} and a {?4} need {?5} boxes\")",
+      "(relation capacity Thing Number :why \"a {?3} has a capacity of {?4}\")",
+      "(type Number T)",
+      "(type Thing T)"
+    ],
+    "redeclared": []
+  }
+}

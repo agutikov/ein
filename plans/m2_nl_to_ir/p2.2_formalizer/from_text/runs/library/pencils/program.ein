@@ -1,0 +1,46 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has  School (n z 12) Box :source "A school has 12 boxes of pencils, 144 pencils in each.")
+(has  Box (n z 144) Pencil :source "A school has 12 boxes of pencils, 144 pencils in each.")
+(go-to-office Pencil (n z 250) :source "250 pencils go to the office.")
+(shared Pencil Class :source "The rest is shared equally among 31 classes.")
+(count Classes 31 :source "The rest is shared equally among 31 classes.")
+
+;; How many pencils does each class get, and how many are left over?
+(query
+  :goal (and (count ?penc-per-class Class) (count ?left-over Class))
+  :goal-text "{?penc-per-class} pencils per class, {?left-over} left over.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, completed with the relations
+;; the theory reads the verbs into (the rest of 'has', the inverse of 'go-to-office',
+;; the inverse of 'shared', and the inverse of 'count').
+
+(relation has  Thing Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation go-to-office Thing Number :why "a {?3} goes to the office")
+(relation shared Thing Class :why "a {?3} is shared among a {?4}")
+(relation count Thing Number :why "there are {?3} of a {?4}")
+(relation inverse-of Relation Relation :why "a {?3} is the inverse of a {?4}")
+(relation inverse-of-office Thing Number :why "a {?3} goes to the office")
+(relation inverse-of-shared Thing Class :why "a {?3} is shared among a {?4}")
+(relation inverse-of-count Thing Number :why "there are {?3} of a {?4}")
+
+;; The kinds, and their place.
+(type Number T)
+(type Thing  T)
+(type Class  T)
+
+;; The facts the text speaks of and never states (the rest of the 'has' relation
+;; implied by the first sentence, and the implied facts for the inverse relations).
+(has  School (n z 12) Box)
+(has  Box (n z 144) Pencil)
+(inverse-of-office Pencil (n z 250))
+(inverse-of-shared Pencil Class)
+(inverse-of-count Classes 31)
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (div quot-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))

@@ -23,6 +23,10 @@ none (`--events` in 144 and 162 ms). The lever changes which core is named and n
 `ein solve examples/zebra3.1.ein --single --events E.jsonl` against the same file with its `(config …)` line taken
 out (`timeout 300` stops it); `examples/zebra3.2.ein` and `zebra3.3.ein` alike (94 and 91 ms with the line).
 
+At root under every question, by S2.2.5, 2026-11-26: the model's Zebra program, dead at root, takes 72 s under
+`ein solve --single -T 5`, and 63 ms with the line; the clock does not stop it
+([E-126](E-126-a-root-that-dies-on-a-link-several-rules-derive-takes-its-time-past-every-clock.md)).
+
 ## What it costs the application
 
 A formalizer that writes the generic link, as the target shape does, writes a program the kernel answers in

@@ -1,0 +1,12 @@
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 7857 MiB):
+  Device 0: NVIDIA GeForce RTX 4060 Laptop GPU, compute capability 8.9, VMM: yes, VRAM: 7857 MiB
+einaf: qwen35 4.2B (sha256:a9d0a3e1d8c91732a3812becd31f8d4a8ff57414903f226306069f0437e2ac50), 32 layers on CUDA0 (NVIDIA GeForce RTX 4060 Laptop GPU), a context of 65536 tokens
+step 1     4639 prompt tokens, 157 generated (end-of-turn, 2.5 s), 4 forms; at root invalid; H from none (0); 0 findings
+step 2     11607 prompt tokens, 98 generated (end-of-turn, 1.8 s), 4 forms; at root invalid; H from none (0); 0 findings
+step 3     12369 prompt tokens, 148 generated (end-of-turn, 2.7 s), 2 forms
+the program: H from none (0); 0 findings of the check
+  --no-search: invalid (refused at the load (goal): more.ein:9:47: query: its :goal writes (gt (n ?who-more 1) (n ?who-less 1)), and the program names no relation gt — a relation of the program is one it declares, states a fact of, or writes in a rule, so no state holds a fact of gt), 0.0 s
+  --single: invalid (refused at the load (goal): more.ein:9:47: query: its :goal writes (gt (n ?who-more 1) (n ?who-less 1)), and the program names no relation gt — a relation of the program is one it declares, states a fact of, or writes in a rule, so no state holds a fact of gt), 0.0 s
+the answer: invalid (from einaf)
+einaf from-text: 19.6 s
+against the gold answer "Alice 7": no-answer (invalid is no answer)

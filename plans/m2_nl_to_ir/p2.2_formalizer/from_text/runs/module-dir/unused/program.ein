@@ -1,0 +1,66 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples.")
+(has Alice (n z 7) Apple :source "Alice has 7 apples.")
+(has Carol (n z 9) Apple :source "Carol has 9 apples and a box that holds 3.")
+(has Carol (n z 3) Box :source "Carol has 9 apples and a box that holds 3.")
+(gave Bob (n z 2) Apple Alice :source "Bob gave 2 apples to Alice.")
+
+;; How many apples does Bob have?
+(query :goal (has Bob ?n Apple) :goal-text "Bob has {?n} apples.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, completed with the theory's
+;; relations and kinds.
+
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation has Person Number Box :why "a {?3} has a {?4} of {?5}s")
+(relation gave Person Number Thing Person :why "a {?3} gave a {?4} of {?5}s to a {?6}")
+(relation box-holds Box Number :why "a {?3} holds a {?4} of {?3}s")
+
+;; The kinds, and their place.
+(type Attribute T)
+(type Thing     Attribute)
+(type Box       Attribute)
+(type Number    Attribute)
+
+;; What kind of thing each name is: step 1's memberships.
+(instance Bob    Person :source "Bob has 5 apples.")
+(instance Alice  Person :source "Alice has 7 apples.")
+(instance Carol  Person :source "Carol has 9 apples and a box that holds 3.")
+(instance Apple  Thing :source "Bob has 5 apples.")
+(instance Box    Box  :source "Carol has 9 apples and a box that holds 3.")
+
+;; The theory: things in places, from the library.
+(import std.algebra :symbols (symmetric includes top meet))
+(import std.slots)
+
+;; A box-holds relation is a part of same-box.
+(includes box-holds same-box)
+(symmetric same-box)
+
+;; The classes of same-box are the boxes, each holding one value of every
+;; kind, and a box names its class; its obligations write the hypotheses.
+(slot-partition same-box instance type Attribute Box)
+
+;; Read back: a person has the thing they gave away.
+(meet gave has same-box)
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; missing: the number of apples Bob has after giving away two, asked of the calculator
+(rule bob-gave-asks-the-difference ()
+  :match  (and (has Bob ?a Apple) (gave Bob ?g Apple Alice))
+  :assert (not (has Bob ?a Apple))
+  :why    "Bob had {?a} apples and gave {?g} away: ask {?a} less {?g}")
+
+;; missing: the difference, read back as what Bob has left
+(rule bob-gave-is-the-difference ()
+  :match  (and (has Bob ?a Apple) (gave Bob ?g Apple Alice) (not (has Bob ?a Apple)) (has Bob ?r Apple))
+  :assert (has Bob ?r Apple)
+  :why    "{?a} less {?g} is {?r}, so Bob has {?r} apples left")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

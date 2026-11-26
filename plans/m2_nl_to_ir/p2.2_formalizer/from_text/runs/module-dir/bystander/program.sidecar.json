@@ -1,0 +1,317 @@
+{
+  "schema": "einaf-sidecar/1",
+  "categories": [
+    {
+      "canonical": "(has Bob (n z 5) Apple :source \"Bob has 5 apples.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(has Carol (n z 9) Apple :source \"Carol has 9 apples.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(gave Bob (n z 2) Apple Alice :source \"Bob gave 2 apples to Alice.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(query :goal (has Carol ?n Apple) :goal-text \"Carol has {?n} apples.\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation has Person Number Thing :why \"a {?3} has a {?4} of {?5}s\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation\n  gave\n  Person\n  Number\n  Thing\n  Person\n  :why \"a {?3} gave a {?4} of {?5}s to a {?6}\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation has-more Person Number Thing :why \"a {?3} has more {?4} than {?5}s\")",
+      "category": "generated-relation",
+      "step": 2,
+      "judged": "generated-relation"
+    },
+    {
+      "canonical": "(relation\n  same-amount\n  Person\n  Person\n  Thing\n  :why \"a {?3} and a {?4} have equally many {?5}s\")",
+      "category": "generated-relation",
+      "step": 2,
+      "judged": "generated-relation"
+    },
+    {
+      "canonical": "(relation total Person Number Thing :why \"a {?3} has a total of {?4} {?5}s\")",
+      "category": "generated-relation",
+      "step": 2,
+      "judged": "generated-relation"
+    },
+    {
+      "canonical": "(type Thing T)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(type Person T)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(type Number T)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(instance Bob Person :source \"Bob has 5 apples.\")",
+      "category": "source-derived",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(instance Carol Person :source \"Carol has 9 apples.\")",
+      "category": "source-derived",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(instance Alice Person :source \"Bob gave 2 apples to Alice.\")",
+      "category": "source-derived",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(instance Apple Thing :source \"Bob has 5 apples.\")",
+      "category": "source-derived",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.decimal-arith :symbols (sub diff-of))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.decimal :symbols (n))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.arith :symbols (z))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(rule\n  giving-asks-the-difference\n  ()\n  :match (and (gave ?giver ?k ?thing ?receiver) (has ?giver ?a ?thing))\n  :assert (sub ?a ?k)\n  :why \"{?giver} had {?a} and gave {?k}: ask {?a} less {?k}\")",
+      "category": "generated-rule",
+      "step": 3,
+      "judged": "generated-rule"
+    },
+    {
+      "canonical": "(rule\n  giving-is-the-difference\n  ()\n  :match (and (gave ?giver ?k ?thing ?receiver) (has ?giver ?a ?thing) (diff-of ?a ?k ?d z))\n  :assert (has ?giver ?d ?thing)\n  :why \"{?a} less {?k} is {?d}, so {?giver} has {?d} left\")",
+      "category": "generated-rule",
+      "step": 3,
+      "judged": "generated-rule"
+    },
+    {
+      "canonical": "(rule\n  receiving-asks-the-sum\n  ()\n  :match (and (gave ?giver ?k ?thing ?receiver) (has ?receiver ?a ?thing))\n  :assert (sub ?k ?a)\n  :why \"{?receiver} had {?a} and got {?k}: ask {?k} less {?a} (negative difference)\")",
+      "category": "generated-rule",
+      "step": 3,
+      "judged": "generated-rule"
+    },
+    {
+      "canonical": "(rule\n  receiving-is-the-sum\n  ()\n  :match (and (gave ?giver ?k ?thing ?receiver) (has ?receiver ?a ?thing) (sub ?k ?a) (sub ?a ?k) (diff-of ?a ?k ?d z))\n  :assert (has ?receiver ?d ?thing)\n  :why \"{?a} plus {?k} is {?d}, so {?receiver} has {?d} now\")",
+      "category": "generated-rule",
+      "step": 3,
+      "judged": "generated-rule"
+    },
+    {
+      "canonical": "(solve :no-search)",
+      "category": "frame",
+      "step": 3,
+      "judged": null
+    }
+  ],
+  "findings": [
+    {
+      "step": "1",
+      "findings": [],
+      "writer": "blind"
+    },
+    {
+      "step": "2",
+      "findings": [
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance Alice Person :source \"Bob gave 2 apples to Alice.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance Apple Thing :source \"Bob has 5 apples.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance Bob Person :source \"Bob has 5 apples.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance Carol Person :source \"Carol has 9 apples.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Number T)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Person T)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Thing T)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        }
+      ],
+      "writer": "blind"
+    },
+    {
+      "step": "3",
+      "findings": [
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance Alice Person :source \"Bob gave 2 apples to Alice.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance Apple Thing :source \"Bob has 5 apples.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance Bob Person :source \"Bob has 5 apples.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance Carol Person :source \"Carol has 9 apples.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Number T)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Person T)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Thing T)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        }
+      ],
+      "writer": "no-search"
+    },
+    {
+      "step": "complete",
+      "findings": [
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance Alice Person :source \"Bob gave 2 apples to Alice.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance Apple Thing :source \"Bob has 5 apples.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance Bob Person :source \"Bob has 5 apples.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance Carol Person :source \"Carol has 9 apples.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Number T)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Person T)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Thing T)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        }
+      ],
+      "writer": "no-search"
+    }
+  ],
+  "ontology_change": {
+    "kept": 2,
+    "dropped": [],
+    "added": [
+      "(instance Alice Person :source \"Bob gave 2 apples to Alice.\")",
+      "(instance Apple Thing :source \"Bob has 5 apples.\")",
+      "(instance Bob Person :source \"Bob has 5 apples.\")",
+      "(instance Carol Person :source \"Carol has 9 apples.\")",
+      "(relation\n  same-amount\n  Person\n  Person\n  Thing\n  :why \"a {?3} and a {?4} have equally many {?5}s\")",
+      "(relation has-more Person Number Thing :why \"a {?3} has more {?4} than {?5}s\")",
+      "(relation total Person Number Thing :why \"a {?3} has a total of {?4} {?5}s\")",
+      "(type Number T)",
+      "(type Person T)",
+      "(type Thing T)"
+    ],
+    "redeclared": []
+  }
+}

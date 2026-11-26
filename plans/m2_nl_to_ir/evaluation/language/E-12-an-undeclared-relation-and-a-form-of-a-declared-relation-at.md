@@ -20,6 +20,14 @@ pattern of a relation the program does not declare, or at another count, in 4 of
 steps and 10 of the 15 of the one call, both under a grammar ([S2.2.4's record](../../p2.2_formalizer/steps/README.md), `undeclared` and
 `wrong-count`); every one loaded.
 
+
+First-hand by S2.2.5, 2026-11-26, on the stage's own shape of a word problem over the calculator
+(`einaf/tests/fixtures/answer/one.ein`) with its goal written at three arguments where the calculator's answer has
+four, `(query :goal (diff-of (n z 5) (n z 2) ?n) :goal-text "Bob has {?n} apples")`: it loads, `ein solve --single`
+says `Solution` and *the goal has no row: undetermined here*, and no line of the kernel's names the slip; `einaf
+from-text` prints *The statements do not determine the answer.*, and `einaf steps check` finds *wrong-count (4, from
+step 1): a goal of diff-of with 3 arguments, which is declared with 4*.
+
 ## What it costs the application
 
 a model's misspelt relation or dropped argument is no diagnostic: the first rung of the feedback ladder has little to say

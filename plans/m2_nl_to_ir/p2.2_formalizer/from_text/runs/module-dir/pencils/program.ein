@@ -1,0 +1,62 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has  School (n z 12) Box :source "A school has 12 boxes of pencils, 144 pencils in each.")
+(has  Box (n z 144) Pencil :source "A school has 12 boxes of pencils, 144 pencils in each.")
+(go-to-office Pencil (n z 250) :source "250 pencils go to the office.")
+(shared Pencil Class :source "The rest is shared equally among 31 classes.")
+(count Classes 31 :source "The rest is shared equally among 31 classes.")
+
+;; How many pencils does each class get, and how many are left over?
+(query
+  :goal (and (count ?penc-per-class Class) (count ?left-over Class))
+  :goal-text "{?penc-per-class} pencils per class, {?left-over} left over.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, completed with the theory's
+;; relations and kinds.
+
+(relation has  Thing Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation go-to-office Thing Number :why "a {?3} goes to the office")
+(relation shared Thing Class :why "a {?3} is shared among a {?4}")
+(relation count Thing Number :why "there are {?3} of a {?4}")
+(relation rest-of Thing Number Number :why "[{?3}]: {?4} are filled, and {?5} are left over")
+(relation number-of Thing :why "how many {?3} there are")
+(relation each-of Number Thing :why "how many each of the {?3} gets when [{?4}] is shared equally")
+
+;; The kinds, and their place.
+(type Attribute T)
+(type Thing     Attribute)
+(type Number    Attribute)
+(type Class     Attribute)
+(type Pencil    Thing)
+(type Box       Thing)
+
+;; What kind of thing each name is: step 1's memberships.
+(instance School Thing :source "A school has 12 boxes of pencils, 144 pencils in each.")
+(instance Box Thing :source "A school has 12 boxes of pencils, 144 pencils in each.")
+(instance Pencil Thing :source "250 pencils go to the office.")
+(instance Class Class :source "The rest is shared equally among 31 classes.")
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (div quot-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; missing: the rest is the total minus the office share, asked of the calculator
+(rule rest-asks-the-difference ()
+  :match  (and (count ?total Pencil) (count ?office Pencil) (rest-of ?total ?office ?r))
+  :assert (div ?total ?office)
+  :why    "{?total} pencils, {?office} to the office: ask {?total} divided by {?office}")
+
+;; missing: the quotient is what each class gets, the remainder is what is left over
+(rule rest-is-the-quotient ()
+  :match  (and (count ?total Pencil) (count ?office Pencil) (quot-of ?total ?office ?q ?r))
+  :assert (count ?q Pencil)
+  :why    "{?total} among {?office} is {?q} each and {?r} left")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

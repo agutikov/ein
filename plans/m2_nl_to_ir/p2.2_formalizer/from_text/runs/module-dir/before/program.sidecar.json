@@ -1,0 +1,99 @@
+{
+  "schema": "einaf-sidecar/1",
+  "categories": [
+    {
+      "canonical": "(gave Bob Alice (n z 2) Apple :source \"Bob gave Alice 2 apples.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(has Bob (n z 5) Apple :source \"Now Bob has 5.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(query :goal (has Bob ?n Apple) :goal-text \"Bob had {?n} apples before.\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation\n  gave\n  Person\n  Person\n  Number\n  Thing\n  :why \"a {?3} gave a {?4} a {?5} of {?6}s\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation has Person Number Thing :why \"a {?3} has a {?4} of {?5}s\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.decimal-arith :symbols (sub diff-of))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.decimal :symbols (n))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.arith :symbols (z))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(rule\n  before-asks-the-difference\n  ()\n  :match (and (has ?who ?now ?thing) (gave ?who ?giver ?given ?thing))\n  :assert (sub ?now ?given)\n  :why \"{?who} has {?now} and gave {?given}: ask {?now} less {?given}\")",
+      "category": "generated-rule",
+      "step": 3,
+      "judged": "generated-rule"
+    },
+    {
+      "canonical": "(rule\n  before-is-the-difference\n  ()\n  :match (and (has ?who ?now ?thing) (gave ?who ?giver ?given ?thing) (diff-of ?now ?given ?d z))\n  :assert (has ?who ?d ?thing)\n  :why \"{?now} less {?given} is {?d}, so {?who} had {?d} before\")",
+      "category": "generated-rule",
+      "step": 3,
+      "judged": "generated-rule"
+    },
+    {
+      "canonical": "(solve :no-search)",
+      "category": "frame",
+      "step": 3,
+      "judged": null
+    }
+  ],
+  "findings": [
+    {
+      "step": "1",
+      "findings": [],
+      "writer": "blind"
+    },
+    {
+      "step": "2",
+      "findings": [],
+      "writer": "blind"
+    },
+    {
+      "step": "3",
+      "findings": [],
+      "writer": "no-search"
+    },
+    {
+      "step": "complete",
+      "findings": [],
+      "writer": "no-search"
+    }
+  ],
+  "ontology_change": {
+    "kept": 2,
+    "dropped": [],
+    "added": [],
+    "redeclared": []
+  }
+}

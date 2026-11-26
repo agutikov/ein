@@ -1,0 +1,64 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples, Alice has 8.")
+(has Alice (n z 8) :source "Bob has 5 apples, Alice has 8.")
+(holds Box (n z 3) :source "A box holds 3.")
+
+;; How many boxes do they need?
+(query :goal (need-boxes Bob Alice ?n) :goal-text "They need {?n} boxes.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, completed with the relations
+;; the theory reads the verbs into (has, holds) and the kinds.
+
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation holds Thing Number :why "a {?3} holds a {?4}")
+(relation need-boxes Person Person Number :why "a {?3} and a {?4} need {?5} boxes")
+
+;; The kinds, and their place.
+(type Number T)
+(type Thing T)
+(type Person T)
+
+;; What kind of thing each name is: step 1's memberships.
+(instance Bob Person :source "Bob has 5 apples, Alice has 8.")
+(instance Alice Person :source "Bob has 5 apples, Alice has 8.")
+(instance Apple Thing :source "Bob has 5 apples, Alice has 8.")
+(instance Box Thing :source "A box holds 3.")
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (add sum-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; A request (add X Y) is answered by (sum-of X Y S): a rule states the
+;; request and another reads the result back.
+;; (Note: The problem asks for the number of boxes needed for the total apples.
+;; Total apples = 5 + 8 = 13. Boxes needed = ceil(13 / 3) = 5.
+;; However, the standard library provided in the examples only has add, sub, mul, div, cmp.
+;; It does not have a ceiling function or a rule to compute boxes from sum and capacity.
+;; The problem asks "How many boxes do they need?".
+;; Without a ceiling rule, we cannot derive the exact integer of boxes needed from sum and capacity
+;; using only the provided library entries (add, sum-of).
+;; But looking at the pattern of Step 2 in the examples, it usually just imports the
+;; necessary arithmetic module and declares the ontology.
+;; The "missing" marker is required if a property is needed but not in the catalogue.
+;; Here, we need to compute boxes. The library has div (quotient and remainder).
+;; To get boxes, we need ceil(total / capacity).
+;; Since there is no ceiling in the catalogue, we must declare the missing property.
+;; However, the instruction says: "If the text needs a property no entry of the catalogue gives,
+;; write after the selection the marker line ;; missing: and the property in words; its rules are written in another call. Write no rule."
+;; So we will declare the missing property.
+
+;; The total apples is the sum of what Bob and Alice have.
+;; The number of boxes is the ceiling of total apples divided by box capacity.
+;; Since the library does not provide a ceiling function or a rule to compute boxes from sum and capacity,
+;; we mark this as missing.
+
+;; The total apples is the sum of what Bob and Alice have.
+;; The number of boxes is the ceiling of total apples divided by box capacity.
+;; The library does not provide a ceiling function or a rule to compute boxes from sum and capacity.
+;; We mark this as missing.
+;; missing: boxes-needed-from-sum-and-capacity

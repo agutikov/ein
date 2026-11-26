@@ -1,0 +1,43 @@
+{
+  "schema": "einaf-sidecar/1",
+  "categories": [],
+  "findings": [
+    {
+      "step": "1",
+      "findings": [],
+      "writer": "blind"
+    },
+    {
+      "step": "2",
+      "findings": [],
+      "writer": null
+    },
+    {
+      "step": "3",
+      "findings": [],
+      "writer": null
+    },
+    {
+      "step": "complete",
+      "findings": [],
+      "writer": null
+    }
+  ],
+  "ontology_change": {
+    "kept": 3,
+    "dropped": [],
+    "added": [
+      "(instance Alice Person :source \"Alice has 7 apples.\")",
+      "(instance Apple Thing :source \"Bob has 5 apples.\")",
+      "(instance Bob Person :source \"Bob has 5 apples.\")",
+      "(instance Box Box :source \"Carol has 9 apples and a box that holds 3.\")",
+      "(instance Carol Person :source \"Carol has 9 apples and a box that holds 3.\")",
+      "(relation box-holds Box Number :why \"a {?3} holds a {?4} of {?3}s\")",
+      "(type Attribute T)",
+      "(type Box Attribute)",
+      "(type Number Attribute)",
+      "(type Thing Attribute)"
+    ],
+    "redeclared": []
+  }
+}

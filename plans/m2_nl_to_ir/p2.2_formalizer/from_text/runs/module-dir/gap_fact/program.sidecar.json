@@ -1,0 +1,50 @@
+{
+  "schema": "einaf-sidecar/1",
+  "categories": [],
+  "findings": [
+    {
+      "step": "1",
+      "findings": [],
+      "writer": "blind"
+    },
+    {
+      "step": "2",
+      "findings": [
+        {
+          "kind": "name-not-listed",
+          "from_step": 2,
+          "form": null,
+          "message": "the program writes sum-of, which std.math.decimal-arith declares and its import does not list: the module's facts are std.math.decimal-arith.sum-of, and the program's sum-of is its own"
+        }
+      ],
+      "writer": "blind"
+    },
+    {
+      "step": "3",
+      "findings": [],
+      "writer": null
+    },
+    {
+      "step": "complete",
+      "findings": [],
+      "writer": null
+    }
+  ],
+  "ontology_change": {
+    "kept": 3,
+    "dropped": [],
+    "added": [
+      "(instance Alice Person :source \"Alice has 4 apples.\")",
+      "(instance Apple Thing :source \"Bob has 5 apples.\")",
+      "(instance Bob Person :source \"Bob has 5 apples.\")",
+      "(relation\n  subtract\n  Person\n  Number\n  Thing\n  :why \"a {?3} gave a {?4} to a {?5}, so a {?3} has a {?4} left\")",
+      "(relation instance T T :why \"{?3} is a {?4}\")",
+      "(relation type T T :why \"{?3} is a kind of {?4}\")",
+      "(type Apple Thing)",
+      "(type Number T)",
+      "(type Person T)",
+      "(type Thing T)"
+    ],
+    "redeclared": []
+  }
+}

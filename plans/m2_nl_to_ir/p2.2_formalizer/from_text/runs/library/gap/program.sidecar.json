@@ -1,0 +1,133 @@
+{
+  "schema": "einaf-sidecar/1",
+  "categories": [
+    {
+      "canonical": "(has Bob (n z 5) Apple :source \"Bob has 5 apples.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(gave Bob (n z 2) Alice :source \"He gave 2 to Alice.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(query\n  :goal (sum-of (n z 5) (n z 2) ?n)\n  :goal-text \"They have {?n} apples together.\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation has Person Number Thing :why \"a {?3} has a {?4} of {?5}s\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation gave Person Number Person :why \"a {?3} gave a {?4} to a {?5}\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation sum-of Number Number Number :why \"a {?3} plus a {?4} is a {?5}\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.decimal-arith :symbols (add product-of))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.decimal :symbols (n))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.arith :symbols (z))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(rule\n  apples-asks-the-sum\n  ()\n  :match (and (has ?p ?a ?t) (gave ?p ?b ?r))\n  :assert (add ?a ?b)\n  :why \"{?p} has {?a} and gave {?b}: ask {?a} plus {?b}\")",
+      "category": "generated-rule",
+      "step": 3,
+      "judged": "generated-rule"
+    },
+    {
+      "canonical": "(rule\n  apples-is-the-sum\n  ()\n  :match (and (has ?p ?a ?t) (gave ?p ?b ?r) (sum-of ?a ?b ?s))\n  :assert (has (sum-of ?a ?b ?s) ?t ?r)\n  :why \"{?a} and {?b} make {?s}, which they have together\")",
+      "category": "generated-rule",
+      "step": 3,
+      "judged": "generated-rule"
+    },
+    {
+      "canonical": "(solve :no-search)",
+      "category": "frame",
+      "step": 3,
+      "judged": null
+    }
+  ],
+  "findings": [
+    {
+      "step": "1",
+      "findings": [
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(query\n  :goal (sum-of (n z 5) (n z 2) ?n)\n  :goal-text \"They have {?n} apples together.\")",
+          "message": "a goal of n, which the program does not declare and no imported module has"
+        }
+      ],
+      "writer": "blind"
+    },
+    {
+      "step": "2",
+      "findings": [
+        {
+          "kind": "name-not-listed",
+          "from_step": 2,
+          "form": null,
+          "message": "the program writes sum-of, which std.math.decimal-arith declares and its import does not list: the module's facts are std.math.decimal-arith.sum-of, and the program's sum-of is its own"
+        }
+      ],
+      "writer": "blind"
+    },
+    {
+      "step": "3",
+      "findings": [
+        {
+          "kind": "name-not-listed",
+          "from_step": 2,
+          "form": null,
+          "message": "the program writes sum-of, which std.math.decimal-arith declares and its import does not list: the module's facts are std.math.decimal-arith.sum-of, and the program's sum-of is its own"
+        }
+      ],
+      "writer": "no-search"
+    },
+    {
+      "step": "complete",
+      "findings": [
+        {
+          "kind": "name-not-listed",
+          "from_step": 2,
+          "form": null,
+          "message": "the program writes sum-of, which std.math.decimal-arith declares and its import does not list: the module's facts are std.math.decimal-arith.sum-of, and the program's sum-of is its own"
+        }
+      ],
+      "writer": "no-search"
+    }
+  ],
+  "ontology_change": {
+    "kept": 3,
+    "dropped": [],
+    "added": [],
+    "redeclared": []
+  }
+}

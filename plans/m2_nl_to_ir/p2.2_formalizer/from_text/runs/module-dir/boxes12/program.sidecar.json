@@ -1,0 +1,51 @@
+{
+  "schema": "einaf-sidecar/1",
+  "categories": [],
+  "findings": [
+    {
+      "step": "1",
+      "findings": [
+        {
+          "kind": "wrong-count",
+          "from_step": 1,
+          "form": "(has Alice (n z 7) :source \"Bob has 5 apples, Alice has 7.\")",
+          "message": "a fact of has with 2 arguments, which is declared with 3"
+        }
+      ],
+      "writer": "blind"
+    },
+    {
+      "step": "2",
+      "findings": [],
+      "writer": null
+    },
+    {
+      "step": "3",
+      "findings": [],
+      "writer": null
+    },
+    {
+      "step": "complete",
+      "findings": [],
+      "writer": null
+    }
+  ],
+  "ontology_change": {
+    "kept": 3,
+    "dropped": [],
+    "added": [
+      "(instance Alice Person :source \"Bob has 5 apples, Alice has 7.\")",
+      "(instance Apple Thing :source \"Bob has 5 apples, Alice has 7.\")",
+      "(instance Bob Person :source \"Bob has 5 apples, Alice has 7.\")",
+      "(instance Box Thing :source \"A box holds 3.\")",
+      "(relation\n  div\n  Number\n  Number\n  Number\n  Number\n  :why \"{?3} divided by {?4} is {?5} with {?6} left\")",
+      "(relation cmp-of Number Number Number :why \"{?3} compared to {?4} is {?5}\")",
+      "(relation sum-of Number Number Number :why \"{?3} plus {?4} is {?5}\")",
+      "(relation total Person Number :why \"a {?3} has a {?4} of {?3}s\")",
+      "(type Number T)",
+      "(type Person T)",
+      "(type Thing T)"
+    ],
+    "redeclared": []
+  }
+}

@@ -1,0 +1,757 @@
+{
+  "schema": "einaf-sidecar/1",
+  "categories": [
+    {
+      "canonical": "(instance House1 House :source \"There are five houses.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance House2 House :source \"There are five houses.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance House3 House :source \"There are five houses.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance House4 House :source \"There are five houses.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance House5 House :source \"There are five houses.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(lives-in Englishman RedHouse :source \"The Englishman lives in the red house.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(owns Spaniard Dog :source \"The Spaniard owns the dog.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(drinks Coffee GreenHouse :source \"Coffee is drunk in the green house.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(drinks Ukrainian Tea :source \"The Ukrainian drinks tea.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(is-immediately-to-the-right-of\n  GreenHouse\n  IvoryHouse\n  :source \"The green house is immediately to the right of the ivory house.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(owns OldGold Snails :source \"The Old Gold smoker owns snails.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(smokes Kools YellowHouse :source \"Kools are smoked in the yellow house.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(drinks Milk MiddleHouse :source \"Milk is drunk in the middle house.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(lives-in Norwegian House1 :source \"The Norwegian lives in the first house.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(lives-in\n  ChesterfieldsHouse\n  FoxOwner\n  :source \"The man who smokes Chesterfields lives in the house next to the man with the fox.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(smokes\n  Kools\n  HorseKeeperHouse\n  :source \"Kools are smoked in the house next to the house where the horse is kept.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(drinks\n  LuckyStrike\n  OrangeJuice\n  :source \"The Lucky Strike smoker drinks orange juice.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(smokes Japanese Parliaments :source \"The Japanese smokes Parliaments.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(lives-in\n  Norwegian\n  BlueHouse\n  :source \"The Norwegian lives next to the blue house.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(query\n  :goal (and (drinks ?who Water) (owns ?who Zebra))\n  :goal-text \"{?who} drinks water. {?who} owns the zebra.\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation instance T T :why \"{?3} is a {?4}\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation type T T :why \"{?3} is a kind of {?4}\")",
+      "category": "generated-relation",
+      "step": 2,
+      "judged": "generated-relation"
+    },
+    {
+      "canonical": "(relation lives-in Person House :why \"a {?3} lives in a {?4}\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation owns Person Thing :why \"a {?3} owns a {?4}\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation drinks Person Thing :why \"a {?3} drinks a {?4}\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation\n  is-immediately-to-the-right-of\n  House\n  House\n  :why \"a {?3} is immediately to the right of a {?4}\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation smokes Person Thing :why \"a {?3} smokes a {?4}\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation has Person Thing :why \"a {?3} has a {?4}\")",
+      "category": "generated-relation",
+      "step": 1,
+      "judged": "generated-relation"
+    },
+    {
+      "canonical": "(relation next-to House House :why \"a {?3} is next to a {?4}\")",
+      "category": "generated-relation",
+      "step": 2,
+      "judged": "generated-relation"
+    },
+    {
+      "canonical": "(relation house-of House House :why \"a {?3} is the house of a {?4}\")",
+      "category": "generated-relation",
+      "step": 2,
+      "judged": "generated-relation"
+    },
+    {
+      "canonical": "(relation smoker-and-house Smoker House :why \"a {?3} and a {?4}\")",
+      "category": "generated-relation",
+      "step": 2,
+      "judged": "generated-relation"
+    },
+    {
+      "canonical": "(relation drinker-and-house Drinker House :why \"a {?3} and a {?4}\")",
+      "category": "generated-relation",
+      "step": 2,
+      "judged": "generated-relation"
+    },
+    {
+      "canonical": "(relation owner-and-house Owner House :why \"a {?3} and a {?4}\")",
+      "category": "generated-relation",
+      "step": 2,
+      "judged": "generated-relation"
+    },
+    {
+      "canonical": "(relation color-and-house Color House :why \"a {?3} and a {?4}\")",
+      "category": "generated-relation",
+      "step": 2,
+      "judged": "generated-relation"
+    },
+    {
+      "canonical": "(relation thing-and-house Thing House :why \"a {?3} and a {?4}\")",
+      "category": "generated-relation",
+      "step": 2,
+      "judged": "generated-relation"
+    },
+    {
+      "canonical": "(type Attribute T)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(type House Attribute)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(type Person Attribute)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(type Thing Attribute)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(type Smoker Attribute)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(type Drinker Attribute)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(type Owner Attribute)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(type Color Attribute)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(instance House1 House :source \"There are five houses.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance House2 House :source \"There are five houses.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance House3 House :source \"There are five houses.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance House4 House :source \"There are five houses.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance House5 House :source \"There are five houses.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance Englishman Person :source \"The Englishman lives in the red house.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance Spaniard Person :source \"The Spaniard owns the dog.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance Coffee Thing :source \"Coffee is drunk in the green house.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance Ukrainian Person :source \"The Ukrainian drinks tea.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance GreenHouse House :source \"Coffee is drunk in the green house.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance OldGold Thing :source \"The Old Gold smoker owns snails.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance Kools Thing :source \"Kools are smoked in the yellow house.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance Milk Thing :source \"Milk is drunk in the middle house.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance Norwegian Person :source \"The Norwegian lives in the first house.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance RedHouse House :source \"The Englishman lives in the red house.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance Dog Thing :source \"The Spaniard owns the dog.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance Tea Thing :source \"The Ukrainian drinks tea.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance\n  IvoryHouse\n  House\n  :source \"The green house is immediately to the right of the ivory house.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance Snails Thing :source \"The Old Gold smoker owns snails.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance YellowHouse House :source \"Kools are smoked in the yellow house.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance MiddleHouse House :source \"Milk is drunk in the middle house.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance\n  Fox\n  Thing\n  :source \"The man who smokes Chesterfields lives in the house next to the man with the fox.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance\n  Chesterfields\n  Thing\n  :source \"The man who smokes Chesterfields lives in the house next to the man with the fox.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance\n  Horse\n  Thing\n  :source \"Kools are smoked in the house next to the house where the horse is kept.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance\n  OrangeJuice\n  Thing\n  :source \"The Lucky Strike smoker drinks orange juice.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance\n  LuckyStrike\n  Thing\n  :source \"The Lucky Strike smoker drinks orange juice.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance Parliaments Thing :source \"The Japanese smokes Parliaments.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance Japanese Person :source \"The Japanese smokes Parliaments.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance BlueHouse House :source \"The Norwegian lives next to the blue house.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance Water Thing :source \"Who drinks water?\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(instance Zebra Thing :source \"Who owns the zebra?\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(is-immediately-to-the-right-of House1 House2)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(is-immediately-to-the-right-of House2 House3)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(is-immediately-to-the-right-of House3 House4)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(is-immediately-to-the-right-of House4 House5)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(import std.algebra :symbols (symmetric includes converse top meet))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.slots)",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(includes lives-in same-house)",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(includes owns same-house)",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(includes drinks same-house)",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(includes smokes same-house)",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(includes is-immediately-to-the-right-of next-to)",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(symmetric same-house)",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(symmetric next-to)",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(slot-partition same-house instance type Attribute House)",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(slot-spatial same-house is-immediately-to-the-right-of instance House)",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(top smoker-and-house instance Smoker House)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(top drinker-and-house instance Drinker House)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(top owner-and-house instance Owner House)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(top color-and-house instance Color House)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(top thing-and-house instance Thing House)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(meet same-house smoker-and-house smokes)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(meet same-house drinker-and-house drinks)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(meet same-house owner-and-house owns)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(meet same-house color-and-house lives-in)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(meet same-house thing-and-house has)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(converse smokes smoker-and-house)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(converse drinks drinker-and-house)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(converse owns owner-and-house)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(converse lives-in smoker-and-house)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(solve :no-search)",
+      "category": "frame",
+      "step": 3,
+      "judged": null
+    }
+  ],
+  "findings": [
+    {
+      "step": "1",
+      "findings": [],
+      "writer": "blind"
+    },
+    {
+      "step": "2",
+      "findings": [],
+      "writer": "stuck"
+    },
+    {
+      "step": "3",
+      "findings": [
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(meet same-house color-and-house lives-in)",
+          "message": "root's saturation names no firing of meet with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(top color-and-house instance Color House)",
+          "message": "root's saturation names no firing of top with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(top drinker-and-house instance Drinker House)",
+          "message": "root's saturation names no firing of top with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(top owner-and-house instance Owner House)",
+          "message": "root's saturation names no firing of top with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(top smoker-and-house instance Smoker House)",
+          "message": "root's saturation names no firing of top with these arguments and no owe of it"
+        },
+        {
+          "kind": "mechanism-not-the-one-stated",
+          "from_step": 3,
+          "form": null,
+          "message": "the program states no-search and obligations, and the writer of H is no-search"
+        }
+      ],
+      "writer": "no-search"
+    },
+    {
+      "step": "complete",
+      "findings": [
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(meet same-house color-and-house lives-in)",
+          "message": "root's saturation names no firing of meet with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(top color-and-house instance Color House)",
+          "message": "root's saturation names no firing of top with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(top drinker-and-house instance Drinker House)",
+          "message": "root's saturation names no firing of top with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(top owner-and-house instance Owner House)",
+          "message": "root's saturation names no firing of top with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(top smoker-and-house instance Smoker House)",
+          "message": "root's saturation names no firing of top with these arguments and no owe of it"
+        },
+        {
+          "kind": "mechanism-not-the-one-stated",
+          "from_step": 3,
+          "form": null,
+          "message": "the program states no-search and obligations, and the writer of H is no-search"
+        }
+      ],
+      "writer": "no-search"
+    }
+  ],
+  "ontology_change": {
+    "kept": 33,
+    "dropped": [],
+    "added": [
+      "(instance House1 House :source \"There are five houses.\")",
+      "(instance House2 House :source \"There are five houses.\")",
+      "(instance House3 House :source \"There are five houses.\")",
+      "(instance House4 House :source \"There are five houses.\")",
+      "(instance House5 House :source \"There are five houses.\")",
+      "(is-immediately-to-the-right-of House1 House2)",
+      "(is-immediately-to-the-right-of House2 House3)",
+      "(is-immediately-to-the-right-of House3 House4)",
+      "(is-immediately-to-the-right-of House4 House5)",
+      "(relation color-and-house Color House :why \"a {?3} and a {?4}\")",
+      "(relation drinker-and-house Drinker House :why \"a {?3} and a {?4}\")",
+      "(relation house-of House House :why \"a {?3} is the house of a {?4}\")",
+      "(relation next-to House House :why \"a {?3} is next to a {?4}\")",
+      "(relation owner-and-house Owner House :why \"a {?3} and a {?4}\")",
+      "(relation smoker-and-house Smoker House :why \"a {?3} and a {?4}\")",
+      "(relation thing-and-house Thing House :why \"a {?3} and a {?4}\")",
+      "(relation type T T :why \"{?3} is a kind of {?4}\")",
+      "(type Attribute T)",
+      "(type Color Attribute)",
+      "(type Drinker Attribute)",
+      "(type House Attribute)",
+      "(type Owner Attribute)",
+      "(type Person Attribute)",
+      "(type Smoker Attribute)",
+      "(type Thing Attribute)"
+    ],
+    "redeclared": []
+  }
+}

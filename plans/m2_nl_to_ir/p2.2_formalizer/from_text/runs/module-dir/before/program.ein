@@ -1,0 +1,35 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(gave Bob Alice (n z 2) Apple :source "Bob gave Alice 2 apples.")
+(has Bob (n z 5) Apple :source "Now Bob has 5.")
+
+;; How many apples did Bob have before?
+(query :goal (has Bob ?n Apple) :goal-text "Bob had {?n} apples before.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's, complete as it stands.
+(relation gave Person Person Number Thing :why "a {?3} gave a {?4} a {?5} of {?6}s")
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (sub diff-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; missing: what Bob had before is the amount he has now minus what he gave, asked of the calculator
+(rule before-asks-the-difference ()
+  :match  (and (has ?who ?now ?thing) (gave ?who ?giver ?given ?thing))
+  :assert (sub ?now ?given)
+  :why    "{?who} has {?now} and gave {?given}: ask {?now} less {?given}")
+;; missing: the difference, read back as what Bob had before
+(rule before-is-the-difference ()
+  :match  (and (has ?who ?now ?thing) (gave ?who ?giver ?given ?thing) (diff-of ?now ?given ?d z))
+  :assert (has ?who ?d ?thing)
+  :why    "{?now} less {?given} is {?d}, so {?who} had {?d} before")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

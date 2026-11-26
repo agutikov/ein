@@ -16,7 +16,8 @@ E-104 to E-113, filed by [S2.2.0a](../s2.2.0a_zebra_formulations.md) on 2026-11-
 [the contract](../../../../docs/einaf/04-contract.md#7-the-steps-by-hand); E-117 to E-119, filed by
 [S2.2.2](../s2.2.2_model_runtime.md) the same day from [its probe of Ein written by the model with no grammar](../model_runtime/README.md);
 E-120 to E-122, filed by [S2.2.3](../s2.2.3_gbnf.md) the same day from [its grammars of Ein](../grammars/README.md);
-E-123 to E-125, filed by [S2.2.4](../s2.2.4_passes.md) the same day from [its runs of the steps](../steps/README.md).
+E-123 to E-125, filed by [S2.2.4](../s2.2.4_passes.md) the same day from [its runs of the steps](../steps/README.md);
+E-126 and E-127, filed by [S2.2.5](../s2.2.5_from_text.md) the same day from [its one shot](../from_text/README.md).
 
 | id | title | kind | topic | status | owner |
 |---|---|---|---|---|---|
@@ -42,3 +43,5 @@ E-123 to E-125, filed by [S2.2.4](../s2.2.4_passes.md) the same day from [its ru
 | [E-123](diagnostics/E-123-no-value-says-whether-a-selecting-fact-was-taken-up.md) | No value says whether a selecting fact was taken up, and an unused one is silent whatever the reason | gap | `diagnostics` | open | none |
 | [E-124](answer/E-124-one-state-may-answer-a-question-of-one-value-with-a-row-a-pass.md) | One state may answer a question of one value with a row for each pass of a rule that reads what it concludes | limit | `answer` | open | none; Q-M2.10 and S2.5.3's answer rule read it |
 | [E-125](diagnostics/E-125-a-dead-root-s-core-names-the-sentence-the-model-misread.md) | A dead root's core names the sentence the model misread, and the rule that found it | strength | `diagnostics` | standing (a strength) | — |
+| [E-126](bounds/E-126-a-root-that-dies-on-a-link-several-rules-derive-takes-its-time-past-every-clock.md) | A root that dies on a link several rules derive takes its time past every clock, unless the program sets a lever | limit | `bounds` | open | none; E-113's case at root, Q-M2.34 |
+| [E-127](natural-language/E-127-the-kernel-s-line-is-a-template-filled-by-a-rule-a-caller-writes-again.md) | The kernel's line is a template filled by a rule a caller writes again, byte for byte | strength | `natural-language` | standing (a strength) | — |

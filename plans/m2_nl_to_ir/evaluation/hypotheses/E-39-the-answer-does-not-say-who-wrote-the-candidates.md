@@ -20,6 +20,12 @@ Read around by S2.2.4, 2026-11-26: `einaf::kernel::root` calls `ein_infer::struc
 function, which returns the writer (`Hypotheses::rung`) at the price of root's saturation a second time beside the
 bounded call; the read-out still says nothing of it, and a run of the steps records it beside each step's feedback.
 
+
+Confirmed by S2.2.5, 2026-11-26: `ein solve einaf/tests/fixtures/answer/several.ein --single --json-summary S` names
+the writer in no key of the summary, where `ein show hyps` says *H, from `obligations`: 2 candidates*; `einaf
+from-text` records the writer of each step's program and the complete one's from `einaf::kernel::root`
+(`program.sidecar.json`).
+
 ## What it costs the application
 
 with E-13: the feedback cannot say *you named no hypothesis mechanism* from the answer alone

@@ -1,0 +1,99 @@
+{
+  "schema": "einaf-sidecar/1",
+  "categories": [
+    {
+      "canonical": "(has Bob (n z 5) Apple :source \"Bob has 5 apples.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(gave Bob (n z 7) Alice :source \"He gave 7 to Alice.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(query :goal (has Bob ?n Apple) :goal-text \"Bob has {?n} apples.\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation has Person Number Thing :why \"a {?3} has a {?4} of {?5}s\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation gave Person Number Person :why \"a {?3} gave a {?4} to a {?5}\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.decimal-arith :symbols (sub diff-of))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.decimal :symbols (n))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.arith :symbols (z))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(rule\n  giving-asks-the-difference\n  ()\n  :match (and (has ?who ?a ?thing) (gave ?who ?k ?to))\n  :assert (sub ?a ?k)\n  :why \"{?who} had {?a} and gave {?k}: ask {?a} less {?k}\")",
+      "category": "generated-rule",
+      "step": 3,
+      "judged": "generated-rule"
+    },
+    {
+      "canonical": "(rule\n  giving-is-the-difference\n  ()\n  :match (and (has ?who ?a ?thing) (gave ?who ?k ?to) (diff-of ?a ?k ?d z))\n  :assert (has ?who ?d ?thing)\n  :why \"{?a} less {?k} is {?d}, so {?who} has {?d} left\")",
+      "category": "generated-rule",
+      "step": 3,
+      "judged": "generated-rule"
+    },
+    {
+      "canonical": "(solve :no-search)",
+      "category": "frame",
+      "step": 3,
+      "judged": null
+    }
+  ],
+  "findings": [
+    {
+      "step": "1",
+      "findings": [],
+      "writer": "blind"
+    },
+    {
+      "step": "2",
+      "findings": [],
+      "writer": "blind"
+    },
+    {
+      "step": "3",
+      "findings": [],
+      "writer": "no-search"
+    },
+    {
+      "step": "complete",
+      "findings": [],
+      "writer": "no-search"
+    }
+  ],
+  "ontology_change": {
+    "kept": 2,
+    "dropped": [],
+    "added": [],
+    "redeclared": []
+  }
+}

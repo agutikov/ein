@@ -13,6 +13,11 @@
 
 the ledger, [Q-M2.12](../../open_questions/answer/Q-M2.12-what-prints-the-answer.md); `ein_infer::read_out`'s class
 
+
+Confirmed by S2.2.5, 2026-11-26: `einaf from-text` reads the kernel's lines from the library
+(`queries[].classes[].lines`) and fills the template again for its formatted line; a caller of the binary still has
+the line only on stdout.
+
 ## What it costs the application
 
 nothing to a caller of the library; a caller of the binary reads the answer off stdout

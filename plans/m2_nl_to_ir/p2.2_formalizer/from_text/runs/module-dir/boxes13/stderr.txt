@@ -1,0 +1,13 @@
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 7857 MiB):
+  Device 0: NVIDIA GeForce RTX 4060 Laptop GPU, compute capability 8.9, VMM: yes, VRAM: 7857 MiB
+einaf: qwen35 4.2B (sha256:a9d0a3e1d8c91732a3812becd31f8d4a8ff57414903f226306069f0437e2ac50), 32 layers on CUDA0 (NVIDIA GeForce RTX 4060 Laptop GPU), a context of 65536 tokens
+step 1     4640 prompt tokens, 164 generated (end-of-turn, 2.6 s), 6 forms; at root invalid; H from none (0); 0 findings
+step 2     14568 prompt tokens, 256 generated (end-of-turn, 4.6 s), 9 forms
+step 3     15470 prompt tokens, 12288 generated (max-tokens, 223.2 s), 0 forms; cut by the budget: 0 forms kept, 0 repeats dropped
+stopped: step 3's output does not parse, or is empty
+the program: H from blind (612); 4 findings of the check
+  --no-search: not decided (--no-search: root is alive, and R was not searched), 0.0 s
+  --single: several (Ambiguity: two states found, which differ), 0.0 s
+the answer: no-row (from einaf)
+einaf from-text: 246.9 s
+against the gold answer "@undetermined": right (the fixed text "The statements do not determine the answer.")

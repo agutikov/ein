@@ -1,0 +1,12 @@
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 7857 MiB):
+  Device 0: NVIDIA GeForce RTX 4060 Laptop GPU, compute capability 8.9, VMM: yes, VRAM: 7857 MiB
+einaf: qwen35 4.2B (sha256:a9d0a3e1d8c91732a3812becd31f8d4a8ff57414903f226306069f0437e2ac50), 32 layers on CUDA0 (NVIDIA GeForce RTX 4060 Laptop GPU), a context of 65536 tokens
+step 1     4637 prompt tokens, 150 generated (end-of-turn, 2.4 s), 5 forms; at root not decided; H from blind (0); 0 findings
+step 2     11598 prompt tokens, 127 generated (end-of-turn, 2.3 s), 5 forms; at root not decided; H from blind (0); 0 findings
+step 3     12360 prompt tokens, 230 generated (end-of-turn, 3.9 s), 3 forms
+the program: H from no-search (0); 0 findings of the check
+  --no-search: not decided (--no-search: root is alive, and R was not searched), 0.0 s
+  --single: one (Solution: one state), 0.0 s
+the answer: lines (from program)
+einaf from-text: 22.5 s
+against the gold answer "7": wrong (no line states 7)

@@ -1,0 +1,105 @@
+{
+  "schema": "einaf-sidecar/1",
+  "categories": [
+    {
+      "canonical": "(has Bob (n z 5) Apple :source \"Bob has 5 apples.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(has Carol (n z 9) Apple :source \"Carol has 9 apples.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(gave Bob (n z 2) Apple Alice :source \"Bob gave 2 apples to Alice.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(query :goal (has Carol ?n Apple) :goal-text \"Carol has {?n} apples.\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation has Person Number Thing :why \"a {?3} has a {?4} of {?5}s\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation\n  gave\n  Person\n  Number\n  Thing\n  Person\n  :why \"a {?3} gave a {?4} of {?5}s to a {?6}\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.decimal-arith :symbols (sub diff-of))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.decimal :symbols (n))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.arith :symbols (z))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(rule\n  carol-has-asks-the-difference\n  ()\n  :match (and (has Carol ?c ?t) (gave Bob ?g ?t ?a) (neq ?c ?a))\n  :assert (sub ?c ?g)\n  :why \"Carol has {?c} and Bob gave {?g}: ask {?c} less {?g}\")",
+      "category": "generated-rule",
+      "step": 3,
+      "judged": "generated-rule"
+    },
+    {
+      "canonical": "(rule\n  carol-has-is-the-difference\n  ()\n  :match (and (has Carol ?c ?t) (gave Bob ?g ?t ?a) (diff-of ?c ?g ?d z))\n  :assert (has Carol ?d ?t)\n  :why \"{?c} less {?g} is {?d}, so Carol has {?d} now\")",
+      "category": "generated-rule",
+      "step": 3,
+      "judged": "generated-rule"
+    },
+    {
+      "canonical": "(solve :no-search)",
+      "category": "frame",
+      "step": 3,
+      "judged": null
+    }
+  ],
+  "findings": [
+    {
+      "step": "1",
+      "findings": [],
+      "writer": "blind"
+    },
+    {
+      "step": "2",
+      "findings": [],
+      "writer": "blind"
+    },
+    {
+      "step": "3",
+      "findings": [],
+      "writer": "no-search"
+    },
+    {
+      "step": "complete",
+      "findings": [],
+      "writer": "no-search"
+    }
+  ],
+  "ontology_change": {
+    "kept": 2,
+    "dropped": [],
+    "added": [],
+    "redeclared": []
+  }
+}

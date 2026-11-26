@@ -91,8 +91,8 @@ same topic, and what is ruled goes with the phase's folder, where `git log` keep
 | phase | its questions |
 |---|---|
 | P2.1 | none: Q-M2.18 to Q-M2.21, raised by its report, moved here open at its close, 2026-11-26, its folder deleted (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`) |
-| [P2.2](../p2.2_formalizer/README.md) | Q-M2.22, raised by the re-plan to the user's steps, Q-M2.23 and Q-M2.24, raised by S2.2.0a, Q-M2.25 and Q-M2.26, raised by S2.2.1, Q-M2.27, raised by S2.2.2, Q-M2.28 and Q-M2.29, raised by S2.2.3, Q-M2.30, raised by S2.2.3's amendment, and Q-M2.31 and Q-M2.32, raised by S2.2.4: [its open questions](../p2.2_formalizer/open_questions/README.md) |
+| [P2.2](../p2.2_formalizer/README.md) | Q-M2.22, raised by the re-plan to the user's steps, Q-M2.23 and Q-M2.24, raised by S2.2.0a, Q-M2.25 and Q-M2.26, raised by S2.2.1, Q-M2.27, raised by S2.2.2, Q-M2.28 and Q-M2.29, raised by S2.2.3, Q-M2.30, raised by S2.2.3's amendment, Q-M2.31 and Q-M2.32, raised by S2.2.4, and Q-M2.33 and Q-M2.34, raised by S2.2.5: [its open questions](../p2.2_formalizer/open_questions/README.md) |
 | [P2.2b](../p2.2b_guided_thinking/README.md) | none yet: planned, not started; its design questions, each with its default, are in [its README](../p2.2b_guided_thinking/README.md#design-questions-each-with-its-default) |
 | [P2.3](../p2.3_benchmark/README.md) to [P2.10](../p2.10_result_artifact_demo/README.md) | none yet |
 
-**The next free id is Q-M2.33.**
+**The next free id is Q-M2.35.**

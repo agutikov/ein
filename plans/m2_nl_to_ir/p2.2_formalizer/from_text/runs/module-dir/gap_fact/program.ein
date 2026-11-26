@@ -1,0 +1,75 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples.")
+(has Alice (n z 4) Apple :source "Alice has 4 apples.")
+(gave Bob (n z 2) Alice :source "He gave 2 to Alice.")
+
+;; How many apples does Bob have? How many does Alice have? How many apples do they have together?
+(query
+  :goal (and (has Bob ?b Apple) (has Alice ?a Apple) (sum-of ?b ?a ?t))
+  :goal-text "{?b} apples does Bob have. {?a} apples does Alice have. {?t} apples do they have together.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, and what the theory reads the
+;; verbs into, and the kinds.
+
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation gave Person Number Person :why "a {?3} gave a {?4} to a {?5}")
+(relation sum-of Number Number Number :why "a {?3} plus a {?4} is a {?5}")
+(relation subtract Person Number Thing :why "a {?3} gave a {?4} to a {?5}, so a {?3} has a {?4} left")
+(relation instance T T :why "{?3} is a {?4}")
+(relation type T T :why "{?3} is a kind of {?4}")
+
+;; The kinds, and their place.
+(type Thing T)
+(type Person T)
+(type Number T)
+(type Apple Thing)
+
+;; What kind of thing each name is: step 1's memberships.
+(instance Bob Person :source "Bob has 5 apples.")
+(instance Alice Person :source "Alice has 4 apples.")
+(instance Apple Thing :source "Bob has 5 apples.")
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (sub diff-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; The read-back that makes the answer query answerable.
+;; A subtraction of a given amount from a total is the remainder, asked of the calculator.
+;; The remainder is what the giver has left.
+;; The sum is what the two have together.
+;; The sum is the total of the two parts.
+;; The difference is the total minus the part given away.
+
+;; missing: a subtraction of a given amount from a total is the remainder, asked of the calculator
+(rule giving-asks-the-difference ()
+  :match  (and (has ?giver ?total Thing) (gave ?giver ?given ?receiver))
+  :assert (sub ?total ?given)
+  :why    "{?giver} had {?total} and gave {?given}: ask {?total} less {?given}")
+
+;; missing: the difference, read back as what the giver has left
+(rule giving-is-the-difference ()
+  :match  (and (has ?giver ?total Thing) (gave ?giver ?given ?receiver) (diff-of ?total ?given ?d z))
+  :assert (has ?giver ?d Thing)
+  :why    "{?total} less {?given} is {?d}, so {?giver} has {?d}")
+
+;; missing: the sum is the total of the two parts
+(rule together-asks-the-sum ()
+  :match  (and (has ?p1 ?a Thing) (has ?p2 ?b Thing))
+  :assert (sum-of ?a ?b ?s)
+  :why    "{?p1} has {?a} and {?p2} has {?b}: ask {?a} plus {?b}")
+
+;; missing: the sum is what the two have together
+(rule together-is-the-sum ()
+  :match  (and (has ?p1 ?a Thing) (has ?p2 ?b Thing) (sum-of ?a ?b ?s))
+  :assert (has ?p1 ?s Thing)
+  :why    "{?a} and {?b} make {?s}, so {?p1} has {?s}")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

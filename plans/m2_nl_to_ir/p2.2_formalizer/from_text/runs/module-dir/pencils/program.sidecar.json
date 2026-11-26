@@ -1,0 +1,429 @@
+{
+  "schema": "einaf-sidecar/1",
+  "categories": [
+    {
+      "canonical": "(has\n  School\n  (n z 12)\n  Box\n  :source \"A school has 12 boxes of pencils, 144 pencils in each.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(has\n  Box\n  (n z 144)\n  Pencil\n  :source \"A school has 12 boxes of pencils, 144 pencils in each.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(go-to-office Pencil (n z 250) :source \"250 pencils go to the office.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(shared Pencil Class :source \"The rest is shared equally among 31 classes.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(count Classes 31 :source \"The rest is shared equally among 31 classes.\")",
+      "category": "source-derived",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(query\n  :goal (and (count ?penc-per-class Class) (count ?left-over Class))\n  :goal-text \"{?penc-per-class} pencils per class, {?left-over} left over.\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation has Thing Number Thing :why \"a {?3} has a {?4} of {?5}s\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation go-to-office Thing Number :why \"a {?3} goes to the office\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation shared Thing Class :why \"a {?3} is shared among a {?4}\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation count Thing Number :why \"there are {?3} of a {?4}\")",
+      "category": "frame",
+      "step": 1,
+      "judged": null
+    },
+    {
+      "canonical": "(relation\n  rest-of\n  Thing\n  Number\n  Number\n  :why \"[{?3}]: {?4} are filled, and {?5} are left over\")",
+      "category": "generated-relation",
+      "step": 2,
+      "judged": "generated-relation"
+    },
+    {
+      "canonical": "(relation number-of Thing :why \"how many {?3} there are\")",
+      "category": "generated-relation",
+      "step": 2,
+      "judged": "generated-relation"
+    },
+    {
+      "canonical": "(relation\n  each-of\n  Number\n  Thing\n  :why \"how many each of the {?3} gets when [{?4}] is shared equally\")",
+      "category": "generated-relation",
+      "step": 2,
+      "judged": "generated-relation"
+    },
+    {
+      "canonical": "(type Attribute T)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(type Thing Attribute)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(type Number Attribute)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(type Class Attribute)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(type Pencil Thing)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(type Box Thing)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(instance\n  School\n  Thing\n  :source \"A school has 12 boxes of pencils, 144 pencils in each.\")",
+      "category": "source-derived",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(instance\n  Box\n  Thing\n  :source \"A school has 12 boxes of pencils, 144 pencils in each.\")",
+      "category": "source-derived",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(instance Pencil Thing :source \"250 pencils go to the office.\")",
+      "category": "source-derived",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(instance Class Class :source \"The rest is shared equally among 31 classes.\")",
+      "category": "source-derived",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.decimal-arith :symbols (div quot-of))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.decimal :symbols (n))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(import std.math.arith :symbols (z))",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(rule\n  rest-asks-the-difference\n  ()\n  :match (and (count ?total Pencil) (count ?office Pencil) (rest-of ?total ?office ?r))\n  :assert (div ?total ?office)\n  :why \"{?total} pencils, {?office} to the office: ask {?total} divided by {?office}\")",
+      "category": "generated-rule",
+      "step": 3,
+      "judged": "generated-rule"
+    },
+    {
+      "canonical": "(rule\n  rest-is-the-quotient\n  ()\n  :match (and (count ?total Pencil) (count ?office Pencil) (quot-of ?total ?office ?q ?r))\n  :assert (count ?q Pencil)\n  :why \"{?total} among {?office} is {?q} each and {?r} left\")",
+      "category": "generated-rule",
+      "step": 3,
+      "judged": "generated-rule"
+    },
+    {
+      "canonical": "(solve :no-search)",
+      "category": "frame",
+      "step": 3,
+      "judged": null
+    }
+  ],
+  "findings": [
+    {
+      "step": "1",
+      "findings": [
+        {
+          "kind": "number-as-name",
+          "from_step": 1,
+          "form": "(count Classes 31 :source \"The rest is shared equally among 31 classes.\")",
+          "message": "31 is a number written as a name; a quantity a rule computes with is a numeral, (n z 5)"
+        }
+      ],
+      "writer": "blind"
+    },
+    {
+      "step": "2",
+      "findings": [
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance\n  Box\n  Thing\n  :source \"A school has 12 boxes of pencils, 144 pencils in each.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance\n  School\n  Thing\n  :source \"A school has 12 boxes of pencils, 144 pencils in each.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance Class Class :source \"The rest is shared equally among 31 classes.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance Pencil Thing :source \"250 pencils go to the office.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Attribute T)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Box Thing)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Class Attribute)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Number Attribute)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Pencil Thing)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Thing Attribute)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "number-as-name",
+          "from_step": 1,
+          "form": "(count Classes 31 :source \"The rest is shared equally among 31 classes.\")",
+          "message": "31 is a number written as a name; a quantity a rule computes with is a numeral, (n z 5)"
+        }
+      ],
+      "writer": "blind"
+    },
+    {
+      "step": "3",
+      "findings": [
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance\n  Box\n  Thing\n  :source \"A school has 12 boxes of pencils, 144 pencils in each.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance\n  School\n  Thing\n  :source \"A school has 12 boxes of pencils, 144 pencils in each.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance Class Class :source \"The rest is shared equally among 31 classes.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance Pencil Thing :source \"250 pencils go to the office.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Attribute T)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Box Thing)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Class Attribute)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Number Attribute)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Pencil Thing)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Thing Attribute)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "number-as-name",
+          "from_step": 1,
+          "form": "(count Classes 31 :source \"The rest is shared equally among 31 classes.\")",
+          "message": "31 is a number written as a name; a quantity a rule computes with is a numeral, (n z 5)"
+        }
+      ],
+      "writer": "no-search"
+    },
+    {
+      "step": "complete",
+      "findings": [
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance\n  Box\n  Thing\n  :source \"A school has 12 boxes of pencils, 144 pencils in each.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance\n  School\n  Thing\n  :source \"A school has 12 boxes of pencils, 144 pencils in each.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance Class Class :source \"The rest is shared equally among 31 classes.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(instance Pencil Thing :source \"250 pencils go to the office.\")",
+          "message": "a fact of instance, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Attribute T)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Box Thing)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Class Attribute)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Number Attribute)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Pencil Thing)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "undeclared",
+          "from_step": 1,
+          "form": "(type Thing Attribute)",
+          "message": "a fact of type, which the program does not declare and no imported module has"
+        },
+        {
+          "kind": "number-as-name",
+          "from_step": 1,
+          "form": "(count Classes 31 :source \"The rest is shared equally among 31 classes.\")",
+          "message": "31 is a number written as a name; a quantity a rule computes with is a numeral, (n z 5)"
+        }
+      ],
+      "writer": "no-search"
+    }
+  ],
+  "ontology_change": {
+    "kept": 4,
+    "dropped": [],
+    "added": [
+      "(instance\n  Box\n  Thing\n  :source \"A school has 12 boxes of pencils, 144 pencils in each.\")",
+      "(instance\n  School\n  Thing\n  :source \"A school has 12 boxes of pencils, 144 pencils in each.\")",
+      "(instance Class Class :source \"The rest is shared equally among 31 classes.\")",
+      "(instance Pencil Thing :source \"250 pencils go to the office.\")",
+      "(relation\n  each-of\n  Number\n  Thing\n  :why \"how many each of the {?3} gets when [{?4}] is shared equally\")",
+      "(relation\n  rest-of\n  Thing\n  Number\n  Number\n  :why \"[{?3}]: {?4} are filled, and {?5} are left over\")",
+      "(relation number-of Thing :why \"how many {?3} there are\")",
+      "(type Attribute T)",
+      "(type Box Thing)",
+      "(type Class Attribute)",
+      "(type Number Attribute)",
+      "(type Pencil Thing)",
+      "(type Thing Attribute)"
+    ],
+    "redeclared": []
+  }
+}

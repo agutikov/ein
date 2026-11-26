@@ -1,0 +1,36 @@
+;; ---- step 1: the statements and the answer query
+
+;; The statements, in the text's own words.
+(has Bob (n z 5) Apple :source "Bob has 5 apples.")
+(gave Bob (n z 2) Alice :source "He gave 2 to Alice.")
+
+;; How many apples do they have together?
+(query :goal (sum-of (n z 5) (n z 2) ?n) :goal-text "They have {?n} apples together.")
+
+;; ---- step 2: the ontology whole, the imports and the selection
+
+;; The ontology, whole: step 1's declarations, complete as it stands.
+(relation has Person Number Thing :why "a {?3} has a {?4} of {?5}s")
+(relation gave Person Number Person :why "a {?3} gave a {?4} to a {?5}")
+(relation sum-of Number Number Number :why "a {?3} plus a {?4} is a {?5}")
+
+;; The theory: the calculator, which gives the numerals their meaning.
+(import std.math.decimal-arith :symbols (add product-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; ---- step 3: the rest of the theory and the hypothesis mechanism
+
+;; missing: the sum of what Bob had and what he gave away is what they have together
+(rule together-asks-the-sum ()
+  :match  (and (has ?who ?k ?thing) (gave ?who ?m ?to))
+  :assert (add ?k ?m)
+  :why    "{?who} had {?k} and gave {?m}: ask {?k} plus {?m}")
+;; missing: the sum, read back as what they have together
+(rule together-is-the-sum ()
+  :match  (and (has ?who ?k ?thing) (gave ?who ?m ?to) (sum-of ?k ?m ?s))
+  :assert (has ?to ?s ?thing)
+  :why    "{?k} and {?m} make {?s}, so {?who} and {?to} have {?s} together")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)
