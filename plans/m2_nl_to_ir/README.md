@@ -15,7 +15,7 @@ end; its plans are deleted (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_k
 left open is the milestone's, and [the defaults it took](defaults/p2.1.md) stand. **P2.2 is started
 2026-11-26** on the user's word, *"start next phase plans/m2_nl_to_ir/p2.2_formalizer, execute s2.2.0a and pause"*; S2.2.0a ran to its end, and then, *"Ok, I like what I see, after s2.2.0a continue with other stages of the phase"*,
 **the phase runs its other stages to its end and stops there for the user's review; no other phase starts until the
-user says so.** S2.2.1 and S2.2.2 have run to their end; S2.2.3 is next.
+user says so.** S2.2.1 to S2.2.3 have run to their end; S2.2.4 is next.
 **Depends on:** the kernel as it stands after M1f's close
 ([Q-M2.1](open_questions/kernel/Q-M2.1-when-is-the-kernel-frozen.md)). No other milestone runs for it:
 [M1p](../m1p_ein_to_natural_language/README.md), Ein to natural language, stays unstarted

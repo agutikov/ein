@@ -379,7 +379,13 @@ says Ein; `c/`, `nl2smt/` and `docs/lib/` are outside both projects.
   llama.cpp and needs no model) and replay, which answers a request from a
   record; the chat template rendered by EinAf, every call's envelope, the
   prompts versioned under `einaf/prompts/`
-  ([`05-model.md`](docs/einaf/05-model.md)). Its tests are
+  ([`05-model.md`](docs/einaf/05-model.md)). **The grammars**:
+  `einaf::grammar` writes the whole grammar of Ein as GBNF,
+  `einaf/grammars/ein.gbnf`, from `ein.l` and `ein.y` through grmtools'
+  readers, and a grammar a step of the contract at request time, with
+  EinAf's acceptor and sampler of the text llama.cpp reads
+  ([`06-grammars.md`](docs/einaf/06-grammars.md); the inventory of its
+  hand-written rules is `einaf/grammars/README.md`). Its tests are
   a step of the gate after Ein's: one test an outcome, the command, every
   refused fixture, and every corpus program that is not `slow` under every
   question, held to its group, its exit, its claims and the engine's static
@@ -763,7 +769,11 @@ or in the grammar's table (`ein-ir/tests/grammar_pages.rs`).
   `--check` or a test in the gate; `utils/check_generated.py` runs every
   generator's `--check`, and no crate test runs a generator. None names its
   generator; this list and `utils/README.md` are where the script is written
-  down.
+  down. **EinAf's one generated file** is `einaf/grammars/ein.gbnf` with its
+  `MANIFEST.sha256` (`einaf grammar write`, from `ein.l` and `ein.y`), held by
+  EinAf's own test, `the_grammar_file_is_what_einaf_grammar_write_writes`,
+  in its gate step: **a change to `ein.l` or `ein.y` re-runs `einaf grammar
+  write` in the same commit**, or that step fails.
 - **`ein.rs/vendor/lrpar/` is outside the workspace**: edit it only through a
   change to `ein.patch`. Nothing goes upstream.
 - A change to what `ein solve` prints changes `08-read-out.md` in the same
@@ -872,6 +882,8 @@ einaf/target/release/einaf feedback FILE [QUESTION] [--region-budget N] [--regio
 CMAKE_CUDA_ARCHITECTURES=89 cargo build --release --features cuda --manifest-path einaf/Cargo.toml   # EinAf with the model's runtime, on the GPU
 einaf/target/release/einaf generate --model GGUF REQUEST.json…   # one call a request, a record line each; --replay RECORD.jsonl answers from a record, no model
 einaf/target/release/einaf probe run --plan PLAN.jsonl --out OUT.jsonl (--model GGUF | --replay RECORD.jsonl) [--only PREFIX]   # the probe of Ein written with no grammar
+einaf/target/release/einaf grammar write [--check]                # the whole grammar, einaf/grammars/ein.gbnf, from ein.l and ein.y
+einaf/target/release/einaf grammar render STEP (--text T | --program P) [--fence]   # a step's grammar for a text or a program; accept, sample and catalogue beside it, llama (feature) through llama.cpp's sampler
 EIN_TEST_JOBS=1   cargo test … --profile gate --workspace    # the corpus sweeps one unit at a time; the verdicts are the default's
 EIN_TEST_UNITS=u.tsv EIN_TEST_JOBS=1 cargo test … --test id_order_invariance   # every unit's cost and peak memory, one line each
 EIN_CORPUS_SLOW=1 EIN_TEST_SHARD=2/4 cargo test … --test corpus_cores   # one shard of a nightly step
