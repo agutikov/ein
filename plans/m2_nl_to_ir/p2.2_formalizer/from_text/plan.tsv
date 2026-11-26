@@ -1,0 +1,41 @@
+# S2.2.5's plan of runs with the model, fixed before its first generation: a line a run, in the order run.
+# condition, item, text (from the repository's root), answer line, the gold short answer (the stand-in reader's:
+# @undetermined, @contradiction, or claims separated by |), and the options of `einaf from-text` beside --id,
+# --answer-line, --record, --gold-answer and --model.
+# Every run: qwen3.5:4b, thinking off (--request-mode thinking-off), greedy, seed 1, a context of 65 536 tokens,
+# 12 288 generated tokens a call at most, the whole catalogue, the steps, each under its step's grammar inside the
+# fence, the chain's choice checked first, an output the budget cut read as the forms written before the cut
+# (--cut keep-forms), each kernel call under a clock of 60 s and the kernel's own bounds (a facts budget of 2^20,
+# a cube limit of 16, 2^20 firings a saturation). S2.2.4's budgets, unchanged.
+# library: the model shown the library alone, the main arms' condition. module-dir: the same, with
+# examples/word_problems/'s modules given beside the library, the widest condition of the library ablation,
+# labelled so, and Q9's escape hatch A.
+library	zebra	nl2smt/puzzles/zebra.txt	zebra	Norwegian water|Japanese zebra	
+library	zebra-minus-15	nl2smt/puzzles/zebra-minus-15.txt	zebra	@undetermined	
+library	zebra-contradiction	nl2smt/puzzles/zebra-contradiction.txt	zebra	@contradiction	
+library	bob1	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/bob1.txt	word	3	
+library	gap	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/gap.txt	word	@undetermined	
+library	gap_fact	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/gap_fact.txt	word	Bob 3|Alice 6|9	
+library	contra	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/contra.txt	word	@contradiction	
+library	unused	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/unused.txt	word	3	
+library	bystander	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/bystander.txt	word	9	
+library	before	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/before.txt	word	7	
+library	kinds	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/kinds.txt	word	@undetermined	
+library	kinds_full	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/kinds_full.txt	word	8	
+library	more	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/more.txt	word	Alice 7	
+library	boxes12	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/boxes12.txt	word	4	
+library	boxes13	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/boxes13.txt	word	@undetermined	
+library	pencils	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/pencils.txt	word	47|21	
+module-dir	bob1	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/bob1.txt	word	3	--module-dir examples/word_problems
+module-dir	gap	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/gap.txt	word	@undetermined	--module-dir examples/word_problems
+module-dir	gap_fact	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/gap_fact.txt	word	Bob 3|Alice 6|9	--module-dir examples/word_problems
+module-dir	contra	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/contra.txt	word	@contradiction	--module-dir examples/word_problems
+module-dir	unused	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/unused.txt	word	3	--module-dir examples/word_problems
+module-dir	bystander	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/bystander.txt	word	9	--module-dir examples/word_problems
+module-dir	before	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/before.txt	word	7	--module-dir examples/word_problems
+module-dir	kinds	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/kinds.txt	word	@undetermined	--module-dir examples/word_problems
+module-dir	kinds_full	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/kinds_full.txt	word	8	--module-dir examples/word_problems
+module-dir	more	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/more.txt	word	Alice 7	--module-dir examples/word_problems
+module-dir	boxes12	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/boxes12.txt	word	4	--module-dir examples/word_problems
+module-dir	boxes13	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/boxes13.txt	word	@undetermined	--module-dir examples/word_problems
+module-dir	pencils	plans/m2_nl_to_ir/p2.2_formalizer/steps/texts/pencils.txt	word	47|21	--module-dir examples/word_problems

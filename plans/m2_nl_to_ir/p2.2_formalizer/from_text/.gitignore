@@ -1,0 +1,9 @@
+# What replay writes again from the committed record (the user's ruling on what a run commits).
+replayed/
+runs/*/*/config.json
+runs/*/*/kernel.jsonl
+runs/*/*/answer.json
+runs/*/*/run.json
+runs/*/*/steps/
+runs/*/*/stdout.txt
+__pycache__/
