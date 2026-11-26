@@ -20,7 +20,7 @@ hand; this page is what it finds of the kernel, kept for the iteration of Ein th
 - **One file an entry**, `<topic>/E-<n>-<slug>.md`, under the topic it is about: its id and its bold sentence as
   the title; its kind, its status (open, or closed and by what; a strength stands), where it was filed and its
   owner; then the cells of its row, each a section, as they were written. This page is the index. **The ids are one
-  sequence for the milestone and its phases**, and the next free id is **E-129**.
+  sequence for the milestone and its phases**, and the next free id is **E-130**.
 - **An entry filed by a phase lives in the phase's `evaluation/`** (every phase's folder has one) until the phase
   closes. Then, if it is open or a strength, it moves here under the same topic; a closed one stays in the phase's
   folder, which M2 keeps (P2.1's, closed before that rule, went with its folder, where `git log` keeps it).
@@ -178,12 +178,12 @@ rules. The wrong answers known before this milestone are [the register](../../wr
 below is a wrong answer.
 
 The bugs P2.1 filed, E-62, E-65, E-74, E-76, E-79 and E-88, were each closed in the phase and went with its folder
-at its close ([below](#in-a-phases-folder)). **The two below are P2.2's, open, and neither is a wrong answer by the
-register's rules.**
+at its close ([below](#in-a-phases-folder)). **The two below are P2.2's, and neither is a wrong answer by the register's
+rules**: E-104 closed by S2.2e.1, E-105 open. P2.2e's E-129 is in [its folder](../p2.2e_kernel_fixes/evaluation/README.md).
 
 | id | title | topic | status | owner |
 |---|---|---|---|---|
-| [E-104](language/E-104-a-relation-declared-at-a-second-count-is-refused-where-the.md) | A relation declared at a second count is refused where the program imports a module | `language` | open | [S2.2e.1](../p2.2e_kernel_fixes/s2.2e.1_declared_again_under_an_import.md); [Q-M2.42](../open_questions/kernel/Q-M2.42-are-e-104-and-e-105-fixed-before-the-benchmark-is-built.md) |
+| [E-104](language/E-104-a-relation-declared-at-a-second-count-is-refused-where-the.md) | A relation declared at a second count is refused where the program imports a module | `language` | closed by S2.2e.1 (`8d1f89ba`) | [S2.2e.1](../p2.2e_kernel_fixes/s2.2e.1_declared_again_under_an_import.md); [Q-M2.42](../open_questions/kernel/Q-M2.42-are-e-104-and-e-105-fixed-before-the-benchmark-is-built.md) |
 | [E-105](stdlib/E-105-std-slots-lets-two-values-stated-next-to-each-other-share-a.md) | `std.slots` lets two values stated next to each other share a house | `stdlib` | open | [S2.2e.2](../p2.2e_kernel_fixes/s2.2e.2_slots_neighbours.md); [Q-M2.42](../open_questions/kernel/Q-M2.42-are-e-104-and-e-105-fixed-before-the-benchmark-is-built.md) |
 
 ## Limits
@@ -232,6 +232,7 @@ One line a phase whose `evaluation/` holds entries, so that every id is found fr
   is kept with its folder. **E-128 was filed here at the same close**, from
   [the analysis of the phase](../p2.2_formalizer/report/ANALYSIS.md#12-what-a-library-says-of-its-rules-to-whoever-selects-them).
 - [P2.2b](../p2.2b_guided_thinking/evaluation/README.md), [P2.2c](../p2.2c_decoding_and_model_alone/evaluation/README.md),
-  [P2.2d](../p2.2d_formalizer_corrected/evaluation/README.md), [P2.2e](../p2.2e_kernel_fixes/evaluation/README.md):
-  none yet, each planned and not started.
+  [P2.2d](../p2.2d_formalizer_corrected/evaluation/README.md): none yet, each planned and not started.
+- **E-129 is P2.2e's**, filed by S2.2e.1 on what the imports pass does to a program's own forms
+  ([the phase's index](../p2.2e_kernel_fixes/evaluation/README.md)).
 - P2.3 to P2.10: none yet.

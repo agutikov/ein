@@ -1,0 +1,4 @@
+;;; The module: `likes` at two arguments, a rule over it, and a fact of it.
+(relation likes Person Drink :why "{?3} likes {?4}")
+(rule mfan () :match (likes ?a ?b) :assert (mfan ?a) :why "{?a} likes {?b}")
+(likes Cy Milk)

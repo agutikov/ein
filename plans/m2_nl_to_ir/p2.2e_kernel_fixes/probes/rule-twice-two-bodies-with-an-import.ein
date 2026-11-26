@@ -1,0 +1,8 @@
+;;; A rule written twice with two bodies: refused either way, by two lines.
+(import std.algebra)
+(relation p T :why "p holds of {?3}")
+(p A)
+(rule r () :match (p ?a) :assert (q ?a) :why "q holds of {?a}")
+(rule r () :match (p ?a) :assert (s ?a) :why "s holds of {?a}")
+(query :goal (q ?a))
+(solve :no-search)

@@ -10,4 +10,9 @@ phase's folder.
 
 ## Index
 
-None yet: the phase is planned and not started.
+| id | title | kind | topic | status | owner |
+|---|---|---|---|---|---|
+| [E-129](language/E-129-a-rule-or-a-macro-written-twice-the-same-is-read-once-where-the-program-imports.md) | A rule or a macro written twice the same is read once where the program imports a module, and refused where it imports none | bug | `language` | open | none |
+
+The phase closes, of the milestone's entries, [E-104](../../evaluation/language/E-104-a-relation-declared-at-a-second-count-is-refused-where-the.md)
+(S2.2e.1), marked closed where it is.

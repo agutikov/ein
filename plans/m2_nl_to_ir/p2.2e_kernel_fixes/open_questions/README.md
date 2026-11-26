@@ -12,4 +12,6 @@ under the same topic; what is ruled stays in the phase's folder.
 
 ## Index
 
-None yet: the phase is planned and not started.
+| id | question | topic | status | raised by |
+|---|---|---|---|---|
+| [Q-M2.43](kernel/Q-M2.43-is-a-programs-declaration-of-a-modules-relation-a-second-declaration-of-it.md) | Is a program's declaration of a relation it takes from a module a second declaration of the module's relation? | `kernel` | open; the default, nothing changes until the user rules | [S2.2e.1](../s2.2e.1_declared_again_under_an_import.md), on the user's statement of how a declaration meets an import |

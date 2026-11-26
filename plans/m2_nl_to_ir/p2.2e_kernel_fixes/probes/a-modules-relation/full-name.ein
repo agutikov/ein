@@ -1,0 +1,7 @@
+;;; The program imports m whole and declares `m.likes`, the module's full
+;;; name: refused (Q-M1f.239).
+(import m)
+(relation m.likes Person Drink :why "{?3} is fond of {?4}")
+(m.likes Ann Tea)
+(solve :no-search)
+(query :goal (m.mfan ?a))

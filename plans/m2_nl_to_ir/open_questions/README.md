@@ -116,7 +116,8 @@ same topic, and what is ruled stays in the phase's folder, which M2 keeps.
 | P2.1 | none: Q-M2.18 to Q-M2.21, raised by its report, moved here open at its close, 2026-11-26, its folder deleted (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`) |
 | [P2.2](../p2.2_formalizer/README.md) | none: Q-M2.22 to Q-M2.34, raised by its re-plan and its stages, moved here open at its close, 2026-11-27, none of them ruled; Q-M2.35 to Q-M2.42, raised by [the analysis of the phase](../p2.2_formalizer/report/ANALYSIS.md) and the routing of its results, were filed here at the same close. Its folder is kept ([its index](../p2.2_formalizer/open_questions/README.md)) |
 | [P2.2b](../p2.2b_guided_thinking/README.md) | none yet: planned, not started; its design questions, each with its default, are in [its README](../p2.2b_guided_thinking/README.md#design-questions-each-with-its-default) |
-| [P2.2c](../p2.2c_decoding_and_model_alone/README.md), [P2.2d](../p2.2d_formalizer_corrected/README.md), [P2.2e](../p2.2e_kernel_fixes/README.md) | none yet: planned 2026-11-27, not started; each reads questions of this ledger, named at the head of its README |
+| [P2.2c](../p2.2c_decoding_and_model_alone/README.md), [P2.2d](../p2.2d_formalizer_corrected/README.md) | none yet: planned 2026-11-27, not started; each reads questions of this ledger, named at the head of its README |
+| [P2.2e](../p2.2e_kernel_fixes/README.md) | Q-M2.43, raised by S2.2e.1, open ([its index](../p2.2e_kernel_fixes/open_questions/README.md)) |
 | [P2.3](../p2.3_benchmark/README.md) to [P2.10](../p2.10_result_artifact_demo/README.md) | none yet |
 
-**The next free id is Q-M2.43.**
+**The next free id is Q-M2.44.**

@@ -1,0 +1,8 @@
+;;; A macro written twice with two bodies: refused either way, by two lines.
+(relation p T :why "p holds of {?3}")
+(p A)
+(macro pp (?a) (p ?a) :why "pp of {?a}")
+(macro pp (?a) (q ?a) :why "pp of {?a}")
+(rule r () :match (pp ?a) :assert (q ?a) :why "q holds of {?a}")
+(query :goal (q ?a))
+(solve :no-search)

@@ -1,0 +1,7 @@
+;;; The same program with no declaration of `a.likes`: one relation, the
+;;; module's, and its rule reads the program's fact.
+(import m :as a)
+(a.likes Ann Tea)
+(solve :no-search)
+(query :goal (a.mfan ?a))
+(query :goal (a.likes ?a ?b))

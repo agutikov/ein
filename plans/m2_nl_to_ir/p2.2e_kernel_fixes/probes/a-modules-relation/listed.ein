@@ -1,0 +1,7 @@
+;;; The program lists `likes` from m and declares it again: refused, one short
+;;; name bound to two full names (Q-M1f.234).
+(import m :symbols (likes mfan))
+(relation likes Person Drink :why "{?3} is fond of {?4}")
+(likes Ann Tea)
+(solve :no-search)
+(query :goal (mfan ?a))

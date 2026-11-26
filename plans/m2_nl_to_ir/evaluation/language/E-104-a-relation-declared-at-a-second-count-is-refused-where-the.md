@@ -1,7 +1,7 @@
 # E-104 — A relation declared at a second count is refused where the program imports a module
 
 **Kind:** bug
-**Status:** open
+**Status:** closed by [S2.2e.1](../../p2.2e_kernel_fixes/s2.2e.1_declared_again_under_an_import.md) (`8d1f89ba`)
 **Filed:** by S2.2.0a, 2026-11-26, on `4bdbccaf`
 **Owner:** none; a fix leaves Ein's syntax and semantics as they are, so a stage of M2 that needs it may make it
 ([Q-M2.16](../../open_questions/kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md))
@@ -39,3 +39,16 @@ whatever the count.
 imports `std.slots`: it declares `the` at three arguments only, and its two-argument descriptions are of a relation
 no declaration names, which no `:why` reads and EinAf's check would report as undeclared. A formalizer that
 declares what it writes, as the contract asks, is refused on a valid program.
+
+## Closed
+
+By S2.2e.1, `8d1f89ba`, 2026-11-27: `dedup_declarations` passes a `relation` form through as it is written, and keeps
+its fold and its refusal for a rule and a macro. The fix restores Ein's semantics as Q-M1f.447 states them, two
+declarations being two facts of `relation` which different rules may read; no decision is written. The probes answer
+alike (`declared-at-two-counts.ein` and `-with-an-import.ein`, exit 0, one class `(likes Ann Tea)`); the model's
+`unused` program of both conditions loads (`ein solve --no-search`, exit 0); `examples/zebra3.2.ein` declares `the`
+at both counts, its answer unchanged. Held by `ein-cli/tests/declared_counts.rs` (every case with an import and
+without, and what reads a declaration reading each) and `ein-ir/tests/imports_semantics.rs`. What the pass still
+does to a rule or a macro is [E-129](../../p2.2e_kernel_fixes/evaluation/language/E-129-a-rule-or-a-macro-written-twice-the-same-is-read-once-where-the-program-imports.md);
+the user's statement on a program's declaration of a module's relation, which Q-M1f.234 answers otherwise for a
+listed name, is [Q-M2.43](../../p2.2e_kernel_fixes/open_questions/kernel/Q-M2.43-is-a-programs-declaration-of-a-modules-relation-a-second-declaration-of-it.md).

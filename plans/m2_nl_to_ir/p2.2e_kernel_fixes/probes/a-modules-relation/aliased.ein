@@ -1,0 +1,10 @@
+;;; The program imports m under the alias `a` and declares `a.likes`, the
+;;; module's atom, again: it loads, and the declaration makes `a.likes` a
+;;; relation of the program's own, which the module's rule does not read; the
+;;; module's prints as `m.likes`.
+(import m :as a)
+(relation a.likes Person Drink :why "{?3} is fond of {?4}")
+(a.likes Ann Tea)
+(solve :no-search)
+(query :goal (a.mfan ?a))
+(query :goal (a.likes ?a ?b))
