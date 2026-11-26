@@ -100,12 +100,39 @@ pub enum GrammarStart {
     Patterns { patterns: Vec<String> },
 }
 
-/// A GBNF grammar: its text, its root, and where it begins.
+/// A GBNF grammar: its text, its root, where it begins, and how a token is
+/// held to it.
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Grammar {
     pub text: String,
     pub root: String,
     pub start: GrammarStart,
+    /// How a generated token is held to the grammar; absent, every token.
+    #[serde(default, skip_serializing_if = "GrammarCheck::is_every_token")]
+    pub check: GrammarCheck,
+}
+
+/// **How a generated token is held to a grammar.** Under greedy decoding
+/// the two choose the same tokens: the most likely token the grammar allows.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum GrammarCheck {
+    /// The grammar is applied to every candidate, then the chain chooses:
+    /// a grammar that leaves no token is seen at once.
+    #[default]
+    EveryToken,
+    /// **The chain chooses first, and its choice alone is checked**; where
+    /// the grammar refuses it, the grammar is applied to every candidate and
+    /// the chain chooses again, as llama.cpp's own sampler of the server
+    /// does. Every candidate is read only where the choice is refused, and
+    /// while a lazy grammar has not begun.
+    ChosenFirst,
+}
+
+impl GrammarCheck {
+    pub fn is_every_token(&self) -> bool {
+        *self == GrammarCheck::EveryToken
+    }
 }
 
 /// **One sampler of the chain**, with its parameters, applied in the
@@ -350,7 +377,7 @@ pub struct SamplerId {
 }
 
 /// The grammar, where it was asked to begin, and where it began.
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct GrammarId {
     /// `sha256:` of its text.
     pub sha256: String,
@@ -359,6 +386,17 @@ pub struct GrammarId {
     /// The generated token at which it began constraining, by its index;
     /// `null` where a lazy grammar never began.
     pub began_at: Option<usize>,
+    /// The wall time of the grammar's sampler made, its text parsed, in
+    /// milliseconds; absent from a record made before it was kept.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub build_ms: Option<f64>,
+    /// How a token was held to it; absent, every token.
+    #[serde(default, skip_serializing_if = "GrammarCheck::is_every_token")]
+    pub check: GrammarCheck,
+    /// Under [`GrammarCheck::ChosenFirst`], the tokens whose first choice
+    /// the grammar refused, each chosen again; absent under every token.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub chosen_again: Option<usize>,
 }
 
 /// What was generated, and the time it took.

@@ -62,7 +62,7 @@ A request (`einaf::model::Request`), as JSON:
 |---|---|
 | `prompt` | `{"kind": "chat", "messages": [{role, content, reasoning_content?}…], "tools": […]}`, rendered through the model's own template; or `{"kind": "text", "text": …}`, tokenised as it stands |
 | `thinking` | whether the model thinks before it answers: the template opens the thinking block, or closes it empty |
-| `grammar` | `null`, or `{text, root, start}`: a GBNF grammar, its root, and where it begins (§ 6) |
+| `grammar` | `null`, or `{text, root, start, check}`: a GBNF grammar, its root, where it begins (§ 6), and how a token is held to it, `check` (absent, `every-token`) |
 | `sampler` | the chain, in order, each sampler with its parameters: `greedy`, `penalties`, `top-k`, `top-p`, `min-p`, `temp`, `dist` |
 | `seed` | the seed of a `dist` sampler |
 | `max_tokens` | the budget of generated tokens, the thinking included |
@@ -90,7 +90,7 @@ What every call returns, beside the generation, and every record keeps:
 | `template` | `sha256` of the template's text, the `renderer`, `thinking`, how many `tools` were declared; `null` for a text prompt |
 | `prompt` | `text_sha256` of the rendered text, `tokens_sha256` of its token ids (one a line, in decimal), their count, and how many a kept context `reused` |
 | `sampler` | the `chain` in order, and the `seed` |
-| `grammar` | `sha256` of its text, its `root`, where it was asked to `start`, and the generated token it `began_at` |
+| `grammar` | `sha256` of its text, its `root`, where it was asked to `start`, the generated token it `began_at`; `build_ms`, the wall time of its sampler's making; its `check`, and under `chosen-first` `chosen_again`, the tokens whose first choice it refused |
 | `generation` | the generated `tokens`, the thinking's included and the end of turn not; the counts of `thinking` and `answer` tokens; why it `stop`ped; the wall time of the prompt's evaluation and of the generation, in milliseconds |
 
 A record is JSON lines, a call a line, `einaf::model::Recorded`: the schema `einaf-generation/1`, the request's
@@ -109,7 +109,11 @@ it, `{"type": "function", "function": {…}}`; the model's call comes back in th
 
 ## 6. A grammar, and where it begins
 
-A grammar is GBNF, applied before the request's chain, so that a grammar that leaves no token is seen as such (§ 8).
+A grammar is GBNF. **Under `every-token`** (a request that names no `check`) it is applied to every candidate before
+the request's chain, so that a grammar that leaves no token is seen as such (§ 8); **under `chosen-first`** the chain
+chooses first and its choice alone is offered to the grammar, which is applied to every candidate only where it
+refuses that choice. Under greedy decoding the two choose the same tokens, and the second reads the vocabulary once
+where the first reads it at every token ([the grammars § 5](06-grammars.md#5-how-a-token-is-held-to-a-grammar)).
 **From the first token**, `{"at": "first"}`, it holds the whole output, **the thinking too**: with thinking on, a
 grammar from the first token writes its text where the thinking goes, and the answer is empty. **Lazily**,
 `{"at": "patterns", "patterns": [P…]}`, it begins where the generated text first matches a pattern whole, and is
@@ -117,7 +121,7 @@ fed the text from the pattern's first group on; llama.cpp feeds it the whole tex
 **the trigger is the grammar's own first text**: to begin after the thinking, the pattern is
 `[\s\S]*?(</think>)[\s\S]*` and the grammar begins with `"</think>"`, the white space after it bounded, or greedy
 decoding can write white space for ever. The envelope's `grammar.began_at` is the first generated token the grammar
-constrained.
+constrained. The grammars EinAf writes, and the grammar a request carries, are [the grammars](06-grammars.md)'.
 
 ## 7. A kept context
 
@@ -156,7 +160,7 @@ second run: `--replay FILE` in place of `--model PATH`, on every command that ma
 einaf render --template TEMPLATE REQUEST.json        # the prompt a request renders to, as text; no model
 einaf generate --model PATH REQUEST.json...          # a call a request, in order, in one process: a record line each
 einaf generate --replay RECORD.jsonl REQUEST.json    # the same, answered by a record
-einaf grammar --json-schema SCHEMA.json              # the GBNF llama.cpp writes for a JSON schema (`llama`)
+einaf grammar --json-schema SCHEMA.json              # the GBNF llama.cpp writes for a JSON schema (`llama`); the other `grammar` commands are [the grammars § 6](06-grammars.md#6-the-commands)'s
 einaf model --model PATH                             # the model's pin, the runtime and the context, as JSON (`llama`)
 einaf probe plan --out PLAN.jsonl                    # every run of the probe of Ein written with no grammar, its request whole
 einaf probe run --plan PLAN.jsonl --out RECORD.jsonl --model PATH [--only PREFIX]...

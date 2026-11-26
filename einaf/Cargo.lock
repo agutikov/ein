@@ -279,14 +279,17 @@ dependencies = [
 name = "einaf"
 version = "0.1.0"
 dependencies = [
+ "cfgrammar",
  "ein-core",
  "ein-corpus",
  "ein-infer",
  "ein-ir",
  "ein-render",
  "llama-cpp-2",
+ "lrlex",
  "minijinja",
  "minijinja-contrib",
+ "regex-syntax",
  "serde",
  "serde_json",
  "sha2",

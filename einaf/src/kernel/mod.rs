@@ -32,20 +32,28 @@
 //! and nothing loaded. The probe of a model's output reads it beside the
 //! bounded call, which loads what parses.
 //!
+//! **And a program's vocabulary** ([`vocabulary()`]): what its text
+//! declares, imports and writes, read off its parse, which a step's grammar
+//! is rendered on; and the standard library's modules as texts
+//! ([`library()`]), which the grammars' catalogue is read from.
+//!
 //! Nothing else in EinAf names an item of Ein's crates, and nothing here
-//! calls them but through [`call`], [`forms()`] and [`parse()`].
+//! calls them but through [`call`], [`forms()`], [`shapes()`], [`parse()`],
+//! [`vocabulary()`] and [`library()`].
 
 mod feedback;
 mod forms;
 mod outcome;
 mod program;
+mod vocab;
 
 pub use feedback::{
     Asked, ClaimPart, ClassPart, Core, ExpectPart, Fault, Feedback, Finding, Flagged, KernelId,
     Owed, Owing, Place, ProgramId, QueryPart, Readings, SCHEMA, Site, StatePart, Stop, Word, Work,
 };
-pub use forms::{Form, Forms, Library, Shape, Written, forms};
+pub use forms::{Form, Forms, Library, Shape, Written, forms, shapes};
 pub use outcome::{Outcome, Reading};
+pub use vocab::{Imported, Vocabulary, library, vocabulary};
 
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::Path;

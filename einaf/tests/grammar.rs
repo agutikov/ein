@@ -1,0 +1,716 @@
+//! **The grammars held to the parser**, with no model.
+//!
+//! - The whole grammar's file is what `einaf grammar write` writes, and its
+//!   manifest names it by digest.
+//! - **The corpus through EinAf's acceptor** (test 1): every `.ein` file under
+//!   `examples/`, `stdlib/` and `tests/` is accepted by the whole grammar,
+//!   from its root `program`, exactly when `ein_ir::parse`, reached through
+//!   `einaf::kernel::parse`, returns no error; the refusals no context-free
+//!   grammar states are named (a text nested past 1 000 parentheses, a byte
+//!   that is not UTF-8). And every shape of the kernel's banked table of
+//!   refused shapes, `ein-ir/tests/golden/grammar_table.txt`, is refused by
+//!   the grammar.
+//! - **The grammar's own texts through the parser** (test 2): texts sampled
+//!   from the whole grammar, a stated number from a stated seed, each parses.
+//!
+//! `--nocapture` prints the counts and what each test cost.
+
+use std::collections::BTreeSet;
+use std::path::PathBuf;
+use std::time::Instant;
+
+use einaf::grammar::gbnf::{Compiled, Rng, Verdict};
+use einaf::grammar::{MANIFEST_FILE, WHOLE_FILE, whole};
+use einaf::kernel;
+
+fn package() -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+}
+
+fn compiled() -> Compiled {
+    Compiled::parse(&einaf::grammar::whole_text()).expect("the whole grammar reads")
+}
+
+/// **The file under `einaf/grammars/` is what the command writes**, and the
+/// manifest names it by its digest.
+#[test]
+fn the_grammar_file_is_what_einaf_grammar_write_writes() {
+    let want = einaf::grammar::whole_text();
+    let have = std::fs::read_to_string(package().join(WHOLE_FILE)).unwrap_or_default();
+    assert!(
+        have == want,
+        "{WHOLE_FILE} is not what `einaf grammar write` writes from ein.l and ein.y: \
+         run `cargo run --manifest-path einaf/Cargo.toml -- grammar write`"
+    );
+    let manifest = std::fs::read_to_string(package().join(MANIFEST_FILE)).unwrap_or_default();
+    assert_eq!(
+        manifest,
+        einaf::grammar::manifest_text(&want),
+        "{MANIFEST_FILE} does not name the grammar by its digest"
+    );
+    assert!(
+        want.contains("Do not edit"),
+        "the file says it is generated"
+    );
+}
+
+/// **The inventory names every hand-written rule**, with the rule of `ein.l`
+/// or `ein.y` it stands for.
+#[test]
+fn the_inventory_names_every_hand_written_rule() {
+    let readme = std::fs::read_to_string(package().join("grammars/README.md"))
+        .expect("the grammars' inventory");
+    let words = whole::lexical(whole::EIN_L).expect("ein.l reads").words;
+    assert_eq!(words.len(), 29, "the inventory counts the words no name is");
+    for (rule, stands_for, _) in whole::HAND_WRITTEN {
+        let cell = if rule.starts_with('(') || rule.starts_with("the ") {
+            rule.to_string()
+        } else {
+            rule.split(", ")
+                .map(|r| format!("`{r}`"))
+                .collect::<Vec<_>>()
+                .join(", ")
+        };
+        assert!(
+            readme.contains(&format!("| {cell} |")),
+            "the inventory has no row for {rule} ({stands_for})"
+        );
+    }
+}
+
+/// A corpus file's verdicts.
+struct Read {
+    path: String,
+    /// The parser: `Ok(())`, or the kinds of its findings.
+    parser: Result<(), Vec<String>>,
+    /// The line and column of the parser's first finding.
+    first: Option<(usize, usize)>,
+    /// The acceptor's verdict, or why it gave none.
+    grammar: Result<Verdict, String>,
+    bytes: usize,
+}
+
+/// The refusals no context-free grammar states, by the parser's kind.
+const NOT_THE_GRAMMARS: [&str; 2] = ["nesting-limit", "unreadable"];
+
+/// **Test 1: every corpus file, accepted by the grammar exactly when the
+/// parser accepts it**, the named refusals aside.
+#[test]
+fn the_grammar_accepts_a_corpus_file_exactly_when_the_parser_does() {
+    let t0 = Instant::now();
+    let c = compiled();
+    let root = ein_corpus::repo_root();
+    let files = ein_corpus::corpus_files();
+    let reads: Vec<Read> = ein_corpus::pool::map(
+        "grammar-corpus",
+        &files,
+        |p: &PathBuf| (p.display().to_string(), "grammar".to_string()),
+        |p: &PathBuf| {
+            let rel = p.strip_prefix(&root).unwrap_or(p).display().to_string();
+            let bytes = std::fs::read(p).unwrap_or_default();
+            match String::from_utf8(bytes.clone()) {
+                Err(_) => Read {
+                    path: rel,
+                    parser: Err(vec!["unreadable".to_string()]),
+                    first: None,
+                    grammar: Err("not UTF-8".to_string()),
+                    bytes: bytes.len(),
+                },
+                Ok(text) => {
+                    let parsed = kernel::parse(&text, &rel);
+                    let parser = if parsed.forms.is_some() {
+                        Ok(())
+                    } else {
+                        Err(parsed.findings.iter().map(|f| f.kind.clone()).collect())
+                    };
+                    Read {
+                        path: rel,
+                        parser,
+                        first: parsed
+                            .findings
+                            .first()
+                            .and_then(|f| f.place.as_ref())
+                            .map(|p| (p.line as usize, p.col as usize)),
+                        grammar: c.accepts(whole::PROGRAM, &text),
+                        bytes: text.len(),
+                    }
+                }
+            }
+        },
+    );
+    let (mut both, mut neither, mut named) = (0, 0, Vec::new());
+    let (mut same_line, mut same_place) = (0, 0);
+    let mut disagree = Vec::new();
+    for r in &reads {
+        let accepted = matches!(r.grammar, Ok(Verdict::Accepted));
+        match (&r.parser, accepted) {
+            (Ok(()), true) => both += 1,
+            (Err(_), false) if r.grammar.is_ok() => {
+                neither += 1;
+                if let (Ok(Verdict::Refused { line, column, .. }), Some((l, c))) =
+                    (&r.grammar, r.first)
+                {
+                    same_line += usize::from(*line == l);
+                    same_place += usize::from(*line == l && *column == c);
+                }
+            }
+            (Err(kinds), _) if kinds.iter().all(|k| NOT_THE_GRAMMARS.contains(&k.as_str())) => {
+                named.push(format!("{} ({})", r.path, kinds.join(", ")))
+            }
+            _ => disagree.push(format!(
+                "{}: the parser {}, the grammar {:?}",
+                r.path,
+                match &r.parser {
+                    Ok(()) => "accepts".to_string(),
+                    Err(k) => format!("refuses ({})", k.join(", ")),
+                },
+                r.grammar
+            )),
+        }
+    }
+    let bytes: usize = reads.iter().map(|r| r.bytes).sum();
+    println!(
+        "test 1: {} corpus files ({bytes} bytes): {both} accepted by both, {neither} refused by both \
+         ({same_line} at the parser's first error's line, {same_place} at its column too), \
+         {} refused by the parser alone for a reason that is no grammar's: {:?}; {:.1} s",
+        reads.len(),
+        named.len(),
+        named,
+        t0.elapsed().as_secs_f64()
+    );
+    assert!(
+        disagree.is_empty(),
+        "the grammar and the parser part ways on {} files:\n{}",
+        disagree.len(),
+        disagree.join("\n")
+    );
+    assert!(both > 800, "the corpus is read: {both} files accepted");
+}
+
+/// The rows of the kernel's banked table of refused shapes: each row's
+/// program, as the table prints it.
+fn table_rows() -> Vec<(String, String)> {
+    let path = ein_corpus::repo_root().join("ein.rs/crates/ein-ir/tests/golden/grammar_table.txt");
+    let text = std::fs::read_to_string(&path).expect("the grammar's table is banked");
+    let mut rows = Vec::new();
+    let mut head: Option<String> = None;
+    let mut program = String::new();
+    let mut in_program = false;
+    for line in text.lines() {
+        if let Some(h) = line.strip_prefix("## ") {
+            head = Some(h.to_string());
+            program.clear();
+            in_program = true;
+        } else if in_program {
+            if let Some(l) = line.strip_prefix("    ") {
+                program.push_str(l);
+                program.push('\n');
+            } else {
+                in_program = false;
+                rows.push((head.clone().expect("a row's head"), program.clone()));
+            }
+        }
+    }
+    rows
+}
+
+/// **Every shape the kernel's table refuses at the parse, the grammar
+/// refuses too.**
+#[test]
+fn every_shape_of_the_kernels_table_is_refused_by_the_grammar() {
+    let c = compiled();
+    let rows = table_rows();
+    assert!(rows.len() > 300, "the table is read: {} rows", rows.len());
+    let mut taken = Vec::new();
+    for (head, program) in &rows {
+        assert!(
+            kernel::parse(program, "<row>").forms.is_none(),
+            "the parser takes a row of its own table: {head}"
+        );
+        if c.accepts(whole::PROGRAM, program)
+            .expect("the acceptor runs")
+            .accepted()
+        {
+            taken.push(format!("{head}\n{program}"));
+        }
+    }
+    println!(
+        "the table: {} rows, each refused by the grammar",
+        rows.len()
+    );
+    assert!(
+        taken.is_empty(),
+        "the grammar takes {} rows the parser refuses:\n{}",
+        taken.len(),
+        taken.join("\n")
+    );
+}
+
+/// The number of texts test 2 samples, and its seed.
+const SAMPLES: usize = 2_000;
+const SEED: u64 = 20_261_126;
+/// How deep a sampled text nests, in rules, and how long it grows before
+/// every rule takes its shortest alternative.
+const DEPTH: u32 = 24;
+const SIZE: usize = 1_200;
+
+/// **Test 2: every text sampled from the whole grammar parses**, from each
+/// of its two roots.
+#[test]
+fn every_text_sampled_from_the_whole_grammar_parses() {
+    let t0 = Instant::now();
+    let c = compiled();
+    let mut rng = Rng::new(SEED);
+    let mut refused = Vec::new();
+    let mut chars = 0;
+    let mut seen = Seen::default();
+    for i in 0..SAMPLES {
+        let root = if i % 2 == 0 {
+            whole::ROOT
+        } else {
+            whole::PROGRAM
+        };
+        let text = c
+            .sample(root, &mut rng, DEPTH, SIZE, einaf::grammar::FAVOURED)
+            .expect("the root derives a text");
+        chars += text.len();
+        seen.read(&text);
+        assert!(
+            c.accepts(root, &text)
+                .expect("the acceptor runs")
+                .accepted(),
+            "{text}"
+        );
+        let parsed = kernel::parse(&text, "<sample>");
+        if parsed.forms.is_none() {
+            refused.push(format!(
+                "{text}\n  {}",
+                parsed
+                    .findings
+                    .iter()
+                    .map(|f| f.message.clone())
+                    .collect::<Vec<_>>()
+                    .join("\n  ")
+            ));
+        }
+    }
+    println!(
+        "test 2: {SAMPLES} texts from the seed {SEED}, {chars} characters, {} refused; {:.1} s\n  \
+         what they hold: {} words no name is, standing as tokens; {} names that begin with \
+         one or are one cut short; {} tokens glued to a paren; {} line comments, {} block comments",
+        refused.len(),
+        t0.elapsed().as_secs_f64(),
+        seen.words,
+        seen.near,
+        seen.glued,
+        seen.lines,
+        seen.blocks
+    );
+    assert!(
+        seen.words > 1_000 && seen.near > 1_000 && seen.glued > 1_000 && seen.blocks > 100,
+        "the samples reach the hand-written rules"
+    );
+    assert!(
+        refused.is_empty(),
+        "{} sampled texts do not parse:\n{}",
+        refused.len(),
+        refused
+            .iter()
+            .take(5)
+            .cloned()
+            .collect::<Vec<_>>()
+            .join("\n---\n")
+    );
+}
+
+/// The words that are tokens of their own: the ten never a name and the
+/// fifteen a position gives a meaning to.
+const WORDS: [&str; 25] = [
+    "and", "or", "neq", "rule", "query", "solve", "config", "trace", "macro", "import", "not",
+    "relation", "step", "eq", "absent", "false", "true", "open", "model", "region", "merged",
+    "owing", "program", "module", "commit",
+];
+
+/// What the sampled texts hold of the hand-written rules, read by a scan of
+/// each text's tokens.
+#[derive(Default)]
+struct Seen {
+    /// A word of [`WORDS`] standing as a token.
+    words: usize,
+    /// A name that begins with such a word, or is one cut short by at least
+    /// one character and at least two long.
+    near: usize,
+    /// A token other than a paren with a paren just before or after it.
+    glued: usize,
+    lines: usize,
+    blocks: usize,
+}
+
+impl Seen {
+    fn read(&mut self, text: &str) {
+        let b = text.as_bytes();
+        let mut i = 0;
+        let word = |c: u8| !(c.is_ascii_whitespace() || b"();#\"\x1c\x1d\x1e\x1f".contains(&c));
+        while i < b.len() {
+            match b[i] {
+                b';' => {
+                    self.lines += 1;
+                    while i < b.len() && b[i] != b'\n' {
+                        i += 1;
+                    }
+                }
+                b'#' if b.get(i + 1) == Some(&b'|') => {
+                    self.blocks += 1;
+                    i += 2;
+                    while i + 1 < b.len() && !(b[i] == b'|' && b[i + 1] == b'#') {
+                        i += 1;
+                    }
+                    i += 2;
+                }
+                b'"' => {
+                    i += 1;
+                    while i < b.len() && b[i] != b'"' {
+                        i += if b[i] == b'\\' { 2 } else { 1 };
+                    }
+                    i += 1;
+                }
+                c if word(c) => {
+                    let start = i;
+                    while i < b.len() && word(b[i]) {
+                        i += 1;
+                    }
+                    let t = &text[start..i];
+                    if WORDS.contains(&t) {
+                        self.words += 1;
+                    } else if WORDS
+                        .iter()
+                        .any(|w| t.starts_with(w) || (t.len() >= 2 && w.starts_with(t)))
+                    {
+                        self.near += 1;
+                    }
+                    let before = start.checked_sub(1).map(|j| b[j]);
+                    if matches!(before, Some(b'(' | b')')) || matches!(b.get(i), Some(b'(' | b')'))
+                    {
+                        self.glued += 1;
+                    }
+                }
+                _ => i += 1,
+            }
+        }
+    }
+}
+
+// ── The step grammars ───────────────────────────────────────────────
+
+use einaf::grammar::steps::{self, Catalogue, Params, Step};
+use einaf::kernel::{Shape, Written};
+
+/// The texts the contract's steps by hand are written for.
+const TEXTS: [&str; 6] = ["youngest", "zebra", "seating", "apples", "together", "more"];
+
+/// The top-level forms of a text, as written: each `(` … `)` at depth 0,
+/// comments and strings skipped.
+fn spans(text: &str) -> Vec<String> {
+    let b = text.as_bytes();
+    let (mut out, mut depth, mut start, mut i) = (Vec::new(), 0usize, 0usize, 0usize);
+    while i < b.len() {
+        match b[i] {
+            b';' => {
+                while i < b.len() && b[i] != b'\n' {
+                    i += 1;
+                }
+                continue;
+            }
+            b'#' if b.get(i + 1) == Some(&b'|') => {
+                while i + 1 < b.len() && !(b[i] == b'|' && b[i + 1] == b'#') {
+                    i += 1;
+                }
+                i += 2;
+                continue;
+            }
+            b'"' => {
+                i += 1;
+                while i < b.len() && b[i] != b'"' {
+                    i += if b[i] == b'\\' { 2 } else { 1 };
+                }
+            }
+            b'(' => {
+                if depth == 0 {
+                    start = i;
+                }
+                depth += 1;
+            }
+            b')' => {
+                depth -= 1;
+                if depth == 0 {
+                    out.push(text[start..=i].to_string());
+                }
+            }
+            _ => {}
+        }
+        i += 1;
+    }
+    out
+}
+
+fn contract_file(dir: &str, file: &str) -> String {
+    std::fs::read_to_string(package().join("contract").join(dir).join(file))
+        .unwrap_or_else(|e| panic!("{dir}/{file}: {e}"))
+}
+
+fn canonical(form: &str) -> String {
+    kernel::shapes(form, "<form>").expect("a hand-written form parses")[0]
+        .canonical
+        .clone()
+}
+
+/// **What a step wrote by hand**: the forms of its program that no earlier
+/// step's program holds, as written, in order; each rule after a marker
+/// naming it, where `markers`.
+fn part(dir: &str, step: usize, markers: bool) -> String {
+    let before: BTreeSet<String> = if step == 1 {
+        BTreeSet::new()
+    } else {
+        spans(&contract_file(dir, &format!("step{}.ein", step - 1)))
+            .iter()
+            .map(|f| canonical(f))
+            .collect()
+    };
+    let mut out = Vec::new();
+    for f in spans(&contract_file(dir, &format!("step{step}.ein"))) {
+        if before.contains(&canonical(&f)) {
+            continue;
+        }
+        if markers && f.starts_with("(rule") {
+            let name = f.split_whitespace().nth(1).unwrap_or("").to_string();
+            out.push(format!(";; missing: {name}"));
+        }
+        out.push(f);
+    }
+    out.join("\n")
+}
+
+fn params(dir: &str, program_of: Option<usize>, catalogue: &Catalogue) -> Params {
+    Params {
+        sentences: Some(einaf::contract::sentences(&contract_file(dir, "text.txt"))),
+        catalogue: catalogue.clone(),
+        program: program_of.map_or_else(Default::default, |n| {
+            kernel::vocabulary(&contract_file(dir, &format!("step{n}.ein")), dir)
+                .expect("a step's program parses")
+        }),
+    }
+}
+
+/// A step's grammar, rendered for a text's hand-written steps: step 1 on
+/// the input's sentences; step 2 on the catalogue; steps 2b and 3 on the
+/// program of steps 1 and 2.
+fn rendered(dir: &str, step: Step, catalogue: &Catalogue) -> steps::Rendered {
+    let program = match step {
+        Step::One | Step::Two => None,
+        Step::TwoRules | Step::Three => Some(2),
+    };
+    steps::render(step, &params(dir, program, catalogue))
+}
+
+/// **Each step's grammar accepts that step's hand-written part**, rendered
+/// on its vocabulary, for every text of the contract's steps by hand; step
+/// 2's second call is held to the rules step 3 wrote.
+#[test]
+fn each_steps_grammar_accepts_the_steps_written_by_hand() {
+    let catalogue = Catalogue::library();
+    let mut refused = Vec::new();
+    let mut n = 0;
+    for dir in TEXTS {
+        for step in Step::ALL {
+            let text = match step {
+                Step::One => part(dir, 1, false),
+                Step::Two => part(dir, 2, false),
+                Step::Three => part(dir, 3, true),
+                Step::TwoRules => spans(&part(dir, 3, false))
+                    .into_iter()
+                    .filter(|f| f.starts_with("(rule"))
+                    .collect::<Vec<_>>()
+                    .join("\n"),
+            };
+            if text.is_empty() {
+                continue;
+            }
+            n += 1;
+            let g = rendered(dir, step, &catalogue);
+            let c = Compiled::parse(&g.text).expect("a step's grammar reads");
+            match c.accepts(&g.root, &text).expect("the acceptor runs") {
+                Verdict::Accepted => {}
+                Verdict::Refused { at, line, column } => refused.push(format!(
+                    "{dir}, step {}: refused at {line}:{column}, {:?}, in\n{text}",
+                    step.word(),
+                    &text[at..text.len().min(at + 30)]
+                )),
+            }
+        }
+    }
+    println!("the steps by hand: {n} parts, each accepted by its step's grammar");
+    assert!(refused.is_empty(), "{}", refused.join("\n\n"));
+}
+
+/// Whether a text's forms are of `step`'s grammar's, in its order.
+fn of_its_step(step: Step, forms: &[einaf::kernel::Form]) -> Result<(), String> {
+    // Each form's part, in the step's order.
+    let mut parts: Vec<u8> = Vec::new();
+    for f in forms {
+        let p = match (step, &f.shape) {
+            (
+                Step::One,
+                Shape::Fact {
+                    source: Some(_),
+                    written: Written::Holds | Written::Negated,
+                    ..
+                },
+            )
+            | (Step::One, Shape::Query { .. }) => 0,
+            (
+                Step::One,
+                Shape::Relation { .. }
+                | Shape::Fact {
+                    written: Written::Holds,
+                    ..
+                },
+            ) => 1,
+            (Step::Two, Shape::Relation { .. }) => 0,
+            (Step::Two, Shape::Import { .. }) => 1,
+            // An ontology fact before the imports, an activating fact after
+            // them: either is a fact.
+            (
+                Step::Two,
+                Shape::Fact {
+                    written: Written::Holds,
+                    ..
+                },
+            ) => *parts.last().unwrap_or(&0),
+            (Step::TwoRules, Shape::Rule { .. }) => 0,
+            (
+                Step::Three,
+                Shape::Fact {
+                    written: Written::Holds,
+                    ..
+                },
+            ) => 0,
+            (Step::Three, Shape::Rule { .. }) => 1,
+            (
+                Step::Three,
+                Shape::Solve
+                | Shape::Fact {
+                    written: Written::Open,
+                    ..
+                },
+            ) => 2,
+            _ => return Err(format!("step {} writes no {}", step.word(), f.canonical)),
+        };
+        parts.push(p);
+    }
+    if step == Step::One {
+        let queries = forms
+            .iter()
+            .filter(|f| {
+                matches!(
+                    f.shape,
+                    Shape::Query {
+                        goal_text: true,
+                        ..
+                    }
+                )
+            })
+            .count();
+        if queries != 1 {
+            return Err(format!("{queries} answer queries"));
+        }
+        if !forms
+            .iter()
+            .any(|f| matches!(f.shape, Shape::Relation { .. }))
+        {
+            return Err("no declaration".to_string());
+        }
+    }
+    if parts.windows(2).any(|w| w[0] > w[1]) && step != Step::One {
+        return Err("its parts out of order".to_string());
+    }
+    if step == Step::One {
+        let first_decl = forms
+            .iter()
+            .position(|f| matches!(f.shape, Shape::Relation { .. }));
+        let last_statement = forms.iter().rposition(|f| {
+            matches!(
+                f.shape,
+                Shape::Query { .. }
+                    | Shape::Fact {
+                        written: Written::Negated,
+                        ..
+                    }
+            )
+        });
+        if let (Some(d), Some(s)) = (first_decl, last_statement)
+            && s > d
+        {
+            return Err("a statement after the ontology".to_string());
+        }
+    }
+    Ok(())
+}
+
+/// How many texts test 2 samples from each step's grammar, and its seed.
+const STEP_SAMPLES: usize = 100;
+
+/// **Test 2 of each step's grammar**: every text sampled from it parses,
+/// and is of the forms its step writes, in its order; rendered for every
+/// text of the steps by hand.
+#[test]
+fn every_text_sampled_from_a_steps_grammar_parses_and_is_of_its_step() {
+    let t0 = Instant::now();
+    let catalogue = Catalogue::library();
+    let mut rng = Rng::new(SEED);
+    let mut bad = Vec::new();
+    let mut n = 0;
+    for dir in TEXTS {
+        for step in Step::ALL {
+            let g = rendered(dir, step, &catalogue);
+            let c = Compiled::parse(&g.text).expect("a step's grammar reads");
+            for _ in 0..STEP_SAMPLES {
+                let text = c
+                    .sample(&g.root, &mut rng, 12, 1_500, &[])
+                    .expect("the root derives a text");
+                n += 1;
+                if text.trim().is_empty() {
+                    continue;
+                }
+                match kernel::shapes(&text, "<sample>") {
+                    Err(f) => bad.push(format!(
+                        "{dir}, step {}: does not parse: {}\n{text}",
+                        step.word(),
+                        f.iter()
+                            .map(|f| f.message.clone())
+                            .collect::<Vec<_>>()
+                            .join("; ")
+                    )),
+                    Ok(forms) => {
+                        if let Err(e) = of_its_step(step, &forms) {
+                            bad.push(format!("{dir}, step {}: {e}\n{text}", step.word()));
+                        }
+                    }
+                }
+            }
+        }
+    }
+    println!(
+        "test 2 of the steps' grammars: {n} texts, {STEP_SAMPLES} a grammar from the seed {SEED}, {} refused; {:.1} s",
+        bad.len(),
+        t0.elapsed().as_secs_f64()
+    );
+    assert!(
+        bad.is_empty(),
+        "{}",
+        bad.iter()
+            .take(4)
+            .cloned()
+            .collect::<Vec<_>>()
+            .join("\n---\n")
+    );
+}

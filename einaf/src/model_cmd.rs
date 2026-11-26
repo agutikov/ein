@@ -242,6 +242,123 @@ pub fn grammar(args: &[String]) -> ExitCode {
     }
 }
 
+/// `einaf grammar llama --model PATH [--grammar FILE] [--root NAME]
+/// [--list FILE] FILE...`: **each file read by llama.cpp's own grammar
+/// sampler**, token by token with the model's vocabulary, and by EinAf's
+/// acceptor; a JSON line a file, with whether the two agree, and a count on
+/// stderr. Exits 0 where every file agrees.
+#[cfg(feature = "llama")]
+pub fn grammar_llama(args: &[String]) -> ExitCode {
+    use einaf::grammar::gbnf::{Compiled, Verdict};
+    use einaf::model::llama::Vocab;
+    let (mut model, mut grammar, mut root) = (None, None, "program".to_string());
+    let mut files: Vec<String> = Vec::new();
+    let mut it = args.iter();
+    while let Some(a) = it.next() {
+        match a.as_str() {
+            "--model" => model = it.next().map(PathBuf::from),
+            "--grammar" => grammar = it.next().cloned(),
+            "--root" => match it.next() {
+                Some(r) => root = r.clone(),
+                None => return usage_error("--root takes a rule's name"),
+            },
+            "--list" => match it.next().map(std::fs::read_to_string) {
+                Some(Ok(t)) => {
+                    files.extend(t.lines().filter(|l| !l.is_empty()).map(str::to_string))
+                }
+                _ => return usage_error("--list takes a file of paths"),
+            },
+            s if s.starts_with('-') => return usage_error(&format!("unknown option {s}")),
+            s => files.push(s.to_string()),
+        }
+    }
+    let Some(model) = model.or_else(|| std::env::var_os("EINAF_MODEL").map(PathBuf::from)) else {
+        return usage_error("llama takes --model PATH, or $EINAF_MODEL");
+    };
+    let text = match &grammar {
+        Some(p) => match std::fs::read_to_string(p) {
+            Ok(t) => t,
+            Err(e) => {
+                eprintln!("error: {p}: {e}");
+                return ExitCode::from(1);
+            }
+        },
+        None => einaf::grammar::whole_text(),
+    };
+    let compiled = match Compiled::parse(&text) {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!("error: the grammar: {e}");
+            return ExitCode::from(1);
+        }
+    };
+    let vocab = match Vocab::load(&model) {
+        Ok(v) => v,
+        Err(e) => {
+            eprintln!("error: {e}");
+            return ExitCode::from(1);
+        }
+    };
+    let (mut agree, mut differ) = (0, 0);
+    for f in &files {
+        let input = match std::fs::read_to_string(f) {
+            Ok(t) => t,
+            Err(e) => {
+                eprintln!("{f}: unreadable: {e}");
+                continue;
+            }
+        };
+        let ours = compiled.accepts(&root, &input);
+        let theirs = vocab.read(&text, &root, &input);
+        let same = match (&ours, &theirs) {
+            (Ok(Verdict::Accepted), Ok(r)) => r.refused.is_none() && r.can_end,
+            (Ok(Verdict::Refused { at, .. }), Ok(r)) => match r.refused {
+                Some((_, off)) => off <= *at && *at < off + r.refused_len.max(1),
+                None => *at == input.len() && !r.can_end,
+            },
+            _ => false,
+        };
+        if same {
+            agree += 1;
+        } else {
+            differ += 1;
+        }
+        let einaf = match &ours {
+            Ok(Verdict::Accepted) => serde_json::json!({"accepted": true}),
+            Ok(Verdict::Refused { at, line, column }) => {
+                serde_json::json!({"accepted": false, "at": at, "line": line, "column": column})
+            }
+            Err(e) => serde_json::json!({"error": e}),
+        };
+        let llama = match &theirs {
+            Ok(r) => serde_json::to_value(r).expect("JSON"),
+            Err(e) => serde_json::json!({"error": e}),
+        };
+        println!(
+            "{}",
+            serde_json::json!({"file": f, "agree": same, "einaf": einaf, "llama": llama})
+        );
+    }
+    eprintln!(
+        "einaf grammar llama: {} files, {agree} read alike, {differ} not",
+        files.len()
+    );
+    if differ == 0 {
+        ExitCode::SUCCESS
+    } else {
+        ExitCode::from(1)
+    }
+}
+
+/// `einaf grammar llama`: built with the `llama` feature only.
+#[cfg(not(feature = "llama"))]
+pub fn grammar_llama(_: &[String]) -> ExitCode {
+    eprintln!(
+        "error: this einaf is built without the model's runtime; build it with `--features cuda`"
+    );
+    ExitCode::from(1)
+}
+
 #[cfg(not(feature = "llama"))]
 pub fn grammar(_: &[String]) -> ExitCode {
     eprintln!(

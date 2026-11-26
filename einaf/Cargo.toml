@@ -48,6 +48,14 @@ minijinja-contrib = { version = "2", default-features = false, features = ["pyco
 # builds a llama.cpp of its own (CMake, a C++ compiler, and with `cuda` the
 # CUDA toolkit), which the gate's build of EinAf never does.
 llama-cpp-2 = { version = "=0.1.161", optional = true, default-features = false, features = ["common"] }
+# The grammars (`einaf::grammar`): Ein's two grammar files read through
+# grmtools' public readers, as Ein's grammar page is written from them, at the
+# versions `ein-ir` builds against, and `regex-syntax`, which reads a lexer
+# rule's regular expression as a tree. All three are already in the lock
+# file, through `ein-ir`.
+cfgrammar    = "=0.15.0"
+lrlex        = "=0.15.0"
+regex-syntax = "0.8"
 
 [features]
 # **The model's runtime**, off by default (`docs/einaf/05-model.md`): with

@@ -210,6 +210,17 @@ pub fn forms(source: Source<'_>) -> Result<Forms, Vec<Finding>> {
     })
 }
 
+/// **A text's top-level forms, read off its parse alone**: each as
+/// [`forms()`] gives it, with nothing loaded, so that a program a load would
+/// refuse (an undeclared module, a missing `:why`) is read all the same; a
+/// text that does not parse is its findings.
+pub fn shapes(text: &str, name: &str) -> Result<Vec<Form>, Vec<Finding>> {
+    let mut own = Ast::new();
+    let nodes = ein_ir::parse(&mut own, text, Some(name))
+        .map_err(|e| e.diagnostics().iter().map(finding).collect::<Vec<_>>())?;
+    Ok(nodes.iter().map(|&id| form(&own, id)).collect())
+}
+
 /// One top-level form, by its head.
 fn form(ast: &Ast, id: NodeId) -> Form {
     let canonical = ein_ir::dump_canonical(ast, &[id])

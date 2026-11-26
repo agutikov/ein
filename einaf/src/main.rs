@@ -25,6 +25,12 @@ usage: einaf outcome FILE [QUESTION] [BOUNDS]
        einaf feedback FILE [QUESTION] [BOUNDS]
        einaf render --template FILE REQUEST.json
        einaf generate RUNTIME REQUEST.json...
+       einaf grammar write [--check]
+       einaf grammar accept [--grammar FILE] [--root NAME] FILE...
+       einaf grammar sample [--grammar FILE] [--root NAME] [--seed N] [--count N]
+       einaf grammar render whole|1|2|2b|3 [--program FILE] [--text FILE] [--after-thinking] [--request]
+       einaf grammar catalogue
+       einaf grammar llama RUNTIME [--grammar FILE] [--root NAME] [--list FILE] FILE...
        einaf grammar --json-schema FILE
        einaf model --model PATH [--ctx N] [--verbose]
        einaf probe plan [--out FILE]
@@ -53,7 +59,16 @@ BOUNDS, each set on every call:
 render    a request's prompt, rendered through a chat template, as text
 generate  a call of the model a request, in order, in one process; its record
           as one JSON line a call
-grammar   the GBNF grammar llama.cpp writes for a JSON schema (`llama`)
+grammar   the grammars: `write` writes einaf/grammars/ein.gbnf from ein.l and
+          ein.y and its manifest (`--check`: write nothing, exit 1 where they
+          differ); `accept` runs EinAf's acceptor of a grammar on files (the
+          whole grammar from its root `program` by default); `sample` writes
+          texts a grammar allows; `render` writes the whole grammar or a
+          step's for a program, or the grammar a request carries; `catalogue`
+          the catalogue the steps' grammars are rendered on; `llama` reads
+          files through llama.cpp's grammar sampler with the model's
+          vocabulary (`llama`); `--json-schema` the GBNF llama.cpp writes for
+          a JSON schema (`llama`)
 model     the model loaded, its pin, the runtime and the context as JSON
 probe     the probe of Ein written with no grammar: `plan` writes every run
           as JSON lines, `run` makes each call and judges its answer through
@@ -76,7 +91,7 @@ fn main() -> ExitCode {
         Some("render") => model_cmd::render(&args[1..]),
         Some("generate") => model_cmd::generate(&args[1..]),
         Some("model") => model_cmd::model(&args[1..]),
-        Some("grammar") => model_cmd::grammar(&args[1..]),
+        Some("grammar") => grammar_cmd::grammar(&args[1..]),
         Some("probe") => model_cmd::probe(&args[1..]),
         Some("-h" | "--help") => {
             print!("{USAGE}");
@@ -88,6 +103,7 @@ fn main() -> ExitCode {
     }
 }
 
+mod grammar_cmd;
 mod model_cmd;
 
 fn usage_error(why: &str) -> ExitCode {

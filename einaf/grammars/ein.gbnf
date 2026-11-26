@@ -1,0 +1,2007 @@
+# Ein's grammar as GBNF: generated from ein.l and ein.y, and the hand-written rules
+# that stand for what Ein's lexer does beside them. Do not edit: regenerate.
+#
+# Two roots: `root`, the forms a program the formalization contract admits is written
+# from, and `program`, every form ein.y's Program takes.
+
+# hand-written: a text of the forms the contract admits, between separators
+root ::= gap-end |
+       gap root-forms gap-end
+
+# hand-written: a text of every form ein.y's Program takes, between separators
+program ::= gap-end |
+          gap program-forms gap-end
+
+root-forms ::= relation root-forms-1 |
+             rule root-forms-1 |
+             query root-forms-1 |
+             solve root-forms-1 |
+             import root-forms-1 |
+             not-fact root-forms-1 |
+             fact root-forms-1 |
+             open-fact root-forms-1
+
+root-forms-1 ::= gap relation root-forms-1 |
+               gap rule root-forms-1 |
+               gap query root-forms-1 |
+               gap solve root-forms-1 |
+               gap import root-forms-1 |
+               gap not-fact root-forms-1 |
+               gap fact root-forms-1 |
+               gap open-fact root-forms-1 |
+               ""
+
+program-forms ::= top-form program-forms-1
+
+program-forms-1 ::= gap top-form program-forms-1 |
+                  ""
+
+# ein.y: TopForm
+top-form ::= form |
+           saved
+
+# ein.y: Form
+form ::= relation |
+       rule |
+       query |
+       solve |
+       config |
+       trace |
+       macro |
+       import |
+       not-fact |
+       fact |
+       open-fact
+
+# ein.y: Name
+name ::= head-name |
+       "not"
+
+# ein.y: HeadName
+head-name ::= tok-name |
+            "relation" |
+            "step" |
+            "eq" |
+            "absent" |
+            "false" |
+            "true" |
+            "open" |
+            "model" |
+            "region" |
+            "merged" |
+            "owing" |
+            "program" |
+            "module" |
+            "commit"
+
+# ein.y: DeclName
+decl-name ::= tok-name |
+            "false" |
+            "not" |
+            "step" |
+            "true" |
+            "model" |
+            "region" |
+            "merged" |
+            "owing" |
+            "program" |
+            "module" |
+            "commit"
+
+# ein.y: FactHead
+fact-head ::= tok-name |
+            "step" |
+            "eq" |
+            "true" |
+            "model"
+
+# ein.y: ValueHead
+value-head ::= open-head |
+             "absent"
+
+# ein.y: OpenHead
+open-head ::= ordinary-head |
+            "open"
+
+# ein.y: OrdinaryHead
+ordinary-head ::= tok-name |
+                "relation" |
+                "step" |
+                "true" |
+                "model" |
+                "region" |
+                "merged" |
+                "owing" |
+                "program" |
+                "module" |
+                "commit"
+
+# ein.y: PremiseHead
+premise-head ::= open-head |
+               var
+
+# ein.y: ConclusionHead
+conclusion-head ::= ordinary-head |
+                  var
+
+# ein.y: Var
+var ::= tok-var
+
+# ein.y: Text
+text ::= tok-text
+
+# ein.y: Bool
+bool ::= "true" |
+       "false"
+
+# ein.y: NameList
+name-list ::= "(" name-list-1 |
+            "(" name-list-2
+
+name-list-1 ::= gap ")"
+
+name-list-2 ::= gap name name-list-3
+
+name-list-3 ::= gap-word name name-list-3 |
+              gap ")"
+
+# ein.y: NameListPlus
+name-list-plus ::= "(" name-list-plus-1
+
+name-list-plus-1 ::= gap name name-list-plus-2
+
+name-list-plus-2 ::= gap-word name name-list-plus-2 |
+                   gap ")"
+
+# ein.y: Fact
+fact ::= "(" fact-1 |
+       "(" fact-2
+
+fact-1 ::= gap fact-head fact-3
+
+fact-2 ::= gap "false" fact-4
+
+fact-3 ::= gap-word name fact-3 |
+         gap nested-fact fact-5 |
+         gap neg-fact fact-5 |
+         gap-word ":source" fact-6 |
+         gap-word ":rule" fact-7 |
+         gap-word ":using" fact-8 |
+         gap ")"
+
+fact-4 ::= gap-word ":source" fact-6 |
+         gap-word ":rule" fact-7 |
+         gap-word ":using" fact-8 |
+         gap ")"
+
+fact-5 ::= gap name fact-3 |
+         gap nested-fact fact-5 |
+         gap neg-fact fact-5 |
+         gap ":source" fact-6 |
+         gap ":rule" fact-7 |
+         gap ":using" fact-8 |
+         gap ")"
+
+fact-6 ::= gap-word text fact-9
+
+fact-7 ::= gap-word name fact-4
+
+fact-8 ::= gap "(" fact-10
+
+fact-9 ::= gap-text ":source" fact-6 |
+         gap-text ":rule" fact-7 |
+         gap-text ":using" fact-8 |
+         gap-after-text ")"
+
+fact-10 ::= gap nested-fact fact-11
+
+fact-11 ::= gap nested-fact fact-11 |
+          gap ")" fact-12
+
+fact-12 ::= gap ":source" fact-6 |
+          gap ":rule" fact-7 |
+          gap ":using" fact-8 |
+          gap ")"
+
+# ein.y: OpenFact
+open-fact ::= "(" open-fact-1
+
+open-fact-1 ::= gap "open" open-fact-2
+
+open-fact-2 ::= gap-word name open-fact-3 |
+              gap opened-fact open-fact-4 |
+              gap neg-fact open-fact-4
+
+open-fact-3 ::= gap-word ":source" open-fact-5 |
+              gap-word ":rule" open-fact-6 |
+              gap-word ":using" open-fact-7 |
+              gap ")"
+
+open-fact-4 ::= gap ":source" open-fact-5 |
+              gap ":rule" open-fact-6 |
+              gap ":using" open-fact-7 |
+              gap ")"
+
+open-fact-5 ::= gap-word text open-fact-8
+
+open-fact-6 ::= gap-word name open-fact-3
+
+open-fact-7 ::= gap "(" open-fact-9
+
+open-fact-8 ::= gap-text ":source" open-fact-5 |
+              gap-text ":rule" open-fact-6 |
+              gap-text ":using" open-fact-7 |
+              gap-after-text ")"
+
+open-fact-9 ::= gap nested-fact open-fact-10
+
+open-fact-10 ::= gap nested-fact open-fact-10 |
+               gap ")" open-fact-4
+
+# ein.y: OpenedFact
+opened-fact ::= "(" opened-fact-1 |
+              "(" opened-fact-2
+
+opened-fact-1 ::= gap ordinary-head opened-fact-3
+
+opened-fact-2 ::= gap "false" opened-fact-4
+
+opened-fact-3 ::= gap-word name opened-fact-3 |
+                gap nested-fact opened-fact-5 |
+                gap neg-fact opened-fact-5 |
+                gap ")"
+
+opened-fact-4 ::= gap ")"
+
+opened-fact-5 ::= gap name opened-fact-3 |
+                gap nested-fact opened-fact-5 |
+                gap neg-fact opened-fact-5 |
+                gap ")"
+
+# ein.y: NotFact
+not-fact ::= "(" not-fact-1 |
+           "(" not-fact-2 |
+           "(" not-fact-3
+
+not-fact-1 ::= gap "not" not-fact-4
+
+not-fact-2 ::= gap "not" not-fact-5
+
+not-fact-3 ::= gap "not" not-fact-6
+
+not-fact-4 ::= gap nested-fact not-fact-7
+
+not-fact-5 ::= gap neg-fact not-fact-7
+
+not-fact-6 ::= gap eq-fact not-fact-7
+
+not-fact-7 ::= gap ":source" not-fact-8 |
+             gap ":rule" not-fact-9 |
+             gap ":using" not-fact-10 |
+             gap ")"
+
+not-fact-8 ::= gap-word text not-fact-11
+
+not-fact-9 ::= gap-word name not-fact-12
+
+not-fact-10 ::= gap "(" not-fact-13
+
+not-fact-11 ::= gap-text ":source" not-fact-8 |
+              gap-text ":rule" not-fact-9 |
+              gap-text ":using" not-fact-10 |
+              gap-after-text ")"
+
+not-fact-12 ::= gap-word ":source" not-fact-8 |
+              gap-word ":rule" not-fact-9 |
+              gap-word ":using" not-fact-10 |
+              gap ")"
+
+not-fact-13 ::= gap nested-fact not-fact-14
+
+not-fact-14 ::= gap nested-fact not-fact-14 |
+              gap ")" not-fact-7
+
+# ein.y: NegFact
+neg-fact ::= "(" neg-fact-1 |
+           "(" neg-fact-2
+
+neg-fact-1 ::= gap "not" neg-fact-3
+
+neg-fact-2 ::= gap "not" neg-fact-4
+
+neg-fact-3 ::= gap nested-fact neg-fact-5
+
+neg-fact-4 ::= gap neg-fact neg-fact-5
+
+neg-fact-5 ::= gap ")"
+
+# ein.y: NestedFact
+nested-fact ::= "(" nested-fact-1 |
+              "(" nested-fact-2
+
+nested-fact-1 ::= gap value-head nested-fact-3
+
+nested-fact-2 ::= gap "false" nested-fact-4
+
+nested-fact-3 ::= gap-word name nested-fact-3 |
+                gap nested-fact nested-fact-5 |
+                gap neg-fact nested-fact-5 |
+                gap ")"
+
+nested-fact-4 ::= gap ")"
+
+nested-fact-5 ::= gap name nested-fact-3 |
+                gap nested-fact nested-fact-5 |
+                gap neg-fact nested-fact-5 |
+                gap ")"
+
+# ein.y: EqFact
+eq-fact ::= "(" eq-fact-1
+
+eq-fact-1 ::= gap "eq" eq-fact-2
+
+eq-fact-2 ::= gap-word name eq-fact-2 |
+            gap nested-fact eq-fact-3 |
+            gap neg-fact eq-fact-3 |
+            gap ")"
+
+eq-fact-3 ::= gap name eq-fact-2 |
+            gap nested-fact eq-fact-3 |
+            gap neg-fact eq-fact-3 |
+            gap ")"
+
+# ein.y: Relation
+relation ::= "(" relation-1
+
+relation-1 ::= gap "relation" relation-2
+
+relation-2 ::= gap-word decl-name relation-3
+
+relation-3 ::= gap-word name relation-3 |
+             gap-word ":why" relation-4 |
+             gap ")"
+
+relation-4 ::= gap-word text relation-5
+
+relation-5 ::= gap-text ":why" relation-4 |
+             gap-after-text ")"
+
+# ein.y: Rule
+rule ::= "(" rule-1
+
+rule-1 ::= gap "rule" rule-2
+
+rule-2 ::= gap-word decl-name rule-3
+
+rule-3 ::= gap params rule-4
+
+rule-4 ::= gap ":match" rule-5 |
+         gap ":assert" rule-6 |
+         gap ":ein" rule-7 |
+         gap ":why" rule-8 |
+         gap ")"
+
+rule-5 ::= gap match rule-4
+
+rule-6 ::= gap assert rule-4
+
+rule-7 ::= gap-word name rule-9
+
+rule-8 ::= gap-word text rule-10
+
+rule-9 ::= gap-word ":match" rule-5 |
+         gap-word ":assert" rule-6 |
+         gap-word ":ein" rule-7 |
+         gap-word ":why" rule-8 |
+         gap ")"
+
+rule-10 ::= gap-text ":match" rule-5 |
+          gap-text ":assert" rule-6 |
+          gap-text ":ein" rule-7 |
+          gap-text ":why" rule-8 |
+          gap-after-text ")"
+
+# ein.y: Params
+params ::= "(" params-1
+
+params-1 ::= gap var params-2 |
+           gap ")"
+
+params-2 ::= gap-word var params-2 |
+           gap ")"
+
+# ein.y: Match
+match ::= "(" match-1 |
+        premise
+
+match-1 ::= gap ")"
+
+# ein.y: Premise
+premise ::= "(" premise-1 |
+          "(" premise-2 |
+          connective
+
+premise-1 ::= gap premise-head premise-3
+
+premise-2 ::= gap "false" premise-4
+
+premise-3 ::= gap arg-p premise-5 |
+            gap-word arg-w premise-3 |
+            gap ")"
+
+premise-4 ::= gap ")"
+
+premise-5 ::= gap arg-p premise-5 |
+            gap arg-w premise-3 |
+            gap ")"
+
+# ein.y: Connective
+connective ::= "(" connective-1 |
+             "(" connective-2 |
+             "(" connective-3 |
+             "(" connective-4 |
+             guard
+
+connective-1 ::= gap "and" connective-5
+
+connective-2 ::= gap "or" connective-5
+
+connective-3 ::= gap "not" connective-6
+
+connective-4 ::= gap "absent" connective-7
+
+connective-5 ::= gap premise connective-8
+
+connective-6 ::= gap negated connective-9
+
+connective-7 ::= gap absent-premise connective-9
+
+connective-8 ::= gap premise connective-8 |
+               gap ")"
+
+connective-9 ::= gap ")"
+
+# ein.y: AbsentPremise
+absent-premise ::= "(" absent-premise-1 |
+                 "(" absent-premise-2 |
+                 "(" absent-premise-3 |
+                 "(" absent-premise-4 |
+                 "(" absent-premise-5 |
+                 guard
+
+absent-premise-1 ::= gap premise-head absent-premise-6
+
+absent-premise-2 ::= gap "false" absent-premise-7
+
+absent-premise-3 ::= gap "and" absent-premise-8
+
+absent-premise-4 ::= gap "or" absent-premise-8
+
+absent-premise-5 ::= gap "not" absent-premise-9
+
+absent-premise-6 ::= gap arg-p absent-premise-10 |
+                   gap-word arg-w absent-premise-6 |
+                   gap ")"
+
+absent-premise-7 ::= gap ")"
+
+absent-premise-8 ::= gap premise absent-premise-11
+
+absent-premise-9 ::= gap negated absent-premise-12
+
+absent-premise-10 ::= gap arg-p absent-premise-10 |
+                    gap arg-w absent-premise-6 |
+                    gap ")"
+
+absent-premise-11 ::= gap premise absent-premise-11 |
+                    gap ")"
+
+absent-premise-12 ::= gap ")"
+
+# ein.y: Negated
+negated ::= pattern |
+          neg-pattern |
+          "(" negated-1
+
+negated-1 ::= gap "eq" negated-2
+
+negated-2 ::= gap-word name negated-3 |
+            gap-word var negated-3 |
+            gap pattern negated-4 |
+            gap neg-pattern negated-4
+
+negated-3 ::= gap-word name negated-5 |
+            gap-word var negated-5 |
+            gap pattern negated-6 |
+            gap neg-pattern negated-6
+
+negated-4 ::= gap name negated-5 |
+            gap var negated-5 |
+            gap pattern negated-6 |
+            gap neg-pattern negated-6
+
+negated-5 ::= gap ")"
+
+negated-6 ::= gap ")"
+
+# ein.y: Guard
+guard ::= "(" guard-1 |
+        "(" guard-2
+
+guard-1 ::= gap "eq" guard-3
+
+guard-2 ::= gap "neq" guard-3
+
+guard-3 ::= gap-word name guard-4 |
+          gap-word var guard-4 |
+          gap pattern guard-5 |
+          gap neg-pattern guard-5
+
+guard-4 ::= gap-word name guard-6 |
+          gap-word var guard-6 |
+          gap pattern guard-7 |
+          gap neg-pattern guard-7
+
+guard-5 ::= gap name guard-6 |
+          gap var guard-6 |
+          gap pattern guard-7 |
+          gap neg-pattern guard-7
+
+guard-6 ::= gap ")"
+
+guard-7 ::= gap ")"
+
+# ein.y: Arg, its alternatives that begin with a paren and end with a paren
+arg-p ::= "(" arg-p-1 |
+        "(" arg-p-2 |
+        connective
+
+arg-p-1 ::= gap arg-head arg-p-3
+
+arg-p-2 ::= gap "false" arg-p-4
+
+arg-p-3 ::= gap arg-p arg-p-5 |
+          gap-word arg-w arg-p-3 |
+          gap ")"
+
+arg-p-4 ::= gap ")"
+
+arg-p-5 ::= gap arg-p arg-p-5 |
+          gap arg-w arg-p-3 |
+          gap ")"
+
+# ein.y: Arg, its alternatives that begin with a word and end with a word
+arg-w ::= name |
+        var
+
+# ein.y: ArgHead
+arg-head ::= open-head |
+           var
+
+# ein.y: Pattern
+pattern ::= "(" pattern-1 |
+          "(" pattern-2 |
+          "(" pattern-3
+
+pattern-1 ::= gap value-head pattern-4
+
+pattern-2 ::= gap var pattern-4
+
+pattern-3 ::= gap "false" pattern-5
+
+pattern-4 ::= gap-word name pattern-4 |
+            gap-word var pattern-4 |
+            gap pattern pattern-6 |
+            gap neg-pattern pattern-6 |
+            gap ")"
+
+pattern-5 ::= gap ")"
+
+pattern-6 ::= gap name pattern-4 |
+            gap var pattern-4 |
+            gap pattern pattern-6 |
+            gap neg-pattern pattern-6 |
+            gap ")"
+
+# ein.y: AnyHead
+any-head ::= head-name |
+           var
+
+# ein.y: NegPattern
+neg-pattern ::= "(" neg-pattern-1 |
+              "(" neg-pattern-2
+
+neg-pattern-1 ::= gap "not" neg-pattern-3
+
+neg-pattern-2 ::= gap "not" neg-pattern-4
+
+neg-pattern-3 ::= gap pattern neg-pattern-5
+
+neg-pattern-4 ::= gap neg-pattern neg-pattern-5
+
+neg-pattern-5 ::= gap ")"
+
+# ein.y: Assert
+assert ::= "(" assert-1 |
+         conclusion
+
+assert-1 ::= gap ")"
+
+# ein.y: Conclusion
+conclusion ::= "(" conclusion-1 |
+             "(" conclusion-2 |
+             "(" conclusion-3 |
+             "(" conclusion-4 |
+             "(" conclusion-5 |
+             "(" conclusion-6 |
+             guard
+
+conclusion-1 ::= gap conclusion-head conclusion-7
+
+conclusion-2 ::= gap "open" conclusion-8
+
+conclusion-3 ::= gap "and" conclusion-9
+
+conclusion-4 ::= gap "not" conclusion-10
+
+conclusion-5 ::= gap "not" conclusion-11
+
+conclusion-6 ::= gap "false" conclusion-12
+
+conclusion-7 ::= gap-word name conclusion-7 |
+               gap-word var conclusion-7 |
+               gap pattern conclusion-13 |
+               gap neg-pattern conclusion-13 |
+               gap ")"
+
+conclusion-8 ::= gap-word name conclusion-12 |
+               gap-word var conclusion-12 |
+               gap opened-pattern conclusion-14 |
+               gap neg-pattern conclusion-14
+
+conclusion-9 ::= gap conclusion conclusion-15
+
+conclusion-10 ::= gap negated conclusion-14
+
+conclusion-11 ::= gap-word var conclusion-12
+
+conclusion-12 ::= gap ")"
+
+conclusion-13 ::= gap name conclusion-7 |
+                gap var conclusion-7 |
+                gap pattern conclusion-13 |
+                gap neg-pattern conclusion-13 |
+                gap ")"
+
+conclusion-14 ::= gap ")"
+
+conclusion-15 ::= gap conclusion conclusion-15 |
+                gap ")"
+
+# ein.y: OpenedPattern
+opened-pattern ::= "(" opened-pattern-1 |
+                 "(" opened-pattern-2 |
+                 "(" opened-pattern-3
+
+opened-pattern-1 ::= gap ordinary-head opened-pattern-4
+
+opened-pattern-2 ::= gap var opened-pattern-4
+
+opened-pattern-3 ::= gap "false" opened-pattern-5
+
+opened-pattern-4 ::= gap-word name opened-pattern-4 |
+                   gap-word var opened-pattern-4 |
+                   gap pattern opened-pattern-6 |
+                   gap neg-pattern opened-pattern-6 |
+                   gap ")"
+
+opened-pattern-5 ::= gap ")"
+
+opened-pattern-6 ::= gap name opened-pattern-4 |
+                   gap var opened-pattern-4 |
+                   gap pattern opened-pattern-6 |
+                   gap neg-pattern opened-pattern-6 |
+                   gap ")"
+
+# ein.y: Query
+query ::= "(" query-1
+
+query-1 ::= gap "query" query-2
+
+query-2 ::= gap-word ":goal" query-3 |
+          gap-word ":goal-text" query-4 |
+          gap-word ":over" query-5 |
+          gap-word ":expect" query-6
+
+query-3 ::= gap premise query-7
+
+query-4 ::= gap-word text query-8
+
+query-5 ::= gap-word name query-9
+
+query-6 ::= gap claim query-7
+
+query-7 ::= gap ":goal" query-3 |
+          gap ":goal-text" query-4 |
+          gap ":over" query-5 |
+          gap ":expect" query-6 |
+          gap ")"
+
+query-8 ::= gap-text ":goal" query-3 |
+          gap-text ":goal-text" query-4 |
+          gap-text ":over" query-5 |
+          gap-text ":expect" query-6 |
+          gap-after-text ")"
+
+query-9 ::= gap-word ":goal" query-3 |
+          gap-word ":goal-text" query-4 |
+          gap-word ":over" query-5 |
+          gap-word ":expect" query-6 |
+          gap ")"
+
+# ein.y: Claim
+claim ::= model |
+        "(" claim-1 |
+        "(" claim-2
+
+claim-1 ::= gap "or" claim-3
+
+claim-2 ::= gap "false" claim-4
+
+claim-3 ::= gap model claim-5
+
+claim-4 ::= gap ")"
+
+claim-5 ::= gap model claim-5 |
+          gap ")"
+
+# ein.y: Model
+model ::= "(" model-1
+
+model-1 ::= gap "model" model-2
+
+model-2 ::= gap claim-fact model-3 |
+          gap ")"
+
+model-3 ::= gap claim-fact model-3 |
+          gap ")"
+
+# ein.y: ClaimFact
+claim-fact ::= claim-nested |
+             eq-fact |
+             neg-fact |
+             "(" claim-fact-1 |
+             "(" claim-fact-2 |
+             "(" claim-fact-3
+
+claim-fact-1 ::= gap "not" claim-fact-4
+
+claim-fact-2 ::= gap "absent" claim-fact-5
+
+claim-fact-3 ::= gap "neq" claim-fact-6
+
+claim-fact-4 ::= gap eq-fact claim-fact-7
+
+claim-fact-5 ::= gap claim-atom claim-fact-7
+
+claim-fact-6 ::= gap-word name claim-fact-8 |
+               gap nested-fact claim-fact-9 |
+               gap neg-fact claim-fact-9
+
+claim-fact-7 ::= gap ")"
+
+claim-fact-8 ::= gap-word name claim-fact-10 |
+               gap nested-fact claim-fact-7 |
+               gap neg-fact claim-fact-7
+
+claim-fact-9 ::= gap name claim-fact-10 |
+               gap nested-fact claim-fact-7 |
+               gap neg-fact claim-fact-7
+
+claim-fact-10 ::= gap ")"
+
+# ein.y: ClaimAtom
+claim-atom ::= claim-nested |
+             eq-fact |
+             neg-fact |
+             "(" claim-atom-1
+
+claim-atom-1 ::= gap "not" claim-atom-2
+
+claim-atom-2 ::= gap eq-fact claim-atom-3
+
+claim-atom-3 ::= gap ")"
+
+# ein.y: ClaimNested
+claim-nested ::= "(" claim-nested-1 |
+               "(" claim-nested-2
+
+claim-nested-1 ::= gap ordinary-head claim-nested-3
+
+claim-nested-2 ::= gap "false" claim-nested-4
+
+claim-nested-3 ::= gap-word name claim-nested-3 |
+                 gap nested-fact claim-nested-5 |
+                 gap neg-fact claim-nested-5 |
+                 gap ")"
+
+claim-nested-4 ::= gap ")"
+
+claim-nested-5 ::= gap name claim-nested-3 |
+                 gap nested-fact claim-nested-5 |
+                 gap neg-fact claim-nested-5 |
+                 gap ")"
+
+# ein.y: Solve
+solve ::= "(" solve-1
+
+solve-1 ::= gap "solve" solve-2
+
+solve-2 ::= gap-word ":hypothesis-relations" solve-3 |
+          gap-word ":no-hypothesis" solve-3 |
+          gap-word ":no-search" solve-2 |
+          gap-word ":expect" solve-4 |
+          gap ")"
+
+solve-3 ::= gap name-list solve-5
+
+solve-4 ::= gap region-claim solve-5
+
+solve-5 ::= gap ":hypothesis-relations" solve-3 |
+          gap ":no-hypothesis" solve-3 |
+          gap ":no-search" solve-2 |
+          gap ":expect" solve-4 |
+          gap ")"
+
+# ein.y: RegionClaim
+region-claim ::= "(" region-claim-1 |
+               "(" region-claim-2
+
+region-claim-1 ::= gap "region" region-claim-3
+
+region-claim-2 ::= gap "false" region-claim-4
+
+region-claim-3 ::= gap region-item region-claim-5 |
+                 gap ")"
+
+region-claim-4 ::= gap ")"
+
+region-claim-5 ::= gap region-item region-claim-5 |
+                 gap ")"
+
+# ein.y: RegionItem
+region-item ::= model |
+              "(" region-item-1 |
+              "(" region-item-2
+
+region-item-1 ::= gap "merged" region-item-3
+
+region-item-2 ::= gap "owing" region-item-4
+
+region-item-3 ::= gap model region-item-5
+
+region-item-4 ::= gap model region-item-6
+
+region-item-5 ::= gap merged-from region-item-7
+
+region-item-6 ::= gap model region-item-6 |
+                gap ")"
+
+region-item-7 ::= gap ")"
+
+# ein.y: MergedFrom
+merged-from ::= model |
+              "(" merged-from-1
+
+merged-from-1 ::= gap "or" merged-from-2
+
+merged-from-2 ::= gap model merged-from-3
+
+merged-from-3 ::= gap model merged-from-3 |
+                gap ")"
+
+# ein.y: Config
+config ::= "(" config-1
+
+config-1 ::= gap "config" config-2
+
+config-2 ::= gap-word config-clause config-2 |
+           gap ")"
+
+# ein.y: ConfigClause
+config-clause ::= ":lattice-sanity-check" config-clause-1 |
+                ":record-alternative-justifications" config-clause-1
+
+config-clause-1 ::= gap-word bool
+
+# ein.y: Macro
+macro ::= "(" macro-1 |
+        "(" macro-2
+
+macro-1 ::= gap "macro" macro-3
+
+macro-2 ::= gap "macro" macro-4
+
+macro-3 ::= gap-word decl-name macro-5
+
+macro-4 ::= gap-word decl-name macro-6
+
+macro-5 ::= gap macro-params macro-7
+
+macro-6 ::= gap macro-params macro-8
+
+macro-7 ::= gap template-p macro-9 |
+          gap template-w macro-10
+
+macro-8 ::= gap template-p macro-11 |
+          gap template-w macro-12
+
+macro-9 ::= gap ")"
+
+macro-10 ::= gap ")"
+
+macro-11 ::= gap ":why" macro-13
+
+macro-12 ::= gap-word ":why" macro-13
+
+macro-13 ::= gap-word text macro-14
+
+macro-14 ::= gap-after-text ")"
+
+# ein.y: MacroParams
+macro-params ::= "(" macro-params-1
+
+macro-params-1 ::= gap var macro-params-2
+
+macro-params-2 ::= gap-word var macro-params-2 |
+                 gap ")"
+
+# ein.y: Template, its alternatives that begin with a paren and end with a paren
+template-p ::= "(" template-p-1 |
+             "(" template-p-2 |
+             "(" template-p-3 |
+             "(" template-p-4 |
+             "(" template-p-5
+
+template-p-1 ::= gap "and" template-p-6
+
+template-p-2 ::= gap "or" template-p-6
+
+template-p-3 ::= gap "not" template-p-7
+
+template-p-4 ::= gap "neq" template-p-8
+
+template-p-5 ::= gap any-head template-p-9
+
+template-p-6 ::= gap template-p template-p-10 |
+               gap-word template-w template-p-11
+
+template-p-7 ::= gap template-p template-p-12 |
+               gap-word template-w template-p-13
+
+template-p-8 ::= gap-word name template-p-14 |
+               gap template-p template-p-15 |
+               gap-word template-w template-p-14
+
+template-p-9 ::= gap-word name template-p-9 |
+               gap template-p template-p-16 |
+               gap-word template-w template-p-9 |
+               gap ")"
+
+template-p-10 ::= gap template-p template-p-10 |
+                gap template-w template-p-11 |
+                gap ")"
+
+template-p-11 ::= gap template-p template-p-10 |
+                gap-word template-w template-p-11 |
+                gap ")"
+
+template-p-12 ::= gap ")"
+
+template-p-13 ::= gap ")"
+
+template-p-14 ::= gap-word name template-p-13 |
+                gap template-p template-p-12 |
+                gap-word template-w template-p-13
+
+template-p-15 ::= gap name template-p-13 |
+                gap template-p template-p-12 |
+                gap template-w template-p-13
+
+template-p-16 ::= gap name template-p-9 |
+                gap template-p template-p-16 |
+                gap template-w template-p-9 |
+                gap ")"
+
+# ein.y: Template, its alternatives that begin with a word and end with a word
+template-w ::= var
+
+# ein.y: Import
+import ::= "(" import-1
+
+import-1 ::= gap "import" import-2
+
+import-2 ::= gap-word name import-3
+
+import-3 ::= gap-word ":symbols" import-4 |
+           gap-word ":as" import-5 |
+           gap ")"
+
+import-4 ::= gap name-list-plus import-6
+
+import-5 ::= gap-word decl-name import-3
+
+import-6 ::= gap ":symbols" import-4 |
+           gap ":as" import-5 |
+           gap ")"
+
+# ein.y: Trace
+trace ::= "(" trace-1
+
+trace-1 ::= gap "trace" trace-2
+
+trace-2 ::= gap step trace-3 |
+          gap ")"
+
+trace-3 ::= gap step trace-3 |
+          gap ")"
+
+# ein.y: Step
+step ::= "(" step-1
+
+step-1 ::= gap "step" step-2
+
+step-2 ::= gap-word name step-3
+
+step-3 ::= gap-word ":rule" step-2 |
+         gap-word ":using" step-4 |
+         gap-word ":derives" step-5 |
+         gap-word ":source" step-6 |
+         gap-word ":assumes" step-5 |
+         gap ")"
+
+step-4 ::= gap step-using step-7
+
+step-5 ::= gap derived step-7
+
+step-6 ::= gap-word text step-8
+
+step-7 ::= gap ":rule" step-2 |
+         gap ":using" step-4 |
+         gap ":derives" step-5 |
+         gap ":source" step-6 |
+         gap ":assumes" step-5 |
+         gap ")"
+
+step-8 ::= gap-text ":rule" step-2 |
+         gap-text ":using" step-4 |
+         gap-text ":derives" step-5 |
+         gap-text ":source" step-6 |
+         gap-text ":assumes" step-5 |
+         gap-after-text ")"
+
+# ein.y: StepUsing
+step-using ::= name-list-plus |
+             "(" step-using-1
+
+step-using-1 ::= gap "and" step-using-2
+
+step-using-2 ::= gap-word name step-using-3
+
+step-using-3 ::= gap-word name step-using-3 |
+               gap ")"
+
+# ein.y: Derived
+derived ::= nested-fact |
+          neg-fact
+
+# ein.y: Saved
+saved ::= "(" saved-1 |
+        "(" saved-2 |
+        "(" saved-3
+
+saved-1 ::= gap "program" saved-4
+
+saved-2 ::= gap "module" saved-5
+
+saved-3 ::= gap "commit" saved-6
+
+saved-4 ::= gap form saved-7 |
+          gap ")"
+
+saved-5 ::= gap-word module-name saved-4
+
+saved-6 ::= gap commit-fact saved-8
+
+saved-7 ::= gap form saved-7 |
+          gap ")"
+
+saved-8 ::= gap commit-fact saved-8 |
+          gap ")"
+
+# ein.y: ModuleName
+module-name ::= name
+
+# ein.y: CommitFact
+commit-fact ::= nested-fact |
+              neg-fact
+
+# hand-written: a run of the name characters less `<forced-positive>`, `<lookahead-dies-immediately>`, `<monotonic-unconditional>`, `_`, `absent`, `and`, `commit`, `config`, `eq`, `false`, `import`, `macro`, `merged`, `model`, `module`, `neq`, `not`, `open`, `or`, `owing`, `program`, `query`, `region`, `relation`, `rule`, `solve`, `step`, `trace`, `true`
+tok-name ::= "<" tok-name-1 |
+           "_" tok-name-2 |
+           "a" tok-name-3 |
+           "c" tok-name-4 |
+           "e" tok-name-5 |
+           "f" tok-name-6 |
+           "i" tok-name-7 |
+           "m" tok-name-8 |
+           "n" tok-name-9 |
+           "o" tok-name-10 |
+           "p" tok-name-11 |
+           "q" tok-name-12 |
+           "r" tok-name-13 |
+           "s" tok-name-14 |
+           "t" tok-name-15 |
+           [!$-'*+\--9=>@-\[\]\x5E`bdghj-lu-{}~] tok-name-rest
+
+# after `<`
+tok-name-1 ::= "" |
+             "f" tok-name-16 |
+             "l" tok-name-17 |
+             "m" tok-name-18 |
+             [!$-'*+\--9<->@-\[\]-eg-kn-{}~] tok-name-rest
+
+# after `_`
+tok-name-2 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `a`
+tok-name-3 ::= "" |
+             "b" tok-name-19 |
+             "n" tok-name-20 |
+             [!$-'*+\--9<->@-\[\]-ac-mo-{}~] tok-name-rest
+
+# after `c`
+tok-name-4 ::= "" |
+             "o" tok-name-21 |
+             [!$-'*+\--9<->@-\[\]-np-{}~] tok-name-rest
+
+# after `e`
+tok-name-5 ::= "" |
+             "q" tok-name-22 |
+             [!$-'*+\--9<->@-\[\]-pr-{}~] tok-name-rest
+
+# after `f`
+tok-name-6 ::= "" |
+             "a" tok-name-23 |
+             [!$-'*+\--9<->@-\[\]-`b-{}~] tok-name-rest
+
+# after `i`
+tok-name-7 ::= "" |
+             "m" tok-name-24 |
+             [!$-'*+\--9<->@-\[\]-ln-{}~] tok-name-rest
+
+# after `m`
+tok-name-8 ::= "" |
+             "a" tok-name-25 |
+             "e" tok-name-26 |
+             "o" tok-name-27 |
+             [!$-'*+\--9<->@-\[\]-`b-df-np-{}~] tok-name-rest
+
+# after `n`
+tok-name-9 ::= "" |
+             "e" tok-name-28 |
+             "o" tok-name-29 |
+             [!$-'*+\--9<->@-\[\]-df-np-{}~] tok-name-rest
+
+# after `o`
+tok-name-10 ::= "" |
+              "p" tok-name-30 |
+              "r" tok-name-31 |
+              "w" tok-name-32 |
+              [!$-'*+\--9<->@-\[\]-oqs-vx-{}~] tok-name-rest
+
+# after `p`
+tok-name-11 ::= "" |
+              "r" tok-name-33 |
+              [!$-'*+\--9<->@-\[\]-qs-{}~] tok-name-rest
+
+# after `q`
+tok-name-12 ::= "" |
+              "u" tok-name-34 |
+              [!$-'*+\--9<->@-\[\]-tv-{}~] tok-name-rest
+
+# after `r`
+tok-name-13 ::= "" |
+              "e" tok-name-35 |
+              "u" tok-name-36 |
+              [!$-'*+\--9<->@-\[\]-df-tv-{}~] tok-name-rest
+
+# after `s`
+tok-name-14 ::= "" |
+              "o" tok-name-37 |
+              "t" tok-name-38 |
+              [!$-'*+\--9<->@-\[\]-np-su-{}~] tok-name-rest
+
+# after `t`
+tok-name-15 ::= "" |
+              "r" tok-name-39 |
+              [!$-'*+\--9<->@-\[\]-qs-{}~] tok-name-rest
+
+# after `<f`
+tok-name-16 ::= "" |
+              "o" tok-name-40 |
+              [!$-'*+\--9<->@-\[\]-np-{}~] tok-name-rest
+
+# after `<l`
+tok-name-17 ::= "" |
+              "o" tok-name-41 |
+              [!$-'*+\--9<->@-\[\]-np-{}~] tok-name-rest
+
+# after `<m`
+tok-name-18 ::= "" |
+              "o" tok-name-42 |
+              [!$-'*+\--9<->@-\[\]-np-{}~] tok-name-rest
+
+# after `ab`
+tok-name-19 ::= "" |
+              "s" tok-name-43 |
+              [!$-'*+\--9<->@-\[\]-rt-{}~] tok-name-rest
+
+# after `an`
+tok-name-20 ::= "" |
+              "d" tok-name-44 |
+              [!$-'*+\--9<->@-\[\]-ce-{}~] tok-name-rest
+
+# after `co`
+tok-name-21 ::= "" |
+              "m" tok-name-45 |
+              "n" tok-name-46 |
+              [!$-'*+\--9<->@-\[\]-lo-{}~] tok-name-rest
+
+# after `eq`
+tok-name-22 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `fa`
+tok-name-23 ::= "" |
+              "l" tok-name-47 |
+              [!$-'*+\--9<->@-\[\]-km-{}~] tok-name-rest
+
+# after `im`
+tok-name-24 ::= "" |
+              "p" tok-name-48 |
+              [!$-'*+\--9<->@-\[\]-oq-{}~] tok-name-rest
+
+# after `ma`
+tok-name-25 ::= "" |
+              "c" tok-name-49 |
+              [!$-'*+\--9<->@-\[\]-bd-{}~] tok-name-rest
+
+# after `me`
+tok-name-26 ::= "" |
+              "r" tok-name-50 |
+              [!$-'*+\--9<->@-\[\]-qs-{}~] tok-name-rest
+
+# after `mo`
+tok-name-27 ::= "" |
+              "d" tok-name-51 |
+              [!$-'*+\--9<->@-\[\]-ce-{}~] tok-name-rest
+
+# after `ne`
+tok-name-28 ::= "" |
+              "q" tok-name-52 |
+              [!$-'*+\--9<->@-\[\]-pr-{}~] tok-name-rest
+
+# after `no`
+tok-name-29 ::= "" |
+              "t" tok-name-53 |
+              [!$-'*+\--9<->@-\[\]-su-{}~] tok-name-rest
+
+# after `op`
+tok-name-30 ::= "" |
+              "e" tok-name-54 |
+              [!$-'*+\--9<->@-\[\]-df-{}~] tok-name-rest
+
+# after `or`
+tok-name-31 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `ow`
+tok-name-32 ::= "" |
+              "i" tok-name-55 |
+              [!$-'*+\--9<->@-\[\]-hj-{}~] tok-name-rest
+
+# after `pr`
+tok-name-33 ::= "" |
+              "o" tok-name-56 |
+              [!$-'*+\--9<->@-\[\]-np-{}~] tok-name-rest
+
+# after `qu`
+tok-name-34 ::= "" |
+              "e" tok-name-57 |
+              [!$-'*+\--9<->@-\[\]-df-{}~] tok-name-rest
+
+# after `re`
+tok-name-35 ::= "" |
+              "g" tok-name-58 |
+              "l" tok-name-59 |
+              [!$-'*+\--9<->@-\[\]-fh-km-{}~] tok-name-rest
+
+# after `ru`
+tok-name-36 ::= "" |
+              "l" tok-name-60 |
+              [!$-'*+\--9<->@-\[\]-km-{}~] tok-name-rest
+
+# after `so`
+tok-name-37 ::= "" |
+              "l" tok-name-61 |
+              [!$-'*+\--9<->@-\[\]-km-{}~] tok-name-rest
+
+# after `st`
+tok-name-38 ::= "" |
+              "e" tok-name-62 |
+              [!$-'*+\--9<->@-\[\]-df-{}~] tok-name-rest
+
+# after `tr`
+tok-name-39 ::= "" |
+              "a" tok-name-63 |
+              "u" tok-name-64 |
+              [!$-'*+\--9<->@-\[\]-`b-tv-{}~] tok-name-rest
+
+# after `<fo`
+tok-name-40 ::= "" |
+              "r" tok-name-65 |
+              [!$-'*+\--9<->@-\[\]-qs-{}~] tok-name-rest
+
+# after `<lo`
+tok-name-41 ::= "" |
+              "o" tok-name-66 |
+              [!$-'*+\--9<->@-\[\]-np-{}~] tok-name-rest
+
+# after `<mo`
+tok-name-42 ::= "" |
+              "n" tok-name-67 |
+              [!$-'*+\--9<->@-\[\]-mo-{}~] tok-name-rest
+
+# after `abs`
+tok-name-43 ::= "" |
+              "e" tok-name-68 |
+              [!$-'*+\--9<->@-\[\]-df-{}~] tok-name-rest
+
+# after `and`
+tok-name-44 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `com`
+tok-name-45 ::= "" |
+              "m" tok-name-69 |
+              [!$-'*+\--9<->@-\[\]-ln-{}~] tok-name-rest
+
+# after `con`
+tok-name-46 ::= "" |
+              "f" tok-name-70 |
+              [!$-'*+\--9<->@-\[\]-eg-{}~] tok-name-rest
+
+# after `fal`
+tok-name-47 ::= "" |
+              "s" tok-name-71 |
+              [!$-'*+\--9<->@-\[\]-rt-{}~] tok-name-rest
+
+# after `imp`
+tok-name-48 ::= "" |
+              "o" tok-name-72 |
+              [!$-'*+\--9<->@-\[\]-np-{}~] tok-name-rest
+
+# after `mac`
+tok-name-49 ::= "" |
+              "r" tok-name-73 |
+              [!$-'*+\--9<->@-\[\]-qs-{}~] tok-name-rest
+
+# after `mer`
+tok-name-50 ::= "" |
+              "g" tok-name-74 |
+              [!$-'*+\--9<->@-\[\]-fh-{}~] tok-name-rest
+
+# after `mod`
+tok-name-51 ::= "" |
+              "e" tok-name-75 |
+              "u" tok-name-76 |
+              [!$-'*+\--9<->@-\[\]-df-tv-{}~] tok-name-rest
+
+# after `neq`
+tok-name-52 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `not`
+tok-name-53 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `ope`
+tok-name-54 ::= "" |
+              "n" tok-name-77 |
+              [!$-'*+\--9<->@-\[\]-mo-{}~] tok-name-rest
+
+# after `owi`
+tok-name-55 ::= "" |
+              "n" tok-name-78 |
+              [!$-'*+\--9<->@-\[\]-mo-{}~] tok-name-rest
+
+# after `pro`
+tok-name-56 ::= "" |
+              "g" tok-name-79 |
+              [!$-'*+\--9<->@-\[\]-fh-{}~] tok-name-rest
+
+# after `que`
+tok-name-57 ::= "" |
+              "r" tok-name-80 |
+              [!$-'*+\--9<->@-\[\]-qs-{}~] tok-name-rest
+
+# after `reg`
+tok-name-58 ::= "" |
+              "i" tok-name-81 |
+              [!$-'*+\--9<->@-\[\]-hj-{}~] tok-name-rest
+
+# after `rel`
+tok-name-59 ::= "" |
+              "a" tok-name-82 |
+              [!$-'*+\--9<->@-\[\]-`b-{}~] tok-name-rest
+
+# after `rul`
+tok-name-60 ::= "" |
+              "e" tok-name-83 |
+              [!$-'*+\--9<->@-\[\]-df-{}~] tok-name-rest
+
+# after `sol`
+tok-name-61 ::= "" |
+              "v" tok-name-84 |
+              [!$-'*+\--9<->@-\[\]-uw-{}~] tok-name-rest
+
+# after `ste`
+tok-name-62 ::= "" |
+              "p" tok-name-85 |
+              [!$-'*+\--9<->@-\[\]-oq-{}~] tok-name-rest
+
+# after `tra`
+tok-name-63 ::= "" |
+              "c" tok-name-86 |
+              [!$-'*+\--9<->@-\[\]-bd-{}~] tok-name-rest
+
+# after `tru`
+tok-name-64 ::= "" |
+              "e" tok-name-87 |
+              [!$-'*+\--9<->@-\[\]-df-{}~] tok-name-rest
+
+# after `<for`
+tok-name-65 ::= "" |
+              "c" tok-name-88 |
+              [!$-'*+\--9<->@-\[\]-bd-{}~] tok-name-rest
+
+# after `<loo`
+tok-name-66 ::= "" |
+              "k" tok-name-89 |
+              [!$-'*+\--9<->@-\[\]-jl-{}~] tok-name-rest
+
+# after `<mon`
+tok-name-67 ::= "" |
+              "o" tok-name-90 |
+              [!$-'*+\--9<->@-\[\]-np-{}~] tok-name-rest
+
+# after `abse`
+tok-name-68 ::= "" |
+              "n" tok-name-91 |
+              [!$-'*+\--9<->@-\[\]-mo-{}~] tok-name-rest
+
+# after `comm`
+tok-name-69 ::= "" |
+              "i" tok-name-92 |
+              [!$-'*+\--9<->@-\[\]-hj-{}~] tok-name-rest
+
+# after `conf`
+tok-name-70 ::= "" |
+              "i" tok-name-93 |
+              [!$-'*+\--9<->@-\[\]-hj-{}~] tok-name-rest
+
+# after `fals`
+tok-name-71 ::= "" |
+              "e" tok-name-94 |
+              [!$-'*+\--9<->@-\[\]-df-{}~] tok-name-rest
+
+# after `impo`
+tok-name-72 ::= "" |
+              "r" tok-name-95 |
+              [!$-'*+\--9<->@-\[\]-qs-{}~] tok-name-rest
+
+# after `macr`
+tok-name-73 ::= "" |
+              "o" tok-name-96 |
+              [!$-'*+\--9<->@-\[\]-np-{}~] tok-name-rest
+
+# after `merg`
+tok-name-74 ::= "" |
+              "e" tok-name-97 |
+              [!$-'*+\--9<->@-\[\]-df-{}~] tok-name-rest
+
+# after `mode`
+tok-name-75 ::= "" |
+              "l" tok-name-98 |
+              [!$-'*+\--9<->@-\[\]-km-{}~] tok-name-rest
+
+# after `modu`
+tok-name-76 ::= "" |
+              "l" tok-name-99 |
+              [!$-'*+\--9<->@-\[\]-km-{}~] tok-name-rest
+
+# after `open`
+tok-name-77 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `owin`
+tok-name-78 ::= "" |
+              "g" tok-name-100 |
+              [!$-'*+\--9<->@-\[\]-fh-{}~] tok-name-rest
+
+# after `prog`
+tok-name-79 ::= "" |
+              "r" tok-name-101 |
+              [!$-'*+\--9<->@-\[\]-qs-{}~] tok-name-rest
+
+# after `quer`
+tok-name-80 ::= "" |
+              "y" tok-name-102 |
+              [!$-'*+\--9<->@-\[\]-xz{}~] tok-name-rest
+
+# after `regi`
+tok-name-81 ::= "" |
+              "o" tok-name-103 |
+              [!$-'*+\--9<->@-\[\]-np-{}~] tok-name-rest
+
+# after `rela`
+tok-name-82 ::= "" |
+              "t" tok-name-104 |
+              [!$-'*+\--9<->@-\[\]-su-{}~] tok-name-rest
+
+# after `rule`
+tok-name-83 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `solv`
+tok-name-84 ::= "" |
+              "e" tok-name-105 |
+              [!$-'*+\--9<->@-\[\]-df-{}~] tok-name-rest
+
+# after `step`
+tok-name-85 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `trac`
+tok-name-86 ::= "" |
+              "e" tok-name-106 |
+              [!$-'*+\--9<->@-\[\]-df-{}~] tok-name-rest
+
+# after `true`
+tok-name-87 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `<forc`
+tok-name-88 ::= "" |
+              "e" tok-name-107 |
+              [!$-'*+\--9<->@-\[\]-df-{}~] tok-name-rest
+
+# after `<look`
+tok-name-89 ::= "" |
+              "a" tok-name-108 |
+              [!$-'*+\--9<->@-\[\]-`b-{}~] tok-name-rest
+
+# after `<mono`
+tok-name-90 ::= "" |
+              "t" tok-name-109 |
+              [!$-'*+\--9<->@-\[\]-su-{}~] tok-name-rest
+
+# after `absen`
+tok-name-91 ::= "" |
+              "t" tok-name-110 |
+              [!$-'*+\--9<->@-\[\]-su-{}~] tok-name-rest
+
+# after `commi`
+tok-name-92 ::= "" |
+              "t" tok-name-111 |
+              [!$-'*+\--9<->@-\[\]-su-{}~] tok-name-rest
+
+# after `confi`
+tok-name-93 ::= "" |
+              "g" tok-name-112 |
+              [!$-'*+\--9<->@-\[\]-fh-{}~] tok-name-rest
+
+# after `false`
+tok-name-94 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `impor`
+tok-name-95 ::= "" |
+              "t" tok-name-113 |
+              [!$-'*+\--9<->@-\[\]-su-{}~] tok-name-rest
+
+# after `macro`
+tok-name-96 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `merge`
+tok-name-97 ::= "" |
+              "d" tok-name-114 |
+              [!$-'*+\--9<->@-\[\]-ce-{}~] tok-name-rest
+
+# after `model`
+tok-name-98 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `modul`
+tok-name-99 ::= "" |
+              "e" tok-name-115 |
+              [!$-'*+\--9<->@-\[\]-df-{}~] tok-name-rest
+
+# after `owing`
+tok-name-100 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `progr`
+tok-name-101 ::= "" |
+               "a" tok-name-116 |
+               [!$-'*+\--9<->@-\[\]-`b-{}~] tok-name-rest
+
+# after `query`
+tok-name-102 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `regio`
+tok-name-103 ::= "" |
+               "n" tok-name-117 |
+               [!$-'*+\--9<->@-\[\]-mo-{}~] tok-name-rest
+
+# after `relat`
+tok-name-104 ::= "" |
+               "i" tok-name-118 |
+               [!$-'*+\--9<->@-\[\]-hj-{}~] tok-name-rest
+
+# after `solve`
+tok-name-105 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `trace`
+tok-name-106 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `<force`
+tok-name-107 ::= "" |
+               "d" tok-name-119 |
+               [!$-'*+\--9<->@-\[\]-ce-{}~] tok-name-rest
+
+# after `<looka`
+tok-name-108 ::= "" |
+               "h" tok-name-120 |
+               [!$-'*+\--9<->@-\[\]-gi-{}~] tok-name-rest
+
+# after `<monot`
+tok-name-109 ::= "" |
+               "o" tok-name-121 |
+               [!$-'*+\--9<->@-\[\]-np-{}~] tok-name-rest
+
+# after `absent`
+tok-name-110 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `commit`
+tok-name-111 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `config`
+tok-name-112 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `import`
+tok-name-113 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `merged`
+tok-name-114 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `module`
+tok-name-115 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `progra`
+tok-name-116 ::= "" |
+               "m" tok-name-122 |
+               [!$-'*+\--9<->@-\[\]-ln-{}~] tok-name-rest
+
+# after `region`
+tok-name-117 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `relati`
+tok-name-118 ::= "" |
+               "o" tok-name-123 |
+               [!$-'*+\--9<->@-\[\]-np-{}~] tok-name-rest
+
+# after `<forced`
+tok-name-119 ::= "" |
+               "-" tok-name-124 |
+               [!$-'*+.-9<->@-\[\]-{}~] tok-name-rest
+
+# after `<lookah`
+tok-name-120 ::= "" |
+               "e" tok-name-125 |
+               [!$-'*+\--9<->@-\[\]-df-{}~] tok-name-rest
+
+# after `<monoto`
+tok-name-121 ::= "" |
+               "n" tok-name-126 |
+               [!$-'*+\--9<->@-\[\]-mo-{}~] tok-name-rest
+
+# after `program`
+tok-name-122 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `relatio`
+tok-name-123 ::= "" |
+               "n" tok-name-127 |
+               [!$-'*+\--9<->@-\[\]-mo-{}~] tok-name-rest
+
+# after `<forced-`
+tok-name-124 ::= "" |
+               "p" tok-name-128 |
+               [!$-'*+\--9<->@-\[\]-oq-{}~] tok-name-rest
+
+# after `<lookahe`
+tok-name-125 ::= "" |
+               "a" tok-name-129 |
+               [!$-'*+\--9<->@-\[\]-`b-{}~] tok-name-rest
+
+# after `<monoton`
+tok-name-126 ::= "" |
+               "i" tok-name-130 |
+               [!$-'*+\--9<->@-\[\]-hj-{}~] tok-name-rest
+
+# after `relation`
+tok-name-127 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `<forced-p`
+tok-name-128 ::= "" |
+               "o" tok-name-131 |
+               [!$-'*+\--9<->@-\[\]-np-{}~] tok-name-rest
+
+# after `<lookahea`
+tok-name-129 ::= "" |
+               "d" tok-name-132 |
+               [!$-'*+\--9<->@-\[\]-ce-{}~] tok-name-rest
+
+# after `<monotoni`
+tok-name-130 ::= "" |
+               "c" tok-name-133 |
+               [!$-'*+\--9<->@-\[\]-bd-{}~] tok-name-rest
+
+# after `<forced-po`
+tok-name-131 ::= "" |
+               "s" tok-name-134 |
+               [!$-'*+\--9<->@-\[\]-rt-{}~] tok-name-rest
+
+# after `<lookahead`
+tok-name-132 ::= "" |
+               "-" tok-name-135 |
+               [!$-'*+.-9<->@-\[\]-{}~] tok-name-rest
+
+# after `<monotonic`
+tok-name-133 ::= "" |
+               "-" tok-name-136 |
+               [!$-'*+.-9<->@-\[\]-{}~] tok-name-rest
+
+# after `<forced-pos`
+tok-name-134 ::= "" |
+               "i" tok-name-137 |
+               [!$-'*+\--9<->@-\[\]-hj-{}~] tok-name-rest
+
+# after `<lookahead-`
+tok-name-135 ::= "" |
+               "d" tok-name-138 |
+               [!$-'*+\--9<->@-\[\]-ce-{}~] tok-name-rest
+
+# after `<monotonic-`
+tok-name-136 ::= "" |
+               "u" tok-name-139 |
+               [!$-'*+\--9<->@-\[\]-tv-{}~] tok-name-rest
+
+# after `<forced-posi`
+tok-name-137 ::= "" |
+               "t" tok-name-140 |
+               [!$-'*+\--9<->@-\[\]-su-{}~] tok-name-rest
+
+# after `<lookahead-d`
+tok-name-138 ::= "" |
+               "i" tok-name-141 |
+               [!$-'*+\--9<->@-\[\]-hj-{}~] tok-name-rest
+
+# after `<monotonic-u`
+tok-name-139 ::= "" |
+               "n" tok-name-142 |
+               [!$-'*+\--9<->@-\[\]-mo-{}~] tok-name-rest
+
+# after `<forced-posit`
+tok-name-140 ::= "" |
+               "i" tok-name-143 |
+               [!$-'*+\--9<->@-\[\]-hj-{}~] tok-name-rest
+
+# after `<lookahead-di`
+tok-name-141 ::= "" |
+               "e" tok-name-144 |
+               [!$-'*+\--9<->@-\[\]-df-{}~] tok-name-rest
+
+# after `<monotonic-un`
+tok-name-142 ::= "" |
+               "c" tok-name-145 |
+               [!$-'*+\--9<->@-\[\]-bd-{}~] tok-name-rest
+
+# after `<forced-positi`
+tok-name-143 ::= "" |
+               "v" tok-name-146 |
+               [!$-'*+\--9<->@-\[\]-uw-{}~] tok-name-rest
+
+# after `<lookahead-die`
+tok-name-144 ::= "" |
+               "s" tok-name-147 |
+               [!$-'*+\--9<->@-\[\]-rt-{}~] tok-name-rest
+
+# after `<monotonic-unc`
+tok-name-145 ::= "" |
+               "o" tok-name-148 |
+               [!$-'*+\--9<->@-\[\]-np-{}~] tok-name-rest
+
+# after `<forced-positiv`
+tok-name-146 ::= "" |
+               "e" tok-name-149 |
+               [!$-'*+\--9<->@-\[\]-df-{}~] tok-name-rest
+
+# after `<lookahead-dies`
+tok-name-147 ::= "" |
+               "-" tok-name-150 |
+               [!$-'*+.-9<->@-\[\]-{}~] tok-name-rest
+
+# after `<monotonic-unco`
+tok-name-148 ::= "" |
+               "n" tok-name-151 |
+               [!$-'*+\--9<->@-\[\]-mo-{}~] tok-name-rest
+
+# after `<forced-positive`
+tok-name-149 ::= "" |
+               ">" tok-name-152 |
+               [!$-'*+\--9<=@-\[\]-{}~] tok-name-rest
+
+# after `<lookahead-dies-`
+tok-name-150 ::= "" |
+               "i" tok-name-153 |
+               [!$-'*+\--9<->@-\[\]-hj-{}~] tok-name-rest
+
+# after `<monotonic-uncon`
+tok-name-151 ::= "" |
+               "d" tok-name-154 |
+               [!$-'*+\--9<->@-\[\]-ce-{}~] tok-name-rest
+
+# after `<forced-positive>`
+tok-name-152 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `<lookahead-dies-i`
+tok-name-153 ::= "" |
+               "m" tok-name-155 |
+               [!$-'*+\--9<->@-\[\]-ln-{}~] tok-name-rest
+
+# after `<monotonic-uncond`
+tok-name-154 ::= "" |
+               "i" tok-name-156 |
+               [!$-'*+\--9<->@-\[\]-hj-{}~] tok-name-rest
+
+# after `<lookahead-dies-im`
+tok-name-155 ::= "" |
+               "m" tok-name-157 |
+               [!$-'*+\--9<->@-\[\]-ln-{}~] tok-name-rest
+
+# after `<monotonic-uncondi`
+tok-name-156 ::= "" |
+               "t" tok-name-158 |
+               [!$-'*+\--9<->@-\[\]-su-{}~] tok-name-rest
+
+# after `<lookahead-dies-imm`
+tok-name-157 ::= "" |
+               "e" tok-name-159 |
+               [!$-'*+\--9<->@-\[\]-df-{}~] tok-name-rest
+
+# after `<monotonic-uncondit`
+tok-name-158 ::= "" |
+               "i" tok-name-160 |
+               [!$-'*+\--9<->@-\[\]-hj-{}~] tok-name-rest
+
+# after `<lookahead-dies-imme`
+tok-name-159 ::= "" |
+               "d" tok-name-161 |
+               [!$-'*+\--9<->@-\[\]-ce-{}~] tok-name-rest
+
+# after `<monotonic-unconditi`
+tok-name-160 ::= "" |
+               "o" tok-name-162 |
+               [!$-'*+\--9<->@-\[\]-np-{}~] tok-name-rest
+
+# after `<lookahead-dies-immed`
+tok-name-161 ::= "" |
+               "i" tok-name-163 |
+               [!$-'*+\--9<->@-\[\]-hj-{}~] tok-name-rest
+
+# after `<monotonic-unconditio`
+tok-name-162 ::= "" |
+               "n" tok-name-164 |
+               [!$-'*+\--9<->@-\[\]-mo-{}~] tok-name-rest
+
+# after `<lookahead-dies-immedi`
+tok-name-163 ::= "" |
+               "a" tok-name-165 |
+               [!$-'*+\--9<->@-\[\]-`b-{}~] tok-name-rest
+
+# after `<monotonic-uncondition`
+tok-name-164 ::= "" |
+               "a" tok-name-166 |
+               [!$-'*+\--9<->@-\[\]-`b-{}~] tok-name-rest
+
+# after `<lookahead-dies-immedia`
+tok-name-165 ::= "" |
+               "t" tok-name-167 |
+               [!$-'*+\--9<->@-\[\]-su-{}~] tok-name-rest
+
+# after `<monotonic-unconditiona`
+tok-name-166 ::= "" |
+               "l" tok-name-168 |
+               [!$-'*+\--9<->@-\[\]-km-{}~] tok-name-rest
+
+# after `<lookahead-dies-immediat`
+tok-name-167 ::= "" |
+               "e" tok-name-169 |
+               [!$-'*+\--9<->@-\[\]-df-{}~] tok-name-rest
+
+# after `<monotonic-unconditional`
+tok-name-168 ::= "" |
+               ">" tok-name-170 |
+               [!$-'*+\--9<=@-\[\]-{}~] tok-name-rest
+
+# after `<lookahead-dies-immediate`
+tok-name-169 ::= "" |
+               "l" tok-name-171 |
+               [!$-'*+\--9<->@-\[\]-km-{}~] tok-name-rest
+
+# after `<monotonic-unconditional>`
+tok-name-170 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+# after `<lookahead-dies-immediatel`
+tok-name-171 ::= "" |
+               "y" tok-name-172 |
+               [!$-'*+\--9<->@-\[\]-xz{}~] tok-name-rest
+
+# after `<lookahead-dies-immediately`
+tok-name-172 ::= "" |
+               ">" tok-name-173 |
+               [!$-'*+\--9<=@-\[\]-{}~] tok-name-rest
+
+# after `<lookahead-dies-immediately>`
+tok-name-173 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-name-rest
+
+tok-name-rest ::= [!$-'*+\--9<->@-\[\]-{}~]*
+
+# hand-written: ?a run of the name characters less `?_`
+tok-var ::= "?" ( "_" tok-var-1 | [!$-'*+\--9<->@-\[\]\x5E`-{}~] tok-var-rest )
+
+# after `?_`
+tok-var-1 ::= [!$-'*+\--9<->@-\[\]-{}~] tok-var-rest
+
+tok-var-rest ::= [!$-'*+\--9<->@-\[\]-{}~]*
+
+# ein.l: TEXT, node for node
+tok-text ::= "\"" ( [^\"\\] | "\\" [\"\\nrt] | "\\u{" ( "0"{0,5} [0-9A-Fa-f] | "0"{0,4} [1-9A-Fa-f] [0-9A-Fa-f] | "0"{0,3} [1-9A-Fa-f] [0-9A-Fa-f]{2} | "0"{0,2} ( [1-9A-CEFa-cef] [0-9A-Fa-f]{3} | [Dd] [0-7] [0-9A-Fa-f]{2} ) | "0"? [1-9A-Fa-f] [0-9A-Fa-f]{4} | "10" [0-9A-Fa-f]{4} ) "}" )* "\""
+
+# ein.l: the skip rule's white space, node for node
+space ::= [\t-\r\x1C- ]
+
+# ein.l: the skip rule's line comment, node for node
+comment-line ::= ";" [^\n]*
+
+# ein.l: the skip rule's block comment, node for node
+comment-block ::= "#|" ( [^|] | "|"+ [^#|] )* "|"+ "#"
+
+# hand-written: a line comment runs to the end of its line
+comment-line-ended ::= comment-line "\n"
+
+# hand-written: any separator, none too: after a paren, or before one
+gap ::= ( space | comment-line-ended | comment-block )*
+
+# hand-written: after a word and before a word or a string, a separator is required
+gap-word ::= ( space | comment-line-ended | comment-block )+
+
+# hand-written: after a string, a separator is required before a word or a string, and does not begin with `#`
+gap-text ::= ( space | comment-line-ended ) gap
+
+# hand-written: after a string and before a paren, none, or a separator that does not begin with `#`
+gap-after-text ::= gap-text |
+                 ""
+
+# hand-written: the text's last separator, which may end in a line comment with no line break
+gap-end ::= gap comment-line?

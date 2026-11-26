@@ -16,9 +16,13 @@
 //! returns, the chat template rendered, and replay from a record; the
 //! binding to llama.cpp is behind the `llama` feature. [`probe`] is the
 //! first measurement made with it: whether the model writes Ein with no
-//! grammar, each output read through [`kernel`].
+//! grammar, each output read through [`kernel`]. [`grammar`] is the
+//! filter's mechanism: the whole grammar of Ein as GBNF, generated from
+//! Ein's two grammar files, a grammar a step of the formalization, and
+//! EinAf's acceptor and sampler of a grammar.
 
 pub mod contract;
+pub mod grammar;
 pub mod kernel;
 pub mod model;
 pub mod probe;

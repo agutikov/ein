@@ -28,10 +28,13 @@ use llama_cpp_2::sampling::LlamaSampler;
 use llama_cpp_2::token::LlamaToken;
 use sha2::{Digest, Sha256};
 
+use llama_cpp_2::token::data::LlamaTokenData;
+use llama_cpp_2::token::data_array::LlamaTokenDataArray;
+
 use super::{
-    ContextId, Failure, Generation, GenerationId, GrammarId, GrammarStart, ModelPin, Prompt,
-    PromptId, Request, Runtime, RuntimeId, Sampler, SamplerId, Stop, TemplateId, TokenLogprob,
-    template,
+    ContextId, Failure, Generation, GenerationId, GrammarCheck, GrammarId, GrammarStart, ModelPin,
+    Prompt, PromptId, Request, Runtime, RuntimeId, Sampler, SamplerId, Stop, TemplateId,
+    TokenLogprob, template,
 };
 use super::{Envelope, SCHEMA, sha256_hex, split_thinking, tokens_digest};
 
@@ -383,6 +386,7 @@ impl Runtime for Llama {
         let prompt_ms = t0.elapsed().as_secs_f64() * 1e3;
 
         let grammar_sha = req.grammar.as_ref().map(|g| sha256_hex(g.text.as_bytes()));
+        let t_grammar = Instant::now();
         let mut grammar = match &req.grammar {
             None => None,
             Some(g) => {
@@ -402,9 +406,16 @@ impl Runtime for Llama {
                 })?)
             }
         };
+        let grammar_ms = t_grammar.elapsed().as_secs_f64() * 1e3;
         let mut chain =
             LlamaSampler::chain_simple(req.sampler.iter().map(|s| self.sampler(s, req.seed)));
 
+        let chosen_first = req
+            .grammar
+            .as_ref()
+            .is_some_and(|g| g.check == GrammarCheck::ChosenFirst);
+        let mut chosen_again = 0usize;
+        let mut refused_first;
         let t1 = Instant::now();
         let mut out: Vec<i32> = Vec::new();
         let mut logprobs = Vec::new();
@@ -423,7 +434,34 @@ impl Runtime for Llama {
             let raw: Option<Vec<f32>> = req
                 .logprobs
                 .map(|_| cands.data.iter().map(|d| d.logit()).collect());
-            if let Some(g) = grammar.as_mut() {
+            // **The chain's choice first**: once the grammar has begun, the
+            // chain chooses among every candidate and its choice alone is
+            // offered to the grammar; where the grammar refuses it, the
+            // candidates are read again and the grammar applied to all.
+            if chosen_first
+                && began_at.is_some()
+                && let Some(g) = grammar.as_mut()
+            {
+                let mut first = self.ctx.token_data_array_ith(logits_at);
+                first.apply_sampler(&mut chain);
+                if let Some(t) = first.selected_token() {
+                    let mut one =
+                        LlamaTokenDataArray::new(vec![LlamaTokenData::new(t, 0.0, 0.0)], false);
+                    one.apply_sampler(g);
+                    if one.data[0].logit().is_finite() {
+                        cands = first;
+                        refused_first = false;
+                    } else {
+                        chosen_again += 1;
+                        refused_first = true;
+                    }
+                } else {
+                    refused_first = true;
+                }
+            } else {
+                refused_first = true;
+            }
+            if let Some(g) = grammar.as_mut().filter(|_| refused_first) {
                 let open_before = cands.data.iter().filter(|d| d.logit().is_finite()).count();
                 cands.apply_sampler(g);
                 let open = cands.data.iter().filter(|d| d.logit().is_finite()).count();
@@ -437,7 +475,9 @@ impl Runtime for Llama {
                     began_at = Some(out.len());
                 }
             }
-            cands.apply_sampler(&mut chain);
+            if refused_first {
+                cands.apply_sampler(&mut chain);
+            }
             let token = cands.selected_token().ok_or_else(|| Failure::Engine {
                 message: format!("the chain selected no token at {}", out.len()),
             })?;
@@ -515,6 +555,9 @@ impl Runtime for Llama {
                 root: g.root.clone(),
                 start: g.start.clone(),
                 began_at,
+                build_ms: Some(grammar_ms),
+                check: g.check,
+                chosen_again: chosen_first.then_some(chosen_again),
             }),
             generation: GenerationId {
                 thinking: n_thinking,
@@ -530,6 +573,112 @@ impl Runtime for Llama {
             answer,
             logprobs: req.logprobs.map(|_| logprobs),
             envelope,
+        })
+    }
+}
+
+/// **A vocabulary for llama.cpp's grammar sampler alone**: the model's
+/// file loaded with no weights and no context, its tokens and their pieces,
+/// which is all the grammar sampler reads.
+pub struct Vocab {
+    model: &'static LlamaModel,
+}
+
+/// **What llama.cpp's grammar sampler made of a text**, fed its tokens one
+/// by one as a generation feeds it.
+#[derive(Clone, Debug, PartialEq, serde::Serialize, serde::Deserialize)]
+pub struct GrammarRead {
+    /// The text's tokens.
+    pub tokens: usize,
+    /// Whether the tokens' pieces are the text, byte for byte.
+    pub pieces_are_the_text: bool,
+    /// The first token the sampler refused, by its index and the byte its
+    /// piece begins at; `None` where it took every token.
+    pub refused: Option<(usize, usize)>,
+    /// The bytes of the refused token's piece.
+    pub refused_len: usize,
+    /// Where it took every token: whether it then allows the end of the
+    /// generation.
+    pub can_end: bool,
+    /// The wall time of the sampler's making, the grammar parsed, in
+    /// milliseconds.
+    pub build_ms: f64,
+    /// The wall time of the reading, in milliseconds.
+    pub read_ms: f64,
+}
+
+impl Vocab {
+    /// Load the vocabulary of the model's file.
+    pub fn load(path: &Path) -> Result<Vocab, Failure> {
+        let fail = |message: String| Failure::ModelLoad {
+            path: path.display().to_string(),
+            message,
+        };
+        let mut backend = LlamaBackend::init().map_err(|e| fail(e.to_string()))?;
+        backend.void_logs();
+        let backend: &'static LlamaBackend = Box::leak(Box::new(backend));
+        let params = LlamaModelParams::default().with_vocab_only(true);
+        let model =
+            LlamaModel::load_from_file(backend, path, &params).map_err(|e| fail(e.to_string()))?;
+        Ok(Vocab {
+            model: Box::leak(Box::new(model)),
+        })
+    }
+
+    /// A text's tokens, no special token parsed.
+    pub fn tokens(&self, text: &str) -> Vec<i32> {
+        self.model
+            .vocab()
+            .tokenize(text.as_bytes(), false, false)
+            .into_iter()
+            .map(|t| t.0)
+            .collect()
+    }
+
+    /// **Feed `text`'s tokens to llama.cpp's grammar sampler** made from
+    /// `grammar` at `root`: each token is offered alone and refused where
+    /// the sampler sets its logit to minus infinity, else accepted; after the
+    /// last, the end of turn is offered.
+    pub fn read(&self, grammar: &str, root: &str, text: &str) -> Result<GrammarRead, String> {
+        let t0 = Instant::now();
+        let mut g = LlamaSampler::grammar(self.model, grammar, root)
+            .map_err(|e| format!("llama.cpp makes no sampler of the grammar: {e}"))?;
+        let build_ms = t0.elapsed().as_secs_f64() * 1e3;
+        let t1 = Instant::now();
+        let vocab = self.model.vocab();
+        let tokens = self.tokens(text);
+        let mut bytes = Vec::with_capacity(text.len());
+        let mut refused = None;
+        let mut refused_len = 0;
+        for (i, &t) in tokens.iter().enumerate() {
+            let piece = vocab.token_to_piece(LlamaToken(t), true, None);
+            let mut one =
+                LlamaTokenDataArray::new(vec![LlamaTokenData::new(LlamaToken(t), 0.0, 0.0)], false);
+            one.apply_sampler(&mut g);
+            let open = one.data[0].logit().is_finite() && g.try_accept(LlamaToken(t)).is_ok();
+            if !open {
+                refused = Some((i, bytes.len()));
+                refused_len = piece.len();
+                break;
+            }
+            bytes.extend_from_slice(&piece);
+        }
+        let mut can_end = false;
+        if refused.is_none() {
+            let eot = vocab.eot();
+            let mut one = LlamaTokenDataArray::new(vec![LlamaTokenData::new(eot, 0.0, 0.0)], false);
+            one.apply_sampler(&mut g);
+            can_end = one.data[0].logit().is_finite();
+        }
+        let pieces_are_the_text = refused.is_some() || bytes == text.as_bytes();
+        Ok(GrammarRead {
+            tokens: tokens.len(),
+            pieces_are_the_text,
+            refused,
+            refused_len,
+            can_end,
+            build_ms,
+            read_ms: t1.elapsed().as_secs_f64() * 1e3,
         })
     }
 }

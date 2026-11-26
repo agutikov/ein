@@ -16,7 +16,10 @@ three steps out, each form of it in one row of a table of categories that EinAf 
 example and five texts through the three steps by hand, each step's program a file its tests run. And **the model's
 runtime** ([the model's runtime](05-model.md)): the model in EinAf's process, through a binding to llama.cpp behind a
 Cargo feature, every call returning a generation with its envelope or a typed failure, and replay, which answers a
-call from a record with no model; and the probe made with it, of Ein written with no grammar.
+call from a record with no model; and the probe made with it, of Ein written with no grammar. And **the grammars**
+([the grammars](06-grammars.md)): the whole grammar of Ein as GBNF, generated from Ein's two grammar files and held to
+its parser in both directions, and a grammar a step of the formalization, written at request time from the program's
+own vocabulary.
 
 | page | what |
 |---|---|
@@ -25,6 +28,7 @@ call from a record with no model; and the probe made with it, of Ein written wit
 | [03-feedback.md](03-feedback.md) | the bounded call, and the feedback object it returns, `einaf-feedback/1`, key by key; what the bounds do not stop |
 | [04-contract.md](04-contract.md) | the formalization contract: the task, the three steps and their five design questions, the categories of a program's forms, what the model receives, what a run records; the steps by hand |
 | [05-model.md](05-model.md) | the model's runtime: building with the feature, giving a run the model, a request and a generation, the envelope, the chat template, a grammar and where it begins, a kept context, the failures, replay, the commands and the probe |
+| [06-grammars.md](06-grammars.md) | the grammars: the whole grammar generated from `ein.l` and `ein.y` and its hand-written rules, held to the parser; a grammar a step and what its vocabulary closes; where a grammar begins and how an output ends; how a token is held to a grammar; the commands |
 
 ## What it depends on
 
@@ -38,8 +42,15 @@ two functions: the bounded call `einaf::kernel::call`, which loads a program, as
 kernel's bounds and returns one feedback object a question; and `einaf::kernel::forms`, which parses and loads a
 program and asks it nothing, and returns its top-level forms, each as `ein_ir::dump_canonical` prints it and by its
 shape, with what its imports bring; and `einaf::kernel::parse`, which parses a text and loads nothing, every error
-with its kind and its place. Nothing else in the package names an item of Ein's crates:
-`einaf::contract`, the contract's categories, reads the forms, and `einaf::probe` reads the kernel through the three.
+with its kind and its place; `einaf::kernel::shapes`, a text's forms read off its parse alone; and
+`einaf::kernel::vocabulary`, what a text declares, imports and writes, read off its parse, with
+`einaf::kernel::library`, the standard library's modules as texts. Nothing else in the package names an item of Ein's
+crates: `einaf::contract`, the contract's categories, reads the forms, `einaf::probe` reads the kernel through them,
+and `einaf::grammar` the vocabularies.
+
+**Ein's two grammar files, through grmtools**: `einaf::grammar` reads `ein.l` and `ein.y`, which the build embeds,
+through `lrlex`, `cfgrammar` and `regex-syntax`, at the versions `ein-ir` builds against, and names no item of Ein's
+crates ([the grammars § 1](06-grammars.md#1-the-whole-grammar)).
 Its JSON is written by `serde_json`, and its digests are SHA-256, by `sha2`.
 
 **The model's runtime, by a feature**: the chat template is rendered by `minijinja` (with `minijinja-contrib`'s
@@ -69,7 +80,7 @@ cargo build --release --manifest-path einaf/Cargo.toml        # einaf/target/rel
 cargo test --manifest-path einaf/Cargo.toml --profile gate     # EinAf's tests, a step of the gate after Ein's
 ```
 
-The tests are seven files under [`einaf/tests/`](../../einaf/tests/), five running programs through the bounded call:
+The tests are eight files under [`einaf/tests/`](../../einaf/tests/), five running programs through the bounded call:
 [`outcomes.rs`](../../einaf/tests/outcomes.rs), one test an outcome, on a program that has it, and the programs
 whose saturation has no fixpoint, EinAf's own fixtures under [`einaf/tests/fixtures/`](../../einaf/tests/fixtures/);
 [`corpus.rs`](../../einaf/tests/corpus.rs), every corpus program that is not `slow` asked every question, each outcome
@@ -82,7 +93,9 @@ refused fixture under `examples/broken/`; [`cli.rs`](../../einaf/tests/cli.rs), 
 categories of every form of the reference programs; and two of the model's runtime, which need no model
 ([the model's runtime § 11](05-model.md#11-held-by)): [`model.rs`](../../einaf/tests/model.rs), replay, the envelope
 and each typed failure from calls the binding recorded, and a line of the probe judged again; and
-[`prompts.rs`](../../einaf/tests/prompts.rs), the Ein of the prompts' files and of the probe's plan.
+[`prompts.rs`](../../einaf/tests/prompts.rs), the Ein of the prompts' files and of the probe's plan; and
+[`grammar.rs`](../../einaf/tests/grammar.rs), the grammars held to the parser with no model
+([the grammars § 7](06-grammars.md#7-held-by)).
 
 `corpus.rs` runs the `ein` binary the gate built, `ein.rs/target/gate/ein`, which the gate's step before EinAf's
 builds, or the one `$EIN_BIN` names, and `contract.rs` reads H off its `ein show hyps`; without one each fails,
@@ -104,4 +117,4 @@ einaf outcome · examples/zebra2.ein --single
 The questions are `ein solve`'s: none for a description of R, `--single`, `--minimal` or `--maximal` with or without
 `--single`, `--count` and `--no-search`; the bounds are `--region-budget`, `--region-limit`, `--max-steps` and `-T`.
 `einaf --help` lists them, and the model's subcommands, `render`, `generate`, `grammar`, `model` and `probe`, which
-[the model's runtime § 10](05-model.md#10-the-commands) states.
+[the model's runtime § 10](05-model.md#10-the-commands) states, `grammar`'s in [the grammars § 6](06-grammars.md#6-the-commands).
