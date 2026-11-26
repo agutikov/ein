@@ -46,10 +46,14 @@
 //! as values. What the contract's check reads a selection and a mechanism
 //! off.
 //!
+//! **And the kernel's trace of an answer** ([`explain()`]): a question
+//! asked as [`call`] asks it, its read-out written as `ein solve --trace`
+//! writes it, markdown, for a reader of the answer.
+//!
 //! Nothing else in EinAf names an item of Ein's crates, and nothing here
 //! calls them but through [`call`], [`forms()`], [`shapes()`], [`parse()`],
-//! [`vocabulary()`], [`library()`], [`rule_docs()`], [`stdlib_digest()`] and
-//! [`root()`].
+//! [`vocabulary()`], [`library()`], [`rule_docs()`], [`stdlib_digest()`],
+//! [`root()`] and [`explain()`].
 
 mod feedback;
 mod forms;
@@ -64,7 +68,7 @@ pub use feedback::{
 };
 pub use forms::{Form, Forms, Library, Shape, Written, forms, shapes};
 pub use outcome::{Outcome, Reading};
-pub use root::{Fired, Root, root};
+pub use root::{Fired, NARRATION_LIMIT, Root, root};
 pub use vocab::{Imported, RuleDoc, Vocabulary, library, rule_docs, vocabulary};
 
 use std::panic::{AssertUnwindSafe, catch_unwind};
@@ -377,6 +381,37 @@ pub fn call(source: Source<'_>, questions: &[Question], bounds: Bounds) -> Vec<F
             }
         })
         .collect()
+}
+
+/// **The kernel's trace of the answer**: `source` loaded as [`call`] loads
+/// it, and `question` asked of a copy under `bounds`, its read-out written as
+/// `ein solve --trace FILE.md --no-diagrams` writes it, markdown: root's
+/// derivation, then each state listed, each step a firing with its rule's
+/// `:why` filled and each given premise with its `:source`. A refused
+/// program, a run that hands back no read-out and a panic are the line that
+/// says so.
+pub fn explain(source: Source<'_>, question: Question, bounds: Bounds) -> Result<String, String> {
+    let t0 = Instant::now();
+    let traced = catch_unwind(AssertUnwindSafe(|| {
+        let loaded = match source {
+            Source::File(path) => program::load_file(path, bounds, t0),
+            Source::Text {
+                text,
+                name,
+                base_dir,
+            } => program::load_text(text, name, base_dir, bounds, t0),
+        };
+        match &loaded.program {
+            Ok(p) => p.trace(question, bounds, &loaded.name),
+            Err(r) => Err(r.message.clone()),
+        }
+    }));
+    traced.unwrap_or_else(|payload| {
+        Err(format!(
+            "the kernel panicked: {}",
+            panic_message(payload.as_ref())
+        ))
+    })
 }
 
 /// **What the parser says of a text**, loading nothing.

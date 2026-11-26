@@ -197,7 +197,7 @@ pub fn check(input: &Input<'_>) -> Checked {
     let forms = match kernel::forms(Source::Text {
         text: input.program,
         name: input.name,
-        base_dir: None,
+        base_dir: input.catalogue.base_dir(),
     }) {
         Ok(f) => f,
         Err(findings) => {
@@ -336,7 +336,10 @@ fn selections(forms: &Forms, input: &Input<'_>, out: &mut Vec<Finding>) {
             if is_rule && input.generated.is_check(head) {
                 continue;
             }
-            if !active(&f.canonical, head, input.root) && input.root.refused.is_empty() {
+            if !active(&f.canonical, head, input.root)
+                && input.root.refused.is_empty()
+                && !input.root.narration_cut
+            {
                 out.push(Finding {
                     kind: Kind::SelectionInactive,
                     from_step: 2,

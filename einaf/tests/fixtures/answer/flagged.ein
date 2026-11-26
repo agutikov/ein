@@ -1,0 +1,9 @@
+;;; A rule reads the absence of a fact a commitment can add: the static check flags it.
+(relation lit Lamp :why "{?3} is lit")
+(relation dark Lamp :why "{?3} is dark")
+(open (lit Hall))
+(rule unlit-is-dark ()
+  :match  (absent (lit ?l))
+  :assert (dark Hall)
+  :why    "a lamp not lit leaves the hall dark")
+(query :goal (dark ?l) :goal-text "The {?l} is dark.")

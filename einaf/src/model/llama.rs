@@ -581,6 +581,7 @@ impl Runtime for Llama {
                 thinking: n_thinking,
                 answer: out.len() - n_thinking,
                 tokens: out,
+                tokens_sha256: None,
                 stop,
                 prompt_ms,
                 generation_ms,

@@ -1,0 +1,4 @@
+;;; A relation with no :why: the load refuses it.
+(relation lit Lamp)
+(lit Hall :source "The hall is lit.")
+(query :goal (lit ?l) :goal-text "The {?l} is lit.")

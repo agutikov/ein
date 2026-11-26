@@ -14,7 +14,7 @@
 
 use std::time::Instant;
 
-use ein_infer::events::{Buffer, Events, Level};
+use ein_infer::events::{Events, Level};
 use serde::{Deserialize, Serialize};
 
 use super::feedback::{Finding, finding};
@@ -44,6 +44,38 @@ pub struct Root {
     /// A bound stopped root's saturation or the generator: the kernel's
     /// word for it. `null` where nothing stopped it.
     pub stopped: Option<String>,
+    /// Root's narration outgrew what is kept of it ([`NARRATION_LIMIT`]):
+    /// `fired` and `owed` are its beginning, and a firing past it is not
+    /// among them. A runaway root narrates a term growing with each firing.
+    #[serde(default)]
+    pub narration_cut: bool,
+}
+
+/// **The most of root's narration that is kept**, in bytes: a root whose
+/// saturation builds a fact out of the fact it matched narrates each firing
+/// with a term one deeper, so that its narration grows with the square of its
+/// firings (twenty thousand of them, three gigabytes) until a bound stops it.
+pub const NARRATION_LIMIT: usize = 64 << 20;
+
+/// A sink that keeps the first [`NARRATION_LIMIT`] bytes written to it and
+/// drops the rest, saying so.
+#[derive(Clone, Default)]
+struct Capped(std::sync::Arc<std::sync::Mutex<(Vec<u8>, bool)>>);
+
+impl std::io::Write for Capped {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        let mut held = self.0.lock().expect("no writer panicked");
+        if held.1 || held.0.len() + buf.len() > NARRATION_LIMIT {
+            held.1 = true;
+        } else {
+            held.0.extend_from_slice(buf);
+        }
+        Ok(buf.len())
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        Ok(())
+    }
 }
 
 /// One `fire` or `owe` line of root's narration.
@@ -83,7 +115,7 @@ pub fn root(source: Source<'_>, bounds: Bounds) -> Root {
         }
     };
     let mut copy = program.clone();
-    let buffer = Buffer::new();
+    let buffer = Capped::default();
     let mut events = Events::to(Box::new(buffer.clone()), Level::Verbose);
     let bound = ein_infer::saturator::Bound {
         deadline: bounds.clock.map(|c| t0 + c),
@@ -93,7 +125,11 @@ pub fn root(source: Source<'_>, bounds: Bounds) -> Root {
         ein_infer::structure::hypotheses_with(&mut copy.kb, &mut copy.terms, &copy.ast, &mut events)
     });
     drop(events);
-    let (fired, owed) = narration(&buffer.to_string_lossy());
+    let (text, narration_cut) = {
+        let held = buffer.0.lock().expect("no writer panicked");
+        (String::from_utf8_lossy(&held.0).into_owned(), held.1)
+    };
+    let (fired, owed) = narration(&text);
     match built {
         Ok(h) => Root {
             writer: Some(h.rung.as_str().to_string()),
@@ -104,18 +140,21 @@ pub fn root(source: Source<'_>, bounds: Bounds) -> Root {
             owed,
             refused: Vec::new(),
             stopped: None,
+            narration_cut,
         },
         Err(e) => match e.kind() {
             Some(ein_core::Kind::Deadline) | None => Root {
                 fired,
                 owed,
                 stopped: Some(e.to_string()),
+                narration_cut,
                 ..Root::default()
             },
             Some(kind) => Root {
                 fired,
                 owed,
                 refused: vec![finding(&ein_core::Diagnostic::error(kind, e.to_string()))],
+                narration_cut,
                 ..Root::default()
             },
         },

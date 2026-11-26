@@ -409,8 +409,13 @@ pub struct GrammarId {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct GenerationId {
     /// Every generated token's id, the thinking's included, the end of turn
-    /// not.
+    /// not; `[]` in a slim record ([`Slim`]), which keeps their digest.
+    #[serde(default)]
     pub tokens: Vec<i32>,
+    /// **The generated tokens' digest**, [`tokens_digest`], where the ids
+    /// themselves are not kept: a slim record's. Absent where they are.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tokens_sha256: Option<String>,
     /// The thinking's tokens, its closing tag included.
     pub thinking: usize,
     /// The answer's tokens.
@@ -486,7 +491,36 @@ pub struct Recorded {
     pub failure: Option<Failure>,
 }
 
+impl GenerationId {
+    /// How many tokens were generated, the thinking's included: the ids
+    /// kept, or the thinking's and the answer's counts in a slim record.
+    pub fn count(&self) -> usize {
+        if self.tokens.is_empty() {
+            self.thinking + self.answer
+        } else {
+            self.tokens.len()
+        }
+    }
+}
+
 impl Recorded {
+    /// **The call as a committed record keeps it** ([`Slim`]): its request's
+    /// digest and what came back, with no request body, the generated
+    /// tokens' ids replaced by their digest.
+    pub fn slim(&self) -> Slim {
+        let generation = self.generation.clone().map(|mut g| {
+            let ids = std::mem::take(&mut g.envelope.generation.tokens);
+            g.envelope.generation.tokens_sha256 = Some(tokens_digest(&ids));
+            g
+        });
+        Slim {
+            schema: SLIM_SCHEMA.to_string(),
+            digest: self.digest.clone(),
+            generation,
+            failure: self.failure.clone(),
+        }
+    }
+
     pub fn new(request: &Request, result: &Result<Generation, Failure>) -> Self {
         Recorded {
             schema: SCHEMA.to_string(),
@@ -497,6 +531,38 @@ impl Recorded {
         }
     }
 
+    /// What the call returned.
+    pub fn result(&self) -> Result<Generation, Failure> {
+        match (&self.generation, &self.failure) {
+            (Some(g), _) => Ok(g.clone()),
+            (None, Some(f)) => Err(f.clone()),
+            (None, None) => Err(Failure::NotRecorded {
+                digest: self.digest.clone(),
+            }),
+        }
+    }
+}
+
+/// The schema of a slim call: [`Slim`].
+pub const SLIM_SCHEMA: &str = "einaf-call/1";
+
+/// **A call as a committed record keeps it**: the request's digest, which
+/// replay finds the call by once the request is rendered again from the
+/// versioned prompts, and the generation, its envelope whole but the
+/// generated tokens' ids, which are their digest, `tokens_sha256` (the
+/// prompt's tokens are the envelope's digest already); or the failure. No
+/// request body: replay renders the request again and finds the call by its
+/// digest. One JSON line a call.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct Slim {
+    /// [`SLIM_SCHEMA`].
+    pub schema: String,
+    pub digest: String,
+    pub generation: Option<Generation>,
+    pub failure: Option<Failure>,
+}
+
+impl Slim {
     /// What the call returned.
     pub fn result(&self) -> Result<Generation, Failure> {
         match (&self.generation, &self.failure) {

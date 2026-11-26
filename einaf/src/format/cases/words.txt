@@ -1,0 +1,14 @@
+# The word theory's quantities, a case a line: the relation's full name, its count of arguments, and the
+# words a fact of it is written as, {1} its first argument. The module is examples/word_problems/words.ein,
+# imported as `words` from a program beside it; the words are its declarations' own `:why`s, a quantity
+# inside a quantity in brackets as there. An argument is itself formatted: a numeral as its digits, a
+# quantity by its case.
+words.amount     3  how many {2} {1} has at {3}
+words.together   4  how many {3} {1} and {2} have together at {4}
+words.apart      4  by how many {3} {1} and {2} differ at {4}
+words.capacity   2  how many {2} one of the {1} holds
+words.needed     3  how many {1} are needed for [{3}]
+words.over       1  how many are left unpacked, of [{1}]
+words.number-of  1  how many {1} there are
+words.each-of    2  how many each of the {2} gets when [{1}] is shared equally
+words.rest-of    2  how many are left when [{1}] is shared equally among the {2}

@@ -321,6 +321,75 @@ impl Program {
     }
 }
 
+impl Program {
+    /// **The kernel's trace of the answer to `question`**, as `ein solve
+    /// --trace FILE.md --no-diagrams` writes it: root's derivation, then each
+    /// state the read-out lists, derived from its first minimal commitment,
+    /// each step a firing with its rule's `:why` filled. Asked of a copy,
+    /// under `bounds` as [`Program::ask`] asks; a run that hands back no
+    /// read-out is the line saying why.
+    pub(crate) fn trace(
+        &self,
+        question: Question,
+        bounds: Bounds,
+        name: &str,
+    ) -> Result<String, String> {
+        let mut copy = self.clone();
+        let mut opts = explore::Options::new(question.mode());
+        opts.budget = bounds.budget;
+        opts.limit = if question.needs_the_cube() {
+            0
+        } else {
+            bounds.limit
+        };
+        opts.no_search = question == Question::NoSearch;
+        opts.max_steps = bounds.max_steps;
+        opts.deadline = bounds.clock.map(|c| Instant::now() + c);
+        let bound = ein_infer::saturator::Bound {
+            deadline: opts.deadline,
+            max_steps: bounds.max_steps,
+        };
+        let firings = match ein_infer::saturator::bounded(bound, || {
+            ein_infer::region::root_derivation(&mut copy.kb, &mut copy.terms, &copy.ast)
+        }) {
+            Ok(f) => f,
+            // Root past the cap: the run says so, and the trace tells no
+            // derivation, as `ein solve --trace` does.
+            Err(ein_infer::SolveError::Saturate(ein_infer::saturator::SaturateError::Steps(_))) => {
+                Vec::new()
+            }
+            Err(e) => return Err(e.to_string()),
+        };
+        let r = ein_infer::read_out::run(&mut copy.kb, &mut copy.terms, &copy.ast, &opts)
+            .map_err(|e| e.to_string())?;
+        let argv = match question {
+            Question::Describe => String::new(),
+            q => q.flags(),
+        };
+        ein_render::trace::region::of_read_out(
+            &r,
+            &mut copy.kb,
+            &mut copy.terms,
+            &copy.ast,
+            &firings,
+            &ein_render::read_out::Options {
+                command: "solve",
+                argv: &argv,
+                file: name,
+                budget: bounds.budget,
+                uncut: false,
+            },
+            ein_render::trace::region::Shape {
+                diagrams: false,
+                relevant: false,
+                reorder: false,
+                full_kb: false,
+                fold: false,
+            },
+        )
+    }
+}
+
 /// A run's error, as one of the outcomes' inputs or as the engine's: read
 /// by its kind, `SolveError::kind`, where the kernel names one, the clock's
 /// (`deadline`) and a saved file's choice that names no node (`saved-file`,

@@ -577,7 +577,7 @@ fn summarise(line: &Line) -> String {
     let mut s = match (&r.generation, &r.failure) {
         (Some(g), _) => format!(
             "{} tokens ({} thinking), {:?}, {:.1} s:",
-            g.envelope.generation.tokens.len(),
+            g.envelope.generation.count(),
             g.envelope.generation.thinking,
             g.envelope.generation.stop,
             g.envelope.generation.generation_ms / 1e3

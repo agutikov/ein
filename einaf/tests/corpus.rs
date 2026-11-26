@@ -906,6 +906,56 @@ fn every_object_survives_a_round_trip_through_json() {
     assert!(bad.is_empty(), "{}", bad.join("\n"));
 }
 
+/// **With no formatter applied, EinAf's answer line is the kernel's, byte
+/// for byte**: on every corpus program that is not `slow`, under every
+/// question, each row of each query with a `:goal-text` filled again into
+/// the template by EinAf's filler ([`einaf::format::fill`]), and through
+/// the formatters with none ([`einaf::format::Formatters::none`]), is the
+/// line the kernel filled (`classes[].lines`).
+#[test]
+fn the_answer_line_with_no_formatter_is_the_kernels_byte_for_byte() {
+    use einaf::format::{Formatters, Names, fill};
+    let none = Formatters::none();
+    let names = Names::new();
+    let (mut programs, mut lines) = (BTreeSet::new(), 0usize);
+    let mut bad: Vec<String> = Vec::new();
+    for found in sweep() {
+        for (q, f) in &found.objects {
+            for query in f.queries.iter().flatten() {
+                let Some(t) = &query.goal_text else { continue };
+                programs.insert(found.path.as_str());
+                for c in &query.classes {
+                    for (i, row) in c.rows.iter().enumerate() {
+                        let pairs: Vec<(String, String)> =
+                            row.iter().map(|(k, v)| (k.clone(), v.clone())).collect();
+                        let kernel = &c.lines[i];
+                        let filled = fill(t, &pairs);
+                        let (through, _) = none.fill(t, &pairs, &names);
+                        if &filled != kernel || &through != kernel {
+                            bad.push(format!(
+                                "{} {}: {kernel:?} filled again as {filled:?}",
+                                found.path,
+                                q.flags()
+                            ));
+                        }
+                        lines += 1;
+                    }
+                }
+            }
+        }
+    }
+    println!(
+        "the answer line with no formatter: {lines} lines of {} programs with a :goal-text",
+        programs.len()
+    );
+    assert!(
+        programs.len() > 100 && lines > 1000,
+        "{} programs, {lines} lines",
+        programs.len()
+    );
+    assert!(bad.is_empty(), "{}", bad.join("\n"));
+}
+
 /// **What the object says is what the binary says of the same run**, under
 /// each question the entry declares: the outcome against the summary's
 /// verdict, `region.empty`, `region.exhausted` and `monotonicity`; the

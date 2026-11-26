@@ -1,0 +1,5 @@
+;;; One state, and no query with a :goal-text.
+(relation lit Lamp :why "{?3} is lit")
+(lit Hall :source "The hall is lit.")
+(solve :no-search)
+(query :goal (lit ?l))

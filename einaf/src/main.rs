@@ -12,8 +12,9 @@
 //! prints its record, `einaf model` loads the model and prints its pin, and
 //! `einaf probe` writes the probe's plan and runs it; `einaf steps` runs the
 //! formalization in steps ([`einaf::formalize`]) and the contract's check,
-//! and `einaf catalogue` prints the catalogue the steps select from. A call
-//! is answered by
+//! and `einaf catalogue` prints the catalogue the steps select from;
+//! `einaf from-text` runs the one shot ([`einaf::from_text`]), a text to a
+//! program and the short answer it prints. A call is answered by
 //! the model (`--model PATH` or `$EINAF_MODEL`, with the `llama` feature) or
 //! by a record (`--replay FILE`, always).
 
@@ -43,6 +44,11 @@ usage: einaf outcome FILE [QUESTION] [BOUNDS]
                 [--catalogue whole|minimal] [--max-tokens N] [-T SECONDS]
        einaf steps check PROGRAM [--text TEXT] [--step 1|2|3] [--catalogue whole|minimal]
        einaf catalogue [--minimal] [--generated] [--grammar] [--tokens MODEL]
+       einaf from-text TEXT RUNTIME [--id ID] [--answer-line zebra|word|generic]
+                [--mode steps|whole] [--no-grammar] [--request-mode thinking-off]
+                [--catalogue whole|minimal] [--module-dir DIR] [--max-tokens N]
+                [-T SECONDS] [--seed N] [--cut keep-forms|end] [--no-format]
+                [--out FILE] [--explain FILE.md] [--record DIR] [--gold-answer GOLD]
 
 outcome   the outcome of an Ein program under one question about its answer, R:
           invalid, flagged, not decided, inconsistent, incomplete, several or
@@ -92,6 +98,21 @@ catalogue the catalogue of the library the steps select from, as a prompt
           rules, generated (`--generated`); the catalogue the steps' grammars
           are rendered on (`--grammar`); its length and the prompts' in the
           model's tokens (`--tokens MODEL`, `llama`)
+from-text a text to an Ein program and the short answer it prints, one shot:
+          the steps (`--mode whole`: one call), each step's program judged at
+          root, the complete program asked --no-search and --single and, where
+          the answer query's one class is a lower bound, described; on stdout
+          the answer query's lines with their values formatted, or EinAf's
+          fixed text, and beneath it why; on stderr each call and question
+          with its time. `--module-dir` gives a directory of theory modules
+          beside the library; `--cut` what an output the budget cut becomes
+          (keep-forms: the forms written before the cut, repeats dropped; end:
+          the step ends the run); `--no-format`: the kernel's lines as they
+          stand; `--out` writes the program, `--explain` the kernel's trace of
+          the answer as markdown, `--record` the run's record (every call
+          slim, with no request body), `--gold-answer` scores the answer by
+          the stand-in reader (`@undetermined`, `@contradiction`, or claims
+          separated by `|`)
 probe     the probe of Ein written with no grammar: `plan` writes every run
           as JSON lines, `run` makes each call and judges its answer through
           the kernel, a line a run appended to --out (a run already there is
@@ -117,16 +138,18 @@ fn main() -> ExitCode {
         Some("probe") => model_cmd::probe(&args[1..]),
         Some("steps") => steps_cmd::steps(&args[1..]),
         Some("catalogue") => steps_cmd::catalogue_cmd(&args[1..]),
+        Some("from-text") => from_text_cmd::from_text(&args[1..]),
         Some("-h" | "--help") => {
             print!("{USAGE}");
             ExitCode::SUCCESS
         }
         _ => usage_error(
-            "expected a subcommand: outcome, feedback, render, generate, grammar, model, probe, steps or catalogue",
+            "expected a subcommand: outcome, feedback, render, generate, grammar, model, probe, steps, catalogue or from-text",
         ),
     }
 }
 
+mod from_text_cmd;
 mod grammar_cmd;
 mod model_cmd;
 mod steps_cmd;

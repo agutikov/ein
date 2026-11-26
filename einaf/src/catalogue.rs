@@ -20,8 +20,14 @@
 //! **It holds the library's modules and no family's own.** The whole
 //! catalogue has every entry; the minimal one ([`Size::Minimal`]) the
 //! relation algebra's and the contradiction, the closure of `std.algebra`.
+//! **A directory of modules may be given beside it** ([`Given`],
+//! [`Catalogue::with_modules`]): Q9's escape hatch, the widest condition of
+//! the library ablation, and no part of the main arms; its modules are shown
+//! by their forms, offered to the grammars, and found from the directory
+//! when a program that imports one is loaded.
 
 use std::collections::{BTreeMap, BTreeSet};
+use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
@@ -430,6 +436,147 @@ pub struct Catalogue {
     pub entries: Vec<Entry>,
     /// `sha256:` of the library's manifest, `ein --version`'s `stdlib` line.
     pub manifest: Option<String>,
+    /// The modules of a directory given beside the library; `None` in the
+    /// main arms.
+    pub given: Option<Given>,
+}
+
+/// **A directory of theory modules given beside the library**: each `.ein`
+/// file of it that states no `(query …)` and no `(solve …)`, a problem's file
+/// being no module, by its name, the file's stem, in the order of the names.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Given {
+    /// The directory, as given: where a program that imports a module of it
+    /// is loaded from.
+    pub dir: PathBuf,
+    /// Each module's name and text.
+    pub modules: Vec<(String, String)>,
+}
+
+impl Given {
+    /// **Read a directory's modules.**
+    pub fn read(dir: &Path) -> Result<Given, String> {
+        let mut modules = Vec::new();
+        let entries = std::fs::read_dir(dir).map_err(|e| format!("{}: {e}", dir.display()))?;
+        let mut paths: Vec<PathBuf> = entries
+            .filter_map(|e| e.ok().map(|e| e.path()))
+            .filter(|p| p.extension().is_some_and(|x| x == "ein"))
+            .collect();
+        paths.sort();
+        for p in paths {
+            let text = std::fs::read_to_string(&p).map_err(|e| format!("{}: {e}", p.display()))?;
+            let Some(name) = p.file_stem().map(|s| s.to_string_lossy().into_owned()) else {
+                continue;
+            };
+            let Ok(shapes) = kernel::shapes(&text, &name) else {
+                continue;
+            };
+            let a_problem = shapes
+                .iter()
+                .any(|f| matches!(f.shape, kernel::Shape::Query { .. } | kernel::Shape::Solve));
+            if !a_problem {
+                modules.push((name, text));
+            }
+        }
+        if modules.is_empty() {
+            return Err(format!("{}: no module", dir.display()));
+        }
+        Ok(Given {
+            dir: dir.to_path_buf(),
+            modules,
+        })
+    }
+
+    /// **The modules as a prompt shows them**: each by its forms, no
+    /// comment of its file: the import, its relations as declared, each with
+    /// its `:why`, and its rules, each with its parameters and its `:why`.
+    pub fn text(&self) -> String {
+        let mut s = String::from(
+            "\n# Modules given beside the library\n\nEach is imported by its name, as a module of the library \
+             is, listing every short name of it the program writes; a rule of no parameter fires once the module \
+             is imported. Their relations and rules, as each module declares them:\n",
+        );
+        for (name, text) in &self.modules {
+            s.push_str(&format!("\n## {name}\n\n```ein\n"));
+            for f in kernel::shapes(text, name).unwrap_or_default() {
+                if matches!(f.shape, kernel::Shape::Relation { .. }) {
+                    s.push_str(&f.canonical);
+                    s.push('\n');
+                }
+            }
+            s.push_str("```\n\nIts rules:\n\n");
+            for r in kernel::rule_docs(text, name).unwrap_or_default() {
+                s.push_str(&format!(
+                    "- `{}` ({}): {}\n",
+                    r.name,
+                    r.params
+                        .iter()
+                        .map(|p| format!("?{p}"))
+                        .collect::<Vec<_>>()
+                        .join(" "),
+                    r.why.as_deref().unwrap_or("")
+                ));
+            }
+        }
+        s
+    }
+
+    /// **The modules as a step's grammar is offered them**: each module's
+    /// declared names, its relations, its rules of a parameter or more, the
+    /// relations its rules read that neither the library nor a given module
+    /// declares, and the names it writes as values that none declares.
+    pub fn grammar(&self) -> Vec<steps::Module> {
+        let vocabs: Vec<(String, kernel::Vocabulary)> = self
+            .modules
+            .iter()
+            .filter_map(|(m, t)| kernel::vocabulary(t, m).ok().map(|v| (m.clone(), v)))
+            .collect();
+        let library = steps::Catalogue::library();
+        let mut declared_anywhere: BTreeSet<String> = library
+            .modules
+            .iter()
+            .flat_map(|m| m.symbols.iter().cloned())
+            .collect();
+        declared_anywhere.extend(
+            vocabs
+                .iter()
+                .flat_map(|(_, v)| v.declared.keys().chain(v.rules.keys()).cloned()),
+        );
+        // A word of Ein's is no relation a module reads and no value.
+        let words = crate::grammar::whole::lexical(crate::grammar::whole::EIN_L)
+            .expect("ein.l reads")
+            .words;
+        vocabs
+            .iter()
+            .map(|(m, v)| steps::Module {
+                module: m.clone(),
+                symbols: v.declared.keys().chain(v.rules.keys()).cloned().collect(),
+                relations: v.declared.clone(),
+                activators: v
+                    .rules
+                    .iter()
+                    .filter(|(_, n)| **n > 0)
+                    .map(|(r, &n)| (r.clone(), n))
+                    .collect(),
+                unlisted: v
+                    .read
+                    .iter()
+                    .filter(|(r, _)| !declared_anywhere.contains(*r) && !words.contains(*r))
+                    .map(|(r, c)| (r.clone(), c.clone()))
+                    .collect(),
+                values: v
+                    .names
+                    .iter()
+                    .filter(|n| {
+                        !declared_anywhere.contains(*n)
+                            && !v.written.contains_key(*n)
+                            && !words.contains(*n)
+                    })
+                    .cloned()
+                    .collect(),
+            })
+            .collect()
+    }
 }
 
 /// **One module of the generated part**: each rule of it, as its form says.
@@ -525,7 +672,19 @@ impl Catalogue {
                 .copied()
                 .collect(),
             manifest: kernel::stdlib_digest(),
+            given: None,
         }
+    }
+
+    /// **This catalogue with a directory's modules given beside it.**
+    pub fn with_modules(mut self, dir: &Path) -> Result<Catalogue, String> {
+        self.given = Some(Given::read(dir)?);
+        Ok(self)
+    }
+
+    /// Where a program's local imports are found: the given directory.
+    pub fn base_dir(&self) -> Option<&Path> {
+        self.given.as_ref().map(|g| g.dir.as_path())
     }
 
     /// **The catalogue as a prompt shows it**: the library's digest, how a
@@ -585,6 +744,9 @@ impl Catalogue {
                 }
                 s.push_str(&format!("\n```ein\n{}```\n", e.shown()));
             }
+        }
+        if let Some(g) = &self.given {
+            s.push_str(&g.text());
         }
         s
     }
@@ -698,9 +860,13 @@ impl Catalogue {
         if let Some(m) = modules.get_mut("std.math.decimal") {
             m.values.extend((0..=9).map(|d| d.to_string()));
         }
-        steps::Catalogue {
+        let mut out = steps::Catalogue {
             modules: modules.into_values().collect(),
+        };
+        if let Some(g) = &self.given {
+            out.modules.extend(g.grammar());
         }
+        out
     }
 }
 

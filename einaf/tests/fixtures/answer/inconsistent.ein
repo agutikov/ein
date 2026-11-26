@@ -1,0 +1,11 @@
+;;; The hall is lit and dark, which a rule refutes: R is empty, every node dead.
+(relation lit Lamp :why "{?3} is lit")
+(relation dark Lamp :why "{?3} is dark")
+(lit Hall :source "The hall is lit.")
+(dark Hall :source "The hall is dark.")
+(rule lit-is-not-dark ()
+  :match  (and (lit ?l) (dark ?l))
+  :assert (false)
+  :why    "a lamp is not lit and dark at once")
+(solve :no-search)
+(query :goal (lit ?l) :goal-text "The {?l} is lit.")

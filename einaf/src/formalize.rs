@@ -101,6 +101,36 @@ impl RequestMode {
     }
 }
 
+/// **What a step's output the budget of generated tokens cut becomes.**
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum Cut {
+    /// Read as it stands: a text cut in a form does not parse, and the step
+    /// ends the run.
+    #[default]
+    End,
+    /// **The forms written before the cut**: every top-level form the output
+    /// completed, the one the cut stopped in dropped, and every form that
+    /// repeats one written before it dropped too, which is the loop a greedy
+    /// decoding runs into (L-M2.19); the comments between them kept. A text
+    /// with no complete form is empty, and ends the run.
+    KeepForms,
+}
+
+impl Cut {
+    pub fn parse(s: &str) -> Option<Cut> {
+        match s {
+            "end" => Some(Cut::End),
+            "keep-forms" => Some(Cut::KeepForms),
+            _ => None,
+        }
+    }
+}
+
+fn one() -> u32 {
+    1
+}
+
 /// **The options of a run.**
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Options {
@@ -114,6 +144,12 @@ pub struct Options {
     pub max_tokens: u32,
     /// The clock of each kernel call, in seconds.
     pub clock_s: u64,
+    /// The seed of every request, recorded; greedy decoding draws nothing.
+    #[serde(default = "one")]
+    pub seed: u32,
+    /// What an output the budget cut becomes.
+    #[serde(default)]
+    pub cut: Cut,
 }
 
 impl Default for Options {
@@ -125,6 +161,8 @@ impl Default for Options {
             catalogue: catalogue::Size::Whole,
             max_tokens: 12_288,
             clock_s: 60,
+            seed: 1,
+            cut: Cut::End,
         }
     }
 }
@@ -162,6 +200,9 @@ pub struct RootSummary {
     pub owed: BTreeMap<String, usize>,
     pub stopped: Option<String>,
     pub refused: Vec<kernel::Finding>,
+    /// Root's narration outgrew what is kept of it.
+    #[serde(default)]
+    pub narration_cut: bool,
 }
 
 impl RootSummary {
@@ -182,6 +223,7 @@ impl RootSummary {
             owed: count(&root.owed),
             stopped: root.stopped.clone(),
             refused: root.refused.clone(),
+            narration_cut: root.narration_cut,
         }
     }
 }
@@ -213,6 +255,10 @@ pub struct StepRun {
     pub output: Option<String>,
     /// Whether the output was read from a fenced block.
     pub fenced: bool,
+    /// Where the budget cut the output and [`Cut::KeepForms`] took the forms
+    /// written before the cut: what was dropped. `output` is what was kept.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cut: Option<CutOff>,
     /// The parse of the output alone.
     pub parsed: Option<Parsed>,
     /// The markers of a missing property it wrote.
@@ -221,6 +267,47 @@ pub struct StepRun {
     pub program: Option<String>,
     /// The judgement of that program at root, and the check's findings.
     pub judged: Option<Judged>,
+}
+
+/// **What [`Cut::KeepForms`] dropped of an output the budget cut.**
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CutOff {
+    /// The complete forms kept.
+    pub kept: usize,
+    /// The complete forms dropped, each a repeat of one written before it.
+    pub repeats: usize,
+    /// The bytes after the last form kept: the form the cut stopped in,
+    /// and the repeats' text.
+    pub dropped_bytes: usize,
+}
+
+/// **The forms an output the budget cut wrote before the cut**
+/// ([`Cut::KeepForms`]): the text up to the end of its last complete
+/// top-level form, less each form that repeats one before it, each kept form
+/// with the comment lines above it.
+pub fn keep_forms(output: &str) -> (String, CutOff) {
+    let spans = top_level_spans(output);
+    let mut seen: BTreeSet<&str> = BTreeSet::new();
+    let mut kept = String::new();
+    let mut off = CutOff::default();
+    let mut prev_end = 0;
+    for (s, e) in spans {
+        let form = &output[s..e];
+        let between = &output[prev_end..s];
+        prev_end = e;
+        if !seen.insert(form.trim()) {
+            off.repeats += 1;
+            continue;
+        }
+        kept.push_str(between);
+        kept.push_str(form);
+        off.kept += 1;
+    }
+    if !kept.is_empty() {
+        kept.push('\n');
+    }
+    off.dropped_bytes = output.len().saturating_sub(kept.len());
+    (kept, off)
 }
 
 /// **What step 2 changed of step 1's ontology**, by the forms' canonical
@@ -250,6 +337,10 @@ pub struct Run {
     pub catalogue_sha256: String,
     /// Every program a prompt quoted, from the package's root.
     pub quoted: Vec<String>,
+    /// The directory of modules given beside the library, as given; `null`
+    /// in the main arms.
+    #[serde(default)]
+    pub module_dir: Option<String>,
     pub steps: Vec<StepRun>,
     /// Where the chain ended before its last step, and why.
     pub stopped: Option<String>,
@@ -400,6 +491,11 @@ struct Shared<'a> {
 }
 
 impl Shared<'_> {
+    /// Where a program's local imports are found: the given directory.
+    fn base_dir(&self) -> Option<&std::path::Path> {
+        self.catalogue.base_dir()
+    }
+
     fn bounds(&self) -> Bounds {
         Bounds {
             clock: Some(Duration::from_secs(self.options.clock_s)),
@@ -420,7 +516,7 @@ impl Shared<'_> {
             thinking: self.options.request.thinking(),
             grammar,
             sampler: Sampler::greedy(),
-            seed: 1,
+            seed: self.options.seed,
             max_tokens: self.options.max_tokens,
             logprobs: None,
             keep: None,
@@ -439,7 +535,7 @@ impl Shared<'_> {
         let source = Source::Text {
             text: program,
             name,
-            base_dir: None,
+            base_dir: self.base_dir(),
         };
         let feedback = kernel::call(source, questions, self.bounds());
         let root = kernel::root(source, self.bounds());
@@ -475,8 +571,26 @@ pub fn run(
     options: Options,
     calls: &mut Vec<Recorded>,
 ) -> Run {
-    let catalogue = Catalogue::new(options.catalogue);
+    run_with(
+        runtime,
+        input,
+        options,
+        Catalogue::new(options.catalogue),
+        calls,
+    )
+}
+
+/// **Run the formalization of `input` over `catalogue`**, a directory of
+/// modules given beside the library among it ([`Catalogue::with_modules`]).
+pub fn run_with(
+    runtime: &mut dyn Runtime,
+    input: &Input,
+    options: Options,
+    catalogue: Catalogue,
+    calls: &mut Vec<Recorded>,
+) -> Run {
     let catalogue_text = catalogue.text();
+    let module_dir = catalogue.base_dir().map(|d| d.display().to_string());
     let excerpt = prompts::EXCERPT.text.to_string();
     let system =
         render(&prompts::SYSTEM, &[("excerpt", excerpt)]).expect("the system message renders");
@@ -505,6 +619,7 @@ pub fn run(
         excerpt_sha256: prompts::EXCERPT.sha256(),
         catalogue_sha256: sha256_hex(shared.catalogue_text.as_bytes()),
         quoted,
+        module_dir,
         steps: Vec::new(),
         stopped: None,
         program: None,
@@ -577,6 +692,7 @@ fn call(
         failure: None,
         output: None,
         fenced: false,
+        cut: None,
         parsed: None,
         markers: Vec::new(),
         program: None,
@@ -584,7 +700,7 @@ fn call(
     };
     match result {
         Ok(g) => {
-            out.generated_tokens = Some(g.envelope.generation.tokens.len());
+            out.generated_tokens = Some(g.envelope.generation.count());
             out.prompt_tokens = Some(g.envelope.prompt.tokens);
             out.stop = serde_json::to_value(g.envelope.generation.stop)
                 .ok()
@@ -594,11 +710,18 @@ fn call(
                         .or_else(|| Some(v.to_string()))
                 });
             out.generation_ms = Some(g.envelope.generation.generation_ms);
-            let (text, fenced) = match model::first_fenced_block(&g.answer) {
+            let (mut text, fenced) = match model::first_fenced_block(&g.answer) {
                 Some(b) => (b, true),
                 None => (g.answer.clone(), false),
             };
             out.fenced = fenced;
+            if g.envelope.generation.stop == model::Stop::MaxTokens
+                && shared.options.cut == Cut::KeepForms
+            {
+                let (kept, off) = keep_forms(&text);
+                text = kept;
+                out.cut = Some(off);
+            }
             out.parsed = Some(kernel::parse(&text, &format!("step {step}")));
             out.markers = markers(&text);
             out.output = Some(text);
@@ -846,7 +969,7 @@ fn complete(
         kernel::forms(Source::Text {
             text: p,
             name: n,
-            base_dir: None,
+            base_dir: shared.base_dir(),
         })
         .ok()
     };
@@ -914,7 +1037,7 @@ fn run_whole(
     if let Ok(f) = kernel::forms(Source::Text {
         text: &program,
         name: id,
-        base_dir: None,
+        base_dir: shared.base_dir(),
     }) {
         run.categories = contract::categories(&f, &shared.input.text);
     }

@@ -1,0 +1,6 @@
+;;; One state, and the answer query has no row.
+(relation lit Lamp :why "{?3} is lit")
+(relation dark Lamp :why "{?3} is dark")
+(lit Hall :source "The hall is lit.")
+(solve :no-search)
+(query :goal (dark ?l) :goal-text "The {?l} is dark.")

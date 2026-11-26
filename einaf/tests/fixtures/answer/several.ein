@@ -1,0 +1,9 @@
+;;; Ann owes a food she likes, of two: R is three states, the answer query three classes.
+(import std.algebra :symbols (total-owed))
+(relation is-a T T :why "{?3} is a {?4}")
+(relation likes Person Food :why "{?3} likes {?4}")
+(is-a Ann Person :source "Ann eats.")
+(is-a Soup Food :source "There is soup.")
+(is-a Stew Food :source "There is stew.")
+(total-owed likes is-a)
+(query :goal (likes Ann ?f) :goal-text "Ann likes {?f}.")

@@ -1,0 +1,6 @@
+;;; R is two states, the door open and not; the answer query reads the lamp alone, one class in both.
+(relation lit Lamp :why "{?3} is lit")
+(relation open-door Door :why "{?3} is open")
+(lit Hall :source "The hall is lit.")
+(open (open-door Front))
+(query :goal (lit ?l) :goal-text "The {?l} is lit.")
