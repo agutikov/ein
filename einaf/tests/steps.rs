@@ -445,6 +445,43 @@ fn the_check_finds_what_the_kernel_loads_in_silence() {
         "{:#?}",
         checked.findings
     );
+
+    // A name of the calculator's the import does not list, written as the
+    // program's own: the answer is under the full name.
+    let entry = catalogue::ENTRIES
+        .iter()
+        .find(|e| e.id == "calc.add")
+        .expect("the entry");
+    let program = entry.program.replace(
+        "(import std.math.decimal-arith :symbols (add sum-of))",
+        "(import std.math.decimal-arith :symbols (add))",
+    );
+    let root = kernel::root(
+        Source::Text {
+            text: &program,
+            name: "silent4",
+            base_dir: None,
+        },
+        bounds(),
+    );
+    let checked = check::check(&check::Input {
+        program: &program,
+        name: "silent4",
+        step: 2,
+        text: "",
+        catalogue: &catalogue,
+        generated: &generated,
+        step1: None,
+        root: &root,
+    });
+    assert!(
+        checked
+            .findings
+            .iter()
+            .any(|f| f.kind == Kind::NameNotListed),
+        "{:#?}",
+        checked.findings
+    );
 }
 
 /// **The steps by hand are what a run's grammars take**: each step's part,

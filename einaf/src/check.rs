@@ -10,7 +10,9 @@
 //! 1. a `:source` that is no sentence of the input (from step 1);
 //! 2. a selection that is not active (from step 2): an activating fact under
 //!    a name the file does not list from the module that declares its rule,
-//!    or of a module no import brings, which the program's text shows; and,
+//!    or of a module no import brings, which the program's text shows; a
+//!    relation the program writes under the short name of one an imported
+//!    module declares and its import does not list; and,
 //!    read off root's narration ([`crate::kernel::root`]), a selected rule
 //!    root names no firing of and a selected obligation root names no `owe`
 //!    of, a check aside, which fires only where a state breaks it; and an
@@ -55,6 +57,10 @@ pub enum Kind {
     SelectionInactive,
     /// 2: an import or a selecting fact the catalogue has no entry for.
     SelectionNotInCatalogue,
+    /// 2: a relation the program writes under the short name of one an
+    /// imported module declares, which the import does not list: the
+    /// module's facts are under its full name, the program's are its own.
+    NameNotListed,
     /// 3: the writer of H is `blind`, and the program states no mechanism.
     MechanismNotStated,
     /// 3: the writer of H is not every one the program states.
@@ -84,7 +90,10 @@ impl Kind {
     pub fn number(self) -> u8 {
         match self {
             Kind::SourceNotASentence => 1,
-            Kind::SelectionNotListed | Kind::SelectionInactive | Kind::SelectionNotInCatalogue => 2,
+            Kind::SelectionNotListed
+            | Kind::SelectionInactive
+            | Kind::SelectionNotInCatalogue
+            | Kind::NameNotListed => 2,
             Kind::MechanismNotStated | Kind::MechanismNotTheOneStated => 3,
             Kind::Undeclared | Kind::WrongCount => 4,
             Kind::NumberAsName => 5,
@@ -103,6 +112,7 @@ impl Kind {
             Kind::SelectionNotListed => "selection-not-listed",
             Kind::SelectionInactive => "selection-inactive",
             Kind::SelectionNotInCatalogue => "selection-not-in-catalogue",
+            Kind::NameNotListed => "name-not-listed",
             Kind::MechanismNotStated => "mechanism-not-stated",
             Kind::MechanismNotTheOneStated => "mechanism-not-the-one-stated",
             Kind::Undeclared => "undeclared",
@@ -204,6 +214,7 @@ pub fn check(input: &Input<'_>) -> Checked {
     let mut found = Vec::new();
     sources(&forms, input.text, &mut found);
     selections(&forms, input, &mut found);
+    shadowed(input.program, input.name, &mut found);
     out.mechanism = mechanism(&forms, input);
     if input.step >= 3 {
         mechanism_findings(&out.mechanism, &mut found);
@@ -369,6 +380,40 @@ fn selections(forms: &Forms, input: &Input<'_>, out: &mut Vec<Finding>) {
                 message,
             });
             break;
+        }
+    }
+}
+
+/// **A name of a module the import does not list, which the program writes
+/// as its own**: `(import std.math.decimal-arith :symbols (add))` and a
+/// rule that reads `(sum-of ?a ?b ?s)` read the program's own `sum-of`,
+/// which nothing concludes, while the calculator's answer is
+/// `std.math.decimal-arith.sum-of`.
+fn shadowed(program: &str, name: &str, out: &mut Vec<Finding>) {
+    let Ok(v) = kernel::vocabulary(program, name) else {
+        return;
+    };
+    let library = gsteps::Catalogue::library();
+    for imp in &v.imports {
+        let Some(m) = library.module(&imp.module) else {
+            continue;
+        };
+        let listed: BTreeSet<&str> = imp.symbols.iter().flatten().map(String::as_str).collect();
+        for r in m.relations.keys() {
+            if listed.contains(r.as_str()) || imp.alias.is_some() {
+                continue;
+            }
+            if v.declared.contains_key(r) || v.written.contains_key(r) {
+                out.push(Finding {
+                    kind: Kind::NameNotListed,
+                    from_step: 2,
+                    form: None,
+                    message: format!(
+                        "the program writes {r}, which {} declares and its import does not list: the module's facts are {}.{r}, and the program's {r} is its own",
+                        imp.module, imp.module
+                    ),
+                });
+            }
         }
     }
 }
