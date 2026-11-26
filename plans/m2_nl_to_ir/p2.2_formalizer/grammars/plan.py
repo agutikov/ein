@@ -24,7 +24,12 @@ Writes, beside this script:
   "request"}` each; `speed/order.txt`, the names in the order they run, each
   three times.
 
-Both are gzip with no time stamp, so that the same plan is the same bytes.
+- `after/plan.jsonl.gz`: three short prompts with thinking on and a grammar
+  begun after the thinking, with no fence (none asks for one), so that a
+  generation shows the grammar beginning where a thinking ends: the host
+  probe's question, and two that ask for Ein in a sentence.
+
+All are gzip with no time stamp, so that the same plan is the same bytes.
 Every grammar is written by `einaf grammar render … --fence --request`, held
 to by the chain's choice first. The first plan, `first/plan.jsonl.gz`, the
 grammars from the first token with no fence, was written by this script's
@@ -58,8 +63,8 @@ def probe() -> dict[str, dict]:
 
 
 def grammar(einaf: str, which: str, *, text: str | None = None, program: str | None = None,
-            after: bool = False, check: str = "chosen-first") -> dict:
-    args = [einaf, "grammar", "render", which, "--request", "--fence"]
+            after: bool = False, check: str = "chosen-first", fence: bool = True) -> dict:
+    args = [einaf, "grammar", "render", which, "--request"] + (["--fence"] if fence else [])
     if text:
         args += ["--text", text]
     if program:
@@ -152,7 +157,32 @@ def main() -> None:
     (HERE / "speed").mkdir(exist_ok=True)
     write_gz(HERE / "speed" / "requests.jsonl.gz", "".join(lines))
     (HERE / "speed" / "order.txt").write_text("\n".join(order) + "\n")
-    print(f"plan.py: {len(runs)} runs in fenced/plan.jsonl.gz, {len(order)} calls in speed/order.txt")
+    # A grammar begun after a thinking that ends: three short prompts, the
+    # grammar with no fence (none of them asks for one), 2 048 tokens at most.
+    # The first is the host probe's question, whose thinking ended at its
+    # 268th token (S2.2.2's request 02); the others ask for Ein in a sentence.
+    after = []
+    q = "Ann is older than Bob. Bob is older than Cy. Who is the youngest?"
+    asks = [
+        ("after.question", q + " Answer with one name.", "whole", {}),
+        ("after.fact", q + " Answer with one Ein fact of the relation `youngest`, such as `(youngest Ann)`.",
+         "whole", {}),
+        ("after.step1", q + "\n\nWrite these sentences as Ein: each statement a fact with its sentence as "
+         "`:source`, the question a query with a `:goal` and a `:goal-text`, then each relation declared with a "
+         "`:why`. Reply with the Ein alone.", "1", {"text": f"{CONTRACT}/youngest/text.txt"}),
+    ]
+    for rid, content, which, kw in asks:
+        e = with_grammar(p["step1.on.youngest"], rid,
+                         grammar(a.einaf, which, after=True, fence=False, **kw))
+        e["request"]["prompt"]["messages"] = [{"role": "user", "content": content}]
+        e["request"]["max_tokens"] = 2048
+        e["examples"] = []
+        after.append(e)
+    (HERE / "after").mkdir(exist_ok=True)
+    write_gz(HERE / "after" / "plan.jsonl.gz",
+             "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in after))
+    print(f"plan.py: {len(runs)} runs in fenced/plan.jsonl.gz, {len(after)} in after/plan.jsonl.gz, "
+          f"{len(order)} calls in speed/order.txt")
 
 
 if __name__ == "__main__":
