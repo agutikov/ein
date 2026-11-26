@@ -11,6 +11,14 @@
 //! program's forms and asks it nothing. And [`contract`], the formalization
 //! contract's categories: each form of a program in one row, with the step
 //! that writes it. Nothing but [`kernel`] names an `ein_*` item.
+//!
+//! [`model`] is the model's runtime: one trait, the envelope every call
+//! returns, the chat template rendered, and replay from a record; the
+//! binding to llama.cpp is behind the `llama` feature. [`probe`] is the
+//! first measurement made with it: whether the model writes Ein with no
+//! grammar, each output read through [`kernel`].
 
 pub mod contract;
 pub mod kernel;
+pub mod model;
+pub mod probe;

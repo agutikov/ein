@@ -37,6 +37,26 @@ serde_json = "1"
 # A program's and a state's digests, SHA-256, as `ein --version` takes the
 # library's manifest's.
 sha2       = "0.10"
+# The model's chat template, which its file carries as a Jinja text, rendered
+# in EinAf (`einaf::model::template`): llama.cpp's own C renderer knows no
+# Jinja, and the binding wraps nothing else. `pycompat` gives the template
+# the Python string methods it calls (`startswith`, `split`, `rstrip`);
+# `preserve_order` keeps a declared function's keys in the order written.
+minijinja         = { version = "2", default-features = false, features = ["builtins", "macros", "multi_template", "loop_controls", "adjacent_loop_items", "preserve_order", "serde"] }
+minijinja-contrib = { version = "2", default-features = false, features = ["pycompat"] }
+# The binding to llama.cpp, behind the features below and nothing else: it
+# builds a llama.cpp of its own (CMake, a C++ compiler, and with `cuda` the
+# CUDA toolkit), which the gate's build of EinAf never does.
+llama-cpp-2 = { version = "=0.1.161", optional = true, default-features = false, features = ["common"] }
+
+[features]
+# **The model's runtime**, off by default (`docs/einaf/05-model.md`): with
+# `llama` the binding runs the model in EinAf's process, on the CPU; with
+# `cuda`, on the GPU. Without either, EinAf builds and tests with no
+# llama.cpp and no model, replaying recorded generations.
+default = []
+llama   = ["dep:llama-cpp-2"]
+cuda    = ["llama", "llama-cpp-2/cuda"]
 
 [dev-dependencies]
 # The corpus manifest, its worker pool and the repository's root, as the

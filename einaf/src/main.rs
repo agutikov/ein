@@ -6,6 +6,13 @@
 //! gives, and `einaf feedback FILE` prints the whole feedback object as
 //! JSON. The outcome is read off the object. Every outcome exits 0; a usage
 //! error exits 2, and a fault of the kernel's 1.
+//!
+//! And the model's ([`einaf::model`]): `einaf render` renders a request's
+//! prompt through a chat template, `einaf generate` makes one call and
+//! prints its record, `einaf model` loads the model and prints its pin, and
+//! `einaf probe` writes the probe's plan and runs it. A call is answered by
+//! the model (`--model PATH` or `$EINAF_MODEL`, with the `llama` feature) or
+//! by a record (`--replay FILE`, always).
 
 use std::path::Path;
 use std::process::ExitCode;
@@ -16,6 +23,12 @@ use einaf::kernel::{Bounds, Feedback, Part, Question, Source, call};
 const USAGE: &str = "\
 usage: einaf outcome FILE [QUESTION] [BOUNDS]
        einaf feedback FILE [QUESTION] [BOUNDS]
+       einaf render --template FILE REQUEST.json
+       einaf generate RUNTIME REQUEST.json...
+       einaf grammar --json-schema FILE
+       einaf model --model PATH [--ctx N] [--verbose]
+       einaf probe plan [--out FILE]
+       einaf probe run --plan FILE --out FILE RUNTIME [--only PREFIX]...
 
 outcome   the outcome of an Ein program under one question about its answer, R:
           invalid, flagged, not decided, inconsistent, incomplete, several or
@@ -36,6 +49,23 @@ BOUNDS, each set on every call:
   --region-limit N       the largest cube a flagged program gets, 16 by default
   --max-steps N          the firings one saturation may take, 1048576 by default
   -T, --max-time SECONDS the wall clock, none by default
+
+render    a request's prompt, rendered through a chat template, as text
+generate  a call of the model a request, in order, in one process; its record
+          as one JSON line a call
+grammar   the GBNF grammar llama.cpp writes for a JSON schema (`llama`)
+model     the model loaded, its pin, the runtime and the context as JSON
+probe     the probe of Ein written with no grammar: `plan` writes every run
+          as JSON lines, `run` makes each call and judges its answer through
+          the kernel, a line a run appended to --out (a run already there is
+          not made again)
+
+RUNTIME, what answers a call:
+  --model PATH           the model's file, by the binding to llama.cpp (the
+                         `llama` feature); $EINAF_MODEL where none is given
+  --ctx N                the context's length in tokens, 65536 by default
+  --verbose              llama.cpp's own log on stderr
+  --replay FILE          a record: each request answered by the call it holds
 ";
 
 fn main() -> ExitCode {
@@ -43,13 +73,22 @@ fn main() -> ExitCode {
     match args.first().map(String::as_str) {
         Some("outcome") => command(&args[1..], Print::Outcome),
         Some("feedback") => command(&args[1..], Print::Feedback),
+        Some("render") => model_cmd::render(&args[1..]),
+        Some("generate") => model_cmd::generate(&args[1..]),
+        Some("model") => model_cmd::model(&args[1..]),
+        Some("grammar") => model_cmd::grammar(&args[1..]),
+        Some("probe") => model_cmd::probe(&args[1..]),
         Some("-h" | "--help") => {
             print!("{USAGE}");
             ExitCode::SUCCESS
         }
-        _ => usage_error("expected a subcommand, `outcome` or `feedback`"),
+        _ => usage_error(
+            "expected a subcommand: outcome, feedback, render, generate, grammar, model or probe",
+        ),
     }
 }
+
+mod model_cmd;
 
 fn usage_error(why: &str) -> ExitCode {
     eprintln!("error: {why}\n\n{USAGE}");

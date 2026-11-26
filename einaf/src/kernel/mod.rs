@@ -27,8 +27,13 @@
 //! it and nothing saturated, so that no bound is needed. It is what the
 //! contract's categories are computed from.
 //!
+//! **And a parse alone** ([`parse()`]): whether a text is Ein's syntax,
+//! with every error the parser reports, each with its kind and its place,
+//! and nothing loaded. The probe of a model's output reads it beside the
+//! bounded call, which loads what parses.
+//!
 //! Nothing else in EinAf names an item of Ein's crates, and nothing here
-//! calls them but through [`call`] and [`forms()`].
+//! calls them but through [`call`], [`forms()`] and [`parse()`].
 
 mod feedback;
 mod forms;
@@ -352,6 +357,50 @@ pub fn call(source: Source<'_>, questions: &[Question], bounds: Bounds) -> Vec<F
             }
         })
         .collect()
+}
+
+/// **What the parser says of a text**, loading nothing.
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Parsed {
+    /// The count of top-level forms, where the text parses.
+    pub forms: Option<usize>,
+    /// Every error the parser reports, each a finding of its kind with its
+    /// place, its notes and repairs in its message; `[]` where it parses.
+    pub findings: Vec<Finding>,
+    /// The parser's recovery stopped at its budget: errors past the last one
+    /// listed are not reported.
+    pub cut: bool,
+}
+
+/// **Parse `text` as Ein's syntax**, `ein_ir::parse`, and load nothing:
+/// `name` is what its messages name it by. A panic of the parser's is a
+/// finding of the kind `parse` saying so.
+pub fn parse(text: &str, name: &str) -> Parsed {
+    let parsed = catch_unwind(AssertUnwindSafe(|| {
+        let mut ast = ein_ir::Ast::new();
+        match ein_ir::parse(&mut ast, text, Some(name)) {
+            Ok(forms) => Parsed {
+                forms: Some(forms.len()),
+                findings: Vec::new(),
+                cut: false,
+            },
+            Err(e) => Parsed {
+                forms: None,
+                findings: e.diagnostics().iter().map(feedback::finding).collect(),
+                cut: e.cut,
+            },
+        }
+    }));
+    parsed.unwrap_or_else(|payload| Parsed {
+        forms: None,
+        findings: vec![Finding {
+            kind: ein_core::Kind::Parse.name().to_string(),
+            severity: "error".to_string(),
+            message: format!("the parser panicked: {}", panic_message(payload.as_ref())),
+            place: None,
+        }],
+        cut: false,
+    })
 }
 
 /// A panic's message, where its payload is text.

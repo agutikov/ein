@@ -13,7 +13,10 @@ program under one question, which a bounded call of the kernel returns and every
 ([the feedback object](03-feedback.md)). And what it asks of a formalization, written before what enforces most of
 it: **the formalization contract** ([the contract](04-contract.md)), a text in, one program in five parts made in
 three steps out, each form of it in one row of a table of categories that EinAf computes, with the contract's worked
-example and five texts through the three steps by hand, each step's program a file its tests run.
+example and five texts through the three steps by hand, each step's program a file its tests run. And **the model's
+runtime** ([the model's runtime](05-model.md)): the model in EinAf's process, through a binding to llama.cpp behind a
+Cargo feature, every call returning a generation with its envelope or a typed failure, and replay, which answers a
+call from a record with no model; and the probe made with it, of Ein written with no grammar.
 
 | page | what |
 |---|---|
@@ -21,6 +24,7 @@ example and five texts through the three steps by hand, each step's program a fi
 | [02-kernel-invariants.md](02-kernel-invariants.md) | what the kernel guarantees of an answer, each with the test or the decision of Ein's that holds it |
 | [03-feedback.md](03-feedback.md) | the bounded call, and the feedback object it returns, `einaf-feedback/1`, key by key; what the bounds do not stop |
 | [04-contract.md](04-contract.md) | the formalization contract: the task, the three steps and their five design questions, the categories of a program's forms, what the model receives, what a run records; the steps by hand |
+| [05-model.md](05-model.md) | the model's runtime: building with the feature, giving a run the model, a request and a generation, the envelope, the chat template, a grammar and where it begins, a kept context, the failures, replay, the commands and the probe |
 
 ## What it depends on
 
@@ -33,9 +37,14 @@ read-out. Its tests read the corpus through `ein-corpus`, the engine's test help
 two functions: the bounded call `einaf::kernel::call`, which loads a program, asks it each question under the
 kernel's bounds and returns one feedback object a question; and `einaf::kernel::forms`, which parses and loads a
 program and asks it nothing, and returns its top-level forms, each as `ein_ir::dump_canonical` prints it and by its
-shape, with what its imports bring. Nothing else in the package names an item of Ein's crates:
-`einaf::contract`, the contract's categories, reads the forms. Its
-JSON is written by `serde_json`, and its digests are SHA-256, by `sha2`.
+shape, with what its imports bring; and `einaf::kernel::parse`, which parses a text and loads nothing, every error
+with its kind and its place. Nothing else in the package names an item of Ein's crates:
+`einaf::contract`, the contract's categories, reads the forms, and `einaf::probe` reads the kernel through the three.
+Its JSON is written by `serde_json`, and its digests are SHA-256, by `sha2`.
+
+**The model's runtime, by a feature**: the chat template is rendered by `minijinja` (with `minijinja-contrib`'s
+Python methods), always built; the binding to llama.cpp, `llama-cpp-2`, only with the `llama` or `cuda` feature
+([the model's runtime § 1](05-model.md#1-building-with-the-model)), which the gate's build never turns on.
 
 ## The package
 
@@ -60,7 +69,7 @@ cargo build --release --manifest-path einaf/Cargo.toml        # einaf/target/rel
 cargo test --manifest-path einaf/Cargo.toml --profile gate     # EinAf's tests, a step of the gate after Ein's
 ```
 
-The tests are five files under [`einaf/tests/`](../../einaf/tests/), each running programs through the bounded call:
+The tests are seven files under [`einaf/tests/`](../../einaf/tests/), five running programs through the bounded call:
 [`outcomes.rs`](../../einaf/tests/outcomes.rs), one test an outcome, on a program that has it, and the programs
 whose saturation has no fixpoint, EinAf's own fixtures under [`einaf/tests/fixtures/`](../../einaf/tests/fixtures/);
 [`corpus.rs`](../../einaf/tests/corpus.rs), every corpus program that is not `slow` asked every question, each outcome
@@ -70,7 +79,10 @@ of each outcome under each reading, and of the runs compared); [`refused.rs`](..
 refused fixture under `examples/broken/`; [`cli.rs`](../../einaf/tests/cli.rs), the command; and
 [`contract.rs`](../../einaf/tests/contract.rs), the contract's examples, the programs under
 [`einaf/contract/`](../../einaf/contract/), each held to what [the contract](04-contract.md#8-held-by) says, and the
-categories of every form of the reference programs.
+categories of every form of the reference programs; and two of the model's runtime, which need no model
+([the model's runtime § 11](05-model.md#11-held-by)): [`model.rs`](../../einaf/tests/model.rs), replay, the envelope
+and each typed failure from calls the binding recorded, and a line of the probe judged again; and
+[`prompts.rs`](../../einaf/tests/prompts.rs), the Ein of the prompts' files and of the probe's plan.
 
 `corpus.rs` runs the `ein` binary the gate built, `ein.rs/target/gate/ein`, which the gate's step before EinAf's
 builds, or the one `$EIN_BIN` names, and `contract.rs` reads H off its `ein show hyps`; without one each fails,
@@ -91,4 +103,5 @@ einaf outcome · examples/zebra2.ein --single
 
 The questions are `ein solve`'s: none for a description of R, `--single`, `--minimal` or `--maximal` with or without
 `--single`, `--count` and `--no-search`; the bounds are `--region-budget`, `--region-limit`, `--max-steps` and `-T`.
-`einaf --help` lists them.
+`einaf --help` lists them, and the model's subcommands, `render`, `generate`, `grammar`, `model` and `probe`, which
+[the model's runtime § 10](05-model.md#10-the-commands) states.
