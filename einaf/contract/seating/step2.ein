@@ -1,0 +1,65 @@
+;;; Ann, Bob and Cy sit in a row of three chairs. Ann sits next to Bob. Cy
+;;; does not sit in the first chair. Bob does not sit in the middle chair. Who
+;;; sits in the first chair?
+;;;
+;;; Step 2: step 1's statements and answer query unchanged; the complete
+;;; ontology (the link the theory reads the verbs into, the kinds and their
+;;; place, and the row the first sentence speaks of); and a partial theory:
+;;; the library's theory of shared places selected, each verb read into it.
+
+
+;; ──── The statements ───────────────────────────────────────────
+
+(instance Ann    Person :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Bob    Person :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Cy     Person :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance First  Chair  :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Middle Chair  :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Third  Chair  :source "Ann, Bob and Cy sit in a row of three chairs.")
+(sits-next-to Ann Bob        :source "Ann sits next to Bob.")
+(not (sits-in Cy First)      :source "Cy does not sit in the first chair.")
+(not (sits-in Bob Middle)    :source "Bob does not sit in the middle chair.")
+
+;; *Who sits in the first chair?*
+(query :goal (sits-in ?who First) :goal-text "{?who} sits in the first chair.")
+
+
+;; ──── The ontology ─────────────────────────────────────────────
+
+(relation sits-in      Person Chair  :why "a {?3} sits in a {?4}")
+(relation sits-next-to Person Person :why "a {?3} sits next to a {?4}")
+(relation instance     T T           :why "{?3} is a {?4}")
+
+;; What the theory reads the verbs into, and the kinds.
+(relation same-chair       Attribute Attribute :why "a {?3} and a {?4} are at the same chair")
+(relation next-to          Attribute Attribute :why "a {?3}'s chair is next to a {?4}'s")
+(relation person-and-chair Person Chair        :why "a {?3} and a {?4}")
+(relation type             T T                 :why "{?3} is a kind of {?4}")
+(type Attribute T)
+(type Person    Attribute)
+(type Chair     Attribute)
+
+;; The row the first sentence speaks of: the middle chair is next to the
+;; other two.
+(next-to First Middle)
+(next-to Middle Third)
+
+
+;; ──── The theory ───────────────────────────────────────────────
+
+(import std.algebra :symbols (symmetric includes top meet))
+(import std.slots)
+
+;; A verb of a shared chair is a part of `same-chair`, a verb of a neighbour
+;; a part of `next-to`.
+(includes sits-in       same-chair)
+(includes sits-next-to  next-to)
+(symmetric same-chair)
+(symmetric next-to)
+
+;; `same-chair`'s classes are the chairs, each holding one person, and a chair
+;; names its class; `next-to` holds between people exactly where it holds
+;; between their chairs. Its obligations write the hypotheses: each person
+;; owes a chair, each chair a person.
+(slot-partition same-chair instance type Attribute Chair)
+(slot-spatial   same-chair next-to instance Chair)

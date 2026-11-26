@@ -445,7 +445,7 @@ pub(crate) fn faulted(
     f
 }
 
-fn finding(d: &ein_core::Diagnostic) -> Finding {
+pub(crate) fn finding(d: &ein_core::Diagnostic) -> Finding {
     Finding {
         kind: d.kind.name().to_string(),
         severity: d.severity.name().to_string(),

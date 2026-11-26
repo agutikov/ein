@@ -12,8 +12,10 @@ load's result and the read-out of the run, and from nothing the kernel printed. 
 
 ## 1. The bounded call
 
-`einaf::kernel::call(source, questions, bounds)` is the one door to the kernel: a program, a file or a text, and the
-questions asked of it go in, and one object a question comes out, in their order, whatever the program is.
+`einaf::kernel::call(source, questions, bounds)` is the one door to the kernel's answers: a program, a file or a
+text, and the questions asked of it go in, and one object a question comes out, in their order, whatever the program
+is. (`einaf::kernel::forms` reads a program's forms and asks it nothing, so it saturates nothing and needs no bound;
+[the contract](04-contract.md#4-what-each-form-is-the-categories) reads it.)
 
 - **The program is loaded once**, as `ein solve` loads it: parsed and loaded against its file's directory, then
   judged, `ein_infer::mechanisms::judge_loaded`, which refuses what the binary refuses. Each question is asked of a

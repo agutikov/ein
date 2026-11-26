@@ -1,0 +1,25 @@
+;;; Bob has 5 apples. He gave 2 to Alice. How many apples does Bob have?
+;;;
+;;; Step 1: the statements in the text's words, the question as the answer
+;;; query, and a partial ontology: the relations they use. A number is a
+;;; numeral, `(n z 5)`, written before the calculator that reads it is
+;;; imported.
+
+
+;; ──── The statements ───────────────────────────────────────────
+
+;; *He* is Bob; *2* is 2 apples. The sentences' order is their time: Bob has
+;; 5 at the start, and the giving takes the start to the moment after.
+(has  Bob (n z 5) Apple Start             :source "Bob has 5 apples.")
+(gave Bob (n z 2) Apple Alice Start After :source "He gave 2 to Alice.")
+
+;; *How many apples does Bob have?*, after the giving.
+(query :goal (has Bob ?n Apple After) :goal-text "Bob has {?n} apples.")
+
+
+;; ──── The ontology ─────────────────────────────────────────────
+
+(relation has  Person Number Kind Moment
+  :why "a {?3} has a {?4} of {?5}s at a {?6}")
+(relation gave Person Number Kind Person Moment Moment
+  :why "a {?3} gave a {?4} of {?5}s to a {?6}, from a {?7} to a {?8}")

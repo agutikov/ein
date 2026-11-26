@@ -1,0 +1,35 @@
+;;; Ann is older than Bob. Bob is older than Cy. Who is the youngest?
+;;;
+;;; The complete program with its mechanism line deleted: no form states
+;;; the lattice, and the blind enumerator writes H.
+
+;; ──── The statements ───────────────────────────────────────────
+
+(older Ann Bob :source "Ann is older than Bob.")
+(older Bob Cy  :source "Bob is older than Cy.")
+
+;; *Who is the youngest?*
+(query :goal (youngest ?who) :goal-text "{?who} is the youngest")
+
+
+;; ──── The ontology ─────────────────────────────────────────────
+
+(relation person   Person        :why "{?3} is a person")
+(relation older    Person Person :why "a {?3} is older than a {?4}")
+(relation youngest Person        :why "a {?3} is the youngest")
+(person Ann :source "Ann is older than Bob.")
+(person Bob :source "Ann is older than Bob.")
+(person Cy  :source "Bob is older than Cy.")
+
+
+;; ──── The theory ───────────────────────────────────────────────
+
+;; Selected: the import lists the name the file writes.
+(import std.algebra :symbols (transitive))
+(transitive older)
+
+;; Synthesised: the library has no rule for a least element.
+(rule youngest-is-older-than-nobody ()
+  :match  (and (person ?p) (absent (older ?p ?q)))
+  :assert (youngest ?p)
+  :why    "{?p} is older than nobody, so {?p} is the youngest")

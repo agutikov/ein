@@ -1,0 +1,26 @@
+;;; Bob has 5 apples. Alice has 12 apples. Who has more apples, and by how
+;;; many?
+;;;
+;;; Step 1: the statements in the text's words, the question as the answer
+;;; query, and a partial ontology: the relations they use. A number is a
+;;; numeral, `(n z 5)`, written before the calculator that reads it is
+;;; imported.
+
+
+;; ──── The statements ───────────────────────────────────────────
+
+;; No sentence changes what anyone has: one moment, now.
+(has Bob   (n z 5)       Apple Now :source "Bob has 5 apples.")
+(has Alice (n (n z 1) 2) Apple Now :source "Alice has 12 apples.")
+
+;; *Who has more apples, and by how many?*
+(query :goal (has-more ?who ?by Apple ?other Now)
+       :goal-text "{?who} has {?by} more apples than {?other}.")
+
+
+;; ──── The ontology ─────────────────────────────────────────────
+
+(relation has      Person Number Kind Moment
+  :why "a {?3} has a {?4} of {?5}s at a {?6}")
+(relation has-more Person Number Kind Person Moment
+  :why "a {?3} has a {?4} more {?5}s than a {?6} at a {?7}")

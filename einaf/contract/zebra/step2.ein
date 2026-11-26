@@ -1,0 +1,146 @@
+;;; The Zebra puzzle (its text beside, text.txt), step 2: step 1's
+;;; statements and answer query unchanged; the complete ontology, which
+;;; stands in place of step 1's partial one (the verbs' passives and the verb
+;;; a pet's place is said in, what the theory reads the verbs into, the kinds
+;;; and their place, and the row the text speaks of and never states); and a
+;;; partial theory: the library's theory of shared houses selected, each verb
+;;; read into it.
+
+
+;; ──── The statements ───────────────────────────────────────────
+
+;; *There are five houses* names five things of one kind, and no more.
+(instance First  House :source "There are five houses.")
+(instance Second House :source "There are five houses.")
+(instance Middle House :source "There are five houses.")
+(instance Fourth House :source "There are five houses.")
+(instance Fifth  House :source "There are five houses.")
+
+(lives-in    Englishman Red         :source "The Englishman lives in the red house.")
+(owns        Spaniard   Dog         :source "The Spaniard owns the dog.")
+(is-drunk-in Coffee     Green       :source "Coffee is drunk in the green house.")
+(drinks      Ukrainian  Tea         :source "The Ukrainian drinks tea.")
+(is-immediately-to-the-right-of Green Ivory
+  :source "The green house is immediately to the right of the ivory house.")
+(owns        Old_Gold   Snail       :source "The Old Gold smoker owns snails.")
+(are-smoked-in Kools    Yellow      :source "Kools are smoked in the yellow house.")
+(is-drunk-in Milk       Middle      :source "Milk is drunk in the middle house.")
+(lives-in    Norwegian  First       :source "The Norwegian lives in the first house.")
+(lives-next-to Chesterfields Fox
+  :source "The man who smokes Chesterfields lives in the house next to the man with the fox.")
+(are-smoked-next-to Kools Horse
+  :source "Kools are smoked in the house next to the house where the horse is kept.")
+(drinks      Lucky_Strike Juice     :source "The Lucky Strike smoker drinks orange juice.")
+(smokes      Japanese   Parliament  :source "The Japanese smokes Parliaments.")
+(lives-next-to Norwegian Blue       :source "The Norwegian lives next to the blue house.")
+
+;; *Who drinks water? Who owns the zebra?*
+(query
+  :goal (and (drinks ?who_water Water) (owns ?who_zebra Zebra))
+  :goal-text "The {?who_water} drinks water. The {?who_zebra} owns the zebra.")
+
+
+;; ──── The ontology ─────────────────────────────────────────────
+
+;; The verbs, each with the words its sentences put in its places.
+(relation lives-in       Man House       :why "a {?3} lives in a {?4}")
+(relation owns           Man Pet         :why "a {?3} owns a {?4}")
+(relation is-drunk-in    Drink House     :why "a {?3} is drunk in a {?4}")
+(relation drinks         Man Drink       :why "a {?3} drinks a {?4}")
+(relation are-smoked-in  Cigarette House :why "{?3}s are smoked in a {?4}")
+(relation smokes         Man Cigarette   :why "a {?3} smokes {?4}s")
+(relation is-immediately-to-the-right-of House House
+  :why "a {?3} is immediately to the right of a {?4}")
+(relation lives-next-to  Man Man         :why "a {?3} lives in the house next to a {?4}")
+(relation are-smoked-next-to Cigarette House
+  :why "{?3}s are smoked in the house next to a {?4}")
+
+;; Their passives, and the verb a pet's place is said in, which the text uses
+;; only inside a description (*the house where the horse is kept*).
+(relation is-drunk-by    Drink Man       :why "a {?3} is drunk by a {?4}")
+(relation are-smoked-by  Cigarette Man   :why "{?3}s are smoked by a {?4}")
+(relation is-owned-by    Pet Man         :why "a {?3} is owned by a {?4}")
+(relation is-lived-in-by House Man       :why "a {?3} is lived in by a {?4}")
+(relation is-kept-in     Pet House       :why "a {?3} is kept in a {?4}")
+
+;; What the theory reads the verbs into, and the kinds.
+(relation same-house     Attribute Attribute :why "a {?3} and a {?4} are in the same house")
+(relation next-to        Attribute Attribute :why "a {?3}'s house is next to a {?4}'s")
+(relation man-and-house       Nationality House :why "a {?3} and a {?4}")
+(relation drink-and-house     Drink House       :why "a {?3} and a {?4}")
+(relation cigarette-and-house Cigarette House   :why "a {?3} and a {?4}")
+(relation pet-and-house       Pet House         :why "a {?3} and a {?4}")
+(relation instance       T T                 :why "{?3} is a {?4}")
+(relation type           T T                 :why "{?3} is a kind of {?4}")
+
+(type Attribute   T)
+(type House       Attribute)
+(type Color       Attribute)
+(type Nationality Attribute)
+(type Drink       Attribute)
+(type Cigarette   Attribute)
+(type Pet         Attribute)
+
+;; What kind of thing each name is, quoting the first sentence that names it.
+(instance Red           Color       :source "The Englishman lives in the red house.")
+(instance Green         Color       :source "Coffee is drunk in the green house.")
+(instance Ivory         Color       :source "The green house is immediately to the right of the ivory house.")
+(instance Yellow        Color       :source "Kools are smoked in the yellow house.")
+(instance Blue          Color       :source "The Norwegian lives next to the blue house.")
+(instance Englishman    Nationality :source "The Englishman lives in the red house.")
+(instance Spaniard      Nationality :source "The Spaniard owns the dog.")
+(instance Ukrainian     Nationality :source "The Ukrainian drinks tea.")
+(instance Norwegian     Nationality :source "The Norwegian lives in the first house.")
+(instance Japanese      Nationality :source "The Japanese smokes Parliaments.")
+(instance Coffee        Drink       :source "Coffee is drunk in the green house.")
+(instance Tea           Drink       :source "The Ukrainian drinks tea.")
+(instance Milk          Drink       :source "Milk is drunk in the middle house.")
+(instance Juice         Drink       :source "The Lucky Strike smoker drinks orange juice.")
+(instance Water         Drink       :source "Who drinks water?")
+(instance Old_Gold      Cigarette   :source "The Old Gold smoker owns snails.")
+(instance Kools         Cigarette   :source "Kools are smoked in the yellow house.")
+(instance Chesterfields Cigarette   :source "The man who smokes Chesterfields lives in the house next to the man with the fox.")
+(instance Lucky_Strike  Cigarette   :source "The Lucky Strike smoker drinks orange juice.")
+(instance Parliament    Cigarette   :source "The Japanese smokes Parliaments.")
+(instance Dog           Pet         :source "The Spaniard owns the dog.")
+(instance Snail         Pet         :source "The Old Gold smoker owns snails.")
+(instance Fox           Pet         :source "The man who smokes Chesterfields lives in the house next to the man with the fox.")
+(instance Horse         Pet         :source "Kools are smoked in the house next to the house where the horse is kept.")
+(instance Zebra         Pet         :source "Who owns the zebra?")
+
+;; The row the text speaks of, *the first*, *the middle*, *to the right of*,
+;; *next to*, and never states.
+(is-immediately-to-the-right-of Second First)
+(is-immediately-to-the-right-of Middle Second)
+(is-immediately-to-the-right-of Fourth Middle)
+(is-immediately-to-the-right-of Fifth  Fourth)
+
+
+;; ──── The theory ───────────────────────────────────────────────
+
+(import std.algebra :symbols (symmetric includes converse compose top meet))
+(import std.slots)
+
+;; A verb of a shared house is a part of `same-house`, a verb of a neighbour
+;; a part of `next-to`: `(includes drinks same-house)` copies every `drinks`
+;; fact into `same-house`.
+(includes lives-in      same-house)
+(includes owns          same-house)
+(includes is-drunk-in   same-house)
+(includes drinks        same-house)
+(includes are-smoked-in same-house)
+(includes smokes        same-house)
+(includes is-immediately-to-the-right-of next-to)
+(includes lives-next-to      next-to)
+(includes are-smoked-next-to next-to)
+(symmetric same-house)
+(symmetric next-to)
+
+;; `same-house`'s classes are the houses, each holding one value of every
+;; kind, and a house names its class; the two relations of a row hold
+;; between values exactly where they hold between their houses. Its
+;; obligations write the hypotheses: each value owes a house, each house a
+;; value of each kind.
+(slot-partition same-house instance type Attribute House)
+(slot-spatial   same-house is-immediately-to-the-right-of instance House)
+(slot-spatial   same-house next-to instance House)

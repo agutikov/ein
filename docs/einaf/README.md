@@ -10,13 +10,17 @@ question about its answer** ([the outcomes](01-outcomes.md)), read off the value
 of what the kernel guarantees of those values, each beside the test of Ein's that holds it ([the kernel's
 invariants](02-kernel-invariants.md)); and **the feedback object**, one value for what the kernel found of one
 program under one question, which a bounded call of the kernel returns and every later reader of the kernel reads
-([the feedback object](03-feedback.md)).
+([the feedback object](03-feedback.md)). And what it asks of a formalization, written before what enforces most of
+it: **the formalization contract** ([the contract](04-contract.md)), a text in, one program in five parts made in
+three steps out, each form of it in one row of a table of categories that EinAf computes, with the contract's worked
+example and five texts through the three steps by hand, each step's program a file its tests run.
 
 | page | what |
 |---|---|
 | [01-outcomes.md](01-outcomes.md) | the seven outcomes: each, what it is read from, the test that holds the reading; the questions and the readings |
 | [02-kernel-invariants.md](02-kernel-invariants.md) | what the kernel guarantees of an answer, each with the test or the decision of Ein's that holds it |
 | [03-feedback.md](03-feedback.md) | the bounded call, and the feedback object it returns, `einaf-feedback/1`, key by key; what the bounds do not stop |
+| [04-contract.md](04-contract.md) | the formalization contract: the task, the three steps and their five design questions, the categories of a program's forms, what the model receives, what a run records; the steps by hand |
 
 ## What it depends on
 
@@ -26,8 +30,11 @@ read-out. Its tests read the corpus through `ein-corpus`, the engine's test help
 [`corpus/corpus.toml`](../../corpus/corpus.toml) and runs a sweep on the engine's worker pool.
 
 **One module calls the library**, `einaf::kernel` ([`einaf/src/kernel/`](../../einaf/src/kernel/mod.rs)), through
-one function, the bounded call `einaf::kernel::call`: it loads a program, asks it each question under the kernel's
-bounds and returns one feedback object a question; nothing else in the package names an item of Ein's crates. Its
+two functions: the bounded call `einaf::kernel::call`, which loads a program, asks it each question under the
+kernel's bounds and returns one feedback object a question; and `einaf::kernel::forms`, which parses and loads a
+program and asks it nothing, and returns its top-level forms, each as `ein_ir::dump_canonical` prints it and by its
+shape, with what its imports bring. Nothing else in the package names an item of Ein's crates:
+`einaf::contract`, the contract's categories, reads the forms. Its
 JSON is written by `serde_json`, and its digests are SHA-256, by `sha2`.
 
 ## The package
@@ -53,17 +60,21 @@ cargo build --release --manifest-path einaf/Cargo.toml        # einaf/target/rel
 cargo test --manifest-path einaf/Cargo.toml --profile gate     # EinAf's tests, a step of the gate after Ein's
 ```
 
-The tests are four files under [`einaf/tests/`](../../einaf/tests/), each running programs through the bounded call:
+The tests are five files under [`einaf/tests/`](../../einaf/tests/), each running programs through the bounded call:
 [`outcomes.rs`](../../einaf/tests/outcomes.rs), one test an outcome, on a program that has it, and the programs
 whose saturation has no fixpoint, EinAf's own fixtures under [`einaf/tests/fixtures/`](../../einaf/tests/fixtures/);
 [`corpus.rs`](../../einaf/tests/corpus.rs), every corpus program that is not `slow` asked every question, each outcome
 held to what the corpus says of the program, every object read back as itself through JSON, and each question the
 program's entry declares held to what `ein solve --json-summary` says of the same run (`--nocapture` prints the count
 of each outcome under each reading, and of the runs compared); [`refused.rs`](../../einaf/tests/refused.rs), every
-refused fixture under `examples/broken/`; and [`cli.rs`](../../einaf/tests/cli.rs), the command.
+refused fixture under `examples/broken/`; [`cli.rs`](../../einaf/tests/cli.rs), the command; and
+[`contract.rs`](../../einaf/tests/contract.rs), the contract's examples, the programs under
+[`einaf/contract/`](../../einaf/contract/), each held to what [the contract](04-contract.md#8-held-by) says, and the
+categories of every form of the reference programs.
 
 `corpus.rs` runs the `ein` binary the gate built, `ein.rs/target/gate/ein`, which the gate's step before EinAf's
-builds, or the one `$EIN_BIN` names; without one it fails, naming the command that builds it.
+builds, or the one `$EIN_BIN` names, and `contract.rs` reads H off its `ein show hyps`; without one each fails,
+naming the command that builds it.
 
 ## The command
 

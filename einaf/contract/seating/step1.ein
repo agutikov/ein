@@ -1,0 +1,31 @@
+;;; Ann, Bob and Cy sit in a row of three chairs. Ann sits next to Bob. Cy
+;;; does not sit in the first chair. Bob does not sit in the middle chair. Who
+;;; sits in the first chair?
+;;;
+;;; Step 1: the statements in the text's words, the question as the answer
+;;; query, and a partial ontology: the relations they use. The first sentence
+;;; names six things of two kinds, and is six facts; *does not* is a stored
+;;; negation of the verb.
+
+
+;; ──── The statements ───────────────────────────────────────────
+
+(instance Ann    Person :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Bob    Person :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Cy     Person :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance First  Chair  :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Middle Chair  :source "Ann, Bob and Cy sit in a row of three chairs.")
+(instance Third  Chair  :source "Ann, Bob and Cy sit in a row of three chairs.")
+(sits-next-to Ann Bob        :source "Ann sits next to Bob.")
+(not (sits-in Cy First)      :source "Cy does not sit in the first chair.")
+(not (sits-in Bob Middle)    :source "Bob does not sit in the middle chair.")
+
+;; *Who sits in the first chair?*
+(query :goal (sits-in ?who First) :goal-text "{?who} sits in the first chair.")
+
+
+;; ──── The ontology ─────────────────────────────────────────────
+
+(relation sits-in      Person Chair  :why "a {?3} sits in a {?4}")
+(relation sits-next-to Person Person :why "a {?3} sits next to a {?4}")
+(relation instance     T T           :why "{?3} is a {?4}")

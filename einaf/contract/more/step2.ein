@@ -1,0 +1,32 @@
+;;; Bob has 5 apples. Alice has 12 apples. Who has more apples, and by how
+;;; many?
+;;;
+;;; Step 2: step 1's statements and answer query unchanged, the complete
+;;; ontology, and a partial theory: the library's calculator, selected, which
+;;; gives the numerals their meaning.
+
+
+;; ──── The statements ───────────────────────────────────────────
+
+;; No sentence changes what anyone has: one moment, now.
+(has Bob   (n z 5)       Apple Now :source "Bob has 5 apples.")
+(has Alice (n (n z 1) 2) Apple Now :source "Alice has 12 apples.")
+
+;; *Who has more apples, and by how many?*
+(query :goal (has-more ?who ?by Apple ?other Now)
+       :goal-text "{?who} has {?by} more apples than {?other}.")
+
+
+;; ──── The ontology ─────────────────────────────────────────────
+
+(relation has      Person Number Kind Moment
+  :why "a {?3} has a {?4} of {?5}s at a {?6}")
+(relation has-more Person Number Kind Person Moment
+  :why "a {?3} has a {?4} more {?5}s than a {?6} at a {?7}")
+
+
+;; ──── The theory ───────────────────────────────────────────────
+
+(import std.math.decimal-arith :symbols (sub diff-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))

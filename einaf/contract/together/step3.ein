@@ -1,0 +1,70 @@
+;;; Bob has 5 apples. He gave 2 to Alice. How many apples do they have
+;;; together?
+;;;
+;;; Step 3, the complete program: step 2's program, the rules the library
+;;; does not have, each saying what it asks the calculator and what it reads
+;;; back, and the hypothesis mechanism.
+
+
+;; ──── The statements ───────────────────────────────────────────
+
+;; *He* is Bob; *2* is 2 apples; *they* are Bob and Alice. The sentences'
+;; order is their time: Bob has 5 at the start, and the giving takes the
+;; start to the moment after.
+(has  Bob (n z 5) Apple Start             :source "Bob has 5 apples.")
+(gave Bob (n z 2) Apple Alice Start After :source "He gave 2 to Alice.")
+
+;; *How many apples do they have together?*, after the giving.
+(query :goal (have-together Bob Alice ?n Apple After)
+       :goal-text "Bob and Alice have {?n} apples together.")
+
+
+;; ──── The ontology ─────────────────────────────────────────────
+
+(relation has  Person Number Kind Moment
+  :why "a {?3} has a {?4} of {?5}s at a {?6}")
+(relation gave Person Number Kind Person Moment Moment
+  :why "a {?3} gave a {?4} of {?5}s to a {?6}, from a {?7} to a {?8}")
+(relation have-together Person Person Number Kind Moment
+  :why "a {?3} and a {?4} have a {?5} of {?6}s together at a {?7}")
+
+
+;; ──── The theory ───────────────────────────────────────────────
+
+(import std.math.decimal-arith :symbols (add sum-of sub diff-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; Synthesised: what a giver has after giving is what the giver had less what
+;; was given, and what the receiver has after is what the receiver had and
+;; what was given; what two have together is the sum of what each has.
+(rule giving-asks-the-difference ()
+  :match  (and (gave ?who ?k ?kind ?whom ?t0 ?t1) (has ?who ?m ?kind ?t0))
+  :assert (sub ?m ?k)
+  :why    "{?who} had {?m} {?kind}s and gave {?k}: ask {?m} less {?k}")
+(rule giving-leaves-the-difference ()
+  :match  (and (gave ?who ?k ?kind ?whom ?t0 ?t1) (has ?who ?m ?kind ?t0)
+               (diff-of ?m ?k ?d z))
+  :assert (has ?who ?d ?kind ?t1)
+  :why    "{?who} had {?m} {?kind}s and gave {?k}, so {?who} has {?d}")
+(rule receiving-asks-the-sum ()
+  :match  (and (gave ?who ?k ?kind ?whom ?t0 ?t1) (has ?whom ?m ?kind ?t0))
+  :assert (add ?m ?k)
+  :why    "{?whom} had {?m} {?kind}s and was given {?k}: ask {?m} and {?k}")
+(rule receiving-adds-the-sum ()
+  :match  (and (gave ?who ?k ?kind ?whom ?t0 ?t1) (has ?whom ?m ?kind ?t0)
+               (sum-of ?m ?k ?s))
+  :assert (has ?whom ?s ?kind ?t1)
+  :why    "{?whom} had {?m} {?kind}s and was given {?k}, so {?whom} has {?s}")
+(rule together-asks-the-sum ()
+  :match  (and (has ?a ?x ?kind ?t) (has ?b ?y ?kind ?t) (neq ?a ?b))
+  :assert (add ?x ?y)
+  :why    "{?a} has {?x} {?kind}s and {?b} has {?y}: ask {?x} and {?y}")
+(rule together-is-the-sum ()
+  :match  (and (has ?a ?x ?kind ?t) (has ?b ?y ?kind ?t) (neq ?a ?b)
+               (sum-of ?x ?y ?s))
+  :assert (have-together ?a ?b ?s ?kind ?t)
+  :why    "{?a} and {?b} have {?s} {?kind}s together")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)

@@ -2,7 +2,7 @@
 //! library, `ein-ir` to load, `ein-infer` to ask, `ein-render` to read what
 //! a run says beside its answer.
 //!
-//! **One door, the bounded call** ([`call`]): a program and the questions
+//! **One door to an answer, the bounded call** ([`call`]): a program and the questions
 //! asked of it go in, and one [`Feedback`] for each question comes out,
 //! whatever the program is. The program is loaded once, as `ein solve`
 //! loads it: the text parsed and loaded against the program file's
@@ -21,10 +21,17 @@
 //! its kind (`SolveError::kind`); the answer by the read-out's fields. No
 //! part of the object is read back from text the kernel printed.
 //!
+//! **And one reading of a program that asks it nothing** ([`forms()`]): its
+//! top-level forms, each as `ein_ir::dump_canonical` prints it and by its
+//! shape, and what its imports bring, parsed and loaded as `ein solve` loads
+//! it and nothing saturated, so that no bound is needed. It is what the
+//! contract's categories are computed from.
+//!
 //! Nothing else in EinAf names an item of Ein's crates, and nothing here
-//! calls them but through [`call`].
+//! calls them but through [`call`] and [`forms()`].
 
 mod feedback;
+mod forms;
 mod outcome;
 mod program;
 
@@ -32,6 +39,7 @@ pub use feedback::{
     Asked, ClaimPart, ClassPart, Core, ExpectPart, Fault, Feedback, Finding, Flagged, KernelId,
     Owed, Owing, Place, ProgramId, QueryPart, Readings, SCHEMA, Site, StatePart, Stop, Word, Work,
 };
+pub use forms::{Form, Forms, Library, Shape, Written, forms};
 pub use outcome::{Outcome, Reading};
 
 use std::panic::{AssertUnwindSafe, catch_unwind};

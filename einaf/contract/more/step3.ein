@@ -1,0 +1,48 @@
+;;; Bob has 5 apples. Alice has 12 apples. Who has more apples, and by how
+;;; many?
+;;;
+;;; Step 3, the complete program: step 2's program, the rules the library
+;;; does not have, each saying what it asks the calculator and what it reads
+;;; back, and the hypothesis mechanism.
+
+
+;; ──── The statements ───────────────────────────────────────────
+
+;; No sentence changes what anyone has: one moment, now.
+(has Bob   (n z 5)       Apple Now :source "Bob has 5 apples.")
+(has Alice (n (n z 1) 2) Apple Now :source "Alice has 12 apples.")
+
+;; *Who has more apples, and by how many?*
+(query :goal (has-more ?who ?by Apple ?other Now)
+       :goal-text "{?who} has {?by} more apples than {?other}.")
+
+
+;; ──── The ontology ─────────────────────────────────────────────
+
+(relation has      Person Number Kind Moment
+  :why "a {?3} has a {?4} of {?5}s at a {?6}")
+(relation has-more Person Number Kind Person Moment
+  :why "a {?3} has a {?4} more {?5}s than a {?6} at a {?7}")
+
+
+;; ──── The theory ───────────────────────────────────────────────
+
+(import std.math.decimal-arith :symbols (sub diff-of))
+(import std.math.decimal :symbols (n))
+(import std.math.arith :symbols (z))
+
+;; Synthesised: of two who have the same kind at one moment, the one who has
+;; more is the one whose count less the other's is more than nothing, and by
+;; that difference.
+(rule two-counts-ask-the-difference ()
+  :match  (and (has ?a ?x ?kind ?t) (has ?b ?y ?kind ?t) (neq ?a ?b))
+  :assert (sub ?x ?y)
+  :why    "{?a} has {?x} {?kind}s and {?b} has {?y}: ask {?x} less {?y}")
+(rule more-is-a-difference-past-nothing ()
+  :match  (and (has ?a ?x ?kind ?t) (has ?b ?y ?kind ?t) (neq ?a ?b)
+               (diff-of ?x ?y ?d z) (neq ?d z))
+  :assert (has-more ?a ?d ?kind ?b ?t)
+  :why    "{?a} has {?x} {?kind}s and {?b} has {?y}, so {?a} has {?d} more")
+
+;; The hypothesis mechanism: none; the text states every fact there is.
+(solve :no-search)
