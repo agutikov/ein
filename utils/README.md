@@ -1,6 +1,6 @@
 # `utils/` — the scripts that are not the engine
 
-**Forty-five scripts** (`ls utils/*.py utils/*.sh | wc -l`), **all but nineteen driving `ein.rs`** — bar
+**Forty-six scripts** (`ls utils/*.py utils/*.sh | wc -l`), **all but twenty driving `ein.rs`** — bar
 [`doc_audit.py`](doc_audit.py), whose subject is the documentation and the references of every tracked file, and
 which reads the crates as text, [`check_release_voice.py`](check_release_voice.py),
 [`check_doc_blocks.py`](check_doc_blocks.py),
@@ -8,7 +8,8 @@ which reads the crates as text, [`check_release_voice.py`](check_release_voice.p
 [`check_hashmap_iteration.py`](check_hashmap_iteration.py), [`check_test_scratch.py`](check_test_scratch.py),
 [`check_gate_steps.py`](check_gate_steps.py) and [`check_tool_mirrors.py`](check_tool_mirrors.py),
 which read the tree or a test run's scratch directory as text, [`render_diagrams.py`](render_diagrams.py), which
-draws the documentation's diagrams, [`stdlib_manifest.py`](stdlib_manifest.py), which
+draws the documentation's diagrams, [`md_math.py`](md_math.py), which rewrites a Markdown note's escaped
+formulas so that they render, [`stdlib_manifest.py`](stdlib_manifest.py), which
 writes the stdlib's manifest, [`gen_arith_tables.py`](gen_arith_tables.py), [`gen_num9.py`](gen_num9.py),
 [`gen_gates.py`](gen_gates.py), [`gen_arith_examples.py`](gen_arith_examples.py),
 [`gen_zebra2_variants.py`](gen_zebra2_variants.py), [`gen_send_written.py`](gen_send_written.py),
@@ -53,6 +54,7 @@ are.
 | [`render_knowledge_graph.sh`](render_knowledge_graph.sh) | `docs/lib/knowledge-graph.dot` → SVG/PNG, choosing among `dot` / `fdp` / `sfdp` / `osage` | Graphviz |
 | [`render_knowledge_graph_cy.py`](render_knowledge_graph_cy.py) | the same graph as an interactive Cytoscape.js page (`docs/lib/knowledge-graph.cy/`) | — |
 | [`package_vscode_ein.sh`](package_vscode_ein.sh) | [`vscode-ein/`](vscode-ein/) → an installable `.vsix` | `@vscode/vsce` |
+| [`md_math.py`](md_math.py) | a Markdown note whose formulas are escaped for Markdown (`\\[ … \\]`, `\\( … \\)`) → each display formula between two `$$` lines, each inline one between `$`, Markdown's escapes undone inside a formula (`\\{` → `\{`, `\_` → `_`) and nothing else changed; `--check` changes nothing and exits 1 where a file would change. Written for the notes on papers under `plans/m2_nl_to_ir/reading/` | — |
 
 > **`render_examples.sh` renders all five views again**, since M1e2
 > S1e2.1.3. The **IR-graph** and **unified-KB** views were the two it lost

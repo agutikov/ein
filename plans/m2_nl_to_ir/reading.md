@@ -2,7 +2,9 @@
 
 What M2's work read, grouped by the question each entry informs, one line an entry. Written by
 [S2.2.1](p2.2_formalizer/s2.2.1_contract.md) (its T2.2.1.5); a stage that reads something for its work adds the
-line here. It is the process's, and no page of `docs/einaf/` cites it.
+line here. It is the process's, and no page of `docs/einaf/` cites it. Notes on a paper are under
+[`reading/`](reading/), one file a paper named by its arXiv id, their formulas written as `$$` and `$`
+(`python3 utils/md_math.py --check plans/m2_nl_to_ir/reading/*.md`).
 
 ## Constrained generation: what a grammar can hold a model to — informs [S2.2.3](p2.2_formalizer/s2.2.3_gbnf.md)
 
@@ -27,8 +29,8 @@ line here. It is the process's, and no page of `docs/einaf/` cites it.
 ## Models that call a solver as a tool — informs [S2.4.6](p2.4_loop/s2.4.6_ein_as_a_tool.md) and [Q-M2.13](open_questions/einaf/Q-M2.13-who-calls-the-kernel.md)
 
 - Gao et al., *PAL: Program-aided Language Models* (2022), [arXiv:2211.10435](https://arxiv.org/abs/2211.10435): the model writes a program and an interpreter answers; the filter's shape with Python for Ein.
-- Pan et al., *Logic-LM* (2023), [arXiv:2305.12295](https://arxiv.org/abs/2305.12295): a problem formalized into a solver's language, the solver's error fed back for self-refinement.
-- Ye et al., *SatLM* (2023), [arXiv:2305.09656](https://arxiv.org/abs/2305.09656): a declarative specification handed to a SAT solver instead of a chain of thought.
+- Pan et al., *Logic-LM* (2023), [arXiv:2305.12295](https://arxiv.org/abs/2305.12295): a problem formalized into a solver's language, the solver's error fed back for self-refinement. The user's notes: [`reading/2305.12295.md`](reading/2305.12295.md).
+- Ye et al., *SatLM* (2023), [arXiv:2305.09656](https://arxiv.org/abs/2305.09656): a declarative specification handed to a SAT solver instead of a chain of thought. The user's notes: [`reading/2305.09656.md`](reading/2305.09656.md).
 - Olausson et al., *LINC* (2023), [arXiv:2310.15164](https://arxiv.org/abs/2310.15164): first-order logic for a prover, with a vote over several formalizations.
 - Schick et al., *Toolformer* (2023), [arXiv:2302.04761](https://arxiv.org/abs/2302.04761), and Yao et al., *ReAct* (2022), [arXiv:2210.03629](https://arxiv.org/abs/2210.03629): a tool called inside the model's own reasoning, the arrangement the tool arm takes.
 - [`docs/lib/12-llm-and-reasoning-benchmarks.md`](../../docs/lib/12-llm-and-reasoning-benchmarks.md#8-common-architectures-evaluated-against-these): its table of architectures, PAL, Toolformer and ReAct among them.
