@@ -368,7 +368,11 @@ says Ein; `c/`, `nl2smt/` and `docs/lib/` are outside both projects.
   ([`03-feedback.md`](docs/einaf/03-feedback.md)), whose outcome is one of
   **the seven** (invalid, flagged, not decided, inconsistent, incomplete,
   several, one) under each reading, the part of R *one* and *several* are
-  counted over ([`01-outcomes.md`](docs/einaf/01-outcomes.md)). Its tests are
+  counted over ([`01-outcomes.md`](docs/einaf/01-outcomes.md)). Beside it,
+  `einaf::kernel::forms` reads a program's forms, loaded and asked nothing,
+  which `einaf::contract` puts each in a category of the **formalization
+  contract** ([`04-contract.md`](docs/einaf/04-contract.md)), whose worked
+  programs, each step of each text, are `einaf/contract/`. Its tests are
   a step of the gate after Ein's: one test an outcome, the command, every
   refused fixture, and every corpus program that is not `slow` under every
   question, held to its group, its exit, its claims and the engine's static
