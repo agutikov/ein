@@ -9,7 +9,7 @@ host, which the work has to know and nothing else holds.
 
 - **An id `L-M2.<n>`**, kept and never reused (M1f's findings were `L-n`, and are the followups' now). **One sequence
   for the milestone and its phases**: a phase takes the next free id, whichever folder it files in. **The next free id
-  is L-M2.11.**
+  is L-M2.15.**
 - **One file a finding**, `<topic>/L-M2.<n>-<slug>.md`, under a topic folder: its id and title, its status (open, or
   closed and by what), where it was found and its owner, then what was found (the record's words where a record
   states it), the evidence, and what it costs.
@@ -21,8 +21,8 @@ host, which the work has to know and nothing else holds.
 
 None found at the milestone's level: M2's README and [its analysis](../analysis/README.md) state no finding of this
 kind that something else does not hold (the host's, for one, is [`analysis/host.md`](../analysis/host.md)'s). Those
-below are P2.1's, moved here open at its close, 2026-11-26. L-M2.5 to L-M2.10 are P2.2's, filed by S2.2.0a,
-S2.2.1 and S2.2.2 in [its findings](../p2.2_formalizer/findings/README.md).
+below are P2.1's, moved here open at its close, 2026-11-26. L-M2.5 to L-M2.14 are P2.2's, filed by S2.2.0a,
+S2.2.1, S2.2.2 and S2.2.3 in [its findings](../p2.2_formalizer/findings/README.md).
 
 | id | finding | topic | status |
 |---|---|---|---|
@@ -38,7 +38,9 @@ One line a phase whose `findings/` holds entries, so that every id is found from
   with no bound, and Ein's API change leaving EinAf unbuilt until its own commit. At the phase's close, 2026-11-26,
   the three open moved [here](#index), and L-M2.3, closed in the phase by S2.1.3 (`0ab1aef0`), went with its folder
   (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`).
-- **L-M2.5 to L-M2.10 are P2.2's**, in [its findings](../p2.2_formalizer/findings/README.md): L-M2.5 by S2.2.0a, L-M2.6
+- **L-M2.5 to L-M2.14 are P2.2's**, in [its findings](../p2.2_formalizer/findings/README.md): L-M2.5 by S2.2.0a, L-M2.6
   by S2.2.1, L-M2.7 to L-M2.10 by S2.2.2 (a lazy grammar's trigger, a kept context's greedy text, the excerpt's
-  example, the bounded call's clock on a runaway program).
+  example, the bounded call's clock on a runaway program), L-M2.11 to L-M2.14 by S2.2.3 (a grammar's cost on every
+  candidate, the grammars' catalogue, the marker the steps by hand lack, a grammar with no fence against a prompt that
+  asks for one).
 - P2.3 to P2.10: none yet.

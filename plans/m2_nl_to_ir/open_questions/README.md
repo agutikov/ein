@@ -10,7 +10,7 @@ milestone was *NL → IR*; they keep their numbers. **Q-M2.n** is the milestone-
 ([`analysis/`](../analysis/README.md)), Q-M2.12–13 with the user's answers of that day, Q-M2.14–15 with the
 answers that followed them, Q-M2.16 with the re-plan, Q-M2.17 with the user's answers to the re-plan, Q-M2.18–21 with
 P2.1's report, filed in the phase's folder and moved here at its close ([below](#questions-of-a-phase)), Q-M2.22 with P2.2's re-plan to the
-user's steps, Q-M2.23 and Q-M2.24 with S2.2.0a, Q-M2.25 and Q-M2.26 with S2.2.1, and Q-M2.27 with S2.2.2, filed in that phase's folder.
+user's steps, Q-M2.23 and Q-M2.24 with S2.2.0a, Q-M2.25 and Q-M2.26 with S2.2.1, Q-M2.27 with S2.2.2, and Q-M2.28 and Q-M2.29 with S2.2.3, filed in that phase's folder.
 
 **Q-M2.5, Q-M2.6 and Q-M2.7 were this ledger's Q23, Q24 and Q25 until 2026-11-25.** Those three ids were already the
 root ledger's, given to questions of M1's, and two of them are decision files under `docs/decisions/` (a premise
@@ -42,7 +42,7 @@ about the harness is the second kind.
 | [Q11](formalizer/Q11-link-grammar-value.md) | Does link-grammar enrich LLM input usefully, or is it dead weight? | [S2.6.4](../p2.6_ablations/s2.6.4_representation_ablations.md), by experiment |
 | [Q-M2.3](answer/Q-M2.3-what-is-the-unit-of-faithfulness-without-a-gold-theory.md) | What is the unit of faithfulness without a gold theory? | [S2.4.4](../p2.4_loop/s2.4.4_faithfulness.md) |
 | [Q-M2.4](answer/Q-M2.4-is-the-fixed-point-syntactic-or-semantic.md) | Is the fixed point syntactic or semantic? | [S2.4.1](../p2.4_loop/s2.4.1_state_machine.md) |
-| [Q-M2.6](formalizer/Q-M2.6-one-gbnf-or-many.md) | One GBNF grammar per task, or one grammar for everything? | [S2.2.3](../p2.2_formalizer/s2.2.3_gbnf.md) |
+| [Q-M2.6](formalizer/Q-M2.6-one-gbnf-or-many.md) | One GBNF grammar per task, or one grammar for everything? | [S2.2.3](../p2.2_formalizer/s2.2.3_gbnf.md); its default, for the user's review: *many*, a grammar a step, the whole grammar kept for a program in one call |
 | [Q-M2.10](answer/Q-M2.10-what-does-ein-certifies-a-unique-model-mean-on-r.md) | What does *Ein certifies a unique model* mean on R? | **the user, after experiments** (*"it depends on problem shape"*) |
 | [Q-M2.15](milestone/Q-M2.15-where-does-m2-stop-for-the-next-iteration-of-ein.md) | Where does M2 stop for the next iteration of Ein? | **the user**, at a level's gate; until then every gate is a stop |
 | [Q-M2.18](einaf/Q-M2.18-are-einafs-fmt-and-clippy-steps-of-the-gate.md) | Are EinAf's fmt and clippy steps of the gate? | **the user**; P2.1's default stands meanwhile ([its defaults](../defaults/p2.1.md)) |
@@ -91,7 +91,7 @@ same topic, and what is ruled goes with the phase's folder, where `git log` keep
 | phase | its questions |
 |---|---|
 | P2.1 | none: Q-M2.18 to Q-M2.21, raised by its report, moved here open at its close, 2026-11-26, its folder deleted (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`) |
-| [P2.2](../p2.2_formalizer/README.md) | Q-M2.22, raised by the re-plan to the user's steps, Q-M2.23 and Q-M2.24, raised by S2.2.0a, Q-M2.25 and Q-M2.26, raised by S2.2.1, and Q-M2.27, raised by S2.2.2: [its open questions](../p2.2_formalizer/open_questions/README.md) |
+| [P2.2](../p2.2_formalizer/README.md) | Q-M2.22, raised by the re-plan to the user's steps, Q-M2.23 and Q-M2.24, raised by S2.2.0a, Q-M2.25 and Q-M2.26, raised by S2.2.1, Q-M2.27, raised by S2.2.2, and Q-M2.28 and Q-M2.29, raised by S2.2.3: [its open questions](../p2.2_formalizer/open_questions/README.md) |
 | [P2.3](../p2.3_benchmark/README.md) to [P2.10](../p2.10_result_artifact_demo/README.md) | none yet |
 
-**The next free id is Q-M2.28.**
+**The next free id is Q-M2.30.**

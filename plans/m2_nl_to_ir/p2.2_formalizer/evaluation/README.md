@@ -14,7 +14,8 @@ E-104 to E-113, filed by [S2.2.0a](../s2.2.0a_zebra_formulations.md) on 2026-11-
 [its analysis of the six Zebra encodings](../zebra_formulations/README.md); E-114 to E-116, filed by
 [S2.2.1](../s2.2.1_contract.md) the same day from the steps by hand of
 [the contract](../../../../docs/einaf/04-contract.md#7-the-steps-by-hand); E-117 to E-119, filed by
-[S2.2.2](../s2.2.2_model_runtime.md) the same day from [its probe of Ein written by the model with no grammar](../model_runtime/README.md).
+[S2.2.2](../s2.2.2_model_runtime.md) the same day from [its probe of Ein written by the model with no grammar](../model_runtime/README.md);
+E-120 to E-122, filed by [S2.2.3](../s2.2.3_gbnf.md) the same day from [its grammars of Ein](../grammars/README.md).
 
 | id | title | kind | topic | status | owner |
 |---|---|---|---|---|---|
@@ -34,3 +35,6 @@ E-104 to E-113, filed by [S2.2.0a](../s2.2.0a_zebra_formulations.md) on 2026-11-
 | [E-117](diagnostics/E-117-a-fence-around-a-program-is-the-parse-s-only-error-with-its-repair.md) | A fence around a program is the parse's only error, each fence line named with the repair that deletes it | strength | `diagnostics` | standing (a strength) | — |
 | [E-118](stdlib/E-118-a-numeral-written-with-two-digits-in-one-place-is-refuted-as-a-contradiction.md) | A numeral written with two digits in one place makes root dead, and the outcome reads as a contradiction | weakness | `stdlib` | open | none |
 | [E-119](natural-language/E-119-a-relation-s-why-that-names-an-arrow-its-declaration-lacks-loads.md) | A relation's `:why` that names an arrow its declaration does not have loads, and prints the reference as text | weakness | `natural-language` | open | none; the design, § 2.11 |
+| [E-120](language/E-120-a-string-glued-to-a-block-comment-is-refused-where-a-name-glued-to-one-is-not.md) | A string glued to a block comment is refused, where a name glued to one is a name and a comment | weakness | `language` | open | none |
+| [E-121](language/E-121-the-banked-table-of-refused-shapes-misses-two-of-the-lexer-s-token-ends.md) | The parser's banked table of refused shapes, with the corpus, misses two of the lexer's token ends | gap | `language` | open | none |
+| [E-122](language/E-122-ein-s-syntax-is-context-free-but-for-two-refusals.md) | Ein's syntax, its lexer included, is a context-free language but for two refusals, and a second reader takes it exactly | strength | `language` | standing (a strength) | — |
