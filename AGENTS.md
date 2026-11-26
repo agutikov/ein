@@ -385,7 +385,12 @@ says Ein; `c/`, `nl2smt/` and `docs/lib/` are outside both projects.
   readers, and a grammar a step of the contract at request time, with
   EinAf's acceptor and sampler of the text llama.cpp reads
   ([`06-grammars.md`](docs/einaf/06-grammars.md); the inventory of its
-  hand-written rules is `einaf/grammars/README.md`). Its tests are
+  hand-written rules is `einaf/grammars/README.md`). The file has two
+  roots: `program`, Ein's language exactly, held to the parser on the
+  corpus; and `root`, what a model writes under, narrower than Ein: names of
+  `[A-Za-z0-9_.*+=-]`, no block comment, and no `<`, `>`, `|` or backtick in
+  a string or a comment, so that no chat-template marker and no fence can be
+  written; every step grammar holds the same. Its tests are
   a step of the gate after Ein's: one test an outcome, the command, every
   refused fixture, and every corpus program that is not `slow` under every
   question, held to its group, its exit, its claims and the engine's static
