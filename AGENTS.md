@@ -400,7 +400,16 @@ says Ein; `c/`, `nl2smt/` and `docs/lib/` are outside both projects.
   the whole program in one call, each step's program judged at root with the
   writer of H (`einaf::kernel::root`, held to `ein show hyps` on every
   contract program); a recorded run replays from
-  `einaf/tests/fixtures/steps/`. Its tests are
+  `einaf/tests/fixtures/steps/`. **The one shot**
+  ([`08-from-text.md`](docs/einaf/08-from-text.md)): `einaf::from_text`, a
+  text to a program in the steps, the least questions the answer needs, and
+  the answer, the command `einaf from-text`; `einaf::answer`, the answer
+  chosen by the answer query's classes, and EinAf's fixed texts for what no
+  row of the program says; `einaf::format`, the formatters of a value (std
+  only, built and tested alone: the decimal numeral, and the word theory's
+  quantities by cases under `einaf/src/format/cases/`); a call recorded slim
+  (`einaf::model::Slim`, no request body), and a recorded run replays from
+  `einaf/tests/fixtures/from_text/`. Its tests are
   a step of the gate after Ein's: one test an outcome, the command, every
   refused fixture, and every corpus program that is not `slow` under every
   question, held to its group, its exit, its claims and the engine's static
@@ -467,8 +476,8 @@ paragraph, no register count, no measurement (the user's rule).
   application finds of the kernel, for the iteration of Ein that follows.
   **P2.1 is closed on the user's word and its plans deleted**
   (`git log --diff-filter=D -- plans/m2_nl_to_ir/p2.1_kernel_as_instrumentation`);
-  **P2.2 is started on the user's word, runs its stages to its end and stops
-  there for review; no other phase of M2 starts until the user says so.**
+  **P2.2 has run its stages to its end on the user's word and waits for the
+  user's review, not closed; no other phase of M2 starts until the user says so.**
   [P2.2b](plans/m2_nl_to_ir/p2.2b_guided_thinking/README.md), guided thinking,
   is planned on the user's word and not started. M1f, the structure of the hypothesis
   set and the documentation, is closed on the user's word and its plans deleted
@@ -904,6 +913,7 @@ einaf/target/release/einaf grammar render STEP (--text T | --program P) [--fence
 einaf/target/release/einaf steps run TEXT --out DIR (--model GGUF | --replay RECORD.jsonl) [--mode steps|whole] [--no-grammar] [--answer-line zebra|word|generic]   # a text formalized in three steps (or one call), each judged at root, the check on each
 einaf/target/release/einaf steps check PROGRAM [--text TEXT] [--step 1|2|3]   # the contract's check on one program
 einaf/target/release/einaf catalogue [--minimal|--generated|--grammar|--tokens GGUF]   # the catalogue the steps select from, as a prompt shows it
+einaf/target/release/einaf from-text TEXT (--model GGUF | --replay GENERATIONS.jsonl) [--answer-line zebra|word|generic] [--module-dir DIR] [--record DIR] [--explain T.md] [--gold-answer G] [--no-format]   # a text to a program and the short answer it prints, one shot
 EIN_TEST_JOBS=1   cargo test … --profile gate --workspace    # the corpus sweeps one unit at a time; the verdicts are the default's
 EIN_TEST_UNITS=u.tsv EIN_TEST_JOBS=1 cargo test … --test id_order_invariance   # every unit's cost and peak memory, one line each
 EIN_CORPUS_SLOW=1 EIN_TEST_SHARD=2/4 cargo test … --test corpus_cores   # one shard of a nightly step
