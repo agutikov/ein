@@ -119,7 +119,7 @@ same topic, and what is ruled stays in the phase's folder, which M2 keeps.
 | [P2.2b](../p2.2b_guided_thinking/README.md) | none yet: planned, not started; its design questions, each with its default, are in [its README](../p2.2b_guided_thinking/README.md#design-questions-each-with-its-default) |
 | [P2.2c](../p2.2c_decoding_and_model_alone/README.md), [P2.2d](../p2.2d_formalizer_corrected/README.md) | none yet: planned 2026-11-27, not started; each reads questions of this ledger, named at the head of its README |
 | [P2.2e](../p2.2e_kernel_fixes/README.md) | none open: Q-M2.43, raised by S2.2e.1, moved to P2.2g ([its index](../p2.2e_kernel_fixes/open_questions/README.md)) |
-| [P2.2g](../p2.2g_names_across_an_import/README.md) | Q-M2.43, moved from P2.2e when the phase was planned for it, open ([its index](../p2.2g_names_across_an_import/open_questions/README.md)) |
+| [P2.2g](../p2.2g_names_across_an_import/README.md) | Q-M2.43, moved from P2.2e when the phase was planned for it, and Q-M2.45, the user's generic questions of modules; both open ([its index](../p2.2g_names_across_an_import/open_questions/README.md)) |
 | [P2.3](../p2.3_benchmark/README.md) to [P2.10](../p2.10_result_artifact_demo/README.md) | none yet |
 
-**The next free id is Q-M2.45.** (Q-M2.43 is P2.2g's, in its folder; Q-M2.50 to Q-M2.59 are reserved for P2.2f while it runs in a worktree; S2.2f.1 took Q-M2.50, in the phase's folder.)
+**The next free id is Q-M2.46.** (Q-M2.43 and Q-M2.45 are P2.2g's, in its folder; Q-M2.50 to Q-M2.59 are reserved for P2.2f while it runs in a worktree; S2.2f.1 took Q-M2.50, in the phase's folder.)
