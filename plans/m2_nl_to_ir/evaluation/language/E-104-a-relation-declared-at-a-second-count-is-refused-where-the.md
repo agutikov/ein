@@ -51,4 +51,4 @@ at both counts, its answer unchanged. Held by `ein-cli/tests/declared_counts.rs`
 without, and what reads a declaration reading each) and `ein-ir/tests/imports_semantics.rs`. What the pass still
 does to a rule or a macro is [E-129](../../p2.2e_kernel_fixes/evaluation/language/E-129-a-rule-or-a-macro-written-twice-the-same-is-read-once-where-the-program-imports.md);
 the user's statement on a program's declaration of a module's relation, which Q-M1f.234 answers otherwise for a
-listed name, is [Q-M2.43](../../p2.2e_kernel_fixes/open_questions/kernel/Q-M2.43-is-a-programs-declaration-of-a-modules-relation-a-second-declaration-of-it.md).
+listed name, is [Q-M2.43](../../p2.2g_names_across_an_import/open_questions/kernel/Q-M2.43-is-a-programs-declaration-of-a-modules-relation-a-second-declaration-of-it.md).

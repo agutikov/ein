@@ -492,7 +492,10 @@ paragraph, no register count, no measurement (the user's rule).
   that order, [P2.2f](plans/m2_nl_to_ir/p2.2f_text_analysis/README.md), the
   text analysed by trained networks before it is formalized, AMR first,
   started on the user's word in git worktrees beside P2.2e; its environment
-  is the gitignored `build/nlp/`, every cache there and nothing under `~`. **No phase
+  is the gitignored `build/nlp/`, every cache there and nothing under `~`;
+  and [P2.2g](plans/m2_nl_to_ir/p2.2g_names_across_an_import/README.md),
+  what a module's names are in the program that imports it (Q-M2.43),
+  planned and not started. **No phase
   of M2 starts until the user says so.** M1f, the structure of the hypothesis
   set and the documentation, is closed on the user's word and its plans deleted
   (`git log --diff-filter=D -- plans/m1f_hypothesis_and_documentation`): its

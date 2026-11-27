@@ -1,8 +1,9 @@
 # Q-M2.43 — Is a program's declaration of a relation it takes from a module a second declaration of the module's relation?
 
-**Status:** open
+**Status:** open; **its phase is [P2.2g](../../README.md)**, planned 2026-11-27 on the user's word, *"create a new
+phase for this question"*, after the user's correction of the example below
 
-**Raised 2026-11-27 by [S2.2e.1](../../s2.2e.1_declared_again_under_an_import.md)**, on the user's statement of how a
+**Raised 2026-11-27 by [S2.2e.1](../../../p2.2e_kernel_fixes/s2.2e.1_declared_again_under_an_import.md)**, on the user's statement of how a
 declaration meets an import, passed to the stage by the coordinator while it ran. For two of the statement's cases
 the code and a decision in force say otherwise; the stage stopped at the evidence and changed neither, as the
 coordinator asked.
@@ -69,9 +70,29 @@ Two programs that import it, each declaring `likes` again and writing `Ann`'s fa
 keeps its silent second relation. A no that removes the silence too would refuse `aliased.ein` as Q-M1f.239 refuses
 `(relation m.likes …)` under a bare import: a declaration under an alias's prefix, refused with a message.
 
+### The user's correction, 2026-11-27
+
+> "in your examples 2 facts are different, imported is (m.relation m.likes m.Person m.Drink) and program's is
+> (relation m.likes Person Drink) - I don't yet wknow how to import `m.relation` - create a new phase for this
+> question"
+
+**The *yes* row above is the coordinator's reading, and the user's correction overturns it.** It counted the
+module's declaration and the program's as two facts of one relation, `relation`, over one atom. In the user's
+reading every name a module writes is the module's, the declarator and the labels with the relation: the module
+declares `(m.relation m.likes m.Person m.Drink)`, the program `(relation m.likes Person Drink)` (`a.likes` being
+`m.likes`), two facts of two relations over other labels. How a program reaches `m.relation`, and so whether and
+how the module's declaration is one the program's rules and the kernel read, is open: the user's *"I don't yet
+wknow how to import `m.relation`"*. **Ein today is a third thing**: it writes the module's declaration
+`(relation m.likes Person Drink)` (`ein saturate --dump` on `aliased.ein` lists it beside the program's `(relation
+a.likes Person Drink)`): the declared name alone takes the module's full name
+([Q-M1f.231](../../../../../docs/decisions/imports/Q-M1f.231-every-name-a-module-declares-has-a-full-name.md)),
+`relation` is the kernel's one atom, and the labels and every constant a module writes are names of the program
+([Q-M1f.137](../../../../../docs/decisions/imports/Q-M1f.137-an-imported-facts-constants-are-names.md)). P2.2g
+works the question from there.
+
 ## What Ein does today
 
-The probes are [`../../probes/a-modules-relation/`](../../probes/a-modules-relation/): a module `m` declares
+The probes are [`p2.2e_kernel_fixes/probes/a-modules-relation/`](../../../p2.2e_kernel_fixes/probes/a-modules-relation/): a module `m` declares
 `(relation likes Person Drink …)`, a rule `mfan` over it and the fact `(likes Cy Milk)`; each program writes a fact
 of its own, `(likes Ann Tea)` in the spelling it uses. Run with `ein solve` on the stage's commit.
 
@@ -79,9 +100,9 @@ of its own, `(likes Ann Tea)` in the spelling it uses. Run with `ein solve` on t
 |---|---|---|---|
 | `(import m)`, and its own `(relation likes …)` | two relations, `likes` and `m.likes` | **the same**: it loads, and neither file's rule reads the other's facts, at the module's count or another | [Q-M1f.231](../../../../../docs/decisions/imports/Q-M1f.231-every-name-a-module-declares-has-a-full-name.md), [Q-M1f.236](../../../../../docs/decisions/imports/Q-M1f.236-a-short-name-a-file-writes-and-lists-from-no.md); held by `declared_counts.rs`, `under_a_bare_import_or_an_alias_a_program_and_a_module_declare_two_relations` |
 | `(import m :as a)`, and its own `(relation likes …)` | two relations, `likes` and `a.likes` | **the same** | the same test |
-| `(import m :symbols (likes mfan))`, and `(relation likes …)` ([`listed.ein`](../../probes/a-modules-relation/listed.ein)) | one relation, two declarations, which load | **refused**, exit 1: `listed.ein:3:9: 'likes' is bound to two full names in the program, likes (its own declaration) and m.likes — one short name names one declaration in a file: list it from one module, or write the other by its full name` | [Q-M1f.234](../../../../../docs/decisions/imports/Q-M1f.234-one-short-name-bound-to-two-full-names-in-one.md): *"A short name bound to two full names, by two imports that list it or by an import that lists it and the file's own declaration of it, is refused at load"* |
-| `(import m :as a)`, and `(relation a.likes …)` ([`aliased.ein`](../../probes/a-modules-relation/aliased.ein)) | `a.likes` is `m.likes`: one relation, two declarations | **loads, and the declaration makes `a.likes` a relation of the program's own**, in silence: `(a.mfan ?a)` answers `Cy` alone, the module's rule not reading the program's `(a.likes Ann Tea)`, and `(a.likes ?a ?b)` answers the program's fact alone; the module's relation prints as `m.likes`. With no declaration ([`aliased-undeclared.ein`](../../probes/a-modules-relation/aliased-undeclared.ein)) the program's fact is the module's relation: `(a.mfan ?a)` answers `Ann` and `Cy` | no decision says it: [Q-M1f.239](../../../../../docs/decisions/imports/Q-M1f.239-a-program-declares-no-name-under-the-full-name.md) refuses a declaration under a module's full name and calls a dotted name whose prefix is no module's a name like another; an alias is no module's name |
-| `(import m)`, and `(relation m.likes …)` ([`full-name.ein`](../../probes/a-modules-relation/full-name.ein)) | not in the statement; the coordinator: record it and change nothing | **refused**, exit 1: `full-name.ein:4:11: the program declares 'm.likes', a full name of m, which the program imports — a declaration's full name is its own file's, and a full name of m is one m declares (Q-M1f.239)` | Q-M1f.239 |
+| `(import m :symbols (likes mfan))`, and `(relation likes …)` ([`listed.ein`](../../../p2.2e_kernel_fixes/probes/a-modules-relation/listed.ein)) | one relation, two declarations, which load | **refused**, exit 1: `listed.ein:3:9: 'likes' is bound to two full names in the program, likes (its own declaration) and m.likes — one short name names one declaration in a file: list it from one module, or write the other by its full name` | [Q-M1f.234](../../../../../docs/decisions/imports/Q-M1f.234-one-short-name-bound-to-two-full-names-in-one.md): *"A short name bound to two full names, by two imports that list it or by an import that lists it and the file's own declaration of it, is refused at load"* |
+| `(import m :as a)`, and `(relation a.likes …)` ([`aliased.ein`](../../../p2.2e_kernel_fixes/probes/a-modules-relation/aliased.ein)) | `a.likes` is `m.likes`: one relation, two declarations | **loads, and the declaration makes `a.likes` a relation of the program's own**, in silence: `(a.mfan ?a)` answers `Cy` alone, the module's rule not reading the program's `(a.likes Ann Tea)`, and `(a.likes ?a ?b)` answers the program's fact alone; the module's relation prints as `m.likes`. With no declaration ([`aliased-undeclared.ein`](../../../p2.2e_kernel_fixes/probes/a-modules-relation/aliased-undeclared.ein)) the program's fact is the module's relation: `(a.mfan ?a)` answers `Ann` and `Cy` | no decision says it: [Q-M1f.239](../../../../../docs/decisions/imports/Q-M1f.239-a-program-declares-no-name-under-the-full-name.md) refuses a declaration under a module's full name and calls a dotted name whose prefix is no module's a name like another; an alias is no module's name |
+| `(import m)`, and `(relation m.likes …)` ([`full-name.ein`](../../../p2.2e_kernel_fixes/probes/a-modules-relation/full-name.ein)) | not in the statement; the coordinator: record it and change nothing | **refused**, exit 1: `full-name.ein:4:11: the program declares 'm.likes', a full name of m, which the program imports — a declaration's full name is its own file's, and a full name of m is one m declares (Q-M1f.239)` | Q-M1f.239 |
 
 A program's two declarations of its own relation, beside an import of anything, are two declarations of one
 relation and load: that was E-104, which the stage fixed, and it is the statement's simplest instance.
