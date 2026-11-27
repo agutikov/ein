@@ -266,12 +266,15 @@ fn a_saturation_with_no_fixpoint_is_not_decided_at_the_kernels_bound() {
     }
 }
 
-/// **A dead root's core search is under the call's clock**: Ein's
-/// `dead_link.ein`, whose root saturates in milliseconds and dies on a link
-/// several rules derive, every derivation recorded, so that the search for
-/// its core runs far past any clock set here. Under the clock, every question
-/// is *not decided*, with the deadline's diagnostic, and the call returns
-/// about when its clock says.
+/// **A dead root's core search is under the call's clock, and taken only
+/// where the question prints the core**: Ein's `dead_link.ein`, whose root
+/// saturates in milliseconds and dies on a link several rules derive, every
+/// derivation recorded, so that the search for its core runs far past any
+/// clock set here. A description and `--no-search`, whose objects carry
+/// root's core, are *not decided* at the clock, with the deadline's
+/// diagnostic; every other question prints no core and takes none, and is
+/// *inconsistent* in what root's saturation costs, with no deadline. The call
+/// returns about when its clock says.
 #[test]
 fn a_dead_roots_core_search_is_not_decided_at_the_kernels_clock() {
     let path = ein_corpus::repo_root().join("ein.rs/crates/ein-cli/tests/bounded/dead_link.ein");
@@ -282,12 +285,21 @@ fn a_dead_roots_core_search_is_not_decided_at_the_kernels_clock() {
     let t = std::time::Instant::now();
     let all: Vec<Feedback> = call(Source::File(&path), &Question::ALL, clock);
     assert!(t.elapsed() < Duration::from_secs(30), "{:?}", t.elapsed());
-    for f in &all {
+    assert_eq!(all.len(), Question::ALL.len());
+    for (q, f) in Question::ALL.iter().zip(&all) {
         assert!(f.fault.is_none(), "{:?}", f.fault);
+        let prints_core = matches!(q, Question::Describe | Question::NoSearch);
+        let want = if prints_core {
+            Outcome::NotDecided
+        } else {
+            Outcome::Inconsistent
+        };
         for r in f.outcome.as_ref().expect("an outcome") {
-            assert_eq!(r.outcome, Outcome::NotDecided, "{}", r.why);
+            assert_eq!(r.outcome, want, "{}: {}", q.flags(), r.why);
         }
-        assert_eq!(f.diagnostics[0].kind, "deadline");
+        let deadline = f.diagnostics.iter().any(|d| d.kind == "deadline");
+        assert_eq!(deadline, prints_core, "{}: {:?}", q.flags(), f.diagnostics);
+        assert!(f.core.is_none(), "{}", q.flags());
     }
 }
 

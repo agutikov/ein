@@ -107,7 +107,8 @@ whose outcome is *invalid* under every question, whose diagnostics are its findi
 `a_saturation_with_no_fixpoint_is_not_decided_at_the_kernels_bound`: a program whose root has no fixpoint, and one
 whose load's judgement saturates such a root, are *not decided* under every question at the cap and at the clock;
 and `a_dead_roots_core_search_is_not_decided_at_the_kernels_clock`: a root that dies on a link several rules derive,
-whose core's search runs far past the clock, is *not decided* under every question at the clock.
+whose core's search runs far past the clock, is *not decided* at the clock under a description and `--no-search`,
+whose objects carry the core, and *inconsistent* under every other question, which takes no core.
 
 ## 4. What the bounds do not stop
 
@@ -125,7 +126,9 @@ None is a program the call does not return from: it returns late.
 **A root that dies on a link several rules derive is bounded**: a model's Zebra puzzle that names eleven houses for
 five places and kinds with no member, its alternative justifications recorded (no `(config
 :record-alternative-justifications false)`). Its saturation is short; the search for its core, over every recorded
-derivation of the link, is what runs long, 72 s under `ein solve --single` with no clock and 63 ms with the line, and
-it is taken under every question, a description's core or not. The search reads the clock, so each question of the
-call returns at its clock, *not decided*, with the deadline's diagnostic (§ 3). The memory of a call is not bounded by the kernel;
+derivation of the link, is what runs long, 72 s under `ein solve` with no clock and 63 ms with the line. It is taken
+only where the question prints the core, a description and `--no-search`
+([Q-M1f.29](../decisions/read-out/Q-M1f.29-a-question-that-prints-no-core-writes-a-dead.md)): under those two the
+search reads the clock, and the call returns at its clock, *not decided*, with the deadline's diagnostic; under every
+other question the call answers *inconsistent* in what root's saturation costs (§ 3). The memory of a call is not bounded by the kernel;
 the cap on firings bounds a runaway root's.
