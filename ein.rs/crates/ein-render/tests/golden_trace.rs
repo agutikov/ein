@@ -92,6 +92,7 @@ fn real_trace(rel: &str, flag: &str) -> String {
             root: true,
             visited: false,
             nogoods: mode.which == Which::All,
+            holes: true,
         },
         ..explore::Options::new(mode)
     };

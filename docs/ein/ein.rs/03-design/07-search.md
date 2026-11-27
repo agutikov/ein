@@ -251,9 +251,12 @@ read off the question ([Q-M1e2.31](../../../decisions/answer/Q-M1e2.31-each-ques
 [Q-M1f.29](../../../decisions/read-out/Q-M1f.29-a-question-that-prints-no-core-writes-a-dead.md)): a dead root's by a
 description and `--no-search`, whose read-out and summary print it, and by no mode and not by `--count`, whose
 questions are a part of `R` and how many (`explore::Options::cores_taken`, read before `--count` takes describe's
-route); on the cube the minimal holes' always; each visited dead node's, root's among them, for `--events` and
-`--dump-lattice`, under any question; each member of `N`'s for `--dump-answer` and `--trace`, taken after the run on
-the same fork, so `--jobs` moves none
+route); on the cube each dead minimal hole's by a description, whose read-out and summary print them, and by `--count`,
+whose summary writes them, and by no mode, which prints no hole; each visited dead node's, root's among them, for
+`--events` and `--dump-lattice`, under any question, the whole node the obligation tree reads beside its cache for its
+couplings among them, and none for `-v` or `--layer-progress`, which print a node's commitment and kind; each member
+of `N`'s for `--dump-answer` and `--trace`. The minimal holes' and `N`'s members' are taken after the run on the same
+fork, so `--jobs` moves none
 ([Q-M1f.25](../../../decisions/answer/Q-M1f.25-every-core-a-run-prints-is-taken-against-its-one.md)).
 
 ## 7. Monotone and flagged programs

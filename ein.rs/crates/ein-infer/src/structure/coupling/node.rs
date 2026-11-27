@@ -98,11 +98,13 @@ pub struct NodeCoupling {
     /// What the module's bounds cut of the reading.
     pub cut: Cut,
     /// **The node's core**, where it is dead and the run that read it is
-    /// narrated: its facts, the search's status and the rules it rests on,
-    /// as every dead node a route visits reports them, so that a surface
-    /// listing the nodes a run visited prints this one as it prints the
-    /// others. `None` elsewhere: a core is taken only where a surface prints
-    /// one.
+    /// narrated to a surface that prints every visited node's core
+    /// (`--events`, `--dump-lattice`; `Space::takes_whole_core`): its facts,
+    /// the search's status and the rules it rests on, as every dead node a
+    /// route visits reports them, so that such a surface prints this one as
+    /// it prints the others. `None` elsewhere, a watch that prints no core
+    /// among them (`-v`, `--layer-progress`): a core is taken only where a
+    /// surface prints one.
     pub core: Option<(Vec<String>, crate::explain::CoreStatus, Vec<String>)>,
 }
 
@@ -202,7 +204,7 @@ pub(crate) fn node_coupling_in(
             .enumerate()
             .map(|(b, c)| (c.fact, b as u32))
             .collect();
-        let narrated = sp.narrated();
+        let takes_core = sp.takes_whole_core();
         // The relations L9's premise is read over, where a route's table
         // relies on it: the whole node is a node the route computes.
         let unheld: &[ein_core::Symbol] = table.map_or(&[], |t| &t.unheld_relations);
@@ -215,7 +217,7 @@ pub(crate) fn node_coupling_in(
             |kb: &Kb, terms: &mut Terms, firings| {
                 let breach =
                     crate::unheld::breach(kb, root_kb, terms, unheld, |f| facts.contains_key(&f));
-                let core = if narrated {
+                let core = if takes_core {
                     crate::region::core_of_fixpoint(kb, terms)
                 } else {
                     None

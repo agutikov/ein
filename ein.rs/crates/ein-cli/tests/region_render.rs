@@ -123,6 +123,7 @@ fn studied(file: &str, cube: &Path, run: &Path) {
                 root: true,
                 visited: true,
                 nogoods: false,
+                holes: true,
             },
             ..ein_infer::explore::Options::new(ein_infer::explore::Mode {
                 which: ein_infer::explore::Which::Maximal,

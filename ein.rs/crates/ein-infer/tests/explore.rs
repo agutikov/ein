@@ -1296,11 +1296,14 @@ fn a_wildcard_answers_what_a_fresh_variable_does() {
     }
 }
 
-/// A dead node a walk visits, its commitment and whether it took a core.
-type DeadVisit = (Vec<String>, bool);
+/// A dead node a walk visits: its commitment, whether it took a core, and
+/// whether it is the whole node, every candidate together, which a route
+/// reads beside its cache and reports with no closure.
+type DeadVisit = (Vec<String>, bool, bool);
 
-/// The dead nodes a walk visits, each with whether it took a core, as
-/// `--dump-lattice`'s watch reads them.
+/// The dead nodes a walk visits, each with whether it took a core, as a
+/// watch reads them: `--dump-lattice`'s, and `-v`'s and `--layer-progress`'s,
+/// which print no core.
 struct DeadCores(std::sync::Arc<std::sync::Mutex<Vec<DeadVisit>>>);
 
 impl ein_infer::events::Watch for DeadCores {
@@ -1309,9 +1312,24 @@ impl ein_infer::events::Watch for DeadCores {
             self.0.lock().expect("one watcher").push((
                 v.commitment.to_vec(),
                 v.core_status.is_some() || !v.core.is_empty(),
+                !v.commitment.is_empty() && v.closure.is_empty(),
             ));
         }
     }
+}
+
+/// `dead_link_hole.ein`, a flagged program within the limit whose one
+/// minimal hole dies on a link several rules derive: the hole's core search
+/// runs far past what the cube's eight saturations cost.
+fn dead_link_hole() -> PathBuf {
+    repo_root().join("ein.rs/crates/ein-cli/tests/bounded/dead_link_hole.ein")
+}
+
+/// `dead_link_whole.ein`, a monotone program whose whole node, which the
+/// obligation tree reads under `--single` and `-n 2`, dies on a link several
+/// rules derive: its core search runs far past what the run costs.
+fn dead_link_whole() -> PathBuf {
+    repo_root().join("ein.rs/crates/ein-cli/tests/bounded/dead_link_whole.ein")
 }
 
 /// **A run that prints no core takes none, and answers alike** (Q-M1e2.31):
@@ -1328,12 +1346,30 @@ impl ein_infer::events::Watch for DeadCores {
 /// **A dead root's core is taken where the question prints it** (Q-M1f.29):
 /// a description's is the eager run's, and `--count`'s description, which
 /// prints none, carries none; and on every program whose root is dead, the
-/// lazy run's walk, read by `--dump-lattice`'s watch, takes root's core under
-/// describe and under no other question.
+/// lazy run's walk takes root's core under describe and under no other
+/// question.
+///
+/// **A watch that prints no core takes none**: the lazy run is read by a
+/// watch, as `-v` and `--layer-progress` read a run, and its walk takes no
+/// dead node's core but a dead root's where the question prints it; the
+/// whole node, every candidate together, which the modes' obligation tree
+/// reads beside its cache and reports to the watch, among them. No corpus
+/// program outside the slow set has a whole node the tree reads dead, so
+/// `dead_link_whole.ein` has one, whose core search runs far past the run:
+/// under `--single` and `-n 2` the watched walk visits it and takes no core.
+///
+/// **The cube's minimal holes' are taken where the question prints them**:
+/// a description and `--count`, whose summary writes them, and no line mode.
+/// On `dead_link_hole.ein`, a flagged program within the limit whose one
+/// minimal hole's core search runs far past its cube, `--maximal` and
+/// `--minimal` answer within a clock that search runs past, as the program
+/// with `:record-alternative-justifications false` answers them; and a
+/// description and `--count`, which print that core, do not.
 ///
 /// **And N's cores taken after the walk are the eager ones** (Q-M1f.25):
 /// describe asked for N's cores alone (`Cores { root: true, visited: false,
-/// nogoods: true }`, what `--dump-answer` and `--trace` ask) answers alike,
+/// nogoods: true, holes: true }`, what `--dump-answer` and `--trace` ask)
+/// answers alike,
 /// gives every member of N a core, past `--region-limit` too, and gives each
 /// the core, status and rules the run that takes every core gives it; and
 /// its walk takes none: every dead node it visits but root, which
@@ -1353,6 +1389,7 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
     let mut after_walk = 0usize;
     let mut walk_dead = 0usize;
     let mut dead_roots = 0usize;
+    let mut whole_nodes = 0usize;
     let all: Vec<PathBuf> = corpus_and_regressions();
     let found = ein_corpus::pool::map(
         "explore::a_run_that_prints_no_core_takes_none_and_answers_alike",
@@ -1366,6 +1403,7 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
             let mut after_walk = 0usize;
             let mut walk_dead = 0usize;
             let mut dead_roots = 0usize;
+            let mut whole_nodes = 0usize;
             'unit: {
                 if slow.contains(path) || loaded(path).is_none() {
                     break 'unit;
@@ -1394,12 +1432,23 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
                         root: true,
                         visited: false,
                         nogoods: true,
+                        holes: true,
                     };
                     let run = |o: &explore::Options| {
                         let (mut kb, mut terms, ast) = loaded(path).expect("loaded once already");
                         explore::run(&mut kb, &mut terms, &ast, o).map_err(|e| e.to_string())
                     };
-                    let (a, b) = match (run(&eager), run(&lazy)) {
+                    // The lazy run, read by a watch as `-v` reads a run: what
+                    // its walk took, below.
+                    let lazily = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+                    let lazy_run = {
+                        let (mut kb, mut terms, ast) = loaded(path).expect("loaded once already");
+                        let mut events = ein_infer::events::Events::off()
+                            .watched(Box::new(DeadCores(lazily.clone())));
+                        explore::run_with(&mut kb, &mut terms, &ast, &lazy, &mut events)
+                            .map_err(|e| e.to_string())
+                    };
+                    let (a, b) = match (run(&eager), lazy_run) {
                         (Ok(a), Ok(b)) => (a, b),
                         (Err(x), Err(y)) if x == y => continue,
                         (x, y) => {
@@ -1444,7 +1493,8 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
                                 .map_err(|e| e.to_string())
                         };
                         let answered = watched(&nogoods);
-                        for (commitment, taken) in walked.lock().expect("the run is done").drain(..)
+                        for (commitment, taken, _) in
+                            walked.lock().expect("the run is done").drain(..)
                         {
                             walk_dead += 1;
                             if taken && !commitment.is_empty() {
@@ -1530,26 +1580,30 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
                             }
                         }
                     }
+                    // The lazy run's walk, read by its watch: no dead node's
+                    // core but root's, where the question prints it, the
+                    // whole node's among them.
+                    let mut roots: Vec<bool> = Vec::new();
+                    for (commitment, taken, whole) in
+                        lazily.lock().expect("the run is done").drain(..)
+                    {
+                        if commitment.is_empty() {
+                            roots.push(taken);
+                            continue;
+                        }
+                        whole_nodes += usize::from(whole);
+                        if taken {
+                            failures.push(format!(
+                                "{rel} {mode:?}: the watched walk took a core at {}{commitment:?}, \
+                                 and the question prints none",
+                                if whole { "the whole node " } else { "" }
+                            ));
+                        }
+                    }
                     // Root's own node, where it is dead: the lazy run's walk
                     // takes its core exactly where the question prints it.
                     if a.root_dead {
                         dead_roots += 1;
-                        let walked = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
-                        let (mut kb, mut terms, ast) = loaded(path).expect("loaded once already");
-                        let mut events = ein_infer::events::Events::off()
-                            .watched(Box::new(DeadCores(walked.clone())));
-                        if let Err(e) =
-                            explore::run_with(&mut kb, &mut terms, &ast, &lazy, &mut events)
-                        {
-                            failures.push(format!("{rel} {mode:?}: watched: {e}"));
-                        }
-                        let roots: Vec<bool> = walked
-                            .lock()
-                            .expect("the run is done")
-                            .iter()
-                            .filter(|(c, _)| c.is_empty())
-                            .map(|&(_, taken)| taken)
-                            .collect();
                         if roots != [prints_root] {
                             failures.push(format!(
                                 "{rel} {mode:?}: root's visits took a core {roots:?}, and the \
@@ -1562,11 +1616,19 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
             }
             (
                 failures,
-                [runs, holes, dead_holes, after_walk, walk_dead, dead_roots],
+                [
+                    runs,
+                    holes,
+                    dead_holes,
+                    after_walk,
+                    walk_dead,
+                    dead_roots,
+                    whole_nodes,
+                ],
             )
         },
     );
-    for (f, [r, h, d, a, w, z]) in found {
+    for (f, [r, h, d, a, w, z, t]) in found {
         failures.extend(f);
         runs += r;
         holes += h;
@@ -1574,24 +1636,150 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
         after_walk += a;
         walk_dead += w;
         dead_roots += z;
+        whole_nodes += t;
     }
+    failures.extend(a_line_mode_takes_no_holes_core());
+    let (f, t) = a_watch_takes_no_whole_nodes_core();
+    failures.extend(f);
+    whole_nodes += t;
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     // Not vacuous: the cube's dead holes are read, the ones whose core the
-    // lazy run takes after the cube, and dead roots under every question.
+    // lazy run takes after the cube, dead roots under every question, and
+    // dead whole nodes a watch reads.
     assert!(
         runs >= 1000
             && dead_holes > 0
             && after_walk >= 100
             && walk_dead >= 1000
-            && dead_roots >= 6 * 20,
+            && dead_roots >= 6 * 20
+            && whole_nodes > 0,
         "{runs} runs, {holes} holes, {dead_holes} dead, {after_walk} members of N, {walk_dead} \
-         dead nodes walked, {dead_roots} questions of a dead root"
+         dead nodes walked, {dead_roots} questions of a dead root, {whole_nodes} dead whole \
+         nodes watched"
     );
     eprintln!(
         "{runs} runs, {holes} minimal holes, {dead_holes} dead, {after_walk} members of N \
          taken after the walk, {walk_dead} dead nodes its walk visited with no core taken, \
-         {dead_roots} questions of a dead root"
+         {dead_roots} questions of a dead root, {whole_nodes} dead whole nodes a watch read \
+         with no core taken"
     );
+}
+
+/// The whole node's core on `dead_link_whole.ein`, whose whole node the
+/// obligation tree reads under `--single` and `-n 2` and whose core search
+/// runs far past the run: the run read by a watch, as `-v` and
+/// `--layer-progress` read one, visits that node dead and takes no core at
+/// it or at any other node, and answers what the run nothing reads answers.
+/// With the dead whole nodes it visited.
+fn a_watch_takes_no_whole_nodes_core() -> (Vec<String>, usize) {
+    let path = dead_link_whole();
+    let mut failures = Vec::new();
+    let mut whole_nodes = 0usize;
+    for ask in [Ask::Single, Ask::Find(2)] {
+        let mode = Mode {
+            which: Which::All,
+            ask,
+        };
+        let opts = explore::Options::new(mode);
+        let walked = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+        let watched = {
+            let (mut kb, mut terms, ast) = loaded(&path).expect("the fixture loads");
+            let mut events =
+                ein_infer::events::Events::off().watched(Box::new(DeadCores(walked.clone())));
+            explore::run_with(&mut kb, &mut terms, &ast, &opts, &mut events)
+                .map_err(|e| e.to_string())
+        };
+        let unwatched = {
+            let (mut kb, mut terms, ast) = loaded(&path).expect("the fixture loads");
+            explore::run(&mut kb, &mut terms, &ast, &opts).map_err(|e| e.to_string())
+        };
+        match (&watched, &unwatched) {
+            (Ok(a), Ok(b)) if said(a) == said(b) => {}
+            (a, b) => failures.push(format!(
+                "dead_link_whole.ein {mode:?}: watched {:?}, unwatched {:?}",
+                a.as_ref().map(|a| &a.states),
+                b.as_ref().map(|b| &b.states)
+            )),
+        }
+        let mut whole_here = 0usize;
+        for (commitment, taken, whole) in walked.lock().expect("the run is done").drain(..) {
+            whole_here += usize::from(whole);
+            if taken {
+                failures.push(format!(
+                    "dead_link_whole.ein {mode:?}: the watched walk took a core at {}{} \
+                     candidates, and the question prints none",
+                    if whole { "the whole node, " } else { "" },
+                    commitment.len()
+                ));
+            }
+        }
+        if whole_here == 0 {
+            failures.push(format!(
+                "dead_link_whole.ein {mode:?}: no dead whole node was visited"
+            ));
+        }
+        whole_nodes += whole_here;
+    }
+    (failures, whole_nodes)
+}
+
+/// The cube's minimal holes' cores on `dead_link_hole.ein`, whose one hole's
+/// core search runs far past its cube: `--maximal` and `--minimal`, which
+/// print no hole, answer within a clock that search runs past, as the
+/// program with `:record-alternative-justifications false` answers them; a
+/// description and `--count`, which print the hole's core (the read-out's
+/// row, the summary's), end at a clock the cube alone is well within.
+fn a_line_mode_takes_no_holes_core() -> Vec<String> {
+    use std::time::{Duration, Instant};
+    let path = dead_link_hole();
+    let text = std::fs::read_to_string(&path).expect("the fixture reads");
+    let lever = format!("{text}(config :record-alternative-justifications false)\n");
+    let with_lever = |mode: Mode| -> Result<Answer, String> {
+        let mut ast = Ast::new();
+        let mut terms = Terms::new();
+        let forms = parse(&mut ast, &lever, Some("<lever>")).map_err(|e| e.to_string())?;
+        let mut kb = load(&mut ast, &mut terms, &forms, None).map_err(|e| e.to_string())?;
+        explore::run(&mut kb, &mut terms, &ast, &explore::Options::new(mode))
+            .map_err(|e| e.to_string())
+    };
+    let within = |mode: Mode, clock: Duration| -> (Result<Answer, String>, Duration) {
+        let (mut kb, mut terms, ast) = loaded(&path).expect("the fixture loads");
+        let mut o = explore::Options::new(mode);
+        o.deadline = Some(Instant::now() + clock);
+        let t = Instant::now();
+        let a = explore::run(&mut kb, &mut terms, &ast, &o).map_err(|e| e.to_string());
+        (a, t.elapsed())
+    };
+    let mut failures = Vec::new();
+    for which in [Which::Maximal, Which::Minimal] {
+        let mode = Mode {
+            which,
+            ask: Ask::Describe,
+        };
+        match (within(mode, Duration::from_secs(5)), with_lever(mode)) {
+            ((Ok(a), _), Ok(b)) if a.route == explore::Route::Cube && said(&a) == said(&b) => {}
+            ((a, took), b) => failures.push(format!(
+                "dead_link_hole.ein {mode:?}: {:?} after {took:?}, with the lever {:?}",
+                a.map(|a| (a.route, a.states)),
+                b.map(|b| (b.route, b.states))
+            )),
+        }
+    }
+    for ask in [Ask::Describe, Ask::Count] {
+        let mode = Mode {
+            which: Which::All,
+            ask,
+        };
+        match within(mode, Duration::from_millis(500)) {
+            (Err(e), _) if e == ein_infer::SolveError::Deadline.to_string() => {}
+            (other, took) => failures.push(format!(
+                "dead_link_hole.ein {mode:?}: {:?} after {took:?}, where its hole's core search \
+                 runs past the clock",
+                other.map(|a| a.states)
+            )),
+        }
+    }
+    failures
 }
 
 /// **A description asked without N is the description, less N** — *the

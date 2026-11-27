@@ -588,6 +588,7 @@ pub fn ask(
             root: true,
             visited: watch.is_some(),
             nogoods: false,
+            holes: true,
         },
         nogoods: key != "count",
         ..explore::Options::new(mode)

@@ -17,7 +17,12 @@
 //! clock the tests set, where a question prints the core; a question that
 //! prints none takes none, and answers in what root's saturation costs. It is
 //! no corpus program either: a description prints its core, which no sweep
-//! waits for.
+//! waits for. Two more fixtures put the same link where a core other than
+//! root's is taken: `tests/bounded/dead_link_hole.ein`'s minimal hole on the
+//! cube, which a description prints and a line mode does not, and
+//! `tests/bounded/dead_link_whole.ein`'s whole node, which the obligation
+//! tree reads beside its cache, and which `--events` and `--dump-lattice`
+//! print and `-v` and `--layer-progress` do not.
 //!
 //! What each stop says is the pages' (`05-cli.md` § 3, `08-read-out.md`):
 //!
@@ -403,6 +408,115 @@ fn a_question_that_prints_no_core_answers_a_dead_root_within_the_clock() {
                 other.map(|a| (a.verdict, a.exhausted)),
                 t.elapsed()
             )),
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+/// The `region` and `verdict` blocks of a run's summary: its answer, which
+/// no clock it is within and no watch moves.
+fn answer_blocks(r: &Run) -> Option<(J, J)> {
+    r.summary
+        .as_ref()
+        .map(|s| (s["region"].clone(), s["verdict"].clone()))
+}
+
+/// **A line mode takes no minimal hole's core, and a watch no whole node's**
+/// (Q-M1e2.31, Q-M1f.29): a core is taken only where a surface prints one.
+///
+/// `dead_link_hole.ein` is a flagged program within the limit whose one
+/// minimal hole dies on a link several rules derive. A line mode prints no
+/// hole, so `--maximal` and `--minimal`, which read the whole cube, and
+/// `--maximal` under `-n 2` and `--single`, answer under `-T 2`, exit 0, their
+/// `region` and `verdict` the lever's twin's; a description and `--count`,
+/// whose read-out and summary print the hole's core, and `--maximal` with
+/// `--dump-lattice`, which prints every dead node's, end at the clock.
+///
+/// `dead_link_whole.ein` is a monotone program whose whole node, which the
+/// obligation tree reads under `--single` and `-n 2`, dies on such a link.
+/// `-v` and `--layer-progress` print a node's commitment and kind and no
+/// core, so under `-T 5` each answers, exit 0, its read-out and its `region`
+/// and `verdict` those of the run with no watch.
+#[test]
+fn a_line_mode_takes_no_holes_core_and_a_watch_no_whole_nodes() {
+    let mut failures = Vec::new();
+    let hole = fixture("dead_link_hole.ein");
+    let path = hole.to_str().expect("a path");
+    let dir = Scratch::new("ein-bounded-dead-link-hole");
+    let lever = lever_twin(&dir, &hole);
+    let lever = lever.to_str().expect("a path");
+    for question in [
+        &["--maximal"][..],
+        &["--minimal"][..],
+        &["--maximal", "-n", "2"][..],
+        &["--maximal", "--single"][..],
+    ] {
+        let mut args = vec!["solve", path, "-T", "2"];
+        args.extend(question);
+        let at = args.join(" ");
+        let r = ein(&args);
+        let mut twin = vec!["solve", lever];
+        twin.extend(question);
+        let t = ein(&twin);
+        if r.code != 0 || t.code != 0 || r.wall > PATIENCE {
+            failures.push(format!(
+                "{at}: exit {} after {:?}, the twin's exit {}; stderr {:?}",
+                r.code, r.wall, t.code, r.err
+            ));
+            continue;
+        }
+        match (answer_blocks(&r), answer_blocks(&t)) {
+            (Some(a), Some(b)) if a == b && a.0["holes"].is_null() => {}
+            (a, b) => failures.push(format!("{at}: region and verdict {a:?}, the twin's {b:?}")),
+        }
+    }
+    let lattice = dir.join("lattice");
+    let lattice = lattice.to_str().expect("a path");
+    for question in [
+        &[][..],
+        &["--count"][..],
+        &["--maximal", "--dump-lattice", lattice][..],
+    ] {
+        let mut args = vec!["solve", path, "-T", "0.3"];
+        args.extend(question);
+        let r = ein(&args);
+        let at = args.join(" ");
+        if r.code != 2 || r.err != ABORT || !r.out.is_empty() || !aborted(&r, DECIDED) {
+            failures.push(format!(
+                "{at}: exit {}, stdout {:?}, stderr {:?}, summary {:?}",
+                r.code, r.out, r.err, r.summary
+            ));
+        }
+        if r.wall > PATIENCE {
+            failures.push(format!("{at}: ended after {:?}", r.wall));
+        }
+    }
+    let whole = fixture("dead_link_whole.ein");
+    let path = whole.to_str().expect("a path");
+    for (question, watch) in [
+        (&["--single"][..], "-v"),
+        (&["--single"][..], "--layer-progress"),
+        (&["-n", "2"][..], "-v"),
+    ] {
+        let mut plain = vec!["solve", path, "-T", "5"];
+        plain.extend(question);
+        let mut args = plain.clone();
+        args.push(watch);
+        let at = args.join(" ");
+        let r = ein(&args);
+        let p = ein(&plain);
+        // Past the header, which echoes the command line.
+        let body = |r: &Run| r.out.lines().skip(1).collect::<Vec<_>>().join("\n");
+        if r.code != 0 || p.code != 0 || r.wall > PATIENCE {
+            failures.push(format!(
+                "{at}: exit {} after {:?}, with no watch exit {}; stderr {:?}",
+                r.code,
+                r.wall,
+                p.code,
+                r.err.lines().last()
+            ));
+        } else if body(&r) != body(&p) || answer_blocks(&r) != answer_blocks(&p) {
+            failures.push(format!("{at}: not the answer of the run with no watch"));
         }
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));

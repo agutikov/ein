@@ -233,18 +233,19 @@ pub struct Options {
     /// no `work` count depends on it. The program's own `(config
     /// :lattice-sanity-check true)` turns it on as well.
     pub sanity: bool,
-    /// Which dead nodes' unsat cores the run takes beyond, on the cube, the
-    /// minimal holes', which a description's read-out and summary print
-    /// ([`Cores`]): a dead root's, which a description and `--no-search`
-    /// print; every one the walk visits (`--dump-lattice`, `--events`); and
-    /// after the walk each member of `N` a description holds
-    /// (`--dump-answer`, `--trace`), *the least work each question needs*
-    /// (Q-M1e2.31, Q-M1f.25): every core taken is the one an eager walk takes, and no
-    /// answer depends on it. **The question is read first** (Q-M1f.29): a
-    /// mode prints a part of `R` and `--count` how many, and neither prints a
-    /// core, so neither takes root's or `N`'s, whatever this asks, and takes
-    /// a visited node's, root's among them, only where [`Cores::visited`]
-    /// asks it. [`Options::new`] asks [`Cores::READ_OUT`], what
+    /// Which dead nodes' unsat cores the run takes ([`Cores`]): a dead
+    /// root's, which a description and `--no-search` print; every one the
+    /// walk visits (`--dump-lattice`, `--events`); after the walk each member
+    /// of `N` a description holds (`--dump-answer`, `--trace`); and on the
+    /// cube the minimal holes', which a description's read-out and summary
+    /// print and `--count`'s summary writes, *the least work each question
+    /// needs* (Q-M1e2.31, Q-M1f.25): every core taken is the one an eager walk
+    /// takes, and no answer depends on it. **The question is read first**
+    /// (Q-M1f.29): a mode prints a part of `R` and `--count` how many, and
+    /// neither prints root's core or `N`'s, so neither takes them, whatever
+    /// this asks; no mode prints a hole, so none takes a hole's; and each
+    /// takes a visited node's, root's among them, only where
+    /// [`Cores::visited`] asks it. [`Options::new`] asks [`Cores::READ_OUT`], what
     /// `ein solve` asks for the same question with no artefact that prints
     /// another core, so the library's question does the binary's work; a
     /// caller that writes such an artefact, or reads a visited node's core
@@ -319,7 +320,8 @@ impl Options {
     /// `mode` asked as `ein solve` asks it with no other option: the default
     /// budget and limit, one job, and the cores the read-out and the summary
     /// print ([`Cores::READ_OUT`]): a dead root's under a description and
-    /// `--no-search`, and none under a mode or `--count`. A dead node's core
+    /// `--no-search`, on the cube the minimal holes' under a description and
+    /// `--count`, and none under a mode. A dead node's core
     /// is an explanation search, which on a densely re-derived program costs
     /// far more than the node's saturation, so a run that took one at every
     /// dead node it visits could run for hours where the binary's same
@@ -348,19 +350,25 @@ impl Options {
     /// part of `R` and `--count` how many, and neither prints either, so
     /// neither takes them: root's core is then taken where a surface that
     /// prints every visited node's asks ([`Cores::visited`]), and not else.
-    /// Read by [`run_with`] before `--count` takes describe's route with
-    /// describe's mode, so the count's question reaches the node function's
-    /// axes.
+    /// On the cube a description prints the minimal holes' cores and
+    /// `--count`'s summary writes them, and a mode, which prints no hole,
+    /// takes none. Read by [`run_with`] before `--count` takes describe's
+    /// route with describe's mode, so the count's question reaches the node
+    /// function's axes.
     pub(crate) fn cores_taken(&self) -> Cores {
-        let describes = self.mode
-            == Mode {
-                which: Which::All,
-                ask: Ask::Describe,
-            };
+        let over_all = |ask: Ask| {
+            self.mode
+                == Mode {
+                    which: Which::All,
+                    ask,
+                }
+        };
+        let describes = over_all(Ask::Describe);
         Cores {
             root: self.cores.root && (describes || self.no_search),
             visited: self.cores.visited,
             nogoods: self.cores.nogoods && describes,
+            holes: self.cores.holes && (describes || over_all(Ask::Count)),
         }
     }
 
@@ -1174,9 +1182,11 @@ impl<'a> Space<'a> {
     /// program stops at its first contradiction (`region`'s § What a node
     /// is).
     ///
-    /// `core` is the node's core where the run is narrated
-    /// ([`Self::narrated`]), and a surface that lists the nodes a run visited
-    /// prints it as it prints every dead node's.
+    /// `core` is the node's core where a surface that prints every visited
+    /// node's reads the run ([`Self::takes_whole_core`]), and it prints this
+    /// one as it prints every dead node's; a watch that prints no core
+    /// (`-v`, `--layer-progress`) is handed the node with none, as it is
+    /// every other node.
     pub(crate) fn charge_whole_node(
         &mut self,
         facts: u64,
@@ -1237,10 +1247,21 @@ impl<'a> Space<'a> {
     }
 
     /// Whether anything reads the nodes this run visits: the event stream or
-    /// a watch (`--dump-lattice`, `-v`). Where it is, a node a route computes
-    /// beside the cache takes its core as the node function's nodes do.
+    /// a watch (`--dump-lattice`, `-v`, `--layer-progress`).
     pub(crate) fn narrated(&self) -> bool {
         self.events.on() || self.events.watching()
+    }
+
+    /// Whether a dead node a route computes beside the cache, the whole
+    /// node, takes its core (Q-M1e2.31, *a core is taken only where a
+    /// surface prints one*): where the run is narrated ([`Self::narrated`])
+    /// and asks every visited node's core ([`Cores::visited`]), as
+    /// `--events` and `--dump-lattice` do, which print it with the node
+    /// function's. A watch alone (`-v`, `--layer-progress`) prints a node's
+    /// commitment and kind and no core, and a run nothing reads prints
+    /// none, so neither takes it.
+    pub(crate) fn takes_whole_core(&self) -> bool {
+        self.narrated() && self.axes.takes_cores()
     }
 
     /// How many new fixpoints the budget still affords, by [`Self::afford`]'s

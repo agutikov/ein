@@ -152,6 +152,7 @@ fn ask(path: &Path, mode: Mode, stop: bool) -> Result<Answer, String> {
             root: true,
             visited: false,
             nogoods: mode.ask == Ask::Describe && mode.which == Which::All,
+            holes: true,
         };
         explore::run(&mut kb, &mut terms, &ast, &opts).map_err(|e| e.to_string())
     };

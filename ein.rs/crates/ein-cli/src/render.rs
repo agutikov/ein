@@ -141,6 +141,7 @@ pub fn cmd_lattice(file: &str, full: bool, budget: Option<u64>, load: &ein_ir::L
         root: true,
         visited: true,
         nogoods: false,
+        holes: true,
     };
     if let Some(b) = budget {
         opts.budget = b;

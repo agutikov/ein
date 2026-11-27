@@ -241,17 +241,20 @@ fn run_bounded(
     }
     let summary_path = m.get_one::<String>("json-summary").cloned();
     // A dead node's core only where a surface prints one (Q-M1e2.31, each
-    // question does the least work it needs), and the three asks apart: the
+    // question does the least work it needs), and the four asks apart: the
     // read-out's `unsat core` rows and the summary's `region.core` print a
-    // dead root's, under a description and `--no-search` alone, which the
-    // run reads off the question (Q-M1f.29, `explore::Options::cores`);
+    // dead root's, under a description and `--no-search` alone, and on the
+    // cube the read-out's `minimal hole` rows and the summary's
+    // `region.holes.minimal` the minimal holes', under a description and in
+    // `--count`'s summary, and no mode prints either, which the run reads off
+    // the question (Q-M1f.29, `explore::Options::cores`);
     // `--dump-lattice`'s `nodes.json` and `--events`' `enter` lines print a
-    // core at every dead node the run visits, which the walk takes as it
-    // goes; `--dump-answer`'s `nogoods.json` and `--trace`'s *N* print one
-    // for each member of `N`, which the run takes after the walk, and only
-    // describe prints `N` (`--count` writes no `nogoods.json`). On the cube
-    // the minimal holes', which a description's read-out and summary print,
-    // are taken either way.
+    // core at every dead node the run visits, the whole node a route reads
+    // beside its cache among them, which the walk takes as it goes, and
+    // `-v`'s and `--layer-progress`' lines print none; `--dump-answer`'s
+    // `nogoods.json` and `--trace`'s *N* print one for each member of `N`,
+    // which the run takes after the walk, and only describe prints `N`
+    // (`--count` writes no `nogoods.json`).
     let describing = opts.mode
         == (Mode {
             which: Which::All,
@@ -261,6 +264,7 @@ fn run_bounded(
         root: true,
         visited: lattice_dir.is_some() || m.get_one::<String>("events").is_some(),
         nogoods: describing && (dump.is_some() || m.get_one::<String>("trace").is_some()),
+        holes: true,
     };
     // `N` only where a surface prints it or its count (Q-M1e2.31): `--count`'s
     // rows print neither, so a

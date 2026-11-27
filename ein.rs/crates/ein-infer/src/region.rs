@@ -256,10 +256,9 @@ pub struct Options {
     /// saturation, root's among them, and inside every dead node's core's
     /// search. Reaching it is [`SolveError::Deadline`], never a smaller cube.
     pub deadline: Option<Instant>,
-    /// Which dead nodes' unsat cores the run takes beyond the minimal holes',
-    /// which it takes either way ([`Cores`]). `ein oracle`'s cube is a
-    /// description, which prints a dead root's core, so it asks root's on
-    /// every run.
+    /// Which dead nodes' unsat cores the run takes ([`Cores`]). `ein
+    /// oracle`'s cube is a description, which prints a dead root's core and
+    /// the minimal holes', so it asks both on every run.
     pub cores: Cores,
 }
 
@@ -280,27 +279,32 @@ impl Default for Options {
 /// A core is the one computation a node's record needs that its
 /// classification does not, an explanation search over the node's
 /// derivations, so a run takes one only where a surface prints it
-/// (Q-M1e2.31, *the least work each question needs*). On the cube the
-/// minimal holes' are taken either way, which a description's read-out and
-/// summary print. The surfaces that print a core ask three things, and they
-/// are three fields:
+/// (Q-M1e2.31, *the least work each question needs*). The surfaces that
+/// print a core ask four things, and they are four fields; a question about
+/// `R` keeps of them only what it prints
+/// ([`crate::explore::Options::cores`], Q-M1f.29):
 ///
 /// - [`Self::root`]: a dead root's, which a description and `--no-search`
 ///   print, the read-out's `unsat core` rows and the summary's
 ///   `region.core`. A mode prints a part of `R` and `--count` how many, and
-///   neither prints a core, so a question about `R` asked either takes
-///   root's only as a visited node's, whatever this says
-///   ([`crate::explore::Options::cores`]);
+///   neither prints it, so a question about `R` asked either takes root's
+///   only as a visited node's, whatever this says;
 /// - [`Self::visited`]: every dead node the walk visits, as it visits it,
 ///   root's among them — `--dump-lattice`'s `nodes.json` and `--events`'
-///   `enter` lines;
+///   `enter` lines; and the whole node a route reads beside its cache
+///   (`crate::explore::Space::charge_whole_node`), which those two print
+///   with the rest, where the run is narrated to them;
 /// - [`Self::nogoods`]: each member of `N` a description holds, taken
 ///   **after the walk**, each through the node function against the snapshot
 ///   the walk resumed every node from — `--dump-answer`'s `nogoods.json` and
 ///   `--trace`'s *N*. A member whose core the walk took and kept keeps it;
 ///   every other is taken then, past `--region-limit` too, where the walk
 ///   keeps a node as its two bits. Where root is dead `N` is `{∅}`, and its
-///   member's core is root's, taken by the walk.
+///   member's core is root's, taken by the walk;
+/// - [`Self::holes`]: on the cube, each dead minimal hole's, taken after the
+///   walk as `N`'s members are — the read-out's `minimal hole` rows and the
+///   summary's `region.holes.minimal`, which a description prints and
+///   `--count`'s summary writes, and no line mode, which prints no hole.
 ///
 /// Every core taken after the walk is the one the walk takes eagerly: the
 /// node is root's fork with the same facts, resumed from the same snapshot
@@ -313,6 +317,7 @@ pub struct Cores {
     pub root: bool,
     pub visited: bool,
     pub nogoods: bool,
+    pub holes: bool,
 }
 
 impl Cores {
@@ -323,15 +328,17 @@ impl Cores {
         root: true,
         visited: true,
         nogoods: true,
+        holes: true,
     };
-    /// What the read-out and the summary print: root's, where the question
-    /// prints it, and on the cube the minimal holes' — the default of
+    /// What the read-out and the summary print: root's and, on the cube, the
+    /// minimal holes', each where the question prints it — the default of
     /// [`crate::explore::Options::new`], and what a run no other surface
     /// reads asks.
     pub const READ_OUT: Cores = Cores {
         root: true,
         visited: false,
         nogoods: false,
+        holes: true,
     };
 
     /// Whether a dead root's core is taken: asked for itself, or as a
@@ -725,18 +732,23 @@ pub(crate) fn compute_prepared(
     let topology = Topology::of(n, &status);
     let cost_topology = t_topo.elapsed();
 
-    // The cores a surface prints that the walk did not take: the minimal
-    // holes', which a read-out and a summary print, and under
+    // The cores a surface prints that the walk did not take: under
+    // `Cores::holes` the minimal holes', which a description's read-out and
+    // summary print and `--count`'s summary writes, and under
     // `Cores::nogoods` N's members', which `--dump-answer` and `--trace`
     // print. Each through the node function, against the same
     // snapshot, so each is the core an eager run takes.
     if !opts.cores.visited {
-        let mut after: Vec<u64> = topology
-            .minimal_holes
-            .iter()
-            .copied()
-            .filter(|&m| status[m as usize] & DEAD != 0)
-            .collect();
+        let mut after: Vec<u64> = Vec::new();
+        if opts.cores.holes {
+            after.extend(
+                topology
+                    .minimal_holes
+                    .iter()
+                    .copied()
+                    .filter(|&m| status[m as usize] & DEAD != 0),
+            );
+        }
         if opts.cores.nogoods {
             after.extend(topology.nogoods.iter().copied().filter(|&m| m != 0));
         }
@@ -1423,6 +1435,11 @@ impl Axes {
         self.cores = cores.visited;
         self.root_core = cores.of_root();
         self
+    }
+
+    /// Whether every dead node's core is taken ([`Cores::visited`]).
+    pub(crate) fn takes_cores(&self) -> bool {
+        self.cores
     }
 
     /// The axes [`cores_after`] reads a node with: the same node, its core

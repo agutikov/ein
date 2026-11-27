@@ -318,9 +318,11 @@ on the activator a node derived or committed
   node that is not dead `null` ([Q-M1e2.27](../../../decisions/read-out/Q-M1e2.27-in-eins-json-is-the-empty-set-and-null-what-does.md)).
   A text surface prints the empty core `∅`.
 - **A core is taken only where a surface prints one**: a bare `ein solve` takes root's and the minimal holes',
-  `--no-search` root's, and a mode and `--count`, which print no core, none of root's
+  `--no-search` root's, `--count` the minimal holes', which its summary writes, and none of root's, and a mode, which
+  prints no core, none
   ([Q-M1f.29](../../../decisions/read-out/Q-M1f.29-a-question-that-prints-no-core-writes-a-dead.md)); `--events` and
-  `--dump-lattice` each dead node visited's, and `--dump-answer` and `--trace` each member of N's.
+  `--dump-lattice` each dead node visited's, `-v` and `--layer-progress` none, and `--dump-answer` and `--trace` each
+  member of N's.
 - `:record-alternative-justifications false` records each fact's first derivation only, which may name another core
   and with it other rules `refuted by`, and changes nothing else
   ([`06-config.md`](06-config.md)).

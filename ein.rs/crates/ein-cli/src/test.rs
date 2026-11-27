@@ -1399,13 +1399,16 @@ fn ask(
     opts.refute = true;
     opts.no_search = m.get_flag("no-search");
     // A claim states no core: the run takes one only where `--events` prints
-    // it, at each node visited, and a dead root's where the file's
-    // `--json-summary` writes it, under a description or `--no-search`
+    // it, at each node visited, and a dead root's and on the cube the minimal
+    // holes' where the file's `--json-summary` writes them, a dead root's
+    // under a description or `--no-search` and the holes' under a description
     // (Q-M1f.29). `ein test` prints no `N`.
+    let summary = m.get_one::<String>("json-summary").is_some();
     opts.cores = ein_infer::region::Cores {
-        root: m.get_one::<String>("json-summary").is_some(),
+        root: summary,
         visited: m.get_one::<String>("events").is_some(),
         nogoods: false,
+        holes: summary,
     };
     // Nor does a claim read `N`, and no line here prints it or its count:
     // the description is asked without it, but where an artefact that

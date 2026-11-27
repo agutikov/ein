@@ -2329,6 +2329,7 @@ fn the_event_stream_does_not_depend_on_interning_order() {
                 root: true,
                 visited: true,
                 nogoods: false,
+                holes: true,
             },
             ..ein_infer::explore::Options::new(ein_infer::explore::Mode {
                 which: ein_infer::explore::Which::All,
