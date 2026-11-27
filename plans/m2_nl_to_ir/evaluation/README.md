@@ -20,7 +20,7 @@ hand; this page is what it finds of the kernel, kept for the iteration of Ein th
 - **One file an entry**, `<topic>/E-<n>-<slug>.md`, under the topic it is about: its id and its bold sentence as
   the title; its kind, its status (open, or closed and by what; a strength stands), where it was filed and its
   owner; then the cells of its row, each a section, as they were written. This page is the index. **The ids are one
-  sequence for the milestone and its phases**, and the next free id is **E-132** (E-140 to E-149 are reserved for P2.2f while
+  sequence for the milestone and its phases**, and the next free id is **E-133** (E-140 to E-149 are reserved for P2.2f while
   it runs in a worktree).
 - **An entry filed by a phase lives in the phase's `evaluation/`** (every phase's folder has one) until the phase
   closes. Then, if it is open or a strength, it moves here under the same topic; a closed one stays in the phase's
@@ -180,7 +180,7 @@ below is a wrong answer.
 
 The bugs P2.1 filed, E-62, E-65, E-74, E-76, E-79 and E-88, were each closed in the phase and went with its folder
 at its close ([below](#in-a-phases-folder)). **The two below are P2.2's, and neither is a wrong answer by the register's
-rules**: E-104 closed by S2.2e.1, E-105 by S2.2e.2. P2.2e's E-129, E-130 and E-131 are in [its folder](../p2.2e_kernel_fixes/evaluation/README.md).
+rules**: E-104 closed by S2.2e.1, E-105 by S2.2e.2. P2.2e's E-129 to E-132 are in [its folder](../p2.2e_kernel_fixes/evaluation/README.md).
 
 | id | title | topic | status | owner |
 |---|---|---|---|---|
@@ -234,7 +234,8 @@ One line a phase whose `evaluation/` holds entries, so that every id is found fr
   [the analysis of the phase](../p2.2_formalizer/report/ANALYSIS.md#12-what-a-library-says-of-its-rules-to-whoever-selects-them).
 - [P2.2b](../p2.2b_guided_thinking/evaluation/README.md), [P2.2c](../p2.2c_decoding_and_model_alone/evaluation/README.md),
   [P2.2d](../p2.2d_formalizer_corrected/evaluation/README.md): none yet, each planned and not started.
-- **E-129, E-130 and E-131 are P2.2e's**, filed by S2.2e.1 on what the imports pass does to a program's own forms, by
-  S2.2e.3 on a question that prints no core taking a dead root's (closed by S2.2e.6), and by S2.2e.6 on two more cores
-  taken where nothing prints them ([the phase's index](../p2.2e_kernel_fixes/evaluation/README.md)).
+- **E-129 to E-132 are P2.2e's**, filed by S2.2e.1 on what the imports pass does to a program's own forms, by
+  S2.2e.3 on a question that prints no core taking a dead root's (closed by S2.2e.6), by S2.2e.6 on two more cores
+  taken where nothing prints them (closed by S2.2e.7), and by S2.2e.7 on the whole node's core search, which reads no
+  clock ([the phase's index](../p2.2e_kernel_fixes/evaluation/README.md)).
 - P2.3 to P2.10: none yet.

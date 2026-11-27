@@ -11,6 +11,9 @@ S2.2e.6"*, for the core a question that prints none takes of a dead root; it run
 taken and printed nowhere; it runs last.
 **S2.2e.6 done 2026-11-27** (`6b359cce`): a dead root's core taken by a description and `--no-search` alone, E-130
 closed, E-131 filed; S2.2e.5's recording is next.
+**S2.2e.7 done 2026-11-27** (`87d5db47`): the cube's minimal holes' cores taken by a description and `--count` alone,
+the whole node's only where `--events` or `--dump-lattice` reads the run; E-131 closed, E-132 filed; the phase's gate
+is next.
 The phase stops at its end with a report for the user's review, and is not closed until the user says so.
 **Depends on:** the kernel as it stands; [P2.2](../p2.2_formalizer/README.md), closed, for the probes that hold
 the evidence ([`zebra_formulations/probes/`](../p2.2_formalizer/zebra_formulations/probes/README.md)) and the
