@@ -347,7 +347,8 @@ The contrapositive of the second: `b` excluded from the only target of a positio
 
 #### `slot-prune-fwd`
 
-Once `b` is placed, `a` is excluded from every position that is not a source of `b`'s.
+Once `b` is placed, `a` is excluded from every position that is not a source of `b`'s, `b`'s own among them where
+`?S` does not relate it to itself.
 
 <!-- rule std.slots slot-prune-fwd -->
 ```lisp
@@ -355,7 +356,6 @@ Once `b` is placed, `a` is excluded from every position that is not a source of 
   :match  (and (?S ?a ?b)
                (?R ?b ?p1) (?isa ?p1 ?PT)
                (?isa ?p_o ?PT)
-               (neq ?p_o ?p1)
                (absent (?S ?p_o ?p1)))
   :assert (not (?R ?a ?p_o))
   :why    "{?b} is at {?p1}, so {?a} is at an {?S}-source of {?p1}; {?p_o} is not one.")
@@ -366,7 +366,8 @@ Once `b` is placed, `a` is excluded from every position that is not a source of 
 
 #### `slot-prune-bwd`
 
-Once `a` is placed, `b` is excluded from every position that is not a target of `a`'s.
+Once `a` is placed, `b` is excluded from every position that is not a target of `a`'s, `a`'s own among them where
+`?S` does not relate it to itself.
 
 <!-- rule std.slots slot-prune-bwd -->
 ```lisp
@@ -374,7 +375,6 @@ Once `a` is placed, `b` is excluded from every position that is not a target of 
   :match  (and (?S ?a ?b)
                (?R ?a ?p2) (?isa ?p2 ?PT)
                (?isa ?p_o ?PT)
-               (neq ?p_o ?p2)
                (absent (?S ?p2 ?p_o)))
   :assert (not (?R ?b ?p_o))
   :why    "{?a} is at {?p2}, so {?b} is at an {?S}-target of {?p2}; {?p_o} is not one.")

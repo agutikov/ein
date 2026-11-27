@@ -156,7 +156,7 @@ green is not there either. Red in house 3 would put green off the row. So red is
 |---|---|
 | `slot-adjacent-fwd`, `-bwd` | from `(S a b)` with `b` at a position whose only S-neighbour is `p`: `a` at `p`, and the reverse |
 | `slot-adjacent-fwd-neg`, `-bwd-neg` | their contrapositives: a negative on one side of a spatial clue reaches the other |
-| `slot-prune-fwd`, `-bwd` | once one end is placed, the other is excluded from every position that is not its S-neighbour |
+| `slot-prune-fwd`, `-bwd` | once one end is placed, the other is excluded from every position that is not its S-neighbour: the placed end's own among them where S relates no position to itself, so two values `next-to` relates never share a slot |
 | `slot-endpoint-fwd`, `-bwd` | a position with no S-source cannot hold `b`, one with no S-target cannot hold `a` |
 
 Every negative is a stated consequence of the partition, except the `absent` guards of the spatial rules, which

@@ -855,8 +855,9 @@ fn held(holders: &[(Value, Value, Value)]) -> (usize, usize) {
 /// spent.** Which candidates' own nodes hold each witness of an owed
 /// instance is read after a layer, off its singles, which the layer left in
 /// the cache: nothing is computed, so no budget is asked. On the
-/// one-relation zebra 76 witnesses are held by a single's node at root and
-/// 112 by the theory alone, every witness that is a candidate. A layer's
+/// one-relation zebra 70 witnesses are held by a single's node at root and
+/// 112 by the theory alone, every witness that is a candidate, as on
+/// `zebra2.ein`'s five relations (`ein-infer/tests/coupling.rs`). A layer's
 /// last step may carry it past its budget, so one fact under what root's
 /// layer spends the layer reads every pair, having spent more than it was
 /// given; the holders are read all the same, and the structure is whole,
@@ -871,7 +872,7 @@ fn a_layer_read_whole_has_its_holders_read() {
     let file = "examples/zebra.ein";
     let whole = document_of(file, &[]);
     assert_eq!(whole["whole"], true);
-    assert_eq!(held(&holders(&whole)), (76, 112), "{file}");
+    assert_eq!(held(&holders(&whole)), (70, 112), "{file}");
 
     // One fact under what root's layer spends.
     let spent = whole["pairs"]["work"]["facts"].as_u64().expect("facts");

@@ -3379,6 +3379,21 @@
 0    tests/stdlib/slots/12_owed_fill_satisfied.ein :: test
 0    tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein :: solve
 0    tests/stdlib/slots/13_adjacent_bwd_neg_direction.ein :: test
+0    tests/stdlib/slots/14_prune_placed_position.ein :: render constraints
+0    tests/stdlib/slots/14_prune_placed_position.ein :: render rules
+0    tests/stdlib/slots/14_prune_placed_position.ein :: saturate
+0    tests/stdlib/slots/14_prune_placed_position.ein :: solve
+0    tests/stdlib/slots/14_prune_placed_position.ein :: test
+0    tests/stdlib/slots/15_prune_reflexive.ein :: render constraints
+0    tests/stdlib/slots/15_prune_reflexive.ein :: render rules
+0    tests/stdlib/slots/15_prune_reflexive.ein :: saturate
+0    tests/stdlib/slots/15_prune_reflexive.ein :: solve
+0    tests/stdlib/slots/15_prune_reflexive.ein :: test
+0    tests/stdlib/slots/16_spatial_endpoints.ein :: render constraints
+0    tests/stdlib/slots/16_spatial_endpoints.ein :: render rules
+0    tests/stdlib/slots/16_spatial_endpoints.ein :: saturate
+0    tests/stdlib/slots/16_spatial_endpoints.ein :: solve
+0    tests/stdlib/slots/16_spatial_endpoints.ein :: test
 0    tests/stdlib/typing/01_reflexive.ein :: render constraints
 1    tests/stdlib/typing/01_reflexive.ein :: render rules
 0    tests/stdlib/typing/01_reflexive.ein :: saturate

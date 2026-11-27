@@ -70,6 +70,12 @@
 ;;; For a symmetric relation both guards fail everywhere and nothing spurious
 ;;; fires, which is why `examples/zebra.ein`'s `next-to` contributes none of
 ;;; these.
+;;;
+;;; Here other rules reach the same four: a placed value's seat is no
+;;; S-neighbour of itself, so `slot-prune-fwd` excludes Ann from S1, the cat's
+;;; seat, and `slot-prune-bwd` Bob from S4, the dog's; occupancy excludes Cat
+;;; from S4 and Dog from S1. `16_spatial_endpoints.ein` activates the two
+;;; endpoint rules alone, where nothing else reaches what they conclude.
 
 (import std.algebra :symbols (symmetric symmetric-negative-setup))
 (import std.slots   :symbols (slot-partition-setup slot-spatial-setup))

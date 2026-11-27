@@ -5319,6 +5319,24 @@ runs   = ["solve", "test"]
 note   = "the fixture that kills a mutation survivor, `slot-adjacent-bwd-neg` with its structure premise exchanged. A four-seat row is what makes the derivation isolable, and the exchanged rule is **sound and strictly weaker**, so only a program that *needs* the exclusion can catch it. `probe-excluded` turns the stored negative into a positive the expectation can close — `07_schroder.ein`'s idiom with the polarity reversed."
 
 [[entry]]
+path   = "tests/stdlib/slots/14_prune_placed_position.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`slot-prune-fwd` and `slot-prune-bwd` activated alone over `next-to`, which relates no seat to itself: the partner of a placed value is excluded from the placed value's own seat, as `slot-spatial`'s statement S(a, b) ⟺ S(slot(a), slot(b)) says. The claim closes every exclusion through `probe-excluded`, so a rule that exempted that seat is refuted."
+
+[[entry]]
+path   = "tests/stdlib/slots/15_prune_reflexive.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "the same two rules over `near`, which relates each seat to itself: the placed value's own seat is kept for its partner, decided by the rules' `absent` and no guard. With `14_prune_placed_position.ein`, the two readings of the placed end's seat, each closed by the claim."
+
+[[entry]]
+path   = "tests/stdlib/slots/16_spatial_endpoints.ein"
+group  = "stdlib"
+runs   = ["test", "solve", "saturate", "render rules", "render constraints"]
+note   = "`slot-endpoint-fwd` and `slot-endpoint-bwd` activated alone over a three-seat row, nothing placed: the ends' exclusions, the clue's and the row's own facts', each closed by the claim through `probe-excluded`. In `07_spatial_prune.ein` the pruning rules and occupancy reach the same exclusions; here nothing else does."
+
+[[entry]]
 path   = "tests/stdlib/typing/01_reflexive.ein"
 group  = "stdlib"
 runs   = ["test", "solve", "saturate", "render rules", "render constraints"]

@@ -406,8 +406,15 @@
 ;; Disjunctive pruning: unlike the positive rules these fire whether or not the
 ;; neighbour is unique, restricting the partner's domain to the ?S-neighbourhood
 ;; even when no single position can be pinned. This is what turns "Kools is next
-;; to the horse" into three exclusions the moment Kools is placed, instead of
-;; waiting for a corner.
+;; to the horse" into the horse's exclusion from every house that is not next to
+;; Kools' the moment Kools is placed, instead of waiting for a corner.
+;;
+;; The placed end's own position is read like every other, and the `absent`
+;; decides it by ?S itself: `slot-spatial` reads S(a, b) ⟺ S(slot(a), slot(b)),
+;; so where ?S does not relate a position to itself (`next-to`, `right-of`) two
+;; values it relates never share a slot, and the partner is excluded from the
+;; placed end's position; where ?S does, it is not. No `neq` exempts that
+;; position: one would let the two ends of a clue share a slot.
 ;;
 ;; The two directions are NOT interchangeable when ?S is asymmetric: fwd
 ;; excludes positions that are not ?S-SOURCES of ?b's position, bwd excludes
@@ -417,7 +424,6 @@
   :match  (and (?S ?a ?b)
                (?R ?b ?p1) (?isa ?p1 ?PT)
                (?isa ?p_o ?PT)
-               (neq ?p_o ?p1)
                (absent (?S ?p_o ?p1)))
   :assert (not (?R ?a ?p_o))
   :why    "{?b} is at {?p1}, so {?a} is at an {?S}-source of {?p1}; {?p_o} is not one.")
@@ -426,7 +432,6 @@
   :match  (and (?S ?a ?b)
                (?R ?a ?p2) (?isa ?p2 ?PT)
                (?isa ?p_o ?PT)
-               (neq ?p_o ?p2)
                (absent (?S ?p2 ?p_o)))
   :assert (not (?R ?b ?p_o))
   :why    "{?a} is at {?p2}, so {?b} is at an {?S}-target of {?p2}; {?p_o} is not one.")

@@ -1,0 +1,79 @@
+;;; `std.slots` — `slot-prune-fwd` and `slot-prune-bwd` over an `S` that
+;;; relates no seat to itself: the partner of a placed value is excluded from
+;;; the placed value's own seat.
+;;;
+;;; ── What the rules promise ─────────────────────────────────────────────────
+;;;
+;;; `slot-spatial` reads S(a, b) ⟺ S(slot(a), slot(b)). With `next-to`, which
+;;; relates no seat to itself, two values it relates never share a seat, so
+;;; once one end of a clue is placed the other is excluded from every seat
+;;; that is not next to it, the placed end's own among them. Each rule decides
+;;; the placed end's seat by its `absent`, as it decides every other seat.
+;;;
+;;; ── What this program does ─────────────────────────────────────────────────
+;;;
+;;;   next-to:  S1 — S2 — S3, written both ways
+;;;
+;;;   (next-to Ann Cat) + Cat at S2
+;;;     slot-prune-fwd: Ann sits at a seat next to S2; S2 is not one
+;;;     ⟹ ¬(co-loc Ann S2), and nothing else: S1 and S3 are both next to S2
+;;;
+;;;   (next-to Dog Bob) + Dog at S1
+;;;     slot-prune-bwd: Bob sits at a seat next to S1; S1 and S3 are not
+;;;     ⟹ ¬(co-loc Bob S1), ¬(co-loc Bob S3)
+;;;
+;;; A rule that exempted the placed end's seat would derive only
+;;; ¬(co-loc Bob S3), and let Ann share the cat's seat and Bob the dog's.
+;;;
+;;; ── Separated by activation ────────────────────────────────────────────────
+;;;
+;;; The two rules are activated by themselves and nothing else of the module
+;;; is: no partition, so no occupancy or endpoint rule reaches the same
+;;; exclusions. Each clue reaches one rule: `slot-prune-fwd` reads a placed
+;;; second argument, `slot-prune-bwd` a placed first one, and each clue has
+;;; one end placed.
+;;;
+;;; ── How the expectation sees a negative ────────────────────────────────────
+;;;
+;;; Stored negatives are the one thing an `:expect` does not close, so
+;;; `probe-excluded` turns every exclusion into an `excluded` fact, which it
+;;; does close: the claim lists each exclusion the two rules derive, and no
+;;; other (`13_adjacent_bwd_neg_direction.ein`'s idiom).
+;;; `15_prune_reflexive.ein` is the same two rules over an `S` that relates
+;;; each seat to itself, where the placed end's seat is kept.
+
+(import std.slots :symbols (slot-prune-fwd slot-prune-bwd))
+
+(relation instance T T :why "{?3} is an instance of {?4}")
+(relation co-loc   Attribute Attribute :why "{?3} and {?4} are in the same seat")
+(relation next-to  Attribute Attribute :why "{?3}'s seat is next to {?4}'s")
+(relation excluded Attribute Attribute :why "{?3} was ruled out of {?4}")
+
+(slot-prune-fwd co-loc next-to instance Seat)
+(slot-prune-bwd co-loc next-to instance Seat)
+
+(instance S1 Seat) (instance S2 Seat) (instance S3 Seat)
+
+;; Three seats in a row; `next-to` relates no seat to itself.
+(next-to S1 S2) (next-to S2 S1)
+(next-to S2 S3) (next-to S3 S2)
+
+;; The two clues, each with one end placed.
+(next-to Ann Cat) (co-loc Cat S2)
+(next-to Dog Bob) (co-loc Dog S1)
+
+(rule probe-excluded ()
+  :match  (not (co-loc ?x ?s))
+  :assert (excluded ?x ?s)
+  :why    "a pruning rule ruled {?x} out of {?s}")
+
+;; Root alone (Q-M1f.254): the question is root's saturation, so nothing is
+;; guessed; no obligation is activated, and root is R's one state.
+(solve
+  :no-search
+  :expect (region (model (excluded Ann S2)      ; slot-prune-fwd: the cat's own seat
+                         (excluded Bob S1)      ; slot-prune-bwd: the dog's own seat
+                         (excluded Bob S3))))   ; slot-prune-bwd: not next to S1
+
+(query
+  :goal (excluded ?x ?s))

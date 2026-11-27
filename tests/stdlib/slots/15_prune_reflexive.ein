@@ -1,0 +1,72 @@
+;;; `std.slots` — `slot-prune-fwd` and `slot-prune-bwd` over an `S` that
+;;; relates each seat to itself: the placed value's own seat is kept for its
+;;; partner. `14_prune_placed_position.ein` is the same two rules over an `S`
+;;; that relates no seat to itself, where that seat is excluded.
+;;;
+;;; ── What the rules promise ─────────────────────────────────────────────────
+;;;
+;;; `slot-spatial` reads S(a, b) ⟺ S(slot(a), slot(b)). Here S is `near`, a
+;;; seat and its neighbours, so two values it relates may share a seat, and
+;;; once one end is placed the other is excluded only from the seats not near
+;;; it. Nothing in either rule names the placed end's seat: the `absent` reads
+;;; S at that seat as it reads it at every other, and finds it.
+;;;
+;;; ── What this program does ─────────────────────────────────────────────────
+;;;
+;;;   near:  S1 — S2 — S3 — S4, written both ways, and each seat near itself
+;;;
+;;;   (near Ann Cat) + Cat at S2
+;;;     slot-prune-fwd: Ann sits at a seat near S2, which S1, S2 and S3 are
+;;;     ⟹ ¬(co-loc Ann S4), and Ann keeps S2
+;;;
+;;;   (near Dog Bob) + Dog at S4
+;;;     slot-prune-bwd: Bob sits at a seat near S4, which S3 and S4 are
+;;;     ⟹ ¬(co-loc Bob S1), ¬(co-loc Bob S2), and Bob keeps S4
+;;;
+;;; The rules fire, and the claim closes what they derive, so an exclusion of
+;;; Ann from S2 or of Bob from S4 refutes it.
+;;;
+;;; ── Separated by activation, and how the claim sees a negative ─────────────
+;;;
+;;; As in `14_prune_placed_position.ein`: the two rules activated alone, each
+;;; clue with one end placed, and `probe-excluded` turning every exclusion
+;;; into an `excluded` fact the claim closes.
+
+(import std.slots :symbols (slot-prune-fwd slot-prune-bwd))
+
+(relation instance T T :why "{?3} is an instance of {?4}")
+(relation co-loc   Attribute Attribute :why "{?3} and {?4} are in the same seat")
+(relation near     Attribute Attribute :why "{?3}'s seat is {?4}'s or next to it")
+(relation excluded Attribute Attribute :why "{?3} was ruled out of {?4}")
+
+(slot-prune-fwd co-loc near instance Seat)
+(slot-prune-bwd co-loc near instance Seat)
+
+(instance S1 Seat) (instance S2 Seat) (instance S3 Seat) (instance S4 Seat)
+
+;; Four seats in a row; `near` relates each seat to itself and to its
+;; neighbours.
+(near S1 S1) (near S2 S2) (near S3 S3) (near S4 S4)
+(near S1 S2) (near S2 S1)
+(near S2 S3) (near S3 S2)
+(near S3 S4) (near S4 S3)
+
+;; The two clues, each with one end placed.
+(near Ann Cat) (co-loc Cat S2)
+(near Dog Bob) (co-loc Dog S4)
+
+(rule probe-excluded ()
+  :match  (not (co-loc ?x ?s))
+  :assert (excluded ?x ?s)
+  :why    "a pruning rule ruled {?x} out of {?s}")
+
+;; Root alone (Q-M1f.254): the question is root's saturation, so nothing is
+;; guessed; no obligation is activated, and root is R's one state.
+(solve
+  :no-search
+  :expect (region (model (excluded Ann S4)      ; slot-prune-fwd: not near S2
+                         (excluded Bob S1)      ; slot-prune-bwd: not near S4
+                         (excluded Bob S2))))
+
+(query
+  :goal (excluded ?x ?s))

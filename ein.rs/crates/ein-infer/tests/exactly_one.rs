@@ -217,10 +217,11 @@ fn mirror(text: &str) -> String {
 /// hypothesis rule writes `(co-located v House-n)`, and `slot-owed-fill`, *a house has
 /// no attribute of a kind yet*, writes what pays it, the mirror
 /// `(co-located House-n v)`, which joins `H` beside the hypothesis rule's
-/// (Q-M1f.570): 112 candidates, the 36 of them dead alone at root 18
-/// placements twice. `symmetric` brings each of a candidate and its mirror
-/// from the other, so the two exclude nothing between them, and each
-/// excludes both orientations of whatever the other placement excludes.
+/// (Q-M1f.570): 112 candidates, the 42 of them dead alone at root 21
+/// placements twice, `zebra2.ein`'s 21 dead alone. `symmetric` brings each
+/// of a candidate and its mirror from the other, so the two exclude nothing
+/// between them, and each excludes both orientations of whatever the other
+/// placement excludes.
 ///
 /// Root owes 36 instances and **every one is licensed and owes a group**:
 /// every fact that can witness one is a candidate or denied at root. The 18
@@ -241,8 +242,8 @@ fn mirror(text: &str) -> String {
 /// **What is true of the mirrors that pay a house**: one witness of
 /// `slot-owed-fill` the mirror of each of the hypothesis rule's 56 candidates, and
 /// each a candidate. By the theory alone each is brought by its own node
-/// and its mirror's, and by no other. At root the 38 alive alone are in
-/// both closures, and the 18 dead alone are held by no single's node.
+/// and its mirror's, and by no other. At root the 35 alive alone are in
+/// both closures, and the 21 dead alone are held by no single's node.
 #[test]
 fn one_relation_owes_a_group_in_each_orientation_and_holds_no_grid() {
     let (c, x) = read("examples/zebra.ein");
@@ -269,7 +270,19 @@ fn one_relation_owes_a_group_in_each_orientation_and_holds_no_grid() {
     let dead: BTreeSet<u32> = (0..c.n() as u32)
         .filter(|&b| c.marks[b as usize] == Mark::DeadAlone)
         .collect();
-    assert_eq!(dead.len(), 36);
+    assert_eq!(dead.len(), 42);
+    let dead_folded: BTreeSet<[String; 2]> = dead.iter().map(|&b| placement(c.text(b))).collect();
+    let dead2: BTreeSet<[String; 2]> = (0..c2.n() as u32)
+        .filter(|&b| c2.marks[b as usize] == Mark::DeadAlone)
+        .map(|b| {
+            let p = parts(c2.text(b));
+            [p[1].to_string(), p[2].to_string()]
+        })
+        .collect();
+    assert_eq!(
+        dead_folded, dead2,
+        "dead alone: zebra2.ein's, under the renaming"
+    );
     let dead_texts: BTreeSet<&str> = dead.iter().map(|&b| c.text(b)).collect();
     assert!(
         dead_texts
@@ -411,7 +424,7 @@ fn one_relation_owes_a_group_in_each_orientation_and_holds_no_grid() {
         mirrored, guessed,
         "one witness the mirror of each of the hypothesis rule's"
     );
-    assert_eq!((brought, by_nothing), (38, 18));
+    assert_eq!((brought, by_nothing), (35, 21));
 }
 
 /// **One clue apart.** `zebra2-minus-15.ein` leaves 96 candidates, none

@@ -121,7 +121,7 @@ these programs give each rule one.
 | [`stdlib/bijection/`](stdlib/bijection/) | the two setup fan-outs and the negative completion; domain- and range-elimination, each productive in its own file and redundant in its sibling's; the two arg typechecks violated; `06_blind_enumeration.ein`, the one program here that leaves the enumerator **on**, with the library's obligation rules loaded and none activated; and `07_setup_owed_activators.ein`, the setup's two activators of the obligations, read on the owing root because no claim about R tells them apart on a bijection |
 | [`stdlib/elim/`](stdlib/elim/) | the same inference in its *positional* formulation, plus `no-room-left` — the pair that brackets a quantifier: one exclusion short of full forces the one fact left, exactly full refutes |
 | [`stdlib/closure/`](stdlib/closure/) | `infer-closure`, and its soundness caveat **exhibited**: a program the import takes from many models to one; plus `02`, closed and satisfied. An obligation on a relation whose held extent is closed is refused at load ([Q-M1f.244](../docs/decisions/hypotheses/Q-M1f.244-an-obligated-relations-held-extent-is-not-closed.md)), so the closed and owing case is `examples/ein-bugs/closed-and-owing.ein`, a refused program |
-| [`stdlib/slots/`](stdlib/slots/) | a second activating puzzle for the module beside `examples/zebra.ein` — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd` |
+| [`stdlib/slots/`](stdlib/slots/) | a second activating puzzle for the module beside `examples/zebra.ein` — the partition chain; `slot-fill` and `slot-elimination` as a matched pair, each productive where the other cannot fire; both violation duals; and the spatial family over two different position structures, one of which exists nowhere else and is what tells `slot-prune-fwd` from `slot-prune-bwd`; the placed value's own seat under the two pruning rules, excluded for its partner where `S` relates no seat to itself and kept where `S` relates each seat to itself; and the two endpoint rules activated alone |
 | [`stdlib/typing/`](stdlib/typing/) | the reflexive-closure knob, and the `(type-hierarchy …)` knob in both directions |
 | [`stdlib/negation/`](stdlib/negation/) | `std.negation`, the elimination of a double negation: one program, the seven rules each activated for a relation of its count, every argument a different name; and three relations the rules leave alone, one nobody activates, one activated at counts its facts do not have, one that holds a single negation |
 | [`stdlib/contradiction/`](stdlib/contradiction/) | `std.contradiction`, the contradiction as rules that conclude `(false)` from a fact beside its negation: a firing program for each `clash-N`, one rule a file; all seven loaded, activated and silent over facts and denials that do not meet; the activators `clash-of-N` derives from the declarations, and a relation no declaration names, whose fact beside its negation is alive. See [below](#stdlibcontradiction-the-contradiction-a-program-imports) |
@@ -757,8 +757,9 @@ expectation is made of facts and cannot say which rule produced them
 ([Q-M1c.2](../docs/decisions/language/Q-M1c.2-an-expectation-is-ground-and-naming-a-relation.md)).
 On a fully excluded row `no-room-left` refutes and `domain-elimination`
 forces a value against a stored negative, and both end in ⊥; the fixture picks
-one by declaring only its activator. Five files do this — `elim/02`,
-`elim/03`, `elim/04`, `slots/05`, `slots/06` — and each says so in its header,
+one by declaring only its activator. Eight files do this — `elim/02`,
+`elim/03`, `elim/04`, `slots/05`, `slots/06`, `slots/14`, `slots/15`,
+`slots/16` — and each says so in its header,
 because a reader who does not know why `slot-partition-setup` is absent will
 put it back. The seven firing files of `contradiction/` are written the same
 way, one `clash-N` a file, where the verdict is one the kernel reaches too.
@@ -785,7 +786,7 @@ nothing is proposed whatever the program declares, and the obligations judge
 root, so R is root where it owes nothing and empty, root the owing node it
 stops at, where it owes. That is what the fixtures whose question is root's
 verdict or root's saturation say: `algebra/23` to `26`, `bijection/01` to `03` and `07`,
-`slots/01` to `04`, `07` to `13`, `region/04_owing` and `05_empty`. A hypothesis rule
+`slots/01` to `04`, `07` to `16`, `region/04_owing` and `05_empty`. A hypothesis rule
 or a list beside `:no-search` proposes or filters nothing, and says so in a
 `note:`
 ([Q-M1f.254](../docs/decisions/hypotheses/Q-M1f.254-solve-no-search-relaxes-no-conflict.md));
@@ -837,6 +838,10 @@ invents a debt takes a discharged state out of R where the claim lists it.
 | `slots.ein::slot-owed-room::drop-neq::(neq ?Ta ?index)` | `stdlib/slots/01_partition`, `08_spatial_adjacent`, `10_owed_room_satisfied`: a seat now owes a seat |
 | `slots.ein::slot-owed-fill::drop-neq::(neq ?Tv ?index)` | `stdlib/slots/01_partition`, `08_spatial_adjacent`, `12_owed_fill_satisfied`: the same, on the fill side |
 | `slots.ein::slot-owed-fill::swap-premise::(?sub ?Tv ?super)` | the same three |
+| `slots.ein::slot-prune-fwd::swap-premise::(?R ?b ?p1)`, `slot-prune-bwd::swap-premise::(?R ?a ?p2)` | `stdlib/slots/14_prune_placed_position`: the placement read the other way round, which the file does not write, and the rule silent |
+| `slots.ein::slot-prune-fwd::swap-assert::(?R ?a ?p_o)`, `slot-prune-bwd::swap-assert::(?R ?b ?p_o)` | `stdlib/slots/14_prune_placed_position`, `15_prune_reflexive`: the exclusion stored the other way round, `(not (co-loc S2 Ann))`, an `excluded` fact the claim does not list |
+| `slots.ein::slot-endpoint-fwd::swap-assert::(?R ?b ?p1)`, `slot-endpoint-bwd::swap-assert::(?R ?a ?p2)` | `stdlib/slots/16_spatial_endpoints`: the same |
+| `slots.ein::slot-endpoint-fwd::swap-premise::(?isa ?p1 ?PT)`, `slot-endpoint-bwd::swap-premise::(?isa ?p2 ?PT)` | `stdlib/slots/16_spatial_endpoints`, where nothing else reaches what the two rules conclude; in `07_spatial_prune` the pruning rules and occupancy do |
 
 **Two of `bijective-setup`'s survive.** Exchanging the arguments of
 `(total ?R ?isa)` or `(surjective ?R ?isa)` in its conclusion turns the

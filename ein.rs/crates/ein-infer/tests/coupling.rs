@@ -766,9 +766,10 @@ fn holders(x: &structure::ExactlyOne) -> (usize, usize) {
 /// **A layer that read its singles has its witnesses' holders read,
 /// whatever it spent.** The holders are read off the singles a layer left
 /// in the cache, and nothing is computed for them, so no budget is asked.
-/// On the one-relation zebra 76 of the witnesses of what root owes are
+/// On the one-relation zebra 70 of the witnesses of what root owes are
 /// held by a single's node at root, and 112 by the theory alone, every
-/// witness that is a candidate. A layer's last step is afforded by a
+/// witness that is a candidate: the counts of `zebra2.ein`'s five
+/// relations, which state the same puzzle. A layer's last step is afforded by a
 /// projection and may carry it past its budget: one fact under what root's
 /// layer spends, the layer reads every pair, the holders are read, and
 /// *exactly one* and the coupling are the ones of the default budget,
@@ -781,8 +782,14 @@ fn a_layer_that_read_its_singles_has_its_holders_read() {
     let rel = Z1;
     let whole = z1_whole();
     let parts = whole.parts.as_ref().expect("a cover");
-    assert_eq!(holders(&parts.exactly_one), (76, 112), "{rel}");
+    assert_eq!(holders(&parts.exactly_one), (70, 112), "{rel}");
     assert!(parts.coupling.complete());
+    let typed = whole_at(Z2, structure::Options::default().budget);
+    assert_eq!(
+        holders(&typed.parts.as_ref().expect("a cover").exactly_one),
+        (70, 112),
+        "{Z2}: the same puzzle, the same witnesses held"
+    );
 
     // One fact under what root's layer spends.
     let spent = whole.theory.root.work.facts;

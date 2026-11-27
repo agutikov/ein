@@ -7,9 +7,10 @@
 //! read through each encoding's own vocabulary.
 //!
 //! Each is a few dozen saturations on the routes, so they run with the
-//! ordinary suite.
+//! ordinary suite; the six encodings with a clue dropped, a hundred or so
+//! each.
 //!
-//! **This is the whole acceptance gate.** It covers five
+//! **This is the whole acceptance gate.** It covers six
 //! questions:
 //!
 //! | what it asserts | here |
@@ -18,6 +19,7 @@
 //! | the listing and the contradictions view are *readings of one result*, not second opinions | `the_listing_is_the_verdict_counted` / `the_contradictions_view_is_the_verdict_explained` |
 //! | two encodings, one model | `the_generic_link_encoding_is_the_unique_solution`, `both_ontologies_reach_the_same_model` |
 //! | the text's own words, four ways, one model | `one_relation_a_verb_is_the_unique_solution`, `descriptions_and_what_is_the_same_are_the_unique_solution`, `an_adjective_a_relation_of_one_argument_is_the_unique_solution`, `the_verb_as_an_argument_is_the_unique_solution` |
+//! | the puzzle with sentence (15) dropped, six encodings over two libraries, one answer | `without_sentence_15_every_encoding_answers_the_same_states` |
 //! | the CLI prints the answer, `k`, `exhausted` | the CLI's surface, not the engine's — `ein-cli/tests/` |
 //!
 //! The second row is the guard against a verdict that tracks **the function
@@ -37,8 +39,10 @@
 use ein_core::{FactId, Kb, Terms, Value};
 use ein_infer::described::Described;
 use ein_infer::explore::{self, Answer, Ask, Mode, Verdict, Which};
+use ein_infer::read_out;
 use ein_infer::region::Nodes;
 use ein_ir::{Ast, load_file};
+use std::collections::BTreeMap;
 use std::path::PathBuf;
 
 fn repo_root() -> PathBuf {
@@ -601,6 +605,115 @@ fn the_verb_as_an_argument_is_the_unique_solution() {
         missing.is_empty(),
         "{rel}: grid cells unplaced: {missing:?}"
     );
+}
+
+// ── Sentence (15) dropped ─────────────────────────────────────────
+
+/// Each encoding, and its sentence (15), *the Norwegian lives next to the
+/// blue house*, as the file writes it: four over `std.slots`
+/// (`slot-spatial` reads `next-to`), `zebra2.ein` over `std.bijection`, and
+/// `zebra3.4.ein` over `std.bijection` and rules of its own.
+const SENTENCE_15: [(&str, &str); 6] = [
+    (
+        "examples/zebra2.ein",
+        "(adjacent-via next-to  nation-loc Norwegian   color-loc Blue    :source \"condition (15)\")",
+    ),
+    (
+        "examples/zebra3.4.ein",
+        "(house-next-to Norwegian lives-in Blue color-of\n  :source \"The Norwegian lives next to the blue house.\")",
+    ),
+    (
+        "examples/zebra.ein",
+        "(next-to    Norwegian Blue       :source \"condition (15)\")",
+    ),
+    (
+        "examples/zebra3.1.ein",
+        "(lives-next-to Norwegian Blue       :source \"The Norwegian lives next to the blue house.\")",
+    ),
+    (
+        "examples/zebra3.2.ein",
+        "(next-to (the Norwegian (lives in) House) (the Blue House)\n  :source \"The Norwegian lives next to the blue house.\")",
+    ),
+    (
+        "examples/zebra3.3.ein",
+        "(lives-next-to Norwegian (blue House)  :source \"The Norwegian lives next to the blue house.\")",
+    ),
+];
+
+/// `rel` with its sentence (15) taken out, asked `--maximal`: how many states
+/// the maximal line holds, and how many of them answer each pair of the
+/// questions, *who drinks water* and *who owns the zebra*, read off the
+/// answer query's classes by the two variables every encoding names them by.
+fn without_sentence_15(rel: &str, form: &str) -> (usize, BTreeMap<(String, String), usize>) {
+    let path = repo_root().join(rel);
+    let text = std::fs::read_to_string(&path).expect("reads");
+    assert_eq!(
+        text.matches(form).count(),
+        1,
+        "{rel}: sentence (15) is written once, as given"
+    );
+    let text = text.replace(form, "");
+    let mut ast = Ast::new();
+    let mut terms = Terms::new();
+    let forms = ein_ir::parse(&mut ast, &text, Some(rel)).expect("parses");
+    let mut kb = ein_ir::load(&mut ast, &mut terms, &forms, path.parent()).expect("loads");
+    let out = read_out::run(
+        &mut kb,
+        &mut terms,
+        &ast,
+        &explore::Options::new(Mode {
+            which: Which::Maximal,
+            ask: Ask::Describe,
+        }),
+    )
+    .expect("solves");
+    assert!(out.answer.exhausted, "{rel}: the maximal line is all found");
+    let [query] = &out.queries[..] else {
+        panic!("{rel}: one answer query");
+    };
+    let mut answers = BTreeMap::new();
+    for class in &query.classes {
+        let [row] = &class.rows[..] else {
+            panic!("{rel}: one row a class, the two answers");
+        };
+        let of = |var: &str| {
+            row.iter()
+                .find(|(v, _)| v.trim_start_matches('?') == var)
+                .map(|(_, value)| value.clone())
+                .unwrap_or_else(|| panic!("{rel}: the query binds ?{var}"))
+        };
+        *answers
+            .entry((of("who_water"), of("who_zebra")))
+            .or_default() += class.states.len();
+    }
+    (out.listed().count(), answers)
+}
+
+/// **With sentence (15) dropped, the puzzle is under-determined, and every
+/// encoding answers the same states.** Over `std.slots` that rests on the
+/// pruning rules excluding the partner of a placed value from its own house:
+/// `next-to` relates no house to itself, so `slot-spatial`'s statement,
+/// S(a, b) ⟺ S(slot(a), slot(b)), puts two values it relates in two houses.
+/// A rule that let them share one adds states where the Chesterfields smoker
+/// keeps the fox, or the Kools are smoked where the horse is kept, which no
+/// encoding over `std.bijection` admits.
+#[test]
+fn without_sentence_15_every_encoding_answers_the_same_states() {
+    let [(first, form), rest @ ..] = &SENTENCE_15;
+    let want = without_sentence_15(first, form);
+    assert!(want.0 > 1, "{first}: under-determined, more than one state");
+    assert_eq!(
+        want.0,
+        want.1.values().sum::<usize>(),
+        "{first}: every state answers the two questions once"
+    );
+    for (rel, form) in rest {
+        assert_eq!(
+            without_sentence_15(rel, form),
+            want,
+            "{rel} answers what {first} does: the maximal line's states, and the answers' classes"
+        );
+    }
 }
 
 // ── helpers ────────────────────────────────────────────────────────

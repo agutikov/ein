@@ -508,15 +508,16 @@ fn the_readings_agree_on_the_declared_control() {
     assert_eq!(the_readings_agree("examples/zebra2.ein"), (45, 282));
 }
 
-/// The one-relation encoding's 1 656: 224 of the theory, 1 432 of the
-/// puzzle. `H` holds each placement in both orientations, so they are 414
+/// The one-relation encoding's 1 308: 180 of the theory, 1 128 of the
+/// puzzle. `H` holds each placement in both orientations, so they are 327
 /// pairs of placements, each in its four orientations and all four of one
-/// reading: 56 of the theory, 358 of the puzzle.
+/// reading: 45 of the theory, 282 of the puzzle, the declared control's
+/// counts above, the same puzzle over five relations.
 #[test]
 fn the_readings_agree_on_one_relation() {
     let rel = "examples/zebra.ein";
     let t = theory_of(rel, &checked());
-    assert_eq!(the_readings_agree_on(&t, rel), (224, 1432));
+    assert_eq!(the_readings_agree_on(&t, rel), (180, 1128));
     let mut folded: std::collections::BTreeMap<[[String; 2]; 2], (usize, usize)> =
         Default::default();
     for (&(a, b), of_theory) in t.root.excluded.iter().zip(t.of_the_theory()) {
@@ -526,7 +527,7 @@ fn the_readings_agree_on_one_relation() {
         seen.0 += 1;
         seen.1 += usize::from(of_theory);
     }
-    assert_eq!(folded.len(), 414);
+    assert_eq!(folded.len(), 327);
     assert!(
         folded
             .values()
@@ -534,7 +535,7 @@ fn the_readings_agree_on_one_relation() {
     );
     assert_eq!(
         folded.values().filter(|&&(_, theory)| theory == 4).count(),
-        56
+        45
     );
 }
 
