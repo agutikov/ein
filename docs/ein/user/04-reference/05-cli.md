@@ -370,7 +370,7 @@ share 100 lines, and `--dump-answer DIR` writes each uncut
 
 | question | command | what you get | cost |
 |---|---|---|---|
-| Does the program have a solution at all? | `ein solve F -n 1` | one state of R; or *R is empty*, with why: root's core when root is dead, or what every alive node owes | up to the first member found; proving *none* takes every alive node, or the cube |
+| Does the program have a solution at all? | `ein solve F -n 1` | one state of R; or *R is empty*, and of which kind: every node dead, or every alive node owing. A bare `ein solve F` says why, root's core when root is dead or what every alive node owes; `-n 1` prints no core, and takes none | up to the first member found; proving *none* takes every alive node, or the cube |
 | One complete solution, one nothing can be added to | `ein solve F --maximal -n 1` | one state, certified maximal | the above, and one saturation per candidate outside it |
 | Several | `ein solve F -n 5`, or `--maximal -n 5` | five states, the same five under every option | stops at the fifth |
 | What is the least I have to guess? | `ein solve F --minimal -n 1`; all of them: `--minimal` | a minimal commitment and its state; or the whole minimal line, with sizes | owing nodes only |

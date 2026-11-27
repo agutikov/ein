@@ -246,9 +246,14 @@ about `R` takes is searched under the run's clock (§ 4.1), read every `explain:
 search the clock stops is the run's abort, as the clock is anywhere, and leaves nothing behind, since a search writes
 nothing. **A core is an explanation**: it may vary with rule order, and no answer
 depends on it ([Q-M1f.6](../../../decisions/answer/Q-M1f.6-a-core-is-an-explanation.md)). A node that is not dead has
-no core, `null`; `[]` is a dead node's empty core. A core is taken only where a surface prints one (`region::Cores`):
-root's and, on the cube, the minimal holes' always; each visited dead node's for `--events` and `--dump-lattice`; each
-member of `N`'s for `--dump-answer` and `--trace`, taken after the run on the same fork, so `--jobs` moves none
+no core, `null`; `[]` is a dead node's empty core. A core is taken only where a surface prints one (`region::Cores`),
+read off the question ([Q-M1e2.31](../../../decisions/answer/Q-M1e2.31-each-question-about-r-does-the-least-work-it.md),
+[Q-M1f.29](../../../decisions/read-out/Q-M1f.29-a-question-that-prints-no-core-writes-a-dead.md)): a dead root's by a
+description and `--no-search`, whose read-out and summary print it, and by no mode and not by `--count`, whose
+questions are a part of `R` and how many (`explore::Options::cores_taken`, read before `--count` takes describe's
+route); on the cube the minimal holes' always; each visited dead node's, root's among them, for `--events` and
+`--dump-lattice`, under any question; each member of `N`'s for `--dump-answer` and `--trace`, taken after the run on
+the same fork, so `--jobs` moves none
 ([Q-M1f.25](../../../decisions/answer/Q-M1f.25-every-core-a-run-prints-is-taken-against-its-one.md)).
 
 ## 7. Monotone and flagged programs

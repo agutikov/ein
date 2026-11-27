@@ -585,6 +585,7 @@ pub fn ask(
     let (mut kb, mut terms, ast) = loaded(path).ok_or("does not load")?;
     let opts = explore::Options {
         cores: Cores {
+            root: true,
             visited: watch.is_some(),
             nogoods: false,
         },

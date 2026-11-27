@@ -150,6 +150,7 @@ fn ask(path: &Path, mode: Mode, deaths_alone: bool) -> Result<Answer, String> {
         let (mut kb, mut terms, ast) = loaded(path).expect("loaded once already");
         let mut opts = explore::Options::new(mode);
         opts.cores = Cores {
+            root: true,
             visited: false,
             nogoods: mode.ask == Ask::Describe && mode.which == Which::All,
         };

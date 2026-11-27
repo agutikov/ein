@@ -241,13 +241,16 @@ fn run_bounded(
     }
     let summary_path = m.get_one::<String>("json-summary").cloned();
     // A dead node's core only where a surface prints one (Q-M1e2.31, each
-    // question does the least work it needs), and the two asks apart:
+    // question does the least work it needs), and the three asks apart: the
+    // read-out's `unsat core` rows and the summary's `region.core` print a
+    // dead root's, under a description and `--no-search` alone, which the
+    // run reads off the question (Q-M1f.29, `explore::Options::cores`);
     // `--dump-lattice`'s `nodes.json` and `--events`' `enter` lines print a
     // core at every dead node the run visits, which the walk takes as it
     // goes; `--dump-answer`'s `nogoods.json` and `--trace`'s *N* print one
     // for each member of `N`, which the run takes after the walk, and only
-    // describe prints `N` (`--count` writes no `nogoods.json`). Root's, and on
-    // the cube the minimal holes', which the read-out and the summary print,
+    // describe prints `N` (`--count` writes no `nogoods.json`). On the cube
+    // the minimal holes', which a description's read-out and summary print,
     // are taken either way.
     let describing = opts.mode
         == (Mode {
@@ -255,6 +258,7 @@ fn run_bounded(
             ask: Ask::Describe,
         });
     opts.cores = ein_infer::region::Cores {
+        root: true,
         visited: lattice_dir.is_some() || m.get_one::<String>("events").is_some(),
         nogoods: describing && (dump.is_some() || m.get_one::<String>("trace").is_some()),
     };

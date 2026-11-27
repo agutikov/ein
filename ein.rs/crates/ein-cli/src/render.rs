@@ -138,6 +138,7 @@ pub fn cmd_lattice(file: &str, full: bool, budget: Option<u64>, load: &ein_ir::L
     });
     // Each dead node drawn with its core, as `--dump-lattice` asks.
     opts.cores = ein_infer::region::Cores {
+        root: true,
         visited: true,
         nogoods: false,
     };

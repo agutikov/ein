@@ -14,8 +14,10 @@
 //! The clock reaches a dead node's core search too, which is no saturation:
 //! `tests/bounded/dead_link.ein`'s root dies on a link several rules derive,
 //! and its core's search over every recorded derivation runs far past any
-//! clock the tests set. It is no corpus program either: a description prints
-//! its core, which no sweep waits for.
+//! clock the tests set, where a question prints the core; a question that
+//! prints none takes none, and answers in what root's saturation costs. It is
+//! no corpus program either: a description prints its core, which no sweep
+//! waits for.
 //!
 //! What each stop says is the pages' (`05-cli.md` § 3, `08-read-out.md`):
 //!
@@ -210,13 +212,16 @@ fn the_clock_ends_a_saturation_with_no_fixpoint() {
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 
-/// **The clock ends a dead root's core search**, the one computation a dead
-/// node's record needs that its saturation does not: `dead_link.ein`'s root
-/// saturates in some twenty-five thousand firings and dies, and the search
-/// for its core folds millions of environments over every derivation of a
-/// link several rules derive. Every question, `ein oracle` and `ein test`
-/// end at the clock as `-T` ends a run anywhere; the library's error is
-/// [`ein_infer::SolveError::Deadline`]. The same program with
+/// **The clock ends a dead root's core search where the question prints the
+/// core**, the one computation a dead node's record needs that its saturation
+/// does not: `dead_link.ein`'s root saturates in some twenty-five thousand
+/// firings and dies, and the search for its core folds millions of
+/// environments over every derivation of a link several rules derive. A
+/// description and `--no-search` print root's core, and so does every surface
+/// that prints a visited node's (`--events`, `--dump-lattice`), under any
+/// question; each of them, `ein oracle`, and `ein test` writing the file's
+/// summary end at the clock as `-T` ends a run anywhere; the library's error
+/// is [`ein_infer::SolveError::Deadline`]. The same program with
 /// `(config :record-alternative-justifications false)`, the search offered
 /// one derivation a fact, answers with no clock, its root dead and its claim
 /// held: what the clock stopped was the search, and the program's answer is
@@ -225,15 +230,17 @@ fn the_clock_ends_a_saturation_with_no_fixpoint() {
 fn the_clock_ends_a_dead_roots_core_search() {
     let file = fixture("dead_link.ein");
     let path = file.to_str().expect("a path");
+    let dir = Scratch::new("ein-bounded-dead-link");
+    let events = dir.join("events.jsonl");
+    let events = events.to_str().expect("a path");
+    let lattice = dir.join("lattice");
+    let lattice = lattice.to_str().expect("a path");
     let mut failures = Vec::new();
     for question in [
         &[][..],
-        &["--single"][..],
         &["--no-search"][..],
-        &["--count"][..],
-        &["-n", "2"][..],
-        &["--minimal"][..],
-        &["--maximal"][..],
+        &["--single", "--events", events][..],
+        &["--count", "--dump-lattice", lattice][..],
     ] {
         let mut args = vec!["solve", path, "-T", "0.3"];
         args.extend(question);
@@ -259,44 +266,41 @@ fn the_clock_ends_a_dead_roots_core_search() {
             r.code, r.err, r.wall
         ));
     }
-    let r = ein(&["test", path, "-T", "0.3"]);
+    let summary = dir.join("test.json");
+    let r = ein(&[
+        "test",
+        path,
+        "-T",
+        "0.3",
+        "--json-summary",
+        summary.to_str().expect("a path"),
+    ]);
     if r.code != 2 || !r.out.starts_with("ERROR ") || r.wall > PATIENCE {
         failures.push(format!(
-            "test -T 0.3: exit {}, stdout {:?}, after {:?}",
+            "test -T 0.3 --json-summary: exit {}, stdout {:?}, after {:?}",
             r.code, r.out, r.wall
         ));
     }
-    for mode in [
+    let t = Instant::now();
+    match run(
+        &file,
         Mode {
             which: Which::All,
             ask: Ask::Describe,
         },
-        Mode {
-            which: Which::All,
-            ask: Ask::Single,
-        },
-    ] {
-        let t = Instant::now();
-        match run(&file, mode, |o| {
+        |o| {
             o.deadline = Some(Instant::now() + Duration::from_millis(200));
-        }) {
-            Err(ein_infer::SolveError::Deadline) if t.elapsed() < PATIENCE => {}
-            other => failures.push(format!(
-                "the library, {mode:?}: {:?} after {:?}",
-                other.map(|a| a.verdict),
-                t.elapsed()
-            )),
-        }
+        },
+    ) {
+        Err(ein_infer::SolveError::Deadline) if t.elapsed() < PATIENCE => {}
+        other => failures.push(format!(
+            "the library, describe: {:?} after {:?}",
+            other.map(|a| a.verdict),
+            t.elapsed()
+        )),
     }
     // The program with the lever, which no clock stops.
-    let dir = Scratch::new("ein-bounded-dead-link");
-    let lever = dir.join("dead_link_one_justification.ein");
-    let text = std::fs::read_to_string(&file).expect("the fixture reads");
-    std::fs::write(
-        &lever,
-        format!("{text}(config :record-alternative-justifications false)\n"),
-    )
-    .expect("the copy writes");
+    let lever = lever_twin(&dir, &file);
     let lever = lever.to_str().expect("a path");
     let r = ein(&["solve", lever, "--single"]);
     if r.code != 0 || row(&r.out, "verdict").is_none_or(|v| !v.starts_with("Contradiction")) {
@@ -311,6 +315,95 @@ fn the_clock_ends_a_dead_roots_core_search() {
             "with the lever, test: exit {}, stdout {:?}, stderr {:?}",
             r.code, r.out, r.err
         ));
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+/// `file` with `(config :record-alternative-justifications false)`, written
+/// into `dir`: the search offered one derivation a fact.
+fn lever_twin(dir: &Scratch, file: &Path) -> PathBuf {
+    let lever = dir.join("dead_link_one_justification.ein");
+    let text = std::fs::read_to_string(file).expect("the fixture reads");
+    std::fs::write(
+        &lever,
+        format!("{text}(config :record-alternative-justifications false)\n"),
+    )
+    .expect("the copy writes");
+    lever
+}
+
+/// **A question that prints no core takes no dead root's core, and answers
+/// within the clock** (Q-M1f.29, Q-M1e2.31): a mode prints a part of `R` and
+/// `--count` how many, and neither prints root's core, so neither searches
+/// for it. On `dead_link.ein`, whose root's core search runs far past the
+/// clock, `--single`, `--count`, `-n 2`, `--minimal` and `--maximal` under
+/// `-T 0.3` each answer, exit 0, in what root's saturation costs, the
+/// summary's `region.core` `null`, and their `region` and `verdict` the lever's
+/// twin's, which takes the search's one derivation a fact; so does `ein test`
+/// with no summary, whose claim reads no core; and the library's `--single`
+/// and `--count` under a deadline of 200 ms.
+#[test]
+fn a_question_that_prints_no_core_answers_a_dead_root_within_the_clock() {
+    let file = fixture("dead_link.ein");
+    let path = file.to_str().expect("a path");
+    let dir = Scratch::new("ein-bounded-dead-link-modes");
+    let lever = lever_twin(&dir, &file);
+    let lever = lever.to_str().expect("a path");
+    let mut failures = Vec::new();
+    for question in [
+        &["--single"][..],
+        &["--count"][..],
+        &["-n", "2"][..],
+        &["--minimal"][..],
+        &["--maximal"][..],
+    ] {
+        let mut args = vec!["solve", path, "-T", "0.3"];
+        args.extend(question);
+        let at = args.join(" ");
+        let r = ein(&args);
+        let mut twin = vec!["solve", lever];
+        twin.extend(question);
+        let t = ein(&twin);
+        let blocks = |r: &Run| {
+            r.summary
+                .as_ref()
+                .map(|s| (s["region"].clone(), s["verdict"].clone()))
+        };
+        if r.code != 0 || t.code != 0 || r.wall > PATIENCE {
+            failures.push(format!(
+                "{at}: exit {} after {:?}, the twin's exit {}; stderr {:?}",
+                r.code, r.wall, t.code, r.err
+            ));
+            continue;
+        }
+        match (blocks(&r), blocks(&t)) {
+            (Some(a), Some(b)) if a == b && a.0["core"].is_null() => {}
+            (a, b) => failures.push(format!("{at}: region and verdict {a:?}, the twin's {b:?}")),
+        }
+    }
+    let r = ein(&["test", path, "-T", "0.3"]);
+    if r.code != 0 || !r.out.starts_with("ok ") || r.wall > PATIENCE {
+        failures.push(format!(
+            "test -T 0.3: exit {}, stdout {:?}, after {:?}",
+            r.code, r.out, r.wall
+        ));
+    }
+    for ask in [Ask::Single, Ask::Count] {
+        let mode = Mode {
+            which: Which::All,
+            ask,
+        };
+        let t = Instant::now();
+        match run(&file, mode, |o| {
+            o.deadline = Some(Instant::now() + Duration::from_millis(200));
+        }) {
+            Ok(a) if a.root_dead && a.exhausted && t.elapsed() < PATIENCE => {}
+            other => failures.push(format!(
+                "the library, {mode:?}: {:?} after {:?}",
+                other.map(|a| (a.verdict, a.exhausted)),
+                t.elapsed()
+            )),
+        }
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }

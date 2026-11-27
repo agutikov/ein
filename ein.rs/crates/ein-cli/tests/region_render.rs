@@ -120,6 +120,7 @@ fn studied(file: &str, cube: &Path, run: &Path) {
         // Each visited node's core, as `--dump-lattice` asks.
         let opts = ein_infer::explore::Options {
             cores: ein_infer::region::Cores {
+                root: true,
                 visited: true,
                 nogoods: false,
             },

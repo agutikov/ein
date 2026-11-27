@@ -2326,6 +2326,7 @@ fn the_event_stream_does_not_depend_on_interning_order() {
         // each dead one with its core, as `--events` asks.
         let opts = ein_infer::explore::Options {
             cores: ein_infer::region::Cores {
+                root: true,
                 visited: true,
                 nogoods: false,
             },

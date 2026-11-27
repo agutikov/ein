@@ -256,8 +256,10 @@ pub struct Options {
     /// saturation, root's among them, and inside every dead node's core's
     /// search. Reaching it is [`SolveError::Deadline`], never a smaller cube.
     pub deadline: Option<Instant>,
-    /// Which dead nodes' unsat cores the run takes beyond root's and the
-    /// minimal holes', which it takes either way ([`Cores`]).
+    /// Which dead nodes' unsat cores the run takes beyond the minimal holes',
+    /// which it takes either way ([`Cores`]). `ein oracle`'s cube is a
+    /// description, which prints a dead root's core, so it asks root's on
+    /// every run.
     pub cores: Cores,
 }
 
@@ -273,33 +275,42 @@ impl Default for Options {
     }
 }
 
-/// Which dead nodes' unsat cores a run takes (Q-M1f.26, Q-M1f.25).
+/// Which dead nodes' unsat cores a run takes (Q-M1f.26, Q-M1f.25, Q-M1f.29).
 ///
 /// A core is the one computation a node's record needs that its
 /// classification does not, an explanation search over the node's
 /// derivations, so a run takes one only where a surface prints it
-/// (Q-M1e2.31, *the least work each question needs*).
-/// Root's is taken on every run, and on the cube the minimal holes', which the
-/// read-out and the summary print. The surfaces that print more ask two
-/// things, and they are two fields:
+/// (Q-M1e2.31, *the least work each question needs*). On the cube the
+/// minimal holes' are taken either way, which a description's read-out and
+/// summary print. The surfaces that print a core ask three things, and they
+/// are three fields:
 ///
-/// - [`Self::visited`]: every dead node the walk visits, as it visits it —
-///   `--dump-lattice`'s `nodes.json` and `--events`' `enter` lines;
+/// - [`Self::root`]: a dead root's, which a description and `--no-search`
+///   print, the read-out's `unsat core` rows and the summary's
+///   `region.core`. A mode prints a part of `R` and `--count` how many, and
+///   neither prints a core, so a question about `R` asked either takes
+///   root's only as a visited node's, whatever this says
+///   ([`crate::explore::Options::cores`]);
+/// - [`Self::visited`]: every dead node the walk visits, as it visits it,
+///   root's among them — `--dump-lattice`'s `nodes.json` and `--events`'
+///   `enter` lines;
 /// - [`Self::nogoods`]: each member of `N` a description holds, taken
 ///   **after the walk**, each through the node function against the snapshot
 ///   the walk resumed every node from — `--dump-answer`'s `nogoods.json` and
 ///   `--trace`'s *N*. A member whose core the walk took and kept keeps it;
 ///   every other is taken then, past `--region-limit` too, where the walk
-///   keeps a node as its two bits.
+///   keeps a node as its two bits. Where root is dead `N` is `{∅}`, and its
+///   member's core is root's, taken by the walk.
 ///
 /// Every core taken after the walk is the one the walk takes eagerly: the
 /// node is root's fork with the same facts, resumed from the same snapshot
 /// with the same plans and stopped where the walk's is (the module's § What a
 /// node is), so its derivations and its search are the same
 /// (`ein-cli/tests/answer_round_trip.rs` holds it over the corpus). No answer
-/// depends on either field.
+/// depends on any field.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Cores {
+    pub root: bool,
     pub visited: bool,
     pub nogoods: bool,
 }
@@ -309,16 +320,26 @@ impl Cores {
     /// `--events` or `--dump-lattice` and, under describe, `--dump-answer`
     /// or `--trace`; the oracle's cube with `--dump`.
     pub const ALL: Cores = Cores {
+        root: true,
         visited: true,
         nogoods: true,
     };
-    /// Root's and the minimal holes' alone: what the read-out and the summary
-    /// print, and what a run no other surface reads asks — the default of
-    /// [`crate::explore::Options::new`].
+    /// What the read-out and the summary print: root's, where the question
+    /// prints it, and on the cube the minimal holes' — the default of
+    /// [`crate::explore::Options::new`], and what a run no other surface
+    /// reads asks.
     pub const READ_OUT: Cores = Cores {
+        root: true,
         visited: false,
         nogoods: false,
     };
+
+    /// Whether a dead root's core is taken: asked for itself, or as a
+    /// visited node's, or as the core of `N`'s one member `∅`, which a dead
+    /// root is.
+    pub(crate) fn of_root(self) -> bool {
+        self.root || self.visited || self.nogoods
+    }
 }
 
 /// Nodes per fan-out.
@@ -571,7 +592,7 @@ pub(crate) fn compute_prepared(
         hypothesised,
         opts.keep_states,
     )
-    .taking_cores(opts.cores.visited);
+    .taking_cores(opts.cores);
     // The detector reads every node on a flagged program, and none on a
     // monotone one (`crate::detector`'s zero-work argument).
     let flagged = !monotonicity.is_monotone();
@@ -1333,9 +1354,12 @@ pub(crate) struct Axes {
     /// Report which of root's owed instances each node still owes — L5's
     /// table, on the modes' obligation tree only.
     instances: Option<Arc<crate::oblgen::Alternatives>>,
-    /// Take a dead node's unsat core ([`Axes::taking_cores`]); root's is
-    /// taken either way.
+    /// Take a dead node's unsat core ([`Axes::taking_cores`]), root's
+    /// among them.
     cores: bool,
+    /// Take a dead root's unsat core, where [`Self::cores`] takes no other
+    /// ([`Axes::taking_cores`]).
+    root_core: bool,
     /// Saturate a dead node only as far as its first contradiction, root's
     /// excepted ([`Axes::stopping_at_first_contradiction`]).
     stop: bool,
@@ -1364,6 +1388,7 @@ impl Axes {
             stale: None,
             instances: None,
             cores: true,
+            root_core: true,
             stop: false,
             pairs: Arc::new(crate::contradiction::Pairs::of(
                 plans.iter().map(|p| &**p),
@@ -1385,16 +1410,18 @@ impl Axes {
         self
     }
 
-    /// The same axes, taking a dead node's unsat core only when `cores`, and
-    /// root's either way: a core is the one computation a node's record needs
-    /// that the classification does not, an explanation search over the
-    /// node's derivations, and a run takes one only where a surface prints it
-    /// (Q-M1e2.31). A node not taken reports an empty core, no sources and no
-    /// `refuted_by`, which names the core's derivation's rules (Q-M1e2.21);
-    /// its `absent` premises and
-    /// the detector's `first_rules` are read either way.
-    pub(crate) fn taking_cores(mut self, cores: bool) -> Axes {
-        self.cores = cores;
+    /// The same axes, taking the dead nodes' unsat cores `cores` asks: every
+    /// dead node's under [`Cores::visited`], and else a dead root's alone,
+    /// where [`Cores::of_root`] asks it. A core is the one computation a
+    /// node's record needs that the classification does not, an explanation
+    /// search over the node's derivations, and a run takes one only where a
+    /// surface prints it (Q-M1e2.31, Q-M1f.29). A node not taken reports an
+    /// empty core, no sources and no `refuted_by`, which names the core's
+    /// derivation's rules (Q-M1e2.21); its `absent` premises and the
+    /// detector's `first_rules` are read either way.
+    pub(crate) fn taking_cores(mut self, cores: Cores) -> Axes {
+        self.cores = cores.visited;
+        self.root_core = cores.of_root();
         self
     }
 
@@ -2361,7 +2388,7 @@ fn node_in_region(
     // oracle's is: a node stopped at its first contradiction goes on from
     // there, silently, firing what it would have fired, once everything it
     // reports above is read (the module's § What a node is).
-    if dead && (axes.cores || facts.is_empty()) {
+    if dead && (axes.cores || (facts.is_empty() && axes.root_core)) {
         if stop {
             sat.run_to_quiescence();
             let mut silent = Events::off();

@@ -360,7 +360,7 @@ pub(crate) fn compute_prepared(
     }
     let mut axes = Axes::new(root, terms, &plans, &out.candidates, hypothesised, false)
         .narrating(events.narration())
-        .taking_cores(opts.cores.visited);
+        .taking_cores(opts.cores);
     // A flagged program reaches here only with a dead root (L0): the detector
     // reads the nodes it visits, as on every route.
     if !out.monotonicity.is_monotone() {

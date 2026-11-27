@@ -89,6 +89,7 @@ fn real_trace(rel: &str, flag: &str) -> String {
     // N's cores under describe, which `--trace` prints and asks for.
     let opts = explore::Options {
         cores: ein_infer::region::Cores {
+            root: true,
             visited: false,
             nogoods: mode.which == Which::All,
         },

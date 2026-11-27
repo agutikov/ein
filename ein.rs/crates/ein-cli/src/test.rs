@@ -1399,8 +1399,11 @@ fn ask(
     opts.refute = true;
     opts.no_search = m.get_flag("no-search");
     // A claim states no core: the run takes one only where `--events` prints
-    // it, at each node visited. `ein test` prints no `N`.
+    // it, at each node visited, and a dead root's where the file's
+    // `--json-summary` writes it, under a description or `--no-search`
+    // (Q-M1f.29). `ein test` prints no `N`.
     opts.cores = ein_infer::region::Cores {
+        root: m.get_one::<String>("json-summary").is_some(),
         visited: m.get_one::<String>("events").is_some(),
         nogoods: false,
     };

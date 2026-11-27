@@ -608,7 +608,7 @@ fn fixpoints(
         prepared.hypothesised.clone(),
         true,
     )
-    .taking_cores(false);
+    .taking_cores(region::Cores::READ_OUT);
     let facts: Vec<Vec<FactId>> = sets
         .iter()
         .map(|s| s.iter().map(|&b| candidates[b as usize].fact).collect())

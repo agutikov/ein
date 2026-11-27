@@ -363,7 +363,7 @@ pub(crate) fn compute_resumable(
     // node is): no step of the walk reads more of it than its dead bit.
     let axes = Axes::new(root, terms, &plans, &out.candidates, hypothesised, false)
         .narrating(events.narration())
-        .taking_cores(opts.cores.visited)
+        .taking_cores(opts.cores)
         .stopping_at_first_contradiction();
     let facts: Vec<FactId> = out.candidates.iter().map(|c| c.fact).collect();
     let root = root.sealed();

@@ -233,13 +233,18 @@ pub struct Options {
     /// no `work` count depends on it. The program's own `(config
     /// :lattice-sanity-check true)` turns it on as well.
     pub sanity: bool,
-    /// Which dead nodes' unsat cores the run takes beyond root's and, on the
-    /// cube, the minimal holes', which the read-out and the summary print
-    /// ([`Cores`]): every one the walk visits (`--dump-lattice`, `--events`),
-    /// and after the walk each member of `N` a description holds
+    /// Which dead nodes' unsat cores the run takes beyond, on the cube, the
+    /// minimal holes', which a description's read-out and summary print
+    /// ([`Cores`]): a dead root's, which a description and `--no-search`
+    /// print; every one the walk visits (`--dump-lattice`, `--events`); and
+    /// after the walk each member of `N` a description holds
     /// (`--dump-answer`, `--trace`), *the least work each question needs*
     /// (Q-M1e2.31, Q-M1f.25): every core taken is the one an eager walk takes, and no
-    /// answer depends on it. [`Options::new`] asks [`Cores::READ_OUT`], what
+    /// answer depends on it. **The question is read first** (Q-M1f.29): a
+    /// mode prints a part of `R` and `--count` how many, and neither prints a
+    /// core, so neither takes root's or `N`'s, whatever this asks, and takes
+    /// a visited node's, root's among them, only where [`Cores::visited`]
+    /// asks it. [`Options::new`] asks [`Cores::READ_OUT`], what
     /// `ein solve` asks for the same question with no artefact that prints
     /// another core, so the library's question does the binary's work; a
     /// caller that writes such an artefact, or reads a visited node's core
@@ -313,10 +318,12 @@ impl DescribeRoute {
 impl Options {
     /// `mode` asked as `ein solve` asks it with no other option: the default
     /// budget and limit, one job, and the cores the read-out and the summary
-    /// print ([`Cores::READ_OUT`]). A dead node's core is an explanation
-    /// search, which on a densely re-derived program costs far more than the
-    /// node's saturation, so a run that took one at every dead node it visits
-    /// could run for hours where the binary's same question answers at once.
+    /// print ([`Cores::READ_OUT`]): a dead root's under a description and
+    /// `--no-search`, and none under a mode or `--count`. A dead node's core
+    /// is an explanation search, which on a densely re-derived program costs
+    /// far more than the node's saturation, so a run that took one at every
+    /// dead node it visits could run for hours where the binary's same
+    /// question answers at once.
     pub fn new(mode: Mode) -> Self {
         Options {
             mode,
@@ -331,6 +338,29 @@ impl Options {
             nogoods: true,
             no_search: false,
             describe_route: DescribeRoute::Tree,
+        }
+    }
+
+    /// **The cores the question takes** (Q-M1f.29, Q-M1e2.31): [`Self::cores`],
+    /// less what the question prints none of. A description and `--no-search`
+    /// print a dead root's core, the read-out's `unsat core` rows and the
+    /// summary's `region.core`, and a description alone `N`'s; a mode prints a
+    /// part of `R` and `--count` how many, and neither prints either, so
+    /// neither takes them: root's core is then taken where a surface that
+    /// prints every visited node's asks ([`Cores::visited`]), and not else.
+    /// Read by [`run_with`] before `--count` takes describe's route with
+    /// describe's mode, so the count's question reaches the node function's
+    /// axes.
+    pub(crate) fn cores_taken(&self) -> Cores {
+        let describes = self.mode
+            == Mode {
+                which: Which::All,
+                ask: Ask::Describe,
+            };
+        Cores {
+            root: self.cores.root && (describes || self.no_search),
+            visited: self.cores.visited,
+            nogoods: self.cores.nogoods && describes,
         }
     }
 
@@ -693,10 +723,18 @@ pub fn run_with(
     opts: &Options,
     events: &mut Events,
 ) -> Result<Answer, SolveError> {
+    // The cores the question prints, read before `--count` is asked as
+    // describe: no other part of the run reads the question for them.
+    let asked = Options {
+        cores: opts.cores_taken(),
+        ..*opts
+    };
+    let opts = &asked;
     if opts.mode.ask == Ask::Count {
         // `--count` is describe's question with the listing left out, so it
         // takes describe's route with describe's mode, and only the answer's
-        // label says what was asked: no path of its own to disagree by.
+        // label says what was asked: no path of its own to disagree by. It
+        // takes the cores its own question prints, read above.
         if opts.mode.which != Which::All {
             return Err(SolveError::Unsupported(
                 "--count is over all of R only: k_s and k_c are R's, and a bare `ein solve FILE` \
@@ -1042,7 +1080,7 @@ impl<'a> Space<'a> {
         let flagged = !monotonicity.is_monotone();
         let mut axes = Axes::new(root, terms, &plans, &candidates, hypothesised, false)
             .narrating(events.narration())
-            .taking_cores(opts.cores.visited);
+            .taking_cores(opts.cores);
         if flagged {
             axes = axes.checking_stale(std::sync::Arc::new(StaleCheck::of(&plans)));
         }

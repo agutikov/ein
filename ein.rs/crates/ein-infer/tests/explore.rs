@@ -435,8 +435,38 @@ fn cells(k: usize) -> Vec<Mode> {
     v
 }
 
+/// What a description says less the cores `--count` prints none of, a dead
+/// root's and so `N`'s member `∅`'s (Q-M1f.29): `--count`'s answer must be
+/// describe's in every other field, since it takes describe's route; and a
+/// `--count` takes neither, which is `Err` with what it took.
+fn said_counted(a: &Answer, counted: bool) -> Result<String, String> {
+    let mut a = a.clone();
+    if let Some(d) = a.described.as_mut() {
+        let root = &mut d.root;
+        let took = root.core_status.is_some() || !root.core.is_empty();
+        if counted && took {
+            return Err(format!("--count took root's core {:?}", root.core));
+        }
+        root.core.clear();
+        root.core_status = None;
+        root.refuted_by.clear();
+        root.sources.clear();
+        root.core_sources.clear();
+        for x in d.dead.iter_mut().filter(|x| x.set.is_empty()) {
+            if counted && x.core_status.is_some() {
+                return Err(format!("--count took ∅'s core {:?}", x.core));
+            }
+            x.core.clear();
+            x.core_status = None;
+            x.refuted_by.clear();
+        }
+    }
+    Ok(said(&a))
+}
+
 /// What an answer says, less the question it answers: `--count`'s must be
-/// describe's in every field, since it takes describe's route.
+/// describe's in every field but the cores it prints none of
+/// ([`said_counted`]), since it takes describe's route.
 fn said(a: &Answer) -> String {
     format!(
         "{:?} {:?} {:?} {:?} {} {:?} {:?} {:?} {:?} {} {} {:?} {:?}",
@@ -757,10 +787,14 @@ fn every_mode_unit(path: &Path, oracle: &region::Options) -> Unit {
             opts.budget = u64::MAX;
             let (a, after) = ask(path, &opts);
             match mode.ask {
-                Ask::Describe if mode.which == Which::All => described[0] = Some(said(&a)),
-                Ask::Count if described[0].as_deref() != Some(said(&a).as_str()) => {
-                    failures.push(format!("{rel} --count: not describe's answer"));
+                Ask::Describe if mode.which == Which::All => {
+                    described[0] = said_counted(&a, false).ok();
                 }
+                Ask::Count => match said_counted(&a, true) {
+                    Ok(c) if described[0].as_deref() == Some(c.as_str()) => {}
+                    Ok(_) => failures.push(format!("{rel} --count: not describe's answer")),
+                    Err(e) => failures.push(format!("{rel} {e}")),
+                },
                 _ => {}
             }
             if after != root {
@@ -847,10 +881,15 @@ fn every_mode_unit(path: &Path, oracle: &region::Options) -> Unit {
                 failures.extend(against(&rel, &r, &b, true));
                 failures.extend(empty_rule(&rel, &r, mode, &b));
                 match mode.ask {
-                    Ask::Describe if mode.which == Which::All => described[1] = Some(said(&b)),
-                    Ask::Count if described[1].as_deref() != Some(said(&b).as_str()) => {
-                        failures.push(format!("{rel} --count at budget 8: not describe's answer"));
+                    Ask::Describe if mode.which == Which::All => {
+                        described[1] = said_counted(&b, false).ok();
                     }
+                    Ask::Count => match said_counted(&b, true) {
+                        Ok(c) if described[1].as_deref() == Some(c.as_str()) => {}
+                        Ok(_) => failures
+                            .push(format!("{rel} --count at budget 8: not describe's answer")),
+                        Err(e) => failures.push(format!("{rel} at budget 8: {e}")),
+                    },
                     _ => {}
                 }
             }
@@ -1280,14 +1319,20 @@ impl ein_infer::events::Watch for DeadCores {
 ///
 /// Every mode's answer with [`explore::Options::cores`] off is the answer
 /// with it on, field for field, but the dead nodes' cores it was not asked
-/// for: root's core and, on the cube, each minimal hole's, which the read-out
-/// and the summary print, are the eager run's, and every other core the lazy
-/// run reports is empty. A core's status goes with it: a
-/// core not taken has none. Over every corpus file and regression witness but the
-/// slow entries, describe on each part of `R`, `-n 2` and `--single`.
+/// for: on the cube each minimal hole's, which the read-out and the summary
+/// print, is the eager run's, and every other core the lazy run reports is
+/// empty. A core's status goes with it: a core not taken has none. Over every
+/// corpus file and regression witness but the slow entries, describe on each
+/// part of `R`, `-n 2`, `--single` and `--count`.
+///
+/// **A dead root's core is taken where the question prints it** (Q-M1f.29):
+/// a description's is the eager run's, and `--count`'s description, which
+/// prints none, carries none; and on every program whose root is dead, the
+/// lazy run's walk, read by `--dump-lattice`'s watch, takes root's core under
+/// describe and under no other question.
 ///
 /// **And N's cores taken after the walk are the eager ones** (Q-M1f.25):
-/// describe asked for N's cores alone (`Cores { visited: false,
+/// describe asked for N's cores alone (`Cores { root: true, visited: false,
 /// nogoods: true }`, what `--dump-answer` and `--trace` ask) answers alike,
 /// gives every member of N a core, past `--region-limit` too, and gives each
 /// the core, status and rules the run that takes every core gives it; and
@@ -1307,6 +1352,7 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
     let mut dead_holes = 0usize;
     let mut after_walk = 0usize;
     let mut walk_dead = 0usize;
+    let mut dead_roots = 0usize;
     let all: Vec<PathBuf> = corpus_and_regressions();
     let found = ein_corpus::pool::map(
         "explore::a_run_that_prints_no_core_takes_none_and_answers_alike",
@@ -1319,6 +1365,7 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
             let mut dead_holes = 0usize;
             let mut after_walk = 0usize;
             let mut walk_dead = 0usize;
+            let mut dead_roots = 0usize;
             'unit: {
                 if slow.contains(path) || loaded(path).is_none() {
                     break 'unit;
@@ -1330,9 +1377,13 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
                     (Which::Maximal, Ask::Describe),
                     (Which::All, Ask::Find(2)),
                     (Which::All, Ask::Single),
+                    (Which::All, Ask::Count),
                 ];
                 for (which, ask) in modes {
                     let mode = Mode { which, ask };
+                    // A description prints a dead root's core, and no other
+                    // question does.
+                    let prints_root = which == Which::All && ask == Ask::Describe;
                     let mut eager = explore::Options::new(mode);
                     eager.jobs = jobs();
                     eager.cores = ein_infer::region::Cores::ALL;
@@ -1340,6 +1391,7 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
                     lazy.cores = ein_infer::region::Cores::READ_OUT;
                     let mut nogoods = eager;
                     nogoods.cores = ein_infer::region::Cores {
+                        root: true,
                         visited: false,
                         nogoods: true,
                     };
@@ -1363,6 +1415,12 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
                     let strip = |a: &Answer| -> Answer {
                         let mut a = a.clone();
                         if let Some(d) = a.described.as_mut() {
+                            // Root's, held below by what the question prints.
+                            d.root.core.clear();
+                            d.root.core_status = None;
+                            d.root.refuted_by.clear();
+                            d.root.sources.clear();
+                            d.root.core_sources.clear();
                             for x in d.dead.iter_mut() {
                                 x.core.clear();
                                 // A core's status goes with it.
@@ -1427,9 +1485,23 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
                         }
                     }
                     if let (Some(x), Some(y)) = (a.described.as_ref(), b.described.as_ref()) {
-                        if (&x.root.core, x.root.core_status) != (&y.root.core, y.root.core_status)
+                        if prints_root {
+                            if (&x.root.core, x.root.core_status, &x.root.refuted_by)
+                                != (&y.root.core, y.root.core_status, &y.root.refuted_by)
+                            {
+                                failures.push(format!("{rel} {mode:?}: root's core differs"));
+                            }
+                        } else if y.root.core_status.is_some()
+                            || !y.root.core.is_empty()
+                            || !y.root.refuted_by.is_empty()
                         {
-                            failures.push(format!("{rel} {mode:?}: root's core differs"));
+                            failures.push(format!(
+                                "{rel} {mode:?}: root's core is taken, and the question prints none"
+                            ));
+                        }
+                        if !x.root.alive && x.root.core_status.is_none() {
+                            failures
+                                .push(format!("{rel} {mode:?}: the eager run took no root core"));
                         }
                         if let (Some(hx), Some(hy)) = (
                             x.shape.as_ref().and_then(|s| s.holes.as_ref()),
@@ -1458,30 +1530,67 @@ fn a_run_that_prints_no_core_takes_none_and_answers_alike() {
                             }
                         }
                     }
+                    // Root's own node, where it is dead: the lazy run's walk
+                    // takes its core exactly where the question prints it.
+                    if a.root_dead {
+                        dead_roots += 1;
+                        let walked = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+                        let (mut kb, mut terms, ast) = loaded(path).expect("loaded once already");
+                        let mut events = ein_infer::events::Events::off()
+                            .watched(Box::new(DeadCores(walked.clone())));
+                        if let Err(e) =
+                            explore::run_with(&mut kb, &mut terms, &ast, &lazy, &mut events)
+                        {
+                            failures.push(format!("{rel} {mode:?}: watched: {e}"));
+                        }
+                        let roots: Vec<bool> = walked
+                            .lock()
+                            .expect("the run is done")
+                            .iter()
+                            .filter(|(c, _)| c.is_empty())
+                            .map(|&(_, taken)| taken)
+                            .collect();
+                        if roots != [prints_root] {
+                            failures.push(format!(
+                                "{rel} {mode:?}: root's visits took a core {roots:?}, and the \
+                                 question prints {}",
+                                if prints_root { "one" } else { "none" }
+                            ));
+                        }
+                    }
                 }
             }
-            (failures, [runs, holes, dead_holes, after_walk, walk_dead])
+            (
+                failures,
+                [runs, holes, dead_holes, after_walk, walk_dead, dead_roots],
+            )
         },
     );
-    for (f, [r, h, d, a, w]) in found {
+    for (f, [r, h, d, a, w, z]) in found {
         failures.extend(f);
         runs += r;
         holes += h;
         dead_holes += d;
         after_walk += a;
         walk_dead += w;
+        dead_roots += z;
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
     // Not vacuous: the cube's dead holes are read, the ones whose core the
-    // lazy run takes after the cube.
+    // lazy run takes after the cube, and dead roots under every question.
     assert!(
-        runs >= 1000 && dead_holes > 0 && after_walk >= 100 && walk_dead >= 1000,
+        runs >= 1000
+            && dead_holes > 0
+            && after_walk >= 100
+            && walk_dead >= 1000
+            && dead_roots >= 6 * 20,
         "{runs} runs, {holes} holes, {dead_holes} dead, {after_walk} members of N, {walk_dead} \
-         dead nodes walked"
+         dead nodes walked, {dead_roots} questions of a dead root"
     );
     eprintln!(
         "{runs} runs, {holes} minimal holes, {dead_holes} dead, {after_walk} members of N \
-         taken after the walk, {walk_dead} dead nodes its walk visited with no core taken"
+         taken after the walk, {walk_dead} dead nodes its walk visited with no core taken, \
+         {dead_roots} questions of a dead root"
     );
 }
 
