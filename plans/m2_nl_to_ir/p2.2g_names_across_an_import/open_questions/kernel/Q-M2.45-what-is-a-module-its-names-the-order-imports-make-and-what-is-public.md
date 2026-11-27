@@ -20,9 +20,30 @@ each point before anything is weighed.
 |---|---|---|
 | a name the module declares (a relation, a rule, a macro) | **the module's**: one full name, `m.likes`, whoever imports it and by whatever path | [Q-M1f.231](../../../../../docs/decisions/imports/Q-M1f.231-every-name-a-module-declares-has-a-full-name.md) |
 | a constant it writes (`Cy`, `Person`), and a relation it states facts of and does not declare | **the program's**: a name like the ones the main file writes, which the blind enumerator guesses over | [Q-M1f.137](../../../../../docs/decisions/imports/Q-M1f.137-an-imported-facts-constants-are-names.md), [Q-M1f.250](../../../../../docs/decisions/imports/Q-M1f.250-a-listed-name-a-module-states-facts-of-names.md) |
-| the declarator `relation` and the kernel's other words | **the kernel's**, one atom in every file | `ein_core::terms::Kernel`; [Q-M1f.436](../../../../../docs/decisions/engine/Q-M1f.436-the-kernel-reads-no-theorys-name.md) |
+| the declarator `relation` and the kernel's other words | **the kernel's**, one atom in every file: no import qualifies one, and no declarator binds one (`ein_core::terms::RESERVED`) | `ein_core::terms::Kernel`; [Q-M1f.436](../../../../../docs/decisions/engine/Q-M1f.436-the-kernel-reads-no-theorys-name.md) |
 | its facts | **the program's facts**, once however many imports bring them | [Q-M1f.143](../../../../../docs/decisions/imports/Q-M1f.143-a-modules-fact-arrives-once-however-many-imports.md) |
 | its rules and declarations | **in the program, whole**: an import selects nothing | [Q-M1f.247](../../../../../docs/decisions/imports/Q-M1f.247-every-import-brings-its-module-whole.md) |
+
+**In what sense `relation` is the kernel's**, asked by the user the same day (*"is a `relation` the kernel word? in
+what sense?"*), read off the grammar and the loader and probed:
+
+1. **A form, written at the top.** `(relation likes Person Drink :why "…")` is the grammar's declaration form
+   (`ein.y`'s `Relation`), with its `:why`. A file cannot write a fact of `relation` at the top as data.
+2. **What the loader makes of the form is two things** (`ein-ir/src/from_ir.rs`):
+   - an entry of the program's table of declarations, `Program::declarations` (the name, the labels, the `:why`).
+     That table is what the engine reads: the blind enumerator guesses at each declared count, labels in a
+     declaration are not guessed over as objects, and the read-out and the `:why` texts read it;
+   - two ordinary facts in root's knowledge base, `(relation likes Person Drink)` and `(relation likes)`, *so rules can
+     introspect signatures*, as `std.contradiction`'s activators do.
+3. **Reserved, and never qualified.** No declarator binds it (no relation, rule, macro or alias is called
+   `relation`), and no import qualifies it: a module's declaration is written with the same atom.
+4. **Anywhere else it is a name**: a rule may match `(relation ?R ?A ?B)` and may conclude `(relation …)`. A concluded
+   one is a fact and declares nothing. Probed: a rule that concludes `(relation likes Person Drink)` holds the fact
+   (`:rule mk`), `likes` is not in the table, and the blind enumerator guesses `(other likes)`, `(other Person)`,
+   `(other Drink)`, the three being ordinary names now.
+
+So what the user calls the module's `m.relation` has two parts today: the module's entries in the one table the
+engine reads, and the facts of `relation` rules read. Each can be scoped or shared on its own.
 
 So a module today is closer to a text spliced in with its declared names renamed than to a unit with atoms of its
 own. A module of facts written in place answers as its import, and Ein holds that by a test (Q-M1f.137's,
