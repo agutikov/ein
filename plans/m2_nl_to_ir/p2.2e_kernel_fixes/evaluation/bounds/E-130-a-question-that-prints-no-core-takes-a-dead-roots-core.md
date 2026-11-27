@@ -1,7 +1,7 @@
 # E-130 — A question that prints no core takes a dead root's core all the same
 
 **Kind:** bug
-**Status:** open
+**Status:** closed by [S2.2e.6](../../s2.2e.6_a_core_only_where_printed.md) (`6b359cce`)
 **Filed:** by [S2.2e.3](../../s2.2e.3_clock_and_a_dead_root.md), 2026-11-27, on `44e3bef1`
 **Owner:** [S2.2e.6](../../s2.2e.6_a_core_only_where_printed.md), on the user's word, 2026-11-27: *"E-130 - yes, add
 S2.2e.6"*; the fix leaves Ein's syntax and semantics as they are and moves no answer and no printed byte
@@ -58,3 +58,26 @@ core (`--events`, `--dump-lattice`); not under a mode and not under `--count`, w
 describe's mode (`explore::run_with`), so the count's question has to reach the node function's axes. No answer and no
 printed byte moves: the summaries already write `null` there (Q-M1f.29). The design page's sentence and `region::Cores`'
 note change with it, and the test that a run that prints no core takes none would compare root's core too.
+
+## Closed
+
+By S2.2e.6, `6b359cce`, 2026-11-27. `region::Cores` gains `root`, a dead root's core, which a description and
+`--no-search` print, beside `visited` and `nogoods`; the node function takes root's where the axes say so
+(`Axes::taking_cores` reads the three) and no longer on every run. **The question reaches the axes**:
+`explore::Options::cores_taken` clears `root`, and `nogoods`, where the question prints neither, a mode and `--count`,
+and `explore::run_with` reads it before `--count` takes describe's route with describe's mode, so the count's
+question, which the route no longer sees, has already reached every route's axes. A surface that prints every visited
+node's core (`--events`, `--dump-lattice`, `ein render lattice`) still takes root's under any question, as a visited
+node's. `ein test` asks root's only where its `--json-summary` writes it, under a description or `--no-search`: its
+stdout prints no core. **No answer and no printed byte moved**: the summaries already wrote `null` there (Q-M1f.29),
+and the sweeps that read every answer and every byte are green (the stage's record). On the model's Zebra program,
+`--single`, `-n 2`, `--minimal`, `--maximal` and `--count` answer in some 70 ms where they took 72 s, and under `-T 5`
+answer in the same time where they were the clock's abort; a description and `--no-search` still print their two
+`unsat core` rows after 72 s, and are the clock's abort under `-T 5`. Held by `ein-infer/tests/explore.rs`'
+`a_run_that_prints_no_core_takes_none_and_answers_alike`, which now reads root's core under every question,
+`--count` among them, and fails on the code before the fix, and by `ein-cli/tests/bounded_saturation.rs`'
+`a_question_that_prints_no_core_answers_a_dead_root_within_the_clock`, on `dead_link.ein`, which fails before it too;
+EinAf's `outcomes.rs`' `a_dead_roots_core_search_is_not_decided_at_the_kernels_clock` follows (`1a8608ff`).
+
+Two more cores taken where nothing prints them, found on the way and not root's, are
+[E-131](E-131-two-more-cores-a-question-takes-and-prints-nowhere.md).

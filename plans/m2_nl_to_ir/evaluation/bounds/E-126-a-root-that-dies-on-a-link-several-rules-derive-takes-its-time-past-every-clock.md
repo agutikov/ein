@@ -63,3 +63,10 @@ What is left is not the clock's: the search costs what it costs with no clock (E
 core takes root's all the same, so `--single` on this program is *not decided* at any clock shorter than the search,
 where it could answer at once ([E-130](../../p2.2e_kernel_fixes/evaluation/bounds/E-130-a-question-that-prints-no-core-takes-a-dead-roots-core.md));
 and whether EinAf's call sets the lever is still [Q-M2.34](../../open_questions/kernel/Q-M2.34-does-einaf-s-kernel-call-set-the-lever-that-keeps-one-justification.md).
+
+**Since [S2.2e.6](../../p2.2e_kernel_fixes/s2.2e.6_a_core_only_where_printed.md) (`6b359cce`)** E-130 is closed: a
+question that prints no core takes none of root's, so `--single`, `-n`, `--minimal`, `--maximal` and `--count` answer
+this program in what root's saturation costs, some 70 ms, with no clock and under `-T 5`, and EinAf's call answers
+those questions *inconsistent*. A description and `--no-search` print root's core and still search for it: 72 s with
+no clock, the clock's abort under one. What is left is that search's cost, E-113's and F22's, and Q-M2.34, which now
+bears on those two questions alone.

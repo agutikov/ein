@@ -7,6 +7,8 @@ that commits its work, S2.2e.1 to S2.2e.4; S2.2e.4's first half to the user's ru
 [Q-M2.24](../open_questions/kernel/Q-M2.24-does-ein-hold-that-an-answer-does-not-depend-on-the-order.md), the same
 day: a guarantee Ein states, and no test for now. **S2.2e.6 added 2026-11-27** on the user's word, *"E-130 - yes, add
 S2.2e.6"*, for the core a question that prints none takes of a dead root; it runs before S2.2e.5's recording.
+**S2.2e.6 done 2026-11-27** (`6b359cce`): a dead root's core taken by a description and `--no-search` alone, E-130
+closed, E-131 filed; S2.2e.5's recording is next.
 The phase stops at its end with a report for the user's review, and is not closed until the user says so.
 **Depends on:** the kernel as it stands; [P2.2](../p2.2_formalizer/README.md), closed, for the probes that hold
 the evidence ([`zebra_formulations/probes/`](../p2.2_formalizer/zebra_formulations/probes/README.md)) and the

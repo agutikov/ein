@@ -20,7 +20,7 @@ hand; this page is what it finds of the kernel, kept for the iteration of Ein th
 - **One file an entry**, `<topic>/E-<n>-<slug>.md`, under the topic it is about: its id and its bold sentence as
   the title; its kind, its status (open, or closed and by what; a strength stands), where it was filed and its
   owner; then the cells of its row, each a section, as they were written. This page is the index. **The ids are one
-  sequence for the milestone and its phases**, and the next free id is **E-131** (E-140 to E-149 are reserved for P2.2f while
+  sequence for the milestone and its phases**, and the next free id is **E-132** (E-140 to E-149 are reserved for P2.2f while
   it runs in a worktree).
 - **An entry filed by a phase lives in the phase's `evaluation/`** (every phase's folder has one) until the phase
   closes. Then, if it is open or a strength, it moves here under the same topic; a closed one stays in the phase's
@@ -180,7 +180,7 @@ below is a wrong answer.
 
 The bugs P2.1 filed, E-62, E-65, E-74, E-76, E-79 and E-88, were each closed in the phase and went with its folder
 at its close ([below](#in-a-phases-folder)). **The two below are P2.2's, and neither is a wrong answer by the register's
-rules**: E-104 closed by S2.2e.1, E-105 by S2.2e.2. P2.2e's E-129 and E-130 are in [its folder](../p2.2e_kernel_fixes/evaluation/README.md).
+rules**: E-104 closed by S2.2e.1, E-105 by S2.2e.2. P2.2e's E-129, E-130 and E-131 are in [its folder](../p2.2e_kernel_fixes/evaluation/README.md).
 
 | id | title | topic | status | owner |
 |---|---|---|---|---|
@@ -210,7 +210,7 @@ rules**: E-104 closed by S2.2e.1, E-105 by S2.2e.2. P2.2e's E-129 and E-130 are 
 | [E-102](bounds/E-102-a-deep-fact-is-rendered-and-drawn-in-time-that-grows-with-the.md) | A deep fact is rendered and drawn in time that grows with the square of its depth, after the run and outside the clock | `bounds` | open | — |
 | [E-108](answer/E-108-a-clue-with-its-arguments-swapped-is-answered-one-with.md) | A clue with its arguments swapped is answered *one*, with another grid and, in the text's words, the same answer | `answer` | open | none in Ein; [S2.4.4](../p2.4_loop/s2.4.4_faithfulness.md) is what sees it |
 | [E-124](answer/E-124-one-state-may-answer-a-question-of-one-value-with-a-row-a-pass.md) | One state may answer a question of one value with a row for each pass of a rule that reads what it concludes | `answer` | open | none in Ein; [Q-M2.33](../open_questions/answer/Q-M2.33-is-a-class-with-several-rows-an-answer-of-several-values-or-the-undetermined-text.md), [S2.2d.4](../p2.2d_formalizer_corrected/s2.2d.4_check_findings.md), [S2.5.3](../p2.5_harness/s2.5.3_metrics.md) |
-| [E-126](bounds/E-126-a-root-that-dies-on-a-link-several-rules-derive-takes-its-time-past-every-clock.md) | A root that dies on a link several rules derive takes its time past every clock, unless the program sets a lever | `bounds` | closed by S2.2e.3 (`3a5c162b`) | [S2.2e.3](../p2.2e_kernel_fixes/s2.2e.3_clock_and_a_dead_root.md); what is left, [E-130](../p2.2e_kernel_fixes/evaluation/bounds/E-130-a-question-that-prints-no-core-takes-a-dead-roots-core.md), E-113 and [Q-M2.34](../open_questions/kernel/Q-M2.34-does-einaf-s-kernel-call-set-the-lever-that-keeps-one-justification.md) |
+| [E-126](bounds/E-126-a-root-that-dies-on-a-link-several-rules-derive-takes-its-time-past-every-clock.md) | A root that dies on a link several rules derive takes its time past every clock, unless the program sets a lever | `bounds` | closed by S2.2e.3 (`3a5c162b`) | [S2.2e.3](../p2.2e_kernel_fixes/s2.2e.3_clock_and_a_dead_root.md); what is left, [E-130](../p2.2e_kernel_fixes/evaluation/bounds/E-130-a-question-that-prints-no-core-takes-a-dead-roots-core.md) (closed by S2.2e.6), E-113 and [Q-M2.34](../open_questions/kernel/Q-M2.34-does-einaf-s-kernel-call-set-the-lever-that-keeps-one-justification.md) |
 
 ## In a phase's folder
 
@@ -234,7 +234,7 @@ One line a phase whose `evaluation/` holds entries, so that every id is found fr
   [the analysis of the phase](../p2.2_formalizer/report/ANALYSIS.md#12-what-a-library-says-of-its-rules-to-whoever-selects-them).
 - [P2.2b](../p2.2b_guided_thinking/evaluation/README.md), [P2.2c](../p2.2c_decoding_and_model_alone/evaluation/README.md),
   [P2.2d](../p2.2d_formalizer_corrected/evaluation/README.md): none yet, each planned and not started.
-- **E-129 and E-130 are P2.2e's**, filed by S2.2e.1 on what the imports pass does to a program's own forms, and by
-  S2.2e.3 on a question that prints no core taking a dead root's
-  ([the phase's index](../p2.2e_kernel_fixes/evaluation/README.md)).
+- **E-129, E-130 and E-131 are P2.2e's**, filed by S2.2e.1 on what the imports pass does to a program's own forms, by
+  S2.2e.3 on a question that prints no core taking a dead root's (closed by S2.2e.6), and by S2.2e.6 on two more cores
+  taken where nothing prints them ([the phase's index](../p2.2e_kernel_fixes/evaluation/README.md)).
 - P2.3 to P2.10: none yet.

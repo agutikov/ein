@@ -31,3 +31,9 @@ clock: such a program's every question returns at the call's clock, *not decided
 takes root's core, though only a description and `--no-search` print it
 ([E-130](../../p2.2e_kernel_fixes/evaluation/bounds/E-130-a-question-that-prints-no-core-takes-a-dead-roots-core.md));
 with that fixed, only those two questions would cost the search.
+
+**Since S2.2e.6 (`6b359cce`).** E-130 is fixed: a question that prints no core takes no root's core, so on such a
+program `--single`, the lines, `-n` and `--count` are *inconsistent* in what root's saturation costs, and only a
+description and `--no-search`, whose objects carry the core, cost the search and are *not decided* at the call's
+clock. What the lever would buy is those two questions' answer, with one of the smallest cores in place of the
+smallest.
