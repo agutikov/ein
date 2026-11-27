@@ -7,6 +7,8 @@ that commits its work, S2.2e.1 to S2.2e.4; S2.2e.4's first half to the user's ru
 [Q-M2.24](../open_questions/kernel/Q-M2.24-does-ein-hold-that-an-answer-does-not-depend-on-the-order.md), the same
 day: a guarantee Ein states, and no test for now. **S2.2e.6 added 2026-11-27** on the user's word, *"E-130 - yes, add
 S2.2e.6"*, for the core a question that prints none takes of a dead root; it runs before S2.2e.5's recording.
+**S2.2e.7 added 2026-11-27** on the user's word, *"E-131 - yes, add S2.2e.7"*, for the two other cores S2.2e.6 found
+taken and printed nowhere; it runs last.
 **S2.2e.6 done 2026-11-27** (`6b359cce`): a dead root's core taken by a description and `--no-search` alone, E-130
 closed, E-131 filed; S2.2e.5's recording is next.
 The phase stops at its end with a report for the user's review, and is not closed until the user says so.
@@ -53,13 +55,15 @@ against the same wrong count. And a fix after a split is frozen changes content 
 | [S2.2e.4](s2.2e.4_order_and_table_rows.md) | Two small ones: the order of a program's forms, and two rows of the table | on the user's ruling of Q-M2.24 (2026-11-27), the decision that an answer does not depend on the order of a program's forms, a guarantee, and its row of the determinism page, no test; the two shapes the banked table of refused shapes lacks |
 | [S2.2e.5](s2.2e.5_recordings_follow_the_library.md) | EinAf's recordings follow the library: the digest out of what the model sees | added 2026-11-27 on the user's choice for L-M2.31 (*"2"*): the catalogue a prompt shows carries no digest and the record does; the two recorded runs recorded again with the model, once; the probe line judged again with no model; a replay that survives a library change leaving the catalogue's text alone. EinAf only |
 | [S2.2e.6](s2.2e.6_a_core_only_where_printed.md) | A dead root's core taken only where a question prints it | added 2026-11-27 on the user's word for E-130 (*"E-130 - yes, add S2.2e.6"*): root's core taken by a description, `--no-search` and the surfaces that print a visited node's core, and by no other question; no answer and no printed byte moved; the model's Zebra program answered by `--single` in what its root costs, with no clock and under `-T 5` |
+| [S2.2e.7](s2.2e.7_two_more_cores_only_where_printed.md) | Two more cores taken only where a question prints them | added 2026-11-27 on the user's word for E-131 (*"E-131 - yes, add S2.2e.7"*): the cube's minimal holes' cores taken by a description and `--count` alone, the whole node's only where `Cores::visited` asks it; no answer and no printed byte moved |
 
 ### Order
 
 S2.2e.1 and S2.2e.2 do not wait for each other; S2.2e.2 is the one P2.3 waits for. S2.2e.3 is independent of
 both. S2.2e.4's first half is the user's ruling of Q-M2.24, written down. S2.2e.6 follows S2.2e.3, whose clock it leaves as it is,
-and comes before S2.2e.5's recording, which runs the bounded call on the model's programs. S2.2e.5 runs last, its
-recording when no other stage holds the GPU, and the phase's gate after it.
+and comes before S2.2e.5's recording, which runs the bounded call on the model's programs. S2.2e.5 runs, its
+recording when no other stage holds the GPU. S2.2e.7, added after the others ran, is the phase's last, and the
+phase's gate runs after it.
 
 **Each stage is a change of Ein and runs Ein's gate**: `./run_tests.sh` on the batch's last commit, the nightly
 where a stage changes what the nightly alone reads, the generated files of the library and its pages re-run with

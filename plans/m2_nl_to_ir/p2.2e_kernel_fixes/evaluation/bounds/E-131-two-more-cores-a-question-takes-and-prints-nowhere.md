@@ -4,9 +4,9 @@
 **Status:** open
 **Filed:** by [S2.2e.6](../../s2.2e.6_a_core_only_where_printed.md), 2026-11-27, on `6b359cce`, read off the code and
 not measured
-**Owner:** none; a fix leaves Ein's syntax and semantics as they are and moves no answer and no printed byte
-([Q-M2.16](../../../open_questions/kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md)), so a stage of M2 that
-needs it may make it
+**Owner:** [S2.2e.7](../../s2.2e.7_two_more_cores_only_where_printed.md), on the user's word, 2026-11-27: *"E-131 - yes,
+add S2.2e.7"*; a fix leaves Ein's syntax and semantics as they are and moves no answer and no printed byte
+([Q-M2.16](../../../open_questions/kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md))
 
 ## What
 
