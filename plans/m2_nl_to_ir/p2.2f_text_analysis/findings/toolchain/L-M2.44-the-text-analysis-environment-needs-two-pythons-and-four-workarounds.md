@@ -1,4 +1,4 @@
-# L-M2.44 — The text-analysis environment needs two Pythons and four workarounds, and takes 44 GB
+# L-M2.44 — The text-analysis environment needs two Pythons and four workarounds, and takes 47 GB
 
 **Status:** open
 **Found:** by [S2.2f.1](../../s2.2f.1_the_check.md), 2026-11-27, making the environment
@@ -16,10 +16,11 @@
   `torch.hub.load('pytorch/fairseq', 'bart.large')`, which would build fairseq's GitHub main, pointed at fairseq's
   `bart.large` read by the installed 0.10.2.
 - **Every tool fits 8 GB alone**, the largest Stanza with its coreference model at 4 000 MiB; spaCy on the CPU (no
-  CuPy). Each run's outputs and peaks repeat byte for byte.
-- **44 GB on disk** under `build/nlp/`: the venvs 9.6, uv's cache 10, the model archives 7.6 (amrlib 2.9, IBM and
-  BART 4.7), extracted models 8.5 (IBM, BART) and 3.2 (amrlib), the hub's cache 7.3. The archives and uv's cache
-  (17.6 GB) are needed only to make the environment again.
+  CuPy). The AMR runs, made twice, repeat byte for byte with the same peaks.
+- **47 GB on disk** under `build/nlp/`: the venvs and their Pythons 9.8, uv's cache 10, the model archives 8.8
+  (amrlib 2.9, IBM's two models and BART 5.9), the extracted models 10.3 (BART 3.8, IBM's two 3.4, amrlib's two
+  3.1), the hub's cache 7.3, Stanza's and WordNet's 0.6. The archives and uv's cache (18.6 GB) are needed only to
+  make the environment again.
 - **Nothing was written under `~`**: every cache, and `HOME` itself, pointed into `build/nlp/`; the guard `HOME`
   stayed empty.
 
