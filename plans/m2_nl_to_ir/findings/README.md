@@ -9,7 +9,7 @@ host, which the work has to know and nothing else holds.
 
 - **An id `L-M2.<n>`**, kept and never reused (M1f's findings were `L-n`, and are the followups' now). **One sequence
   for the milestone and its phases**: a phase takes the next free id, whichever folder it files in. **The next free id
-  is L-M2.33.**
+  is L-M2.34.**
 - **One file a finding**, `<topic>/L-M2.<n>-<slug>.md`, under a topic folder: its id and title, its status (open, or
   closed and by what), where it was found and its owner, then what was found (the record's words where a record
   states it), the evidence, and what it costs.
