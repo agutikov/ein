@@ -46,7 +46,7 @@ held for every mode under every lever by `ein-cli/tests/lever_invariance.rs`.
 | `--max-steps N` | the most firings any one saturation of a run may make, root's first; past it the run stops, not decided, and establishes nothing of `R` |
 | `--region-limit N` | how large a flagged program's cube a run computes whole |
 | `--describe-route tree\|states` | which of describe's two routes runs on a monotone program |
-| `-T S` | a deadline, past which the run is an error, read between a route's steps and inside every saturation |
+| `-T S` | a deadline, past which the run is an error, read between a route's steps, inside every saturation and inside every dead node's core search |
 | `--no-search` | the question: root alone, `R` not discovered |
 | `(config :lattice-sanity-check true)`, `-y` | the parent-path spot check, read by the read-out |
 | `(config :record-alternative-justifications false)` | alternatives not recorded; the one lever that may change a dead node's core, never `R` |
@@ -330,6 +330,15 @@ Dropping a superset loses nothing, since union is monotone; only the caps lose e
 stopped reports a real frontier that may not be the smallest, with a status that says so. A premise closure past
 `ExplanationBudget::max_facts` is not searched: the frontier of the recorded derivations is returned in its place,
 and the status says it was cut. A core is taken only where a surface prints one (`region::Cores`).
+
+The budget bounds the search's size and not its time: a round folds every recorded derivation of every fact whose
+label moved, each premise over up to 64 environments, so a dead state whose link several rules derive, every
+derivation recorded, can fold millions of environments within its rounds. A core a question about R takes, through
+the node function or `region::Nodes::refutation`, is searched under the run's clock
+(`explain::contradiction_frontier_by`): the deadline the node's saturation took, read every `explain::CLOCK_EVERY`
+units of the search's work, a fact its closure reads, a derivation folded or an environment made. Past it the search
+returns `explain::Deadline`, which the run reports as `SolveError::Deadline`, the clock's abort wherever it falls.
+The search writes nothing, so a search stopped leaves nothing behind; with no deadline it is the same search.
 
 ## 10. The obligation pass
 

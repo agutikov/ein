@@ -1,0 +1,67 @@
+;;; A root that dies on a link several rules derive, every derivation
+;;; recorded. Two roads join each town to the next along a line of thirty,
+;;; each road is a link, a link is symmetric and transitive, and the two ends
+;;; are apart: root's fixpoint holds (false). Each link between two towns is
+;;; derived through every town between them and by either road, so its
+;;; environments, the sets of roads it follows from, outnumber the core
+;;; search's budget, and the search folds millions of them over its
+;;; rounds where root's saturation is some twenty-five thousand firings. With
+;;; (config :record-alternative-justifications false) the search is offered one
+;;; derivation a fact, and the run answers at once. The solve form leaves H
+;;; empty, so nothing but root's node is computed, and states root's death,
+;;; which `ein test` checks.
+(relation link T T :why "{?3} is linked to {?4}")
+(relation road1 T T :why "road 1 joins {?3} to {?4}")
+(relation road2 T T :why "road 2 joins {?3} to {?4}")
+(relation apart T T :why "{?3} and {?4} are apart")
+(rule road1-links ()
+  :match (road1 ?a ?b)
+  :assert (link ?a ?b)
+  :why "road 1 joins {?a} to {?b}, so they are linked")
+(rule road2-links ()
+  :match (road2 ?a ?b)
+  :assert (link ?a ?b)
+  :why "road 2 joins {?a} to {?b}, so they are linked")
+(rule mirror ()
+  :match (link ?a ?b)
+  :assert (link ?b ?a)
+  :why "{?a} is linked to {?b}, so {?b} is linked to {?a}")
+(rule chain ()
+  :match (and (link ?a ?b) (link ?b ?c) (neq ?a ?c))
+  :assert (link ?a ?c)
+  :why "{?a} is linked to {?b} and {?b} to {?c}, so {?a} is linked to {?c}")
+(rule clash ()
+  :match (and (link ?a ?b) (apart ?a ?b))
+  :assert (false)
+  :why "{?a} and {?b} are linked and apart, which cannot be")
+(apart t1 t30)
+(road1 t1 t2) (road2 t1 t2)
+(road1 t2 t3) (road2 t2 t3)
+(road1 t3 t4) (road2 t3 t4)
+(road1 t4 t5) (road2 t4 t5)
+(road1 t5 t6) (road2 t5 t6)
+(road1 t6 t7) (road2 t6 t7)
+(road1 t7 t8) (road2 t7 t8)
+(road1 t8 t9) (road2 t8 t9)
+(road1 t9 t10) (road2 t9 t10)
+(road1 t10 t11) (road2 t10 t11)
+(road1 t11 t12) (road2 t11 t12)
+(road1 t12 t13) (road2 t12 t13)
+(road1 t13 t14) (road2 t13 t14)
+(road1 t14 t15) (road2 t14 t15)
+(road1 t15 t16) (road2 t15 t16)
+(road1 t16 t17) (road2 t16 t17)
+(road1 t17 t18) (road2 t17 t18)
+(road1 t18 t19) (road2 t18 t19)
+(road1 t19 t20) (road2 t19 t20)
+(road1 t20 t21) (road2 t20 t21)
+(road1 t21 t22) (road2 t21 t22)
+(road1 t22 t23) (road2 t22 t23)
+(road1 t23 t24) (road2 t23 t24)
+(road1 t24 t25) (road2 t24 t25)
+(road1 t25 t26) (road2 t25 t26)
+(road1 t26 t27) (road2 t26 t27)
+(road1 t27 t28) (road2 t27 t28)
+(road1 t28 t29) (road2 t28 t29)
+(road1 t29 t30) (road2 t29 t30)
+(solve :no-search :expect (false))

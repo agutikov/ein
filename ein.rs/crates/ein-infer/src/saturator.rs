@@ -979,6 +979,15 @@ fn ends_of(engine: &Engine, at_once: &[bool]) -> (Vec<usize>, Arc<PlanIndex>) {
 }
 
 impl Snapshot {
+    /// The bound a saturation resumed from this snapshot on this thread
+    /// takes ([`Saturator::resume`]): [`bounded`]'s, else the snapshot's, so
+    /// a worker's node is bounded as the root it resumes. What else a node
+    /// computes under the run's clock, its core's search, reads its
+    /// deadline here.
+    pub(crate) fn bound(&self) -> Bound {
+        BOUND_SWITCH.with(Cell::get).unwrap_or(self.bound)
+    }
+
     /// The saved file's node every fork of this snapshot holds, if any.
     pub(crate) fn floor(&self) -> Option<&crate::region::Floor> {
         self.floor.as_deref()
@@ -1250,7 +1259,7 @@ impl Saturator {
             fail_first: AGENDA_SWITCH.with(Cell::get).unwrap_or(snapshot.fail_first),
             first: Vec::new(),
             stop_first: is_stopping_at_first_contradiction(),
-            bound: BOUND_SWITCH.with(Cell::get).unwrap_or(snapshot.bound),
+            bound: snapshot.bound(),
             steps: 0,
             at_once: if kept {
                 tables.at_once.clone()

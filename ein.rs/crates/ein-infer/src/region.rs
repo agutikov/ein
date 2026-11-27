@@ -252,9 +252,9 @@ pub struct Options {
     /// have to number a new fact hands its node back, and every new fact is
     /// therefore numbered by the calling thread in the order `1` numbers it.
     pub jobs: usize,
-    /// `ein oracle -T`: checked before each batch of nodes, and inside every
-    /// saturation, root's among them. Reaching it is
-    /// [`SolveError::Deadline`], never a smaller cube.
+    /// `ein oracle -T`: checked before each batch of nodes, inside every
+    /// saturation, root's among them, and inside every dead node's core's
+    /// search. Reaching it is [`SolveError::Deadline`], never a smaller cube.
     pub deadline: Option<Instant>,
     /// Which dead nodes' unsat cores the run takes beyond root's and the
     /// minimal holes', which it takes either way ([`Cores`]).
@@ -499,10 +499,10 @@ pub fn compute_with(
     events: &mut Events,
 ) -> Result<Outcome, SolveError> {
     let t_root = Instant::now();
-    // The clock reaches inside every saturation of the cube, root's first;
-    // no cap does: the reference saturates every node to its fixpoint, and
-    // its one bound past the limit is the clock (`explore`'s § A saturation
-    // is bounded).
+    // The clock reaches inside every saturation of the cube, root's first,
+    // and every dead node's core's search; no cap does: the reference
+    // saturates every node to its fixpoint, and its one bound past the limit
+    // is the clock (`explore`'s § A saturation is bounded).
     let bound = crate::saturator::Bound {
         deadline: opts.deadline,
         max_steps: None,
@@ -1960,6 +1960,7 @@ impl<'a> Nodes<'a> {
     /// dump print each member's core.
     pub fn refutation(&mut self, facts: &[FactId]) -> Result<Refutation, SolveError> {
         self.terms.provs.open_fork();
+        let deadline = self.snapshot.bound().deadline;
         let out = fixpoint(
             self.root,
             &self.snapshot,
@@ -1968,22 +1969,25 @@ impl<'a> Nodes<'a> {
             &self.memo,
             facts,
         )
-        .map(|fork| {
+        .and_then(|fork| {
             let contradictions = crate::contradiction::detect(&fork, self.terms);
             if contradictions.is_empty() {
-                return Refutation::default();
+                return Ok(Refutation::default());
             }
-            let e = crate::explain::contradiction_frontier(
+            // Under the clock the fixpoint's saturation took, as the node
+            // function's core is.
+            let e = crate::explain::contradiction_frontier_by(
                 &fork,
                 self.terms,
                 &contradictions,
                 &crate::explain::ExplanationBudget::default(),
-            );
-            Refutation {
+                deadline,
+            )?;
+            Ok(Refutation {
                 core: sorted_text(self.terms, &e.frontier),
                 core_status: Some(crate::explain::CoreStatus::of(&e)),
                 refuted_by: rules_of(self.terms, &e.steps),
-            }
+            })
         });
         self.terms.provs.discard_fork();
         out
@@ -2370,13 +2374,16 @@ fn node_in_region(
             };
             sat.saturate(&mut s, None, &mut |_| {})?;
         }
+        // Under the run's clock, as the node's saturation was: a search it
+        // stops ends the run, as the clock does anywhere.
         let contradictions = crate::contradiction::detect(&fork, terms);
-        let e = crate::explain::contradiction_frontier(
+        let e = crate::explain::contradiction_frontier_by(
             &fork,
             terms,
             &contradictions,
             &crate::explain::ExplanationBudget::default(),
-        );
+            snapshot.bound().deadline,
+        )?;
         node.core = sorted_text(terms, &e.frontier);
         node.core_status = Some(crate::explain::CoreStatus::of(&e));
         node.sources = sources_of(&fork, terms, &e.frontier);

@@ -11,6 +11,12 @@
 //! saturation for the shape golden, `ein saturate`, `ein render kb`, the
 //! oracle's cube), where a saturation has no bound of its own.
 //!
+//! The clock reaches a dead node's core search too, which is no saturation:
+//! `tests/bounded/dead_link.ein`'s root dies on a link several rules derive,
+//! and its core's search over every recorded derivation runs far past any
+//! clock the tests set. It is no corpus program either: a description prints
+//! its core, which no sweep waits for.
+//!
 //! What each stop says is the pages' (`05-cli.md` § 3, `08-read-out.md`):
 //!
 //! - **the clock** ends the run as a `-T` abort always did: one line on
@@ -199,6 +205,111 @@ fn the_clock_ends_a_saturation_with_no_fixpoint() {
         failures.push(format!(
             "test -T 0.3: exit {}, stdout {:?}, after {:?}",
             r.code, r.out, r.wall
+        ));
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+/// **The clock ends a dead root's core search**, the one computation a dead
+/// node's record needs that its saturation does not: `dead_link.ein`'s root
+/// saturates in some twenty-five thousand firings and dies, and the search
+/// for its core folds millions of environments over every derivation of a
+/// link several rules derive. Every question, `ein oracle` and `ein test`
+/// end at the clock as `-T` ends a run anywhere; the library's error is
+/// [`ein_infer::SolveError::Deadline`]. The same program with
+/// `(config :record-alternative-justifications false)`, the search offered
+/// one derivation a fact, answers with no clock, its root dead and its claim
+/// held: what the clock stopped was the search, and the program's answer is
+/// no other.
+#[test]
+fn the_clock_ends_a_dead_roots_core_search() {
+    let file = fixture("dead_link.ein");
+    let path = file.to_str().expect("a path");
+    let mut failures = Vec::new();
+    for question in [
+        &[][..],
+        &["--single"][..],
+        &["--no-search"][..],
+        &["--count"][..],
+        &["-n", "2"][..],
+        &["--minimal"][..],
+        &["--maximal"][..],
+    ] {
+        let mut args = vec!["solve", path, "-T", "0.3"];
+        args.extend(question);
+        let r = ein(&args);
+        let at = args.join(" ");
+        if r.code != 2 || r.err != ABORT || !r.out.is_empty() || !aborted(&r, DECIDED) {
+            failures.push(format!(
+                "{at}: exit {}, stdout {:?}, stderr {:?}, summary {:?}",
+                r.code, r.out, r.err, r.summary
+            ));
+        }
+        if r.wall > PATIENCE {
+            failures.push(format!("{at}: ended after {:?}", r.wall));
+        }
+    }
+    let r = ein(&["oracle", path, "-T", "0.3"]);
+    if r.code != 2
+        || r.err != "** aborted: --max-time 0.3 s reached before the cube was done **\n"
+        || r.wall > PATIENCE
+    {
+        failures.push(format!(
+            "oracle -T 0.3: exit {}, stderr {:?}, after {:?}",
+            r.code, r.err, r.wall
+        ));
+    }
+    let r = ein(&["test", path, "-T", "0.3"]);
+    if r.code != 2 || !r.out.starts_with("ERROR ") || r.wall > PATIENCE {
+        failures.push(format!(
+            "test -T 0.3: exit {}, stdout {:?}, after {:?}",
+            r.code, r.out, r.wall
+        ));
+    }
+    for mode in [
+        Mode {
+            which: Which::All,
+            ask: Ask::Describe,
+        },
+        Mode {
+            which: Which::All,
+            ask: Ask::Single,
+        },
+    ] {
+        let t = Instant::now();
+        match run(&file, mode, |o| {
+            o.deadline = Some(Instant::now() + Duration::from_millis(200));
+        }) {
+            Err(ein_infer::SolveError::Deadline) if t.elapsed() < PATIENCE => {}
+            other => failures.push(format!(
+                "the library, {mode:?}: {:?} after {:?}",
+                other.map(|a| a.verdict),
+                t.elapsed()
+            )),
+        }
+    }
+    // The program with the lever, which no clock stops.
+    let dir = Scratch::new("ein-bounded-dead-link");
+    let lever = dir.join("dead_link_one_justification.ein");
+    let text = std::fs::read_to_string(&file).expect("the fixture reads");
+    std::fs::write(
+        &lever,
+        format!("{text}(config :record-alternative-justifications false)\n"),
+    )
+    .expect("the copy writes");
+    let lever = lever.to_str().expect("a path");
+    let r = ein(&["solve", lever, "--single"]);
+    if r.code != 0 || row(&r.out, "verdict").is_none_or(|v| !v.starts_with("Contradiction")) {
+        failures.push(format!(
+            "with the lever, --single: exit {}, stdout {:?}, stderr {:?}",
+            r.code, r.out, r.err
+        ));
+    }
+    let r = ein(&["test", lever]);
+    if r.code != 0 || !r.out.starts_with("ok ") {
+        failures.push(format!(
+            "with the lever, test: exit {}, stdout {:?}, stderr {:?}",
+            r.code, r.out, r.err
         ));
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));

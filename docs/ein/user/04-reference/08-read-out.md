@@ -198,7 +198,8 @@ other members met are counted on the listing's last line.
 A run `--max-time` stops is no answer: it prints nothing on stdout, writes no answer directory's files, and exits 2
 (§ 10); its summary has no answer, every answer key `null`, and its one diagnostic is the deadline's (§ 11.3). So no
 row reads *stopped at `--max-time`*. The clock is read inside every saturation, root's
-first, as between a route's steps, so a saturation with no fixpoint ends there too.
+first, and inside every dead node's core search, as between a route's steps, so a saturation with no fixpoint ends
+there too, and so does the search for a core over many recorded derivations.
 
 **A run a saturation stopped at `--max-steps`** ([Q-M2.16](../../../decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md)) is not decided, and establishes nothing of R: a
 saturation stopped short of its fixpoint is a state that is not known, and every part of R rests on states. Past
@@ -554,7 +555,7 @@ summary too, in the order stderr prints it (§ 11.3).
 | `note: FILE:L:C: solve: its :no-hypothesis …`, `… :no-search …` | when the run ends, on every command, after a flagged program's `WARNING`: where root holds no `open` fact, a name another declaration already says; a rule that concludes a hypothesis or a list beside `(solve :no-search)`, which proposes or filters nothing ([`07-diagnostics.md`](07-diagnostics.md), the hypothesis mechanisms) | 0 | `mechanisms` |
 | `warning: FILE was written under different inputs (…)` | a `.einb` container whose inputs moved since it was written, opened anyway, on every command that reads it, when it is loaded ([`09-binary-format.md` § 4.3](../../ein.rs/03-design/09-binary-format.md#43-a-file-not-believed)) | 0 | `stale-container` |
 | `FILE: query :expect FAILED — …`, `FILE: (solve :expect) FAILED — …` | a claim the run refutes | 1 | `claim-failed` |
-| `** aborted: --max-time S s reached before the question was decided **` | `-T`, between a route's steps or inside a saturation: no answer, so nothing on stdout and no file in the answer directory, and a summary with no answer whose one diagnostic, besides what the run printed before it, is this (§ 11.3). `ein oracle`'s ends *before the cube was done*; `ein test` prints it too, its file's `ERROR` row on stdout saying only `aborted before an answer`, and lists it in the file's summary, as stderr printed it, and on its report's rows | 2 | `deadline` |
+| `** aborted: --max-time S s reached before the question was decided **` | `-T`, between a route's steps, inside a saturation or inside a dead node's core search: no answer, so nothing on stdout and no file in the answer directory, and a summary with no answer whose one diagnostic, besides what the run printed before it, is this (§ 11.3). `ein oracle`'s ends *before the cube was done*; `ein test` prints it too, its file's `ERROR` row on stdout saying only `aborted before an answer`, and lists it in the file's summary, as stderr printed it, and on its report's rows | 2 | `deadline` |
 
 ---
 

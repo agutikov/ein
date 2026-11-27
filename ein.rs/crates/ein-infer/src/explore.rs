@@ -45,7 +45,9 @@
 //! between a route's steps, and [`Options::max_steps`], a cap on any one
 //! saturation's firings that depends on no machine
 //! ([`crate::saturator::Bound`]). The deadline ends the run with
-//! [`SolveError::Deadline`], as it always did, wherever it falls. A
+//! [`SolveError::Deadline`], as it always did, wherever it falls, a dead
+//! node's core's search among the places it is read
+//! ([`crate::explain::contradiction_frontier_by`]). A
 //! saturation past the cap ends it with [`Stopped::Steps`]: the run is not
 //! decided, [`Answer::exhausted`] false and no verdict, and **nothing of `R`
 //! is established**, root's standing and `H` among it, since a state whose
@@ -215,9 +217,10 @@ pub struct Options {
     /// The largest `n` whose whole cube a flagged program gets.
     pub limit: u32,
     pub jobs: usize,
-    /// `-T`: checked before each step, as the budget is, and inside every
+    /// `-T`: checked before each step, as the budget is, inside every
     /// saturation the run computes, root's among them (the module's § A
-    /// saturation is bounded).
+    /// saturation is bounded), and inside every dead node's core's search
+    /// ([`mod@crate::explain`]'s § A search the run's clock stops).
     pub deadline: Option<Instant>,
     /// `--max-steps`: the most firings any one saturation of the run may
     /// make, root's first; `None` caps none. [`Options::new`] takes

@@ -789,8 +789,8 @@ fn solve_command() -> Command {
                 .value_parser(float_arg)
                 .help(
                     "abort after N wall-clock seconds, exit 2; checked before each \
-                     step of work and inside every saturation. A machine-dependent \
-                     limit is never an answer",
+                     step of work, inside every saturation and inside every dead \
+                     node's core search. A machine-dependent limit is never an answer",
                 ),
         )
         // The route workers' count, the same under every route.
@@ -1224,8 +1224,8 @@ fn oracle_command() -> Command {
                 .value_parser(float_arg)
                 .help(
                     "abort after N wall-clock seconds, exit 2. Checked before each \
-                     batch of the cube's nodes and inside every saturation; a \
-                     stopped cube is never an answer",
+                     batch of the cube's nodes, inside every saturation and inside \
+                     every dead node's core search; a stopped cube is never an answer",
                 ),
         )
         .arg(

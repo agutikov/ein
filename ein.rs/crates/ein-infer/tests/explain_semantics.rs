@@ -23,12 +23,14 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::ops::ControlFlow;
 use std::path::PathBuf;
+use std::time::{Duration, Instant};
 
 use ein_core::walks::{self, Justifications};
 use ein_core::{FactId, Kb, Prov, ProvKind, Symbol, Terms, Value};
 use ein_infer::events::{Buffer, Events, Level};
 use ein_infer::explain::{
-    CoreStatus, Cut, Explanation, ExplanationBudget, explain, minimal_contradiction_frontier,
+    CLOCK_EVERY, CoreStatus, Cut, Deadline, Explanation, ExplanationBudget,
+    contradiction_frontier_by, explain, minimal_contradiction_frontier,
 };
 use ein_infer::hypgen::{HypGenStats, Skip};
 use ein_infer::saturator::{Saturator, Session};
@@ -670,6 +672,57 @@ fn each_cap_a_search_stops_at_is_named() {
         let e = f.explain_contradiction(&ExplanationBudget::default());
         assert_eq!(CoreStatus::of(&e), want, "{rel}");
     }
+}
+
+/// **A deadline stops a core's search, and one it does not reach moves
+/// nothing** (`explain.rs`' § A search the run's clock stops). The clock is
+/// read every [`CLOCK_EVERY`] units of the search's work, so a deadline
+/// already past stops `zebra2-bad.ein`'s root core's search, which does more
+/// than that, at its first read, and lets `SHARED_OPTIMUM`'s and
+/// `core-search-cut.ein`'s, which do fewer, end as they end with none; a
+/// deadline a day away is the search with none, explanation for explanation.
+/// On `dead_link.ein`, whose root saturates to its fixpoint here, the search
+/// alone runs far past a clock a fifth of a second away, and that clock stops
+/// it.
+#[test]
+fn a_deadline_stops_a_core_search_and_one_not_reached_moves_nothing() {
+    let budget = ExplanationBudget::default();
+    let far = Instant::now() + Duration::from_secs(86_400);
+    let by = |f: &Fixture, deadline: Option<Instant>| {
+        let contradictions = ein_infer::contradiction::detect(&f.kb, &f.terms);
+        contradiction_frontier_by(&f.kb, &f.terms, &contradictions, &budget, deadline)
+    };
+    let mut small = load_text(SHARED_OPTIMUM);
+    small.saturate();
+    let mut cut = load_path("examples/ein-bugs/wrong-answers/core-search-cut.ein");
+    cut.saturate();
+    let mut bad = load_path("examples/ein-bugs/zebra2-bad.ein");
+    bad.saturate();
+    for (name, f, read) in [
+        ("SHARED_OPTIMUM", &small, false),
+        ("core-search-cut.ein", &cut, false),
+        ("zebra2-bad.ein", &bad, true),
+    ] {
+        let unbounded = f.explain_contradiction(&budget);
+        assert!(!unbounded.is_empty(), "{name} is dead");
+        assert_eq!(by(f, None), Ok(unbounded.clone()), "{name}, no deadline");
+        assert_eq!(by(f, Some(far)), Ok(unbounded.clone()), "{name}, a far one");
+        let past = by(f, Some(Instant::now()));
+        if read {
+            assert_eq!(past, Err(Deadline), "{name}: the clock read past it");
+        } else {
+            assert_eq!(past, Ok(unbounded), "{name}: the clock never read");
+        }
+    }
+    let mut dead = load_path("ein.rs/crates/ein-cli/tests/bounded/dead_link.ein");
+    dead.saturate();
+    let t = Instant::now();
+    assert_eq!(
+        by(&dead, Some(Instant::now() + Duration::from_millis(200))),
+        Err(Deadline)
+    );
+    assert!(t.elapsed() < Duration::from_secs(30), "{:?}", t.elapsed());
+    assert!(CLOCK_EVERY.is_power_of_two());
 }
 
 /// **A core's status is one word, read back as written**:

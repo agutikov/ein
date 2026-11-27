@@ -99,7 +99,8 @@ ASK     (describe, the default) | -n N | --single | --count (over all of R only)
   saturation that needs more stops the run, which is then **not decided** and establishes nothing of R, neither root's
   standing nor H: its `exhausted` row, or `--single`'s `verdict` and `decided`, say which saturation was stopped, a
   `note:` on stderr says it too, no query is answered, no claim is checked, and it exits 0. `-T` is read inside every
-  saturation as between a route's steps, so a program with no fixpoint ends at the clock as any run does (§ 3).
+  saturation and every dead node's core search as between a route's steps, so a program with no fixpoint ends at the
+  clock as any run does (§ 3).
   A run whose every saturation stays within the cap is the run without it.
 
 The options beside the two axes — the budgets, the presentation forms, the artefacts — are listed by
@@ -239,7 +240,7 @@ hand, too: add its facts to a copy of the program and saturate the copy (§ [4.4
 stops it after N firings (§ [5](#5-what-is-fixed-about-the-command-line)), and `--progress-every N` logs a progress
 line every N steps (0 logs none). It has no cap unless asked: it asks no question about R, and what it shows is
 the saturation itself, as far as it runs. `ein oracle` takes no cap either, every node of its cube being saturated
-to its fixpoint, and its `-T` is read inside every saturation; `ein show hyps`, `ein render h-space`, `ein render kb`
+to its fixpoint, and its `-T` is read inside every saturation and every dead node's core search; `ein show hyps`, `ein render h-space`, `ein render kb`
 and `ein solve --monotone` read root's fixpoint and take neither, and `ein render lattice` runs its describing
 question under `ein solve`'s default cap.
 
@@ -336,8 +337,10 @@ asked not to search, moves no exit code.
 nothing on stdout but `ein test`'s `ERROR` row of the file, and exits 2: a machine-dependent limit is never an
 answer. Its `--json-summary` has no answer, and
 its diagnostics say the deadline ([`08-read-out.md` § 11.3](08-read-out.md#113-diagnostics-what-the-run-said-as-values)). The clock is read between a route's
-steps and inside every saturation, root's first, every thousand-odd firings and at each quiescence, so a run ends
-at it wherever it is, a saturation with no fixpoint among them ([Q-M2.16](../../../decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md)).
+steps, inside every saturation, root's first, every thousand-odd firings and at each quiescence, and inside every
+dead node's core search, every few thousand environments it makes, so a run ends at it wherever it is, a saturation
+with no fixpoint among them ([Q-M2.16](../../../decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md)),
+and a dead root whose core is searched over many recorded derivations of one fact.
 
 **A closed stdout is no code either.** A write to a pipe whose reader has gone ends any command by `SIGPIPE`, with
 nothing on stderr, which a shell reports as 141, as it does for `cat`

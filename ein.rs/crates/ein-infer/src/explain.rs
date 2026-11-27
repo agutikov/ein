@@ -64,6 +64,22 @@
 //! corpus `zebra.ein`'s cuts are at the rounds and the `zebra2` family's at
 //! the environments.
 //!
+//! ### A search the run's clock stops
+//!
+//! **The budget bounds the search's size, not its time**: a round folds
+//! every justification of every fact whose label moved, each over up to 64
+//! environments a premise, so a dead state whose link several rules derive,
+//! each derivation recorded, can fold millions of environments within its
+//! 64 rounds. A search a bounded run takes, a core a question about `R`
+//! prints, reads the run's clock ([`contradiction_frontier_by`]), the
+//! deadline its node's saturation took (Q-M2.16): every
+//! [`CLOCK_EVERY`] units of its work, a fact the closure reads, a
+//! justification folded or an environment made, and past the deadline it
+//! stops with [`Deadline`], which the run reports as it reports the clock
+//! anywhere, no answer. It writes nothing on the way, so a search stopped
+//! leaves nothing another reader sees. With no deadline it is the search,
+//! work for work.
+//!
 //! ### What a derivation rests on
 //!
 //! **Its premises, and the activator its plan was compiled from where a node
@@ -195,6 +211,64 @@ impl Default for ExplanationBudget {
             max_facts: 20_000,
         }
     }
+}
+
+/// How many units of a search's work, a fact its closure reads, a
+/// justification folded or an environment made, it does between two reads
+/// of the clock (the module's § A search the run's clock stops), a power of
+/// two. An environment, made and kept or dropped, costs about half a
+/// microsecond where the labels are full, so a search reads the clock every
+/// few milliseconds at most, and stops within as long past its deadline; one
+/// read is a share of this many units' cost that no measurement sees.
+pub const CLOCK_EVERY: u64 = 1 << 12;
+
+/// The run's clock passed while a search ran ([`contradiction_frontier_by`]):
+/// no core is taken, and the run is the clock's abort,
+/// [`crate::error::SolveError::Deadline`], wherever it was.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Deadline;
+
+impl std::fmt::Display for Deadline {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("--max-time reached inside a core's search")
+    }
+}
+
+/// The deadline a search reads, and the work it has done since its last
+/// read.
+struct Clock {
+    deadline: Option<std::time::Instant>,
+    work: u64,
+}
+
+impl Clock {
+    /// The clock a search reads: `None`, no deadline, and the search runs to
+    /// its own end, as it always did.
+    fn until(deadline: Option<std::time::Instant>) -> Clock {
+        Clock { deadline, work: 0 }
+    }
+
+    /// `units` more of the search's work: every [`CLOCK_EVERY`] the clock is
+    /// read, and a deadline past ends the search.
+    #[inline]
+    fn tick(&mut self, units: usize) -> Result<(), Deadline> {
+        let Some(d) = self.deadline else {
+            return Ok(());
+        };
+        self.work += units as u64;
+        if self.work >= CLOCK_EVERY {
+            self.work = 0;
+            if std::time::Instant::now() >= d {
+                return Err(Deadline);
+            }
+        }
+        Ok(())
+    }
+}
+
+/// A search that took no deadline ran to its end.
+fn unbounded(e: Result<Explanation, Deadline>) -> Explanation {
+    e.unwrap_or_else(|_| unreachable!("a search with no deadline is never stopped by one"))
 }
 
 /// Which of [`ExplanationBudget`]'s caps a search stopped at: none when it
@@ -478,7 +552,8 @@ fn build_graph(
     targets: &[FactId],
     budget: &ExplanationBudget,
     reach: Reach<'_>,
-) -> Graph {
+    clock: &mut Clock,
+) -> Result<Graph, Deadline> {
     let mut g = Graph {
         just: FxHashMap::default(),
         consumers: FxHashMap::default(),
@@ -498,6 +573,7 @@ fn build_graph(
         }
     }
     while let Some(fid) = stack.pop() {
+        clock.tick(1)?;
         if !kb.contains(fid) {
             // A dangling premise id — the case `walk_premises` skips. Ground
             // it out rather than killing the justification that named it, so
@@ -595,7 +671,7 @@ fn build_graph(
             }
         }
     }
-    g
+    Ok(g)
 }
 
 /// Subset-minimal environments, smallest first, capped.
@@ -671,20 +747,23 @@ fn fold(
     searched: usize,
     labels: &FxHashMap<FactId, Vec<Env>>,
     budget: &ExplanationBudget,
-) -> (Vec<Env>, bool) {
+    clock: &mut Clock,
+) -> Result<(Vec<Env>, bool), Deadline> {
+    clock.tick(1)?;
     let mut envs: Vec<Env> = vec![Vec::new()];
     let mut truncated = false;
     let mut read: Env = Vec::new();
     for pid in &and_node[searched..] {
         let Some(plabel) = labels.get(pid).filter(|l| !l.is_empty()) else {
-            return (Vec::new(), false); // not derivable yet
+            return Ok((Vec::new(), false)); // not derivable yet
         };
         read = union(&read, &plabel[0]);
     }
     for pid in &and_node[..searched] {
         let Some(plabel) = labels.get(pid).filter(|l| !l.is_empty()) else {
-            return (Vec::new(), false); // premise not derivable yet
+            return Ok((Vec::new(), false)); // premise not derivable yet
         };
+        clock.tick(envs.len() * plabel.len())?;
         let mut merged = Vec::with_capacity(envs.len() * plabel.len());
         for e in &envs {
             for pe in plabel {
@@ -695,20 +774,25 @@ fn fold(
         truncated |= cut;
         envs = next;
         if envs.is_empty() {
-            return (Vec::new(), truncated);
+            return Ok((Vec::new(), truncated));
         }
     }
     if !read.is_empty() {
+        clock.tick(envs.len())?;
         let merged: Vec<Env> = envs.iter().map(|e| union(e, &read)).collect();
         let (next, cut) = minimise(merged, budget);
         truncated |= cut;
         envs = next;
     }
-    (envs, truncated)
+    Ok((envs, truncated))
 }
 
+/// What [`propagate`] reaches: each fact's label, the rounds it took, and
+/// the caps it stopped at.
+type Labels = (FxHashMap<FactId, Vec<Env>>, usize, Cut);
+
 /// Least-fixpoint label propagation — `(labels, rounds, cut)`.
-fn propagate(g: &Graph, budget: &ExplanationBudget) -> (FxHashMap<FactId, Vec<Env>>, usize, Cut) {
+fn propagate(g: &Graph, budget: &ExplanationBudget, clock: &mut Clock) -> Result<Labels, Deadline> {
     let mut labels: FxHashMap<FactId, Vec<Env>> = g.seed.clone();
     let mut truncated = false;
     let mut dirty: FxHashSet<FactId> = FxHashSet::default();
@@ -734,13 +818,14 @@ fn propagate(g: &Graph, budget: &ExplanationBudget) -> (FxHashMap<FactId, Vec<En
             };
             let mut candidates: Vec<Env> = Vec::new();
             for and_node in ands {
-                let (envs, cut) = fold(&and_node.facts, and_node.searched, &labels, budget);
+                let (envs, cut) = fold(&and_node.facts, and_node.searched, &labels, budget, clock)?;
                 truncated |= cut;
                 candidates.extend(envs);
             }
             if candidates.is_empty() {
                 continue;
             }
+            clock.tick(candidates.len())?;
             let (new, cut) = minimise(candidates, budget);
             truncated |= cut;
             if labels.get(&fid).map(|l| l.as_slice()) != Some(new.as_slice()) {
@@ -756,7 +841,7 @@ fn propagate(g: &Graph, budget: &ExplanationBudget) -> (FxHashMap<FactId, Vec<En
         rounds: !dirty.is_empty(),
         facts: g.truncated,
     };
-    (labels, rounds, cut)
+    Ok((labels, rounds, cut))
 }
 
 /// The smallest recorded-derivation frontier that forces *some* target.
@@ -774,7 +859,14 @@ pub fn explain(
     budget: &ExplanationBudget,
 ) -> Explanation {
     let groups: Vec<Group> = targets.iter().map(|&t| Group::of(vec![t])).collect();
-    explain_groups(kb, terms, &groups, budget, Reach::Core)
+    unbounded(explain_groups(
+        kb,
+        terms,
+        &groups,
+        budget,
+        Reach::Core,
+        &mut Clock::until(None),
+    ))
 }
 
 /// What one contradiction rests on, as the search explains it: a
@@ -871,8 +963,35 @@ pub fn contradiction_frontier(
     contradictions: &[crate::contradiction::Contradiction],
     budget: &ExplanationBudget,
 ) -> Explanation {
+    unbounded(contradiction_frontier_by(
+        kb,
+        terms,
+        contradictions,
+        budget,
+        None,
+    ))
+}
+
+/// [`contradiction_frontier`] under a run's clock (the module's § A search
+/// the run's clock stops): the same search, read against `deadline` every
+/// [`CLOCK_EVERY`] units of its work, and [`Deadline`] past it. `None` is
+/// [`contradiction_frontier`].
+pub fn contradiction_frontier_by(
+    kb: &Kb,
+    terms: &Terms,
+    contradictions: &[crate::contradiction::Contradiction],
+    budget: &ExplanationBudget,
+    deadline: Option<std::time::Instant>,
+) -> Result<Explanation, Deadline> {
     let groups = groups_of(kb, terms, contradictions, Reach::Core);
-    explain_groups(kb, terms, &groups, budget, Reach::Core)
+    explain_groups(
+        kb,
+        terms,
+        &groups,
+        budget,
+        Reach::Core,
+        &mut Clock::until(deadline),
+    )
 }
 
 /// **The support of a death**: [`contradiction_frontier`]'s search, grounded
@@ -904,7 +1023,14 @@ pub fn support_frontier(
     stated: &FxHashSet<FactId>,
 ) -> Explanation {
     let groups = groups_of(kb, terms, contradictions, Reach::Support(stated));
-    explain_groups(kb, terms, &groups, budget, Reach::Support(stated))
+    unbounded(explain_groups(
+        kb,
+        terms,
+        &groups,
+        budget,
+        Reach::Support(stated),
+        &mut Clock::until(None),
+    ))
 }
 
 /// [`explain`] over **groups**, each a conjunction of facts explained
@@ -915,9 +1041,10 @@ fn explain_groups(
     groups: &[Group],
     budget: &ExplanationBudget,
     reach: Reach<'_>,
-) -> Explanation {
+    clock: &mut Clock,
+) -> Result<Explanation, Deadline> {
     if groups.is_empty() {
-        return Explanation::empty();
+        return Ok(Explanation::empty());
     }
     // Every group's other facts, then the targets, in group order: the
     // closure is walked from the end, so the targets are expanded first, as
@@ -929,8 +1056,8 @@ fn explain_groups(
         .flat_map(|g| g.facts.iter().skip(1).copied())
         .collect();
     roots.extend(groups.iter().filter_map(|g| g.facts.first().copied()));
-    let g = build_graph(kb, terms, &roots, budget, reach);
-    let (labels, rounds, mut cut) = propagate(&g, budget);
+    let g = build_graph(kb, terms, &roots, budget, reach, clock)?;
+    let (labels, rounds, mut cut) = propagate(&g, budget, clock)?;
 
     let mut best: Option<((usize, Env, u32), usize, Env)> = None;
     for (gi, group) in groups.iter().enumerate() {
@@ -942,7 +1069,7 @@ fn explain_groups(
                 label[0].clone() // smallest, already sorted
             }
             facts => {
-                let (envs, folded) = fold(facts, group.searched, &labels, budget);
+                let (envs, folded) = fold(facts, group.searched, &labels, budget, clock)?;
                 cut.environments |= folded;
                 let Some(env) = envs.into_iter().next() else {
                     continue;
@@ -970,15 +1097,15 @@ fn explain_groups(
             // label. Degrade to the pre-S1.21.7 answer rather than returning
             // nothing or, worse, passing derived facts off as givens. A
             // support has no such walk to degrade to and says it was cut.
-            return fallback_groups(kb, terms, groups, rounds, considered);
+            return Ok(fallback_groups(kb, terms, groups, rounds, considered));
         }
-        return Explanation {
+        return Ok(Explanation {
             exhausted: !cut.any(),
             cut,
             rounds,
             facts_considered: considered,
             ..Explanation::default()
-        };
+        });
     };
     let frontier: Vec<FactId> = env
         .iter()
@@ -992,7 +1119,7 @@ fn explain_groups(
         Some(p) if !crate::contradiction::ended_by_an_implicit_rule(kb, terms, p) => vec![p],
         _ => steps_of(kb, &g, &groups[gi].facts, &env),
     };
-    Explanation {
+    Ok(Explanation {
         frontier,
         target: groups[gi].facts.first().copied(),
         exhausted: !cut.any(),
@@ -1000,7 +1127,7 @@ fn explain_groups(
         rounds,
         facts_considered: considered,
         steps,
-    }
+    })
 }
 
 /// The facts the environment `env` derives through the graph's recorded

@@ -185,7 +185,7 @@ members found, a line's members found, a verdict reached, with `exhausted` false
 question that needs the whole cube meets `R`'s members in layer order up to the limit, and describe certifies what it
 can of them; a line mode answers from the same description
 ([Q-M1e2.19](../../../decisions/answer/Q-M1e2.19-past-the-limit-a-line-mode-certifies-what.md)). `-T` is a deadline, past
-which the run is an error, read between the steps and inside every saturation. A count is exact at any size and reported up to $2^{63} - 1$
+which the run is an error, read between the steps, inside every saturation and inside every dead node's core search. A count is exact at any size and reported up to $2^{63} - 1$
 ([`count.rs`](../../../../ein.rs/crates/ein-infer/src/count.rs),
 [Q-M1f.218](../../../decisions/answer/Q-M1f.218-a-count-is-exact-and-reported-up-to-2-63-1.md)).
 
@@ -241,7 +241,10 @@ and a derivation through a `forall` rests on each fact it read
 Choosing the best combination of derivations is worst-case exponential, so the search has a budget
 (`explain::ExplanationBudget`: environments kept per label, rounds, the largest environment, the largest premise
 closure), and every core carries its status, `within-budget`, or `cut-` and the caps its search stopped at; a cut core
-is sound and possibly not the smallest. **A core is an explanation**: it may vary with rule order, and no answer
+is sound and possibly not the smallest. The budget bounds the search's size and not its time, so a core a question
+about `R` takes is searched under the run's clock (§ 4.1), read every `explain::CLOCK_EVERY` units of its work: a
+search the clock stops is the run's abort, as the clock is anywhere, and leaves nothing behind, since a search writes
+nothing. **A core is an explanation**: it may vary with rule order, and no answer
 depends on it ([Q-M1f.6](../../../decisions/answer/Q-M1f.6-a-core-is-an-explanation.md)). A node that is not dead has
 no core, `null`; `[]` is a dead node's empty core. A core is taken only where a surface prints one (`region::Cores`):
 root's and, on the cube, the minimal holes' always; each visited dead node's for `--events` and `--dump-lattice`; each

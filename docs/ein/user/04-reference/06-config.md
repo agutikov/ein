@@ -247,7 +247,7 @@ a program to answer about.
   `ein solve --help` states it), the cube's limit and the deadline stop a run. A budget or a limit that stops one
   leaves every surface saying the answer is partial: a lower bound, a `note:` on stderr, `exhausted no` and why. A
   `-T` abort exits 2 and prints no answer, because a machine-dependent limit is never an answer; the clock is read
-  inside every saturation as between a route's steps. **`--max-steps`**, on `ein solve` and `ein test`, is the most
+  inside every saturation and every dead node's core search as between a route's steps. **`--max-steps`**, on `ein solve` and `ein test`, is the most
   firings any one saturation of the run may make, root's first, the load's judgement of the mechanisms and
   `--trace`'s root among them: default $2^{20}$, 1 048 576, far above every saturation a corpus program makes
   ([Q-M2.16](../../../decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md); `ein solve --help` states it), one or more. **Does it change the answer: no.** A run
