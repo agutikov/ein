@@ -10,4 +10,6 @@ topic; what is closed goes with the phase's folder.
 
 ## Index
 
-None yet: the phase is planned and not started.
+| id | finding | topic | status | owner |
+|---|---|---|---|---|
+| [L-M2.31](einaf/L-M2.31-einafs-recorded-model-runs-carry-the-librarys-digest.md) | EinAf's recorded model runs carry the library's digest, so a change to `stdlib/` fails three of its tests | `einaf` | open | none; before the phase's gate |

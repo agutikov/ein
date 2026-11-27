@@ -179,12 +179,12 @@ below is a wrong answer.
 
 The bugs P2.1 filed, E-62, E-65, E-74, E-76, E-79 and E-88, were each closed in the phase and went with its folder
 at its close ([below](#in-a-phases-folder)). **The two below are P2.2's, and neither is a wrong answer by the register's
-rules**: E-104 closed by S2.2e.1, E-105 open. P2.2e's E-129 is in [its folder](../p2.2e_kernel_fixes/evaluation/README.md).
+rules**: E-104 closed by S2.2e.1, E-105 by S2.2e.2. P2.2e's E-129 is in [its folder](../p2.2e_kernel_fixes/evaluation/README.md).
 
 | id | title | topic | status | owner |
 |---|---|---|---|---|
 | [E-104](language/E-104-a-relation-declared-at-a-second-count-is-refused-where-the.md) | A relation declared at a second count is refused where the program imports a module | `language` | closed by S2.2e.1 (`8d1f89ba`) | [S2.2e.1](../p2.2e_kernel_fixes/s2.2e.1_declared_again_under_an_import.md); [Q-M2.42](../open_questions/kernel/Q-M2.42-are-e-104-and-e-105-fixed-before-the-benchmark-is-built.md) |
-| [E-105](stdlib/E-105-std-slots-lets-two-values-stated-next-to-each-other-share-a.md) | `std.slots` lets two values stated next to each other share a house | `stdlib` | open | [S2.2e.2](../p2.2e_kernel_fixes/s2.2e.2_slots_neighbours.md); [Q-M2.42](../open_questions/kernel/Q-M2.42-are-e-104-and-e-105-fixed-before-the-benchmark-is-built.md) |
+| [E-105](stdlib/E-105-std-slots-lets-two-values-stated-next-to-each-other-share-a.md) | `std.slots` lets two values stated next to each other share a house | `stdlib` | closed by S2.2e.2 (`b2d8276f`) | [S2.2e.2](../p2.2e_kernel_fixes/s2.2e.2_slots_neighbours.md); [Q-M2.42](../open_questions/kernel/Q-M2.42-are-e-104-and-e-105-fixed-before-the-benchmark-is-built.md) |
 
 ## Limits
 
