@@ -1,6 +1,9 @@
 # Q-M2.51 — Does every fact of the analysis quote its sentence, or a sentence's facts once?
 
-**Status:** open
+**Status:** ruled by the user, 2026-11-27
+
+**Ruled by the user, 2026-11-27:** *"Q-M2.51 - yes"*: every fact of the analysis quotes its sentence, as the plan
+asks and the facts form writes it (the default, the first alternative). Nothing changes.
 
 **Raised 2026-11-27 by [S2.2f.2](../../s2.2f.2_the_analysis_written.md)**, writing the facts form.
 

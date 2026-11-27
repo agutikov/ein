@@ -1,6 +1,9 @@
 # L-M2.32 — The guarantee of Q-M2.24 has a known wrong answer against it, the register's `W8/fifo-gap-root`
 
-**Status:** open
+**Status:** open, as a known wrong answer; **the user ruled the choice 2026-11-27**: *"L-M2.32: keep, as
+recommended"*: the guarantee stays as Q-M2.24 ruled it, for every program, and is not scoped to programs order-free
+at the boundary; the root race stays a wrong answer by it, `W8/fifo-gap-root`'s, until M1n's stage fixes the
+boundary's order
 **Found:** by [S2.2e.4](../../s2.2e.4_order_and_table_rows.md), 2026-11-27, writing Q-M2.24's decision, on
 `e2b7c0c9`'s gate binary
 **Owner:** the register's row's, S1n.2.1 ([M1n](../../../../m1n_non_monotone_programs/README.md), P1n.2), which the
@@ -27,7 +30,8 @@ first.
 decision states the guarantee for every program, and says where a run falls short of it today, the boundary's order,
 *of a program the static check passes … a wrong answer by this decision, known and not fixed; of a program it flags,
 nothing is claimed* (Q-M1f.564). It does not scope the guarantee to programs order-free at the boundary, which is
-the other way to make the decision true of today's binary, and the user's to choose instead.
+the other way to make the decision true of today's binary, and the user's to choose instead. **The user kept the
+default**, 2026-11-27: *"keep, as recommended"*.
 
 **What the decision now bears on**, each outside this phase:
 

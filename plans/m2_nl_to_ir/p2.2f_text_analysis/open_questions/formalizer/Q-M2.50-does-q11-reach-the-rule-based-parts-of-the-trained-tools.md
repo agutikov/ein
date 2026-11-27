@@ -1,6 +1,18 @@
 # Q-M2.50 — Does Q11's ruling reach the rule-based parts of the trained tools, and WordNet?
 
-**Status:** open
+**Status:** ruled by the user, 2026-11-27
+
+**Ruled by the user, 2026-11-27:** *"Q-M2.50 - No, those are external universal tools, if they have enough
+vocabulary to parse arbitrary texts (at least what we have so far) then we can evaluate them."* The first
+alternative, the default: Q11 does not reach them.
+
+**Read as** (the coordinator's reading, which the user may correct): Q11 excludes a grammar of English written for
+the purpose; a tool made for any text (a parser, an aligner, a lemmatizer, a lexicon such as WordNet), whatever of
+it is written by hand, is an external tool the phase may use, **if its vocabulary covers arbitrary text**, at least
+the texts the plan has, and the check is what evaluates it. **What the ruling opens**: S2.2f.2's rule that a form
+shows a node's words only from a learned aligner (IBM's) was taken to keep the second alternative possible; with the
+ruling, amrlib's rule-based (RBW) words may be shown too, for SPRING and XFM. Nothing is rebuilt for it now: an
+option of `einaf analysis` and an arm of [S2.2f.3](../../s2.2f.3_step1_with_the_analysis.md) if that stage wants it.
 
 **Raised 2026-11-27 by [S2.2f.1](../../s2.2f.1_the_check.md)**, making the environment.
 

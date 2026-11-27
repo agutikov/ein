@@ -6,6 +6,8 @@
 [S2.2e.4](../../p2.2e_kernel_fixes/s2.2e.4_order_and_table_rows.md) (`cc393635`), with the row of
 `01-determinism-and-order.md` § 1.2; no test. It says where a run falls short of the guarantee today, the boundary's
 written order of admission, a known wrong answer ([L-M2.32](../../p2.2e_kernel_fixes/findings/wrong-answers/L-M2.32-the-guarantee-of-q-m2-24-has-a-known-wrong-answer-against-it.md)).
+**The guarantee kept whole**, the user's word on L-M2.32 the same day: *"keep, as recommended"*; not scoped to
+programs order-free at the boundary.
 
 **Ruled by the user, 2026-11-27:** *"I think it already guarantees that, because 1 - syntax and sematics: all forms
 are their own identities, every unique name mean the same objects, rules with the same name are load errors,

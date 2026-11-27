@@ -27,6 +27,48 @@ The coordinator reads [Q-M1f.447](../../../../../docs/decisions/language/Q-M1f.4
 as covering every case, a program's declaration under a module's atom among them. Q-M1f.234 and the code's reading
 of an alias say otherwise for two of them; the question is which holds.
 
+## A short example, and what each answer means
+
+Added 2026-11-27 on the user's word: *"add short example with consequenses explanation"*. The module, `m.ein`:
+
+```ein
+(relation likes Person Drink :why "{?3} likes {?4}")
+(rule mfan () :match (likes ?a ?b) :assert (mfan ?a) :why "{?a} likes {?b}")
+(likes Cy Milk)
+```
+
+Two programs that import it, each declaring `likes` again and writing `Ann`'s fact:
+
+```ein
+;; listed.ein                                   ;; aliased.ein
+(import m :symbols (likes mfan))                (import m :as a)
+(relation likes Person Drink :why "…")          (relation a.likes Person Drink :why "…")
+(likes Ann Tea)                                 (a.likes Ann Tea)
+(query :goal (mfan ?a))                         (query :goal (a.mfan ?a))
+```
+
+| | `listed.ein` | `aliased.ein` | `aliased.ein` with no declaration line |
+|---|---|---|---|
+| **today** (Q-M1f.234 and the code's reading of an alias) | **refused** at load: `'likes' is bound to two full names` | **loads, and `a.likes` is a relation of the program's own**: `(a.mfan ?a)` answers `Cy` alone and `(a.likes ?a ?b)` answers `Ann Tea` alone; the module's rule never sees Ann, and nothing says so | one relation, the module's: `(a.mfan ?a)` answers `Ann` and `Cy` |
+| **yes** (the user's statement) | loads; `likes` is `m.likes`, declared twice: `(mfan ?a)` answers `Ann` and `Cy` | loads; `a.likes` is `m.likes`, declared twice: `(a.mfan ?a)` answers `Ann` and `Cy` | the same: `Ann` and `Cy` |
+
+**What a yes means**:
+
+- **A declaration never changes which relation a name means.** It adds one fact of `relation`, as Q-M1f.447 says
+  of a declaration, so a program answers alike with and without a declaration of what it imports: each column of
+  the *yes* row answers as the third.
+- **The silent case goes.** Today `aliased.ein` loses the module's facts and the module's rule loses the program's,
+  with no message: a declaration line, harmless to write, splits one relation into two.
+- **The two declarations are two facts** over one atom, here with two `:why` texts (*likes*, *is fond of*), and
+  what reads a declaration reads each: the blind enumerator guesses at each count, `std.contradiction` activates its
+  rule from each.
+- **It costs** the name binding in `ein-ir/src/imports.rs`, Q-M1f.234 rewritten with a relation's declaration
+  excepted, the diagnostics page's § 2.27, and a test. A rule or a macro under a listed or aliased name stays refused.
+
+**What a no means** (the default): `listed.ein` stays refused, its message saying how to write it; `aliased.ein`
+keeps its silent second relation. A no that removes the silence too would refuse `aliased.ein` as Q-M1f.239 refuses
+`(relation m.likes …)` under a bare import: a declaration under an alias's prefix, refused with a message.
+
 ## What Ein does today
 
 The probes are [`../../probes/a-modules-relation/`](../../probes/a-modules-relation/): a module `m` declares
