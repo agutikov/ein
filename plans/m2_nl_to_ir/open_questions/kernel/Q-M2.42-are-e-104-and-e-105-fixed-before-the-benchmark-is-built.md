@@ -1,6 +1,8 @@
 # Q-M2.42 — Are E-104 and E-105 fixed before the benchmark is built?
 
-**Status:** open
+**Status:** open; **its default carried out**: [P2.2e](../../p2.2e_kernel_fixes/README.md), the phase of its own
+before P2.3, fixed both (E-104 by S2.2e.1, E-105 by S2.2e.2) and closed on the user's word, 2026-11-27. The
+coordinator reads that as the question settled, which the user may confirm or correct.
 
 **Raised 2026-11-26 by [the analysis of P2.2](../../p2.2_formalizer/report/ANALYSIS.md#94-what-the-library-and-the-kernel-owe)**
 (its proposal 14), and by the routing of the phase's results at its close, 2026-11-27.

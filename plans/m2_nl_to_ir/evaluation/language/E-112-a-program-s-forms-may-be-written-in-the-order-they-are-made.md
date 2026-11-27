@@ -64,4 +64,4 @@ program the check flags, nothing is claimed ([E-31](../answer/E-31-of-a-flagged-
 **For the application**: the steps may assemble a program in the order they make it, as the six encodings did; a
 program in which one rule's `absent` reads what another rule waiting on an `absent` concludes is where another order
 could answer otherwise, and such a run is filed as a wrong answer, not answered by reordering
-([L-M2.32](../../p2.2e_kernel_fixes/findings/wrong-answers/L-M2.32-the-guarantee-of-q-m2-24-has-a-known-wrong-answer-against-it.md)).
+([L-M2.32](../../findings/wrong-answers/L-M2.32-the-guarantee-of-q-m2-24-has-a-known-wrong-answer-against-it.md)).

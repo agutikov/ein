@@ -87,7 +87,7 @@ module path its fix left the binary's. E-104 to E-127 are P2.2's, filed stage by
 | [E-66](answer/E-66-the-seven-outcomes-are-read-off-values-and-eight-questions.md) | The seven outcomes are read off values, and eight questions agree on every corpus program | `answer` | standing (a strength) | — |
 | [E-68](diagnostics/E-68-every-line-a-run-prints-is-a-value-of-its-summary.md) | Every line a run prints is a value of its summary | `diagnostics` | standing (a strength) | — |
 | [E-94](library/E-94-the-library-and-the-binary-say-the-same-of-every-run-einaf.md) | The library and the binary say the same of every run EinAf compared | `library` | standing (a strength) | — |
-| [E-112](language/E-112-a-program-s-forms-may-be-written-in-the-order-they-are-made.md) | A program's forms may be written in the order they are made | `language` | standing (a strength) | — ; Ein states it, [Q-M2.24's decision](../../../docs/decisions/language/Q-M2.24-an-answer-does-not-depend-on-the-order.md) by [S2.2e.4](../p2.2e_kernel_fixes/s2.2e.4_order_and_table_rows.md) (`cc393635`), no test; one known wrong answer against it ([L-M2.32](../p2.2e_kernel_fixes/findings/wrong-answers/L-M2.32-the-guarantee-of-q-m2-24-has-a-known-wrong-answer-against-it.md)) |
+| [E-112](language/E-112-a-program-s-forms-may-be-written-in-the-order-they-are-made.md) | A program's forms may be written in the order they are made | `language` | standing (a strength) | — ; Ein states it, [Q-M2.24's decision](../../../docs/decisions/language/Q-M2.24-an-answer-does-not-depend-on-the-order.md) by [S2.2e.4](../p2.2e_kernel_fixes/s2.2e.4_order_and_table_rows.md) (`cc393635`), no test; one known wrong answer against it ([L-M2.32](../findings/wrong-answers/L-M2.32-the-guarantee-of-q-m2-24-has-a-known-wrong-answer-against-it.md)) |
 | [E-117](diagnostics/E-117-a-fence-around-a-program-is-the-parse-s-only-error-with-its-repair.md) | A fence around a program is the parse's only error, each fence line named with the repair that deletes it | `diagnostics` | standing (a strength) | — |
 | [E-122](language/E-122-ein-s-syntax-is-context-free-but-for-two-refusals.md) | Ein's syntax, its lexer included, is a context-free language but for two refusals, and a second reader takes it exactly | `language` | standing (a strength) | — |
 | [E-125](diagnostics/E-125-a-dead-root-s-core-names-the-sentence-the-model-misread.md) | A dead root's core names the sentence the model misread, and the rule that found it | `diagnostics` | standing (a strength) | — ; where root dies of several faults the core names one ([L-M2.24](../findings/model/L-M2.24-the-model-s-zebra-program-has-seven-defects-and-three-repairs-leave-r-empty.md)) |
@@ -180,12 +180,15 @@ below is a wrong answer.
 
 The bugs P2.1 filed, E-62, E-65, E-74, E-76, E-79 and E-88, were each closed in the phase and went with its folder
 at its close ([below](#in-a-phases-folder)). **The two below are P2.2's, and neither is a wrong answer by the register's
-rules**: E-104 closed by S2.2e.1, E-105 by S2.2e.2. P2.2e's E-129 to E-132 are in [its folder](../p2.2e_kernel_fixes/evaluation/README.md).
+rules**: E-104 closed by S2.2e.1, E-105 by S2.2e.2. **E-129 and E-132 are P2.2e's, moved here open at its close**
+(2026-11-27; E-132 postponed on the user's word); E-130 and E-131, closed in it, stay in [its folder](../p2.2e_kernel_fixes/evaluation/README.md).
 
 | id | title | topic | status | owner |
 |---|---|---|---|---|
 | [E-104](language/E-104-a-relation-declared-at-a-second-count-is-refused-where-the.md) | A relation declared at a second count is refused where the program imports a module | `language` | closed by S2.2e.1 (`8d1f89ba`) | [S2.2e.1](../p2.2e_kernel_fixes/s2.2e.1_declared_again_under_an_import.md); [Q-M2.42](../open_questions/kernel/Q-M2.42-are-e-104-and-e-105-fixed-before-the-benchmark-is-built.md) |
 | [E-105](stdlib/E-105-std-slots-lets-two-values-stated-next-to-each-other-share-a.md) | `std.slots` lets two values stated next to each other share a house | `stdlib` | closed by S2.2e.2 (`b2d8276f`) | [S2.2e.2](../p2.2e_kernel_fixes/s2.2e.2_slots_neighbours.md); [Q-M2.42](../open_questions/kernel/Q-M2.42-are-e-104-and-e-105-fixed-before-the-benchmark-is-built.md) |
+| [E-129](language/E-129-a-rule-or-a-macro-written-twice-the-same-is-read-once-where-the-program-imports.md) | A rule or a macro written twice the same is read once where the program imports a module, and refused where it imports none | `language` | open | none; a fix leaves the syntax and semantics as they are |
+| [E-132](bounds/E-132-the-whole-nodes-core-search-reads-no-clock.md) | The whole node's core search reads no clock | `bounds` | open, postponed on the user's word | none; the iteration of Ein's, or a stage of M2 that needs it |
 
 ## Limits
 
@@ -234,8 +237,10 @@ One line a phase whose `evaluation/` holds entries, so that every id is found fr
   [the analysis of the phase](../p2.2_formalizer/report/ANALYSIS.md#12-what-a-library-says-of-its-rules-to-whoever-selects-them).
 - [P2.2b](../p2.2b_guided_thinking/evaluation/README.md), [P2.2c](../p2.2c_decoding_and_model_alone/evaluation/README.md),
   [P2.2d](../p2.2d_formalizer_corrected/evaluation/README.md): none yet, each planned and not started.
-- **E-129 to E-132 are P2.2e's**, filed by S2.2e.1 on what the imports pass does to a program's own forms, by
+- **E-129 to E-132 were P2.2e's**, filed by S2.2e.1 on what the imports pass does to a program's own forms, by
   S2.2e.3 on a question that prints no core taking a dead root's (closed by S2.2e.6), by S2.2e.6 on two more cores
   taken where nothing prints them (closed by S2.2e.7), and by S2.2e.7 on the whole node's core search, which reads no
-  clock ([the phase's index](../p2.2e_kernel_fixes/evaluation/README.md)).
+  clock. At the phase's close, 2026-11-27, the two open, E-129 and E-132 (postponed on the user's word), moved here
+  under their topics; E-130 and E-131 stay in [the phase's index](../p2.2e_kernel_fixes/evaluation/README.md), with
+  its folder.
 - P2.3 to P2.10: none yet.

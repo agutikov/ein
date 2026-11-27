@@ -1,9 +1,9 @@
 # L-M2.33 — A slim record replayed and written again loses each call's token digest
 
 **Status:** open
-**Found:** by [S2.2e.5](../../s2.2e.5_recordings_follow_the_library.md), 2026-11-27, checking its new replay test's
+**Found:** by [S2.2e.5](../../p2.2e_kernel_fixes/s2.2e.5_recordings_follow_the_library.md), 2026-11-27, checking its new replay test's
 mechanics on a local copy of `einaf/tests/fixtures/from_text/zebra-contradiction/` (not committed)
-**Owner:** none in this phase; the default, [S2.5.1](../../../p2.5_harness/s2.5.1_experiment_record.md), which takes
+**Owner:** none in this phase; the default, [S2.5.1](../../p2.5_harness/s2.5.1_experiment_record.md), which takes
 over or replaces the stand-in record `einaf from-text --record` writes
 
 ## What

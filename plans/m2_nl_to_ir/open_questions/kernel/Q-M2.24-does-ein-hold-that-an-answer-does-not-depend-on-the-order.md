@@ -5,7 +5,7 @@
 **The decision that carries it:** [`docs/decisions/language/Q-M2.24-an-answer-does-not-depend-on-the-order.md`](../../../../docs/decisions/language/Q-M2.24-an-answer-does-not-depend-on-the-order.md), written by
 [S2.2e.4](../../p2.2e_kernel_fixes/s2.2e.4_order_and_table_rows.md) (`cc393635`), with the row of
 `01-determinism-and-order.md` § 1.2; no test. It says where a run falls short of the guarantee today, the boundary's
-written order of admission, a known wrong answer ([L-M2.32](../../p2.2e_kernel_fixes/findings/wrong-answers/L-M2.32-the-guarantee-of-q-m2-24-has-a-known-wrong-answer-against-it.md)).
+written order of admission, a known wrong answer ([L-M2.32](../../findings/wrong-answers/L-M2.32-the-guarantee-of-q-m2-24-has-a-known-wrong-answer-against-it.md)).
 **The guarantee kept whole**, the user's word on L-M2.32 the same day: *"keep, as recommended"*; not scoped to
 programs order-free at the boundary.
 

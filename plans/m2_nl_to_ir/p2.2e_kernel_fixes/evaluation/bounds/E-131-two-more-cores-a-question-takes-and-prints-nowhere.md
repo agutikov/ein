@@ -66,4 +66,4 @@ the abort and answers (release binaries, pinned to a P-core, on AC; the stage's 
 `ein-infer/tests/explore.rs`' `a_run_that_prints_no_core_takes_none_and_answers_alike`, whose lazy run is now read by
 a watch and which reads both fixtures, and by `ein-cli/tests/bounded_saturation.rs`'
 `a_line_mode_takes_no_holes_core_and_a_watch_no_whole_nodes`; each fails on the code before the fix. Found on the
-way: the whole node's core search reads no clock, [E-132](E-132-the-whole-nodes-core-search-reads-no-clock.md).
+way: the whole node's core search reads no clock, [E-132](../../../evaluation/bounds/E-132-the-whole-nodes-core-search-reads-no-clock.md).

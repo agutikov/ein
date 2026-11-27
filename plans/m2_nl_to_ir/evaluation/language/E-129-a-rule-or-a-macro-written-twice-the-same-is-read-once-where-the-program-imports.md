@@ -2,10 +2,10 @@
 
 **Kind:** bug
 **Status:** open
-**Filed:** by [S2.2e.1](../../s2.2e.1_declared_again_under_an_import.md), 2026-11-27, on `f281d35a` and again on
+**Filed:** by [S2.2e.1](../../p2.2e_kernel_fixes/s2.2e.1_declared_again_under_an_import.md), 2026-11-27, on `f281d35a` and again on
 `8d1f89ba`
 **Owner:** none; a fix leaves Ein's syntax and semantics as they are, so a stage of M2 that needs it may make it
-([Q-M2.16](../../../open_questions/kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md))
+([Q-M2.16](../../open_questions/kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md))
 
 ## What
 
@@ -32,7 +32,7 @@ there is read once*.
 
 ## Evidence
 
-[`../../probes/`](../../probes/), each program and the same with `(import std.algebra)` first, `ein solve`:
+[`../../probes/`](../../p2.2e_kernel_fixes/probes/), each program and the same with `(import std.algebra)` first, `ein solve`:
 
 | the program | no import | with the import |
 |---|---|---|

@@ -16,7 +16,7 @@ stage, renderings, the numbers, the defaults taken, the questions left, and what
   added;
 - on [E-130](../evaluation/bounds/E-130-a-question-that-prints-no-core-takes-a-dead-roots-core.md): *"E-130 - yes,
   add S2.2e.6"*: S2.2e.6 added;
-- on [L-M2.32](../findings/wrong-answers/L-M2.32-the-guarantee-of-q-m2-24-has-a-known-wrong-answer-against-it.md):
+- on [L-M2.32](../../findings/wrong-answers/L-M2.32-the-guarantee-of-q-m2-24-has-a-known-wrong-answer-against-it.md):
   *"keep, as recommended"*: the guarantee kept whole;
 - on [E-131](../evaluation/bounds/E-131-two-more-cores-a-question-takes-and-prints-nowhere.md): *"E-131 - yes, add S2.2e.7"*: S2.2e.7 added;
 - on Q-M2.43: *"add short example with consequenses explanation"*, then the correction that moved it out of the
@@ -544,7 +544,7 @@ einaf outcome · plans/m2_nl_to_ir/p2.2_formalizer/from_text/runs/module-dir/unu
 
 The module-dir program loads and its root is dead: its own `std.slots` selection, not the declarations. What the
 pass still does that a program with no import does not, a rule or a macro written twice
-([E-129](../evaluation/language/E-129-a-rule-or-a-macro-written-twice-the-same-is-read-once-where-the-program-imports.md),
+([E-129](../../evaluation/language/E-129-a-rule-or-a-macro-written-twice-the-same-is-read-once-where-the-program-imports.md),
 open, no owner), the phase's eight probes:
 
 | probe | no import | with `(import std.algebra)` |
@@ -820,7 +820,7 @@ core, a listing in the written order, which member of R a question asking for so
 stated twice keeps, the `(config …)` a run takes of several. Held by no test, as ruled. The determinism page's row is
 [§ 1.2](../../../../docs/ein/ein.rs/03-design/01-determinism-and-order.md#12-what-it-may-not-depend-on).
 
-**Where a run falls short of it today** ([L-M2.32](../findings/wrong-answers/L-M2.32-the-guarantee-of-q-m2-24-has-a-known-wrong-answer-against-it.md),
+**Where a run falls short of it today** ([L-M2.32](../../findings/wrong-answers/L-M2.32-the-guarantee-of-q-m2-24-has-a-known-wrong-answer-against-it.md),
 the register's `W8/fifo-gap-root`, M1n's): a saturation's boundary admits the rules that wait on an `absent` in their
 written order. Two rules, the only difference which is written first
 ([diff](out/s4/gap-diff.out)):
@@ -977,7 +977,7 @@ fingerprint):
 
 A description and `--count` of the hole fixture cost the core's search as before and are the clock's abort under
 `-T 5`; `--single --events` on E-132's probe still runs past its clock, the whole node's core search reading none
-([E-132](../evaluation/bounds/E-132-the-whole-nodes-core-search-reads-no-clock.md), open). The record's `compare.sh` held every pair both binaries answered to the same stdout past its
+([E-132](../../evaluation/bounds/E-132-the-whole-nodes-core-search-reads-no-clock.md), open). The record's `compare.sh` held every pair both binaries answered to the same stdout past its
 header and the same summary.
 
 
@@ -1166,11 +1166,11 @@ What waits for the user's word, from the phase:
 |---|---|---|
 | **closing the phase** | the user's word; at the close the open entries move to the milestone's ledgers | not closed |
 | [Q-M2.42](../../open_questions/kernel/Q-M2.42-are-e-104-and-e-105-fixed-before-the-benchmark-is-built.md) (milestone) | Are E-104 and E-105 fixed before the benchmark is built? | yes, by this phase; fixed. The question is open in the ledger, for the user to rule it as done |
-| [E-129](../evaluation/language/E-129-a-rule-or-a-macro-written-twice-the-same-is-read-once-where-the-program-imports.md) | a rule or a macro written twice the same is read once under an import, refused with none; two bodies refused by two different lines | open, no owner; a fix leaves Ein's semantics as they are, so a stage may make it on the user's word |
+| [E-129](../../evaluation/language/E-129-a-rule-or-a-macro-written-twice-the-same-is-read-once-where-the-program-imports.md) | a rule or a macro written twice the same is read once under an import, refused with none; two bodies refused by two different lines | open, no owner; a fix leaves Ein's semantics as they are, so a stage may make it on the user's word |
 | [Q-M2.34](../../open_questions/kernel/Q-M2.34-does-einaf-s-kernel-call-set-the-lever-that-keeps-one-justification.md) (milestone) | Does EinAf's kernel call set the lever that keeps one justification a fact? | no; since S2.2e.6 it bears on a description and `--no-search` alone ([§ 3.3](#33-s22e3-and-s22e6-the-models-zebra-program-question-by-question)) |
-| [L-M2.33](../findings/einaf/L-M2.33-a-replayed-slim-record-written-again-loses-each-calls-token-digest.md) | a replayed slim record, written again, loses each call's token digest | open; S2.5.1's by default |
+| [L-M2.33](../../findings/einaf/L-M2.33-a-replayed-slim-record-written-again-loses-each-calls-token-digest.md) | a replayed slim record, written again, loses each call's token digest | open; S2.5.1's by default |
 | a test of Q-M2.24's guarantee | a sweep of the corpus in another order | none, as ruled; waits for the user's word |
-| [E-132](../evaluation/bounds/E-132-the-whole-nodes-core-search-reads-no-clock.md) | the whole node's core search reads no clock, so under `--events` or `--dump-lattice` a run whose whole node dies on such a link runs past `-T` ([§ 3.6](#36-s22e7-a-hole-and-a-whole-node-dead-on-the-link)) | open, no owner; whether it gets a stage is the user's word |
+| [E-132](../../evaluation/bounds/E-132-the-whole-nodes-core-search-reads-no-clock.md) | the whole node's core search reads no clock, so under `--events` or `--dump-lattice` a run whose whole node dies on such a link runs past `-T` ([§ 3.6](#36-s22e7-a-hole-and-a-whole-node-dead-on-the-link)) | open, no owner; whether it gets a stage is the user's word |
 
 ## 8. What the phase found
 
@@ -1178,10 +1178,10 @@ What waits for the user's word, from the phase:
 
 | id | what | kind | status |
 |---|---|---|---|
-| [E-129](../evaluation/language/E-129-a-rule-or-a-macro-written-twice-the-same-is-read-once-where-the-program-imports.md) | a rule or a macro written twice the same is read once where the program imports, refused where it imports none | bug | open, no owner |
+| [E-129](../../evaluation/language/E-129-a-rule-or-a-macro-written-twice-the-same-is-read-once-where-the-program-imports.md) | a rule or a macro written twice the same is read once where the program imports, refused where it imports none | bug | open, no owner |
 | [E-130](../evaluation/bounds/E-130-a-question-that-prints-no-core-takes-a-dead-roots-core.md) | a question that prints no core takes a dead root's core all the same | bug | closed by S2.2e.6 (`6b359cce`) |
 | [E-131](../evaluation/bounds/E-131-two-more-cores-a-question-takes-and-prints-nowhere.md) | two more cores taken and printed nowhere: the cube's minimal holes' under a line mode, the whole node's under `-v` or `--layer-progress` | bug | closed by S2.2e.7 (`87d5db47`) |
-| [E-132](../evaluation/bounds/E-132-the-whole-nodes-core-search-reads-no-clock.md) | the whole node's core search reads no clock, so `--events` or `--dump-lattice` on a run whose whole node dies on the link runs past `-T` | bug | open, no owner |
+| [E-132](../../evaluation/bounds/E-132-the-whole-nodes-core-search-reads-no-clock.md) | the whole node's core search reads no clock, so `--events` or `--dump-lattice` on a run whose whole node dies on the link runs past `-T` | bug | open, no owner |
 
 **The milestone's entries the phase closed or changed**: [E-104](../../evaluation/language/E-104-a-relation-declared-at-a-second-count-is-refused-where-the.md)
 closed by S2.2e.1, [E-105](../../evaluation/stdlib/E-105-std-slots-lets-two-values-stated-next-to-each-other-share-a.md)
@@ -1200,8 +1200,8 @@ smallest core costs, open, F22's), [E-98](../../evaluation/bounds/E-98-the-clock
 | id | what | status |
 |---|---|---|
 | [L-M2.31](../findings/einaf/L-M2.31-einafs-recorded-model-runs-carry-the-librarys-digest.md) | EinAf's recorded model runs carried the library's digest, so a change to `stdlib/` failed three of its tests | closed by S2.2e.5 |
-| [L-M2.32](../findings/wrong-answers/L-M2.32-the-guarantee-of-q-m2-24-has-a-known-wrong-answer-against-it.md) | the guarantee of Q-M2.24 has a known wrong answer against it, `W8/fifo-gap-root` | open, a known wrong answer; the guarantee kept whole on the user's word; owner the register row's, S1n.2.1 (M1n) |
-| [L-M2.33](../findings/einaf/L-M2.33-a-replayed-slim-record-written-again-loses-each-calls-token-digest.md) | a slim record replayed and written again loses each call's token digest | open; S2.5.1's by default |
+| [L-M2.32](../../findings/wrong-answers/L-M2.32-the-guarantee-of-q-m2-24-has-a-known-wrong-answer-against-it.md) | the guarantee of Q-M2.24 has a known wrong answer against it, `W8/fifo-gap-root` | open, a known wrong answer; the guarantee kept whole on the user's word; owner the register row's, S1n.2.1 (M1n) |
+| [L-M2.33](../../findings/einaf/L-M2.33-a-replayed-slim-record-written-again-loses-each-calls-token-digest.md) | a slim record replayed and written again loses each call's token digest | open; S2.5.1's by default |
 
 **Found by this report's re-runs**: nothing that contradicts a record. Every number the records state that this
 report re-took came out the same (S2.2e.2's 55 and 32, the classes, the work on each encoding, `three-houses.ein`'s
@@ -1229,7 +1229,7 @@ module-dir condition, which now loads, has a dead root (*inconsistent*, its own 
   digest; since S2.2e.2 none that showed the catalogue replays, and they are of their time (S2.2e.5's record).
 - **P2.3**, which the phase blocks, can start on the user's word: the benchmark's attribute programs select `std.slots`
   as it now is.
-- **[E-132](../evaluation/bounds/E-132-the-whole-nodes-core-search-reads-no-clock.md)**, the whole node's core search, which reads no clock under `--events` or `--dump-lattice`:
+- **[E-132](../../evaluation/bounds/E-132-the-whole-nodes-core-search-reads-no-clock.md)**, the whole node's core search, which reads no clock under `--events` or `--dump-lattice`:
   open, the user's word whether it gets a stage. A description and `--count` of a program whose minimal hole dies on
   such a link, and `--events` or `--dump-lattice` of one whose whole node does, still cost the core's search, E-113's
   and F22's.

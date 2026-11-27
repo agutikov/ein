@@ -24,7 +24,8 @@ host, which the work has to know and nothing else holds.
 None found at the milestone's level: M2's README and [its analysis](../analysis/README.md) state no finding of this
 kind that something else does not hold (the host's, for one, is [`analysis/host.md`](../analysis/host.md)'s). Those
 below are P2.1's, moved here open at its close, 2026-11-26, and P2.2's, moved here open at its close, 2026-11-27,
-with the seven the analysis of that phase held and no ledger had (L-M2.24 to L-M2.30), filed at the same close.
+with the seven the analysis of that phase held and no ledger had (L-M2.24 to L-M2.30), filed at the same close,
+and P2.2e's two open, L-M2.32 and L-M2.33, moved here at its close, 2026-11-27.
 
 | id | finding | topic | status | owner since |
 |---|---|---|---|---|
@@ -46,6 +47,8 @@ with the seven the analysis of that phase held and no ledger had (L-M2.24 to L-M
 | [L-M2.28](model/L-M2.28-the-prompts-first-example-is-the-zebra-puzzle-s-theory-in-miniature.md) | The prompts' first example is the Zebra puzzle's theory in miniature | `model` | open | [S2.3.4](../p2.3_benchmark/s2.3.4_splits.md); [S2.2d.6](../p2.2d_formalizer_corrected/s2.2d.6_run_again_and_nearest_miss.md) |
 | [L-M2.29](model/L-M2.29-the-model-alone-solves-the-zebra-puzzle-in-its-thinking-and-names-it.md) | The model alone solves the Zebra puzzle in its thinking, names it, and prints no answer | `model` | open | [S2.2c.2](../p2.2c_decoding_and_model_alone/s2.2c.2_the_model_alone.md); [Q-M2.39](../open_questions/milestone/Q-M2.39-what-is-the-minimal-goal-s-instance-if-the-model-alone-solves-the-zebra-text.md) |
 | [L-M2.30](model/L-M2.30-modules-shown-with-no-description-were-imported-by-no-run.md) | Modules shown with no description were imported by no run | `model` | open | [S2.2d.3](../p2.2d_formalizer_corrected/s2.2d.3_entries_described.md); [Q-M2.37](../p2.2g_names_across_an_import/open_questions/kernel/Q-M2.37-where-do-a-library-s-descriptions-of-its-rules-live.md) |
+| [L-M2.32](wrong-answers/L-M2.32-the-guarantee-of-q-m2-24-has-a-known-wrong-answer-against-it.md) | The guarantee of Q-M2.24 has a known wrong answer against it, the register's `W8/fifo-gap-root` | `wrong-answers` | open, a known wrong answer; the guarantee kept whole, the user's word | the register's row's, S1n.2.1 ([M1n](../../m1n_non_monotone_programs/README.md)), since P2.2e's S2.2e.4 |
+| [L-M2.33](einaf/L-M2.33-a-replayed-slim-record-written-again-loses-each-calls-token-digest.md) | A slim record replayed and written again loses each call's token digest | `einaf` | open | the default, [S2.5.1](../p2.5_harness/s2.5.1_experiment_record.md), since P2.2e's S2.2e.5 |
 
 ## In a phase's folder
 
@@ -63,7 +66,9 @@ One line a phase whose `findings/` holds entries, so that every id is found from
   ledger**, and are filed here at the same close.
 - [P2.2b](../p2.2b_guided_thinking/findings/README.md), [P2.2c](../p2.2c_decoding_and_model_alone/findings/README.md),
   [P2.2d](../p2.2d_formalizer_corrected/findings/README.md): none yet, each planned and not started.
-- **L-M2.31 and L-M2.32 are P2.2e's**: L-M2.31 filed by S2.2e.2 on EinAf's recorded model runs and the library's
-  digest, L-M2.32 by S2.2e.4 on the guarantee of Q-M2.24 and the register's `W8/fifo-gap-root`
-  ([the phase's index](../p2.2e_kernel_fixes/findings/README.md)).
+- **L-M2.31 to L-M2.33 were P2.2e's**: L-M2.31 filed by S2.2e.2 on EinAf's recorded model runs and the library's
+  digest (closed in the phase by S2.2e.5), L-M2.32 by S2.2e.4 on the guarantee of Q-M2.24 and the register's
+  `W8/fifo-gap-root`, L-M2.33 by S2.2e.5 on a slim record written again. At the phase's close, 2026-11-27, the two
+  open moved [here](#index); L-M2.31 stays in [the phase's folder](../p2.2e_kernel_fixes/findings/README.md), which
+  M2 keeps.
 - P2.3 to P2.10: none yet.

@@ -481,7 +481,8 @@ paragraph, no register count, no measurement (the user's rule).
   ([its close](plans/m2_nl_to_ir/p2.2_formalizer/README.md#the-close-2026-11-27):
   what it left open is the milestone's ledgers', and where each of its
   results went is said there). **Four phases are planned before P2.3, and
-  P2.2e is started on the user's word**, to run to its end and stop for review:
+  P2.2e, started on the user's word, is closed on it**, its folder kept
+  ([its close](plans/m2_nl_to_ir/p2.2e_kernel_fixes/README.md#the-close-2026-11-27)):
   [P2.2b](plans/m2_nl_to_ir/p2.2b_guided_thinking/README.md),
   guided thinking; [P2.2c](plans/m2_nl_to_ir/p2.2c_decoding_and_model_alone/README.md),
   a generation that ends and the model alone;

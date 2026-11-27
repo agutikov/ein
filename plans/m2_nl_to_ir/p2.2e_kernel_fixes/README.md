@@ -1,6 +1,7 @@
 # P2.2e — Ein's two bugs, and a clock
 
-**Status:** **planned 2026-11-27** on the user's word, *"Ok I agree, do it"*, to the routing of P2.2's results at
+**Status:** **closed 2026-11-27** on the user's word, *"postpone E-132, move other open items from the phase into milestone and close p2.2e"* ([the close](#the-close-2026-11-27)).
+Its folder is kept, as M2 keeps a closed phase's. **Planned 2026-11-27** on the user's word, *"Ok I agree, do it"*, to the routing of P2.2's results at
 its close (the two bugs of Ein that P2.2 filed with no owner, fixed in a short phase before the benchmark is
 built). **Started 2026-11-27** on the user's word, *"start p2.2e"*: its stages run one by one, each in a subagent
 that commits its work, S2.2e.1 to S2.2e.4; S2.2e.4's first half to the user's ruling of
@@ -14,7 +15,7 @@ closed, E-131 filed; S2.2e.5's recording is next.
 **S2.2e.7 done 2026-11-27** (`87d5db47`): the cube's minimal holes' cores taken by a description and `--count` alone,
 the whole node's only where `--events` or `--dump-lattice` reads the run; E-131 closed, E-132 filed; the phase's gate
 is next.
-The phase stops at its end with a report for the user's review, and is not closed until the user says so.
+The phase stopped at its end with [a report](report/README.md) for the user's review, and closed on the user's word.
 **Depends on:** the kernel as it stands; [P2.2](../p2.2_formalizer/README.md), closed, for the probes that hold
 the evidence ([`zebra_formulations/probes/`](../p2.2_formalizer/zebra_formulations/probes/README.md)) and the
 model's Zebra program that shows the clock's leak.
@@ -25,6 +26,47 @@ target shape, which selects `std.slots` ([S2.3.1](../p2.3_benchmark/s2.3.1_famil
 **Ruling it rests on:** [Q-M2.16](../open_questions/kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md):
 the kernel may gain any feature and any bug fix that leaves Ein's syntax and semantics as they are.
 **The question it answers by default:** [Q-M2.42](../open_questions/kernel/Q-M2.42-are-e-104-and-e-105-fixed-before-the-benchmark-is-built.md).
+
+## The close (2026-11-27)
+
+**The user's words.** After the report: *"postpone E-132, move other open items from the phase into milestone and close p2.2e"*.
+
+**What the phase did.** Its seven stages ran to their end, each in a subagent that committed its work:
+
+| stage | ended with | Ein's commit |
+|---|---|---|
+| [S2.2e.1](s2.2e.1_declared_again_under_an_import.md) | a relation declared again loads under an import as without one; E-104 closed | `8d1f89ba` |
+| [S2.2e.2](s2.2e.2_slots_neighbours.md) | `std.slots`' pruning as its page states it: the Zebra puzzle without clue 15, 32 states over `std.slots` as over `std.bijection` (was 55); E-105 closed | `b2d8276f` |
+| [S2.2e.3](s2.2e.3_clock_and_a_dead_root.md) | the clock read inside a dead root's core search; E-126 closed | `3a5c162b` |
+| [S2.2e.4](s2.2e.4_order_and_table_rows.md) | Q-M2.24's decision, an answer does not depend on the order of a program's forms; two rows of the grammar's table; E-121 closed | `cc393635`, `e2b7c0c9` |
+| [S2.2e.5](s2.2e.5_recordings_follow_the_library.md) | EinAf's prompts carry no digest of the library and its records do; the two recorded runs recorded again; L-M2.31 closed | EinAf: `8e3c6f4a`, `969ae30d` |
+| [S2.2e.6](s2.2e.6_a_core_only_where_printed.md) | a dead root's core taken only where a question prints it: the model's Zebra program under `--single` in 0.17 s (was 72 s); E-130 closed | `6b359cce` |
+| [S2.2e.7](s2.2e.7_two_more_cores_only_where_printed.md) | the cube's minimal holes' and the whole node's cores taken only where printed; E-131 closed | `87d5db47` |
+
+Every answer of a corpus program that moved is listed in its stage's record with the reason (S2.2e.1's and
+S2.2e.2's); S2.2e.3 to S2.2e.7 moved none. [The acceptance](#acceptance), item by item, is [the report's § 1](report/README.md).
+
+**The gate** is green on the phase's last code commit's tree, `3deda3d6`: `./run_tests.sh` exited 0, every static
+check, then Ein's and EinAf's tests, 1 536 passed and none failed. **The nightly** (`./run_tests.sh --nightly`, since
+the library and the engine changed) was running at the close; its result is the line below.
+
+- The nightly: running.
+
+**What the close moved**, by the ledgers' rule (what is open to the milestone, what is closed kept here):
+
+- the two open findings to [the milestone's findings](../findings/README.md): L-M2.32 (the root race a known wrong
+  answer against Q-M2.24's guarantee, which the user kept whole; M1n's S1n.2.1) and L-M2.33 (a slim record written
+  again; S2.5.1 by default); L-M2.31, closed, stays in [`findings/`](findings/README.md);
+- the two open entries to [the milestone's evaluation](../evaluation/README.md): E-129 (a rule or a macro written
+  twice the same, read once under an import) and **E-132, postponed on the user's word** (the whole node's core
+  search reads no clock); E-130 and E-131, closed, stay in [`evaluation/`](evaluation/README.md);
+- no question: Q-M2.43, the phase's one, moved to [P2.2g](../p2.2g_names_across_an_import/README.md) when that
+  phase was planned for it;
+- [Q-M2.42](../open_questions/kernel/Q-M2.42-are-e-104-and-e-105-fixed-before-the-benchmark-is-built.md), the
+  question it answered by default, is noted with what the phase did.
+
+**What the phase unblocks.** [P2.3](../p2.3_benchmark/README.md)'s attribute programs, over `std.slots`, are no
+longer written against a rule of the library known to be wrong.
 
 ## Goal
 
