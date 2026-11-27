@@ -19,5 +19,6 @@ phase's folder.
 
 The phase closes, of the milestone's entries, [E-104](../../evaluation/language/E-104-a-relation-declared-at-a-second-count-is-refused-where-the.md)
 (S2.2e.1), [E-105](../../evaluation/stdlib/E-105-std-slots-lets-two-values-stated-next-to-each-other-share-a.md)
-(S2.2e.2) and [E-126](../../evaluation/bounds/E-126-a-root-that-dies-on-a-link-several-rules-derive-takes-its-time-past-every-clock.md)
-(S2.2e.3), each marked closed where it is.
+(S2.2e.2), [E-126](../../evaluation/bounds/E-126-a-root-that-dies-on-a-link-several-rules-derive-takes-its-time-past-every-clock.md)
+(S2.2e.3) and [E-121](../../evaluation/language/E-121-the-banked-table-of-refused-shapes-misses-two-of-the-lexer-s-token-ends.md)
+(S2.2e.4), each marked closed where it is; and of its own, E-130 (S2.2e.6) and E-131 (S2.2e.7).
