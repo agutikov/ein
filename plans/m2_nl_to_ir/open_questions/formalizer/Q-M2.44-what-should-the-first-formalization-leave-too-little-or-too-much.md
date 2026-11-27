@@ -1,6 +1,11 @@
 # Q-M2.44 — What should the first formalization leave: too little, or too much? And how does a statement carry its confidence?
 
-**Status:** open; measured by [S2.2d.7](../../p2.2d_formalizer_corrected/s2.2d.7_first_iteration_and_relaxation.md), then the user's
+**Status:** ruled by the user, 2026-11-27
+
+**Ruled by the user, 2026-11-27:** *"Q-M2.44 - agree with default, coverage first; and measured confidence is exactly
+what has to be utilized, that is the part of information that is completely not used now"*. The default is below,
+with what the ruling sets. [S2.2d.7](../../p2.2d_formalizer_corrected/s2.2d.7_first_iteration_and_relaxation.md)
+measures and builds it.
 
 **Raised 2026-11-27 by the user**, of [P2.4](../../p2.4_loop/README.md), the loop, as a question for
 [P2.2d](../../p2.2d_formalizer_corrected/README.md), the formalizer corrected:
@@ -73,8 +78,22 @@ taken out or put in anywhere is safe.
 - **Its use is an order**: which statement of a core is left out first, or which maximal set is kept, read by
   EinAf. A statement below a threshold can also be written as a hypothesis from the start.
 
-## The default, until the user rules on S2.2d.7's measurement
+## The ruling, and what it sets
 
-The first iteration aims at coverage: every sentence written, uncertain readings as alternatives. An inconsistent
-program is relaxed by cores, by EinAf with no model, in the order of the statements' measured probability, before
-the model is asked again. No keyword is added to Ein.
+**What the default was**: the first iteration aims at coverage, every sentence written and uncertain readings as
+alternatives; an inconsistent program relaxed by cores, by EinAf with no model, in the order of the statements'
+measured probability, before the model is asked again; no keyword added to Ein.
+
+**What it sets** (the coordinator's reading, which the user may correct):
+
+- **Coverage first** is the formalizer's target for its first iteration: [P2.2d](../../p2.2d_formalizer_corrected/README.md)'s
+  prompts and checks aim at it, and [S2.4.2](../../p2.4_loop/s2.4.2_repair.md) and
+  [S2.4.5](../../p2.4_loop/s2.4.5_alternatives_as_hypotheses.md) start from a program that has it.
+- **Measured confidence is used, and recorded wherever the model writes.** EinAf's model call already returns each
+  generated token's log-probability, taken from the logits before the grammar
+  ([`docs/einaf/05-model.md`](../../../../docs/einaf/05-model.md)), and no run has asked for it. From
+  [S2.2d.7](../../p2.2d_formalizer_corrected/s2.2d.7_first_iteration_and_relaxation.md) on, every generation of the
+  formalizer asks for it and its record keeps it ([S2.5.1](../../p2.5_harness/s2.5.1_experiment_record.md)), and
+  EinAf reads a statement's confidence from its tokens. That confidence orders relaxation, and where a statement's
+  confidence is low it may be written as a hypothesis from the start.
+- **The stated arm is not run**: a confidence the model writes is not what the user asked to use.

@@ -70,7 +70,6 @@ about the harness is the second kind.
 | [Q-M2.40](einaf/Q-M2.40-is-the-model-reasons-and-ein-checks-its-answer-an-arm.md) | Is *the model reasons, and Ein checks its answer* an arm? | **the user**; default: no third arm. [S2.2c.3](../p2.2c_decoding_and_model_alone/s2.2c.3_the_tool_probed.md) and [S2.4.6](../p2.4_loop/s2.4.6_ein_as_a_tool.md) bear on it |
 | [Q-M2.41](formalizer/Q-M2.41-is-a-misread-statement-repaired-before-any-theory.md) | Is a misread statement repaired before any theory? | **the user**: the principle is the user's. [S2.4.2](../p2.4_loop/s2.4.2_repair.md) carries it |
 | [Q-M2.42](kernel/Q-M2.42-are-e-104-and-e-105-fixed-before-the-benchmark-is-built.md) | Are E-104 and E-105 fixed before the benchmark is built? | **the user**; the default taken at P2.2's close: [P2.2e](../p2.2e_kernel_fixes/README.md), before P2.3 |
-| [Q-M2.44](formalizer/Q-M2.44-what-should-the-first-formalization-leave-too-little-or-too-much.md) | What should the first formalization leave: too little, or too much? And how does a statement carry its confidence? | **the user**, on [S2.2d.7](../p2.2d_formalizer_corrected/s2.2d.7_first_iteration_and_relaxation.md)'s measurement; default: coverage, uncertain readings as alternatives, relaxation by cores in the order of measured probability, no keyword of Ein |
 
 ### Ruled by the user
 
@@ -90,6 +89,7 @@ about the harness is the second kind.
 | [Q-M2.17](milestone/Q-M2.17-what-is-the-milestones-minimal-goal.md) | What is the milestone's minimal goal? | the model, *"with help of Ein or through Ein"*, solves the Zebra puzzle: *"this is a minimal goal"* |
 | [Q11](formalizer/Q11-link-grammar-value.md) | Does link-grammar enrich LLM input usefully, or is it dead weight? | 2026-11-27: *"link-grammar will not be used, any strictly pre-defined grammars will not be used"*; the input side is [P2.2f](../p2.2f_text_analysis/README.md)'s, trained networks, AMR first |
 | [Q-M2.24](kernel/Q-M2.24-does-ein-hold-that-an-answer-does-not-depend-on-the-order.md) | Does Ein hold that an answer does not depend on the order of a program's forms? | 2026-11-27: *"it already guarantees that … So for now let's state it and record as a known fact, a guarantee, so if will ever see different behaviour it would be considered a bug"*; [S2.2e.4](../p2.2e_kernel_fixes/s2.2e.4_order_and_table_rows.md) writes the decision, no test |
+| [Q-M2.44](formalizer/Q-M2.44-what-should-the-first-formalization-leave-too-little-or-too-much.md) | What should the first formalization leave: too little, or too much? And how does a statement carry its confidence? | 2026-11-27: *"agree with default, coverage first; and measured confidence is exactly what has to be utilized"*; [S2.2d.7](../p2.2d_formalizer_corrected/s2.2d.7_first_iteration_and_relaxation.md) builds it |
 
 The stage files are re-planned to these rulings (M2's README, [§ The plan as re-planned](../README.md#the-plan-as-re-planned)):
 no stage still decides a question that is ruled here.
