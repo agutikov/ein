@@ -9,7 +9,7 @@ host, which the work has to know and nothing else holds.
 
 - **An id `L-M2.<n>`**, kept and never reused (M1f's findings were `L-n`, and are the followups' now). **One sequence
   for the milestone and its phases**: a phase takes the next free id, whichever folder it files in. **The next free id
-  is L-M2.32.**
+  is L-M2.33.**
 - **One file a finding**, `<topic>/L-M2.<n>-<slug>.md`, under a topic folder: its id and title, its status (open, or
   closed and by what), where it was found and its owner, then what was found (the record's words where a record
   states it), the evidence, and what it costs.
@@ -62,6 +62,7 @@ One line a phase whose `findings/` holds entries, so that every id is found from
   ledger**, and are filed here at the same close.
 - [P2.2b](../p2.2b_guided_thinking/findings/README.md), [P2.2c](../p2.2c_decoding_and_model_alone/findings/README.md),
   [P2.2d](../p2.2d_formalizer_corrected/findings/README.md): none yet, each planned and not started.
-- **L-M2.31 is P2.2e's**, filed by S2.2e.2 on EinAf's recorded model runs and the library's digest
+- **L-M2.31 and L-M2.32 are P2.2e's**: L-M2.31 filed by S2.2e.2 on EinAf's recorded model runs and the library's
+  digest, L-M2.32 by S2.2e.4 on the guarantee of Q-M2.24 and the register's `W8/fifo-gap-root`
   ([the phase's index](../p2.2e_kernel_fixes/findings/README.md)).
 - P2.3 to P2.10: none yet.
