@@ -319,7 +319,7 @@ plans/
 │   ├── p2.2c_decoding_and_model_alone/   (3: S2.2c.1–3; a generation that ends, the model alone; planned 2026-11-27 at P2.2's close, not started)
 │   ├── p2.2d_formalizer_corrected/       (7: S2.2d.1–7, the seventh on the user's question of 2026-11-27; the one shot's formalizer corrected; planned 2026-11-27 at P2.2's close, not started)
 │   ├── p2.2e_kernel_fixes/               (7: S2.2e.1–7, the fifth on the user's choice for L-M2.31, the sixth and seventh on the user's word for E-130 and E-131; Ein's two bugs and a clock; planned 2026-11-27 at P2.2's close, started the same day)
-│   ├── p2.2f_text_analysis/              (5: S2.2f.1–4 and S2.2f.2a, the rules' arm on the user's word; the text analysed by trained networks, AMR first, the check first; planned and started 2026-11-27 on the user's word, in worktrees; S2.2f.1 and S2.2f.2 done, S2.2f.3 waits for S2.2c.1)
+│   ├── p2.2f_text_analysis/              (5: S2.2f.1–4 and S2.2f.2a, the rules' arm over AMR and spaCy on the user's word; the text analysed by trained networks, AMR first, the check first; planned and started 2026-11-27 on the user's word, in worktrees; S2.2f.1 and S2.2f.2 done, S2.2f.3 waits for S2.2c.1)
 │   ├── p2.2g_names_across_an_import/     (3: S2.2g.1–3; what a module's names are in the program that imports it, for Q-M2.43; planned 2026-11-27 on the user's word, not started)
 │   ├── p2.3_benchmark/                   Stage C   (4)
 │   ├── p2.4_loop/                        Stages E, F   (6: the filter's five and Ein as a tool)

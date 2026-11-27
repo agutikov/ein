@@ -5,7 +5,7 @@ especially AMR"*; **started the same day** on the user's word, *"start p2.2f in 
 the stage's agent or the user makes the environment, *"a, let the agent create build/nlp and start p2.2f"*. Its
 stages run one by one, each in a subagent in a git worktree of its own whose branch is merged into `master` when
 the stage ends, beside [P2.2e](../p2.2e_kernel_fixes/README.md), which runs in the main checkout. S2.2f.1 and
-S2.2f.2 run; **S2.2f.2a**, added on the user's word, runs no model and waits for nothing but the user's word; **S2.2f.3 waits** for [S2.2c.1](../p2.2c_decoding_and_model_alone/s2.2c.1_a_generation_that_ends.md),
+S2.2f.2 run; **S2.2f.2a** (AMR and spaCy read by rules), added on the user's word, runs no model and waits for nothing but the user's word; **S2.2f.3 waits** for [S2.2c.1](../p2.2c_decoding_and_model_alone/s2.2c.1_a_generation_that_ends.md),
 whose phase is not started, so the phase stops there for the user, or at S2.2f.1 if no tool passes the check.
 **Ids reserved for it while it runs beside P2.2e**, so that two branches never take one id: L-M2.40 to L-M2.49,
 Q-M2.50 to Q-M2.59, E-140 to E-149; the milestone's sequence on `master` goes on below them.
@@ -92,7 +92,7 @@ Q11's ruling: link grammar, NLTK's grammars, and any hand-written grammar of Eng
 |---|---|---|
 | [S2.2f.1](s2.2f.1_the_check.md) | **The check**: what trained parsers read right where step 1 went wrong | an environment on this host and each tool's peak GPU memory; AMR from at least two parsers and the analyses beside it on the six texts; a table, failure class by sentence, of what each reads right against the hand's step 1 and the model's; a verdict per tool. No model of the formalizer runs |
 | [S2.2f.2](s2.2f.2_the_analysis_written.md) | The analysis written for the formalizer | what passed the check, written two ways, as text for a prompt and as Ein facts the kernel loads, each node with the sentence it came from; recorded analyses EinAf's tests replay with no parser |
-| [S2.2f.2a](s2.2f.2a_amr_to_step1_by_rules.md) | Step 1's facts read from AMR by Ein rules, with no model | added 2026-11-27 on the user's word (*"make a separate stage for it, before S2.2f.3"*), S2.2f.3's arm 5 taken out: rules over EinAf's facts form naming only AMR's closed vocabulary, held to it by a check; a concept as an argument and as a relation, the second through `defrel` requests EinAf turns into declarations; the six texts' programs against the hand's step 1 on the failure classes |
+| [S2.2f.2a](s2.2f.2a_parses_to_step1_by_rules.md) | Step 1's facts read from the parses by Ein rules, with no model: AMR and spaCy | added 2026-11-27 on the user's word (*"make a separate stage for it, before S2.2f.3"*), S2.2f.3's arm 5 taken out, and widened to spaCy's dependency parse (*"not only AMR, also try to convert SpaCy output into S-forms and do the same"*): spaCy's parse written as S-forms; for each parse, rules over EinAf's facts naming only that parse's closed vocabulary, held to it by a check; a concept as an argument and as a relation, the second through `defrel` requests EinAf turns into declarations; the six texts' programs against the hand's step 1 on the failure classes |
 | [S2.2f.3](s2.2f.3_step1_with_the_analysis.md) | Step 1 given the analysis | step 1 on the six texts under each arm (none, AMR as text, AMR as facts, the best analysis beside it, the model's own analysis first; the rules' arm is S2.2f.2a's), held to the hand's step 1 on the failure classes; the Zebra puzzle one shot under the best arm |
 | [S2.2f.4](s2.2f.4_verdict.md) | The verdict, and what goes on | feasible or not, arm by arm, with its evidence; what S2.6.4 measures as its input-side arm, and what P2.2d and P2.2b take; the phase report |
 
@@ -138,7 +138,7 @@ the phase's `runs/` or `out/`. **An analysis that a test of EinAf replays is a t
   hand's step 1 and the model's; each tool's install, its version and its peak GPU memory are recorded.
 - Where a tool passed: the analysis is written as text and as Ein facts, the facts load under `ein solve
   --no-search`, and EinAf's tests replay the recorded analyses with no Python and no GPU.
-- S2.2f.2a's rules, held to AMR's closed vocabulary by a check, give a step-1 program for each of the six texts,
+- S2.2f.2a's rules, over AMR and over spaCy's parse, each held to its parse's closed vocabulary by a check, give a step-1 program for each of the six texts,
   read against the hand's step 1 on the failure classes.
 - S2.2f.3's arms are run on the six texts, every run recorded, and each read against the hand's step 1 on the
   failure classes; the Zebra puzzle one shot under the best arm, its answer and its outcome.
