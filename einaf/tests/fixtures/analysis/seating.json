@@ -1,0 +1,387 @@
+{
+ "schema": "einaf-analysis/1",
+ "text": "seating",
+ "text_sha256": "sha256:88a49c4d75aa525117302b22c2fc87365b38f09abda43d746ff5d1e147ecd6cc",
+ "sentences": [
+  "Ann, Bob and Cy sit in a row of three chairs.",
+  "Ann sits next to Bob.",
+  "Cy does not sit in the first chair.",
+  "Bob does not sit in the middle chair.",
+  "Who sits in the first chair?"
+ ],
+ "amr": [
+  {
+   "parser": "spring",
+   "tool": {
+    "name": "amrlib",
+    "version": "0.8.1",
+    "model": "parse_spring-v0_1_0",
+    "model_sha256": "sha256:f0dc114581411eda0051d0940156935b0102d488d1794459821578f9151f75cb",
+    "decoding": "beam search, num_beams=4, batch_size=1",
+    "versions": {
+     "torch": "2.14.1+cu130",
+     "cuda": "13.0",
+     "transformers": "4.57.6",
+     "penman": "1.3.1",
+     "amrlib": "0.8.1"
+    },
+    "compat": {
+     "generation_config": "return_dict_in_generate and output_attentions set False"
+    }
+   },
+   "aligner": {
+    "name": "amrlib's RBW aligner",
+    "kind": "rule-based",
+    "markers": "~e.N, N a token's index from 0"
+   },
+   "graphs": [
+    {
+     "n": 1,
+     "tokens": [
+      "Ann",
+      ",",
+      "Bob",
+      "and",
+      "Cy",
+      "sit",
+      "in",
+      "a",
+      "row",
+      "of",
+      "three",
+      "chairs",
+      "."
+     ],
+     "penman": "(z1 / sit-01~e.5\n      :ARG1 (z2 / and~e.3\n            :op1 (z3 / person\n                  :name (z4 / name\n                        :op1 \"Ann\"~e.0))\n            :op2 (z5 / person\n                  :name (z6 / name\n                        :op1 \"Bob\"~e.2))\n            :op3 (z7 / person\n                  :name (z8 / name\n                        :op1 \"Cy\"~e.4)))\n      :ARG2 (z9 / row~e.8\n            :consist-of (z10 / chair~e.11\n                  :quant 3~e.10)))"
+    },
+    {
+     "n": 2,
+     "tokens": [
+      "Ann",
+      "sits",
+      "next",
+      "to",
+      "Bob",
+      "."
+     ],
+     "penman": "(z1 / sit-01~e.1\n      :ARG2 (z2 / next-to~e.2\n            :op1 (z3 / person\n                  :name (z4 / name\n                        :op1 \"Bob\"~e.4))))"
+    },
+    {
+     "n": 3,
+     "tokens": [
+      "Cy",
+      "does",
+      "not",
+      "sit",
+      "in",
+      "the",
+      "first",
+      "chair",
+      "."
+     ],
+     "penman": "(z1 / sit-01~e.3\n      :polarity -~e.2\n      :ARG1 (z2 / person\n            :name (z3 / name\n                  :op1 \"Cy\"~e.0))\n      :ARG2 (z4 / chair~e.7\n            :ord (z5 / ordinal-entity\n                  :value 1)))"
+    },
+    {
+     "n": 4,
+     "tokens": [
+      "Bob",
+      "does",
+      "not",
+      "sit",
+      "in",
+      "the",
+      "middle",
+      "chair",
+      "."
+     ],
+     "penman": "(z1 / sit-01~e.3\n      :polarity -~e.2\n      :ARG1 (z2 / person\n            :name (z3 / name\n                  :op1 \"Bob\"~e.0))\n      :ARG2 (z4 / chair~e.7\n            :mod (z5 / middle~e.6)))"
+    },
+    {
+     "n": 5,
+     "tokens": [
+      "Who",
+      "sits",
+      "in",
+      "the",
+      "first",
+      "chair",
+      "?"
+     ],
+     "penman": "(z1 / sit-01~e.1\n      :ARG1 (z2 / amr-unknown)\n      :ARG2 (z3 / chair~e.5\n            :ord (z4 / ordinal-entity\n                  :value 1)))"
+    }
+   ]
+  },
+  {
+   "parser": "xfm",
+   "tool": {
+    "name": "amrlib",
+    "version": "0.8.1",
+    "model": "parse_xfm_bart_large-v0_1_0",
+    "model_sha256": "sha256:d9bdcde696e63224ba56853469689d2e22e64c324eedee6e48348e806eedd45b",
+    "decoding": "beam search, num_beams=4, batch_size=1",
+    "versions": {
+     "torch": "2.14.1+cu130",
+     "cuda": "13.0",
+     "transformers": "4.57.6",
+     "penman": "1.3.1",
+     "amrlib": "0.8.1"
+    },
+    "compat": {}
+   },
+   "aligner": {
+    "name": "amrlib's RBW aligner",
+    "kind": "rule-based",
+    "markers": "~e.N, N a token's index from 0"
+   },
+   "graphs": [
+    {
+     "n": 1,
+     "tokens": [
+      "Ann",
+      ",",
+      "Bob",
+      "and",
+      "Cy",
+      "sit",
+      "in",
+      "a",
+      "row",
+      "of",
+      "three",
+      "chairs",
+      "."
+     ],
+     "penman": "(s / sit-01~e.5\n      :ARG1 (a / and~e.3\n            :op1 (p / person\n                  :name (n / name\n                        :op1 \"Ann\"~e.0))\n            :op2 (p2 / person\n                  :name (n2 / name\n                        :op1 \"Bob\"~e.2))\n            :op3 (p3 / person\n                  :name (n3 / name\n                        :op1 \"Cy\"~e.4)))\n      :ARG2 (r / row~e.8\n            :consist-of (c / chair~e.11\n                  :quant 3~e.10)))"
+    },
+    {
+     "n": 2,
+     "tokens": [
+      "Ann",
+      "sits",
+      "next",
+      "to",
+      "Bob",
+      "."
+     ],
+     "penman": "(s / sit-01~e.1\n      :ARG1 (p / person\n            :name (n / name\n                  :op1 \"Ann\"~e.0))\n      :ARG2 (n2 / next-to~e.2\n            :op1 (p2 / person\n                  :name (n3 / name\n                        :op1 \"Bob\"~e.4))))"
+    },
+    {
+     "n": 3,
+     "tokens": [
+      "Cy",
+      "does",
+      "not",
+      "sit",
+      "in",
+      "the",
+      "first",
+      "chair",
+      "."
+     ],
+     "penman": "(s / sit-01~e.3\n      :polarity -~e.2\n      :ARG1 (p / person\n            :name (n / name\n                  :op1 \"Cy\"~e.0))\n      :ARG2 (c / chair~e.7\n            :ord (o / ordinal-entity\n                  :value 1)))"
+    },
+    {
+     "n": 4,
+     "tokens": [
+      "Bob",
+      "does",
+      "not",
+      "sit",
+      "in",
+      "the",
+      "middle",
+      "chair",
+      "."
+     ],
+     "penman": "(s / sit-01~e.3\n      :polarity -~e.2\n      :ARG1 (p / person\n            :name (n / name\n                  :op1 \"Bob\"~e.0))\n      :ARG2 (c / chair~e.7\n            :mod (m / middle~e.6)))"
+    },
+    {
+     "n": 5,
+     "tokens": [
+      "Who",
+      "sits",
+      "in",
+      "the",
+      "first",
+      "chair",
+      "?"
+     ],
+     "penman": "(s / sit-01~e.1\n      :ARG1 (a / amr-unknown)\n      :ARG2 (c / chair~e.5\n            :ord (o / ordinal-entity\n                  :value 1)))"
+    }
+   ]
+  },
+  {
+   "parser": "ibm",
+   "tool": {
+    "name": "transition-neural-parser",
+    "version": "0.5.4",
+    "model": "AMR3-structbart-L",
+    "model_sha256": "sha256:c4b47b578eb067d61e7d560f2431453ae2beb13aafe5debc13cad5d54600896b",
+    "beside": {
+     "fairseq bart.large model.pt": "sha256:d2438f464efad05c927f2c9e38a8a8358e368c4d9bfa9cbc764d70b05996f1ea"
+    },
+    "decoding": "the parser's default, beam 1",
+    "versions": {
+     "torch": "1.13.1+cu117",
+     "cuda": "11.7",
+     "fairseq": "0.10.2",
+     "penman": "1.3.1",
+     "python": "3.8.20"
+    }
+   },
+   "aligner": {
+    "name": "the parser's own alignment",
+    "kind": "learned",
+    "markers": "~N, N a token's index from 0"
+   },
+   "graphs": [
+    {
+     "n": 1,
+     "tokens": [
+      "Ann",
+      ",",
+      "Bob",
+      "and",
+      "Cy",
+      "sit",
+      "in",
+      "a",
+      "row",
+      "of",
+      "three",
+      "chairs",
+      "."
+     ],
+     "penman": "(s / sit-01~5\n    :ARG1 (a / and~3\n        :op1 (p / person~0\n            :name (n / name~0\n                :op1 \"Ann\"~0))\n        :op2 (p2 / person~2\n            :name (n2 / name~2\n                :op1 \"Bob\"~2))\n        :op3 (p3 / person~4\n            :name (n3 / name~4\n                :op1 \"Cy\"~4)))\n    :ARG2 (r / row~8\n        :consist-of (c / chair~11\n            :quant 3~10)))"
+    },
+    {
+     "n": 2,
+     "tokens": [
+      "Ann",
+      "sits",
+      "next",
+      "to",
+      "Bob",
+      "."
+     ],
+     "penman": "(s / sit-01~1\n    :ARG1 (p / person~0\n        :name (n / name~0\n            :op1 \"Ann\"~0))\n    :ARG2 (n3 / next-to~2\n        :op1 (p2 / person~4\n            :name (n2 / name~4\n                :op1 \"Bob\"~4))))"
+    },
+    {
+     "n": 3,
+     "tokens": [
+      "Cy",
+      "does",
+      "not",
+      "sit",
+      "in",
+      "the",
+      "first",
+      "chair",
+      "."
+     ],
+     "penman": "(s / sit-01~3\n    :ARG1 (p / person~0\n        :name (n / name~0\n            :op1 \"Cy\"~0))\n    :ARG2 (c / chair~7\n        :ord (o / ordinal-entity~6\n            :value 1~6))\n    :polarity -~2)"
+    },
+    {
+     "n": 4,
+     "tokens": [
+      "Bob",
+      "does",
+      "not",
+      "sit",
+      "in",
+      "the",
+      "middle",
+      "chair",
+      "."
+     ],
+     "penman": "(s / sit-01~3\n    :ARG1 (p / person~0\n        :name (n / name~0\n            :op1 \"Bob\"~0))\n    :ARG2 (c / chair~7\n        :mod (m / middle~6))\n    :polarity -~2)"
+    },
+    {
+     "n": 5,
+     "tokens": [
+      "Who",
+      "sits",
+      "in",
+      "the",
+      "first",
+      "chair",
+      "?"
+     ],
+     "penman": "(s / sit-01~1\n    :ARG1 (a / amr-unknown~0)\n    :ARG2 (c / chair~5\n        :ord (o / ordinal-entity~4\n            :value 1~4)))"
+    }
+   ]
+  }
+ ],
+ "entities": {
+  "tool": {
+   "name": "spacy",
+   "version": "3.8.18",
+   "model": "en_core_web_trf 3.8.0",
+   "pipeline": [
+    "transformer",
+    "tagger",
+    "parser",
+    "attribute_ruler",
+    "lemmatizer",
+    "ner"
+   ],
+   "device": "cpu",
+   "versions": {
+    "spacy": "3.8.18",
+    "torch": "2.14.1+cu130"
+   }
+  },
+  "sentences": [
+   [
+    {
+     "text": "Ann",
+     "label": "PERSON"
+    },
+    {
+     "text": "Bob",
+     "label": "PERSON"
+    },
+    {
+     "text": "Cy",
+     "label": "PERSON"
+    },
+    {
+     "text": "three",
+     "label": "CARDINAL"
+    }
+   ],
+   [
+    {
+     "text": "Ann",
+     "label": "PERSON"
+    },
+    {
+     "text": "Bob",
+     "label": "PERSON"
+    }
+   ],
+   [
+    {
+     "text": "Cy",
+     "label": "PERSON"
+    },
+    {
+     "text": "first",
+     "label": "ORDINAL"
+    }
+   ],
+   [
+    {
+     "text": "Bob",
+     "label": "PERSON"
+    }
+   ],
+   [
+    {
+     "text": "first",
+     "label": "ORDINAL"
+    }
+   ]
+  ]
+ }
+}

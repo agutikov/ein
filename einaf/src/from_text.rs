@@ -25,6 +25,7 @@ use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
 
+use crate::analysis::{self, AnalysisOf};
 use crate::answer::{self, Answer, Scored};
 use crate::catalogue::Catalogue;
 use crate::check::Finding as CheckFinding;
@@ -50,6 +51,9 @@ pub struct Config {
     pub module_dir: Option<PathBuf>,
     /// The answer's formatters; `false`, the kernel's lines as they stand.
     pub format: bool,
+    /// **An analysis of the text given to step 1** ([`crate::analysis`]);
+    /// `None` in the main arms, whose requests are as they were.
+    pub analysis: Option<analysis::Given>,
 }
 
 impl Default for Config {
@@ -61,6 +65,7 @@ impl Default for Config {
             },
             module_dir: None,
             format: true,
+            analysis: None,
         }
     }
 }
@@ -130,7 +135,14 @@ pub fn run(
     if let Some(dir) = &config.module_dir {
         catalogue = catalogue.with_modules(dir)?;
     }
-    let run = formalize::run_with(runtime, input, config.options, catalogue, calls);
+    let run = formalize::run_given(
+        runtime,
+        input,
+        config.options,
+        catalogue,
+        config.analysis.as_ref(),
+        calls,
+    )?;
     Ok(answer_of(run, config))
 }
 
@@ -293,6 +305,9 @@ pub struct ConfigOf {
     /// Each template the run rendered, and its digest.
     pub templates: Vec<(String, String)>,
     pub quoted: Vec<String>,
+    /// The analysis step 1 was given; absent where none was.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub analysis: Option<AnalysisOf>,
 }
 
 /// The configuration of a run.
@@ -313,6 +328,9 @@ pub fn config_of(ft: &FromText, config: &Config, calls: &[Recorded]) -> ConfigOf
         .map(|s| (s.template.clone(), s.template_sha256.clone()))
         .collect();
     templates.push((prompts::SYSTEM.file.to_string(), prompts::SYSTEM.sha256()));
+    if let Some(a) = &r.analysis {
+        templates.push((a.template.clone(), a.template_sha256.clone()));
+    }
     templates.sort();
     templates.dedup();
     ConfigOf {
@@ -333,6 +351,7 @@ pub fn config_of(ft: &FromText, config: &Config, calls: &[Recorded]) -> ConfigOf
         stdlib: r.stdlib.clone(),
         templates,
         quoted: r.quoted.clone(),
+        analysis: r.analysis.clone(),
     }
 }
 

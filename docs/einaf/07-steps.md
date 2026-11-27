@@ -68,6 +68,7 @@ record's: a prompt edit changes a digest, and a changed digest is a new experime
 |---|---|---|
 | `steps/system.v1.md` | the system message of every request: one sentence of instructions and the excerpt | `excerpt` |
 | `steps/step1.v1.md` | step 1: the statements, the answer query, the ontology partial | `examples` (each to step 1), `text`, `answer_line` |
+| `steps/step1-analysis.v1.md` | step 1 given an analysis of its text: `steps/step1.v1.md` word for word, the analysis after the text ([the text's analysis § 4](09-analysis.md#4-step-1-given-an-analysis)) | `examples`, `text`, `analysis`, `answer_line` |
 | `steps/step2.v1.md` | step 2: the ontology whole, the imports, the selection, a marker where a property is missing | `catalogue`, `examples` (to step 2), `text`, `program` (step 1's) |
 | `steps/step2b.v1.md` | step 2's second call: the rules of the property each marker names | `markers`, `catalogue`, `examples` (to step 3), `text`, `program` |
 | `steps/step3.v1.md` | step 3: the rest of the selection, the rules each after its marker, the hypothesis mechanism | `catalogue`, `examples` (to step 3), `text`, `program` |
@@ -172,11 +173,13 @@ replay naming the library it was replayed against.
 einaf steps run TEXT --out DIR --model PATH [--id ID] [--answer-line zebra|word|generic]
      [--mode steps|whole] [--no-grammar] [--request-mode thinking-off]
      [--catalogue whole|minimal] [--max-tokens N] [-T SECONDS]   # with --replay FILE in place of --model
+     [--analysis FILE [--analysis-parser P] [--analysis-form F] [--analysis-entities]]
 einaf steps check PROGRAM [--text TEXT] [--step 1|2|3] [--catalogue whole|minimal]
 einaf catalogue [--minimal] [--generated] [--grammar] [--tokens MODEL]
 ```
 
-`einaf steps run` prints a line a step (its prompt's and generation's tokens, how it stopped, its parse, its
+`--analysis FILE` gives step 1 a recorded analysis of the text by trained parsers, after the text
+([the text's analysis](09-analysis.md)); the record's `run.json` names it. `einaf steps run` prints a line a step (its prompt's and generation's tokens, how it stopped, its parse, its
 judgement at root, the writer of H, its findings) and the complete program's outcome under each question, the answer
 query's lines, and the findings by kind. `einaf steps check` prints the writer of H, the mechanism the program states
 and each finding with its form. `einaf catalogue` prints the catalogue as a prompt shows it; `--generated` the
@@ -195,6 +198,7 @@ In EinAf's gate step, with no model:
 | `steps.rs` `the_steps_by_hand_replay_through_the_steps_as_one_generation_a_step` | [the contract § 7](04-contract.md#7-the-steps-by-hand)'s texts through a run, a generation a step: the writer of H of each step, root at each step before the last, the answer, the program the hand's, the categories, and the check's findings |
 | `steps.rs` `each_hand_written_step_is_accepted_by_the_grammar_a_run_renders` | each part of the steps by hand under its step's grammar, rendered on the catalogue's entries |
 | `steps.rs` `the_check_finds_what_the_kernel_loads_in_silence` | each finding on a program that holds it, and the findings of a step 1 |
+| [`analysis.rs`](../../einaf/tests/analysis.rs) | step 1 given an analysis, and a run given none: [the text's analysis § 7](09-analysis.md#7-held-by) |
 | `steps.rs` `a_recorded_run_replays_to_the_run_it_recorded` | recorded runs of the model under [`einaf/tests/fixtures/steps/`](../../einaf/tests/fixtures/steps/), replayed: the same requests, outputs, programs, writers, findings and categories; each template's digest the record's |
 | [`prompts.rs`](../../einaf/tests/prompts.rs) | the excerpt's programs load; each template renders with its slots and no other |
 | [`contract.rs`](../../einaf/tests/contract.rs) `the_writer_of_h_the_kernel_module_reads_is_ein_show_hyps` | `einaf::kernel::root`'s writer and H's size against `ein show hyps` on every program of `einaf/contract/` |

@@ -124,7 +124,7 @@ kernel's and is not formatted.
 
 | file | what |
 |---|---|
-| `config.json` | `einaf-from-text-config/1`: the text's and the answer line's digests, the options, the module directory, the bounds, the questions asked, the kernel, the model, its runtime and context, the chat template and the sampler from the first call's envelope, the excerpt's and the catalogue's digests, `stdlib`, the library's manifest digest, which no prompt shows, each template and its digest, every program a prompt quoted |
+| `config.json` | `einaf-from-text-config/1`: the text's and the answer line's digests, the options, the module directory, the bounds, the questions asked, the kernel, the model, its runtime and context, the chat template and the sampler from the first call's envelope, the excerpt's and the catalogue's digests, `stdlib`, the library's manifest digest, which no prompt shows, each template and its digest, every program a prompt quoted; `analysis`, where step 1 was given one ([the text's analysis § 5](09-analysis.md#5-the-record)) |
 | `generations.jsonl` | every call **slim**, `einaf-call/1` (`einaf::model::Slim`): the request's digest, and the generation, its envelope whole and the answer as the model wrote it, the generated tokens' ids replaced by their digest (`tokens_sha256`); or the failure. **No request body**: replay renders the request again from the versioned prompts and finds the call by its digest |
 | `program.ein` | the complete program, as assembled |
 | `program.sidecar.json` | `einaf-sidecar/1`: each form's category with the step that wrote it, the check's findings of each step's program and the complete one's, the writer of H at each, and what step 2 changed of step 1's ontology |
@@ -146,6 +146,7 @@ einaf from-text TEXT (--model PATH | --replay FILE) [--id ID] [--answer-line zeb
      [--mode steps|whole] [--no-grammar] [--request-mode thinking-off] [--catalogue whole|minimal]
      [--module-dir DIR] [--max-tokens N] [-T SECONDS] [--seed N] [--cut keep-forms|end] [--no-format]
      [--out FILE] [--explain FILE.md] [--record DIR] [--gold-answer GOLD]
+     [--analysis FILE [--analysis-parser P] [--analysis-form F] [--analysis-entities]]
 ```
 
 **stdout is the answer**: the formatted lines, or the fixed text with what stands beneath it, indented, and the

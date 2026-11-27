@@ -14,7 +14,9 @@
 //! formalization in steps ([`einaf::formalize`]) and the contract's check,
 //! and `einaf catalogue` prints the catalogue the steps select from;
 //! `einaf from-text` runs the one shot ([`einaf::from_text`]), a text to a
-//! program and the short answer it prints. A call is answered by
+//! program and the short answer it prints; `einaf analysis` writes a
+//! text's recorded analysis by trained parsers in one of the forms step 1 is
+//! given it in ([`einaf::analysis`]). A call is answered by
 //! the model (`--model PATH` or `$EINAF_MODEL`, with the `llama` feature) or
 //! by a record (`--replay FILE`, always).
 
@@ -41,7 +43,7 @@ usage: einaf outcome FILE [QUESTION] [BOUNDS]
        einaf probe run --plan FILE --out FILE RUNTIME [--only PREFIX]...
        einaf steps run TEXT --out DIR RUNTIME [--id ID] [--answer-line zebra|word|generic]
                 [--mode steps|whole] [--no-grammar] [--request-mode thinking-off]
-                [--catalogue whole|minimal] [--max-tokens N] [-T SECONDS]
+                [--catalogue whole|minimal] [--max-tokens N] [-T SECONDS] [ANALYSIS]
        einaf steps check PROGRAM [--text TEXT] [--step 1|2|3] [--catalogue whole|minimal]
        einaf catalogue [--minimal] [--generated] [--grammar] [--tokens MODEL]
        einaf from-text TEXT RUNTIME [--id ID] [--answer-line zebra|word|generic]
@@ -49,6 +51,10 @@ usage: einaf outcome FILE [QUESTION] [BOUNDS]
                 [--catalogue whole|minimal] [--module-dir DIR] [--max-tokens N]
                 [-T SECONDS] [--seed N] [--cut keep-forms|end] [--no-format]
                 [--out FILE] [--explain FILE.md] [--record DIR] [--gold-answer GOLD]
+                [ANALYSIS]
+       einaf analysis show FILE [--parser spring|xfm|ibm] [--form penman|lines|facts]
+                [--entities] [--block]
+       einaf analysis counts FILE...
 
 outcome   the outcome of an Ein program under one question about its answer, R:
           invalid, flagged, not decided, inconsistent, incomplete, several or
@@ -113,10 +119,23 @@ from-text a text to an Ein program and the short answer it prints, one shot:
           slim, with no request body), `--gold-answer` scores the answer by
           the stand-in reader (`@undetermined`, `@contradiction`, or claims
           separated by `|`)
+analysis  a text's analysis by trained parsers, recorded in FILE
+          (einaf-analysis/1): `show` writes one parser's graphs (spring by
+          default) in one form (penman, the default: each graph as the parser
+          printed it; lines: a node a line; facts: Ein facts, a program the
+          kernel loads), `--entities` the named entities beside them,
+          `--block` as step 1's prompt holds it; `counts` each parser's
+          graphs, nodes, nodes aligned to a word, and facts
 probe     the probe of Ein written with no grammar: `plan` writes every run
           as JSON lines, `run` makes each call and judges its answer through
           the kernel, a line a run appended to --out (a run already there is
           not made again)
+
+ANALYSIS, what step 1 is given beside the text (`steps run`, `from-text`):
+  --analysis FILE        a recorded analysis of the text (einaf analysis)
+  --analysis-parser P    whose graphs: spring (the default), xfm or ibm
+  --analysis-form F      penman (the default), lines or facts
+  --analysis-entities    the named entities beside the graphs
 
 RUNTIME, what answers a call:
   --model PATH           the model's file, by the binding to llama.cpp (the
@@ -139,16 +158,18 @@ fn main() -> ExitCode {
         Some("steps") => steps_cmd::steps(&args[1..]),
         Some("catalogue") => steps_cmd::catalogue_cmd(&args[1..]),
         Some("from-text") => from_text_cmd::from_text(&args[1..]),
+        Some("analysis") => analysis_cmd::analysis(&args[1..]),
         Some("-h" | "--help") => {
             print!("{USAGE}");
             ExitCode::SUCCESS
         }
         _ => usage_error(
-            "expected a subcommand: outcome, feedback, render, generate, grammar, model, probe, steps, catalogue or from-text",
+            "expected a subcommand: outcome, feedback, render, generate, grammar, model, probe, steps, catalogue, from-text or analysis",
         ),
     }
 }
 
+mod analysis_cmd;
 mod from_text_cmd;
 mod grammar_cmd;
 mod model_cmd;

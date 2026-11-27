@@ -89,6 +89,11 @@ pub const EXCERPT: Template = template!("ein-excerpt.v2.md");
 pub const SYSTEM: Template = template!("steps/system.v1.md");
 /// Step 1: the facts, the answer query and a partial ontology.
 pub const STEP1: Template = template!("steps/step1.v1.md");
+/// **Step 1 given an analysis of its text**: step 1's template word for
+/// word, and the analysis after the text, its slot `analysis`
+/// ([`crate::analysis`]). A template of its own, so that a run with no
+/// analysis renders `steps/step1.v1.md` as before, under its digest.
+pub const STEP1_ANALYSIS: Template = template!("steps/step1-analysis.v1.md");
 /// Step 2: the complete ontology and the theory selected.
 pub const STEP2: Template = template!("steps/step2.v1.md");
 /// Step 2's second call, on a marker: the rules of the missing property.
@@ -99,7 +104,16 @@ pub const STEP3: Template = template!("steps/step3.v1.md");
 pub const WHOLE: Template = template!("steps/whole.v1.md");
 
 /// Every template of the steps, the excerpt among them.
-pub const TEMPLATES: [Template; 7] = [EXCERPT, SYSTEM, STEP1, STEP2, STEP2B, STEP3, WHOLE];
+pub const TEMPLATES: [Template; 8] = [
+    EXCERPT,
+    SYSTEM,
+    STEP1,
+    STEP1_ANALYSIS,
+    STEP2,
+    STEP2B,
+    STEP3,
+    WHOLE,
+];
 
 /// **An answer line**: what the text is asked to answer with, the same
 /// words for every arm of a family; this stage's own, by name.
