@@ -33,3 +33,9 @@ At root under every question, by S2.2.5, 2026-11-26: the model's Zebra program, 
 A formalizer that writes the generic link, as the target shape does, writes a program the kernel answers in
 milliseconds and explains, on the surfaces that explain every dead state, in minutes, and nothing in the program's
 shape says which lever to set; the one-shot and the loop read a run's feedback, whose bound has to cover it.
+
+## Since S2.2e.3
+
+The search reads the run's clock (`3a5c162b`, E-126's close): under `-T` a surface that prints every dead state's core
+ends at the clock with the clock's abort rather than running minutes past it. What the search costs with no clock
+is unchanged, and stays this entry's and F22's.

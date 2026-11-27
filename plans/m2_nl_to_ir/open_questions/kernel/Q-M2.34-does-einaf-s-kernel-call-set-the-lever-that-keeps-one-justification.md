@@ -25,3 +25,9 @@ justifications recorded, which the kernel does not have.
 **What bears on it.** The loop's budget of kernel time ([P2.4](../../p2.4_loop/README.md)); the core is what the
 feedback ladder shows ([S2.4.3](../../p2.4_loop/s2.4.3_feedback_ladder.md)), and E-125 is a core the model's
 misreading is named by, which the lever must keep naming.
+
+**Since S2.2e.3 (`3a5c162b`).** The 72 s were root's core's search, not its saturation, and the search now reads the
+clock: such a program's every question returns at the call's clock, *not decided*, rather than late. Every question
+takes root's core, though only a description and `--no-search` print it
+([E-130](../../p2.2e_kernel_fixes/evaluation/bounds/E-130-a-question-that-prints-no-core-takes-a-dead-roots-core.md));
+with that fixed, only those two questions would cost the search.

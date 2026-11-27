@@ -1,7 +1,7 @@
 # E-126 — A root that dies on a link several rules derive takes its time past every clock, unless the program sets a lever
 
 **Kind:** limit
-**Status:** open
+**Status:** closed by [S2.2e.3](../../p2.2e_kernel_fixes/s2.2e.3_clock_and_a_dead_root.md) (`3a5c162b`)
 **Filed:** by S2.2.5, 2026-11-26, on `8c2037b0`
 **Owner:** none; [E-113](E-113-a-dead-state-s-core-costs-minutes-on-a-link-re-derived-many.md)'s, of which it is the
 case at root under every question
@@ -41,3 +41,25 @@ changes which core a dead node reports and no state
 program may not hold a `(config …)` ([the contract § 1.4](../../../../docs/einaf/04-contract.md#14-what-a-program-may-not-hold)),
 so whether EinAf's call sets it is the user's question,
 [Q-M2.34](../../open_questions/kernel/Q-M2.34-does-einaf-s-kernel-call-set-the-lever-that-keeps-one-justification.md).
+
+## Closed
+
+By S2.2e.3, `3a5c162b`, 2026-11-27. **What ran past the clock was not root's saturation but root's core**: the program's
+saturation makes its 22 969 firings in 0.1 s, every justification recorded, and the 72 s are the explanation's label
+search over those justifications (`explain::contradiction_frontier`, 15 rounds of some 19 000 folds each, up to 24
+million environments a round), which the node function takes at a dead root under every question and which read no
+clock. The search now takes the deadline the node's saturation took and reads it every 4 096 units of its work, a
+fact read, a justification folded, an environment made; past it the run is the clock's abort, as anywhere
+([Q-M2.16](../../../../docs/decisions/answer/Q-M2.16-every-saturation-a-question-about-r-computes.md)). The search writes
+nothing, so a stopped one leaves nothing behind. `ein solve program.ein -T 5` returns in 5.01 s on every question,
+exit 2; EinAf's call returns at its clock, each question *not decided* with the deadline's diagnostic. With no clock
+nothing moves: the same read-out in the same 72 s, and the corpus's core searches cost what they cost, with no clock
+and with a far one ([the stage's record](../../p2.2e_kernel_fixes/s2.2e.3_clock_and_a_dead_root.md#record)). Held by
+`ein-cli/tests/bounded_saturation.rs`' `the_clock_ends_a_dead_roots_core_search` and `ein-infer/tests/explain_semantics.rs`'
+`a_deadline_stops_a_core_search_and_one_not_reached_moves_nothing`, on `ein-cli/tests/bounded/dead_link.ein`, the
+shape's smallest program; and EinAf's `outcomes.rs`' `a_dead_roots_core_search_is_not_decided_at_the_kernels_clock`.
+
+What is left is not the clock's: the search costs what it costs with no clock (E-113, F22); a question that prints no
+core takes root's all the same, so `--single` on this program is *not decided* at any clock shorter than the search,
+where it could answer at once ([E-130](../../p2.2e_kernel_fixes/evaluation/bounds/E-130-a-question-that-prints-no-core-takes-a-dead-roots-core.md));
+and whether EinAf's call sets the lever is still [Q-M2.34](../../open_questions/kernel/Q-M2.34-does-einaf-s-kernel-call-set-the-lever-that-keeps-one-justification.md).

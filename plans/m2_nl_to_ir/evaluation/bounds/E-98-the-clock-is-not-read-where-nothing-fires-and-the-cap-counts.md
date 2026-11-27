@@ -16,3 +16,8 @@
 ## What it bounds
 
 a model's program can hold the call several times its clock; a wider graph or more names, longer
+
+## Since S2.2e.3
+
+The clock is read in one more place, a dead node's core search (`3a5c162b`, E-126's close); the two works this entry
+names, a join that fires nothing and the blind enumerator building H, are as they were.
