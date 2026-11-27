@@ -20,7 +20,8 @@ hand; this page is what it finds of the kernel, kept for the iteration of Ein th
 - **One file an entry**, `<topic>/E-<n>-<slug>.md`, under the topic it is about: its id and its bold sentence as
   the title; its kind, its status (open, or closed and by what; a strength stands), where it was filed and its
   owner; then the cells of its row, each a section, as they were written. This page is the index. **The ids are one
-  sequence for the milestone and its phases**, and the next free id is **E-131**.
+  sequence for the milestone and its phases**, and the next free id is **E-131** (E-140 to E-149 are reserved for P2.2f while
+  it runs in a worktree).
 - **An entry filed by a phase lives in the phase's `evaluation/`** (every phase's folder has one) until the phase
   closes. Then, if it is open or a strength, it moves here under the same topic; a closed one stays in the phase's
   folder, which M2 keeps (P2.1's, closed before that rule, went with its folder, where `git log` keeps it).

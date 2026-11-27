@@ -121,4 +121,4 @@ same topic, and what is ruled stays in the phase's folder, which M2 keeps.
 | [P2.2e](../p2.2e_kernel_fixes/README.md) | Q-M2.43, raised by S2.2e.1, open ([its index](../p2.2e_kernel_fixes/open_questions/README.md)) |
 | [P2.3](../p2.3_benchmark/README.md) to [P2.10](../p2.10_result_artifact_demo/README.md) | none yet |
 
-**The next free id is Q-M2.45.** (Q-M2.43 is P2.2e's, in its folder; Q-M2.50 to Q-M2.59 are reserved for P2.2f while it runs in a worktree.)
+**The next free id is Q-M2.45.** (Q-M2.43 is P2.2e's, in its folder; Q-M2.50 to Q-M2.59 are reserved for P2.2f while it runs in a worktree; S2.2f.1 took Q-M2.50, in the phase's folder.)

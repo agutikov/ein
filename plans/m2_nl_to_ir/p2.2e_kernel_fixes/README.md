@@ -5,7 +5,8 @@ its close (the two bugs of Ein that P2.2 filed with no owner, fixed in a short p
 built). **Started 2026-11-27** on the user's word, *"start p2.2e"*: its stages run one by one, each in a subagent
 that commits its work, S2.2e.1 to S2.2e.4; S2.2e.4's first half to the user's ruling of
 [Q-M2.24](../open_questions/kernel/Q-M2.24-does-ein-hold-that-an-answer-does-not-depend-on-the-order.md), the same
-day: a guarantee Ein states, and no test for now.
+day: a guarantee Ein states, and no test for now. **S2.2e.6 added 2026-11-27** on the user's word, *"E-130 - yes, add
+S2.2e.6"*, for the core a question that prints none takes of a dead root; it runs before S2.2e.5's recording.
 The phase stops at its end with a report for the user's review, and is not closed until the user says so.
 **Depends on:** the kernel as it stands; [P2.2](../p2.2_formalizer/README.md), closed, for the probes that hold
 the evidence ([`zebra_formulations/probes/`](../p2.2_formalizer/zebra_formulations/probes/README.md)) and the
@@ -49,12 +50,14 @@ against the same wrong count. And a fix after a split is frozen changes content 
 | [S2.2e.3](s2.2e.3_clock_and_a_dead_root.md) | The clock, and a root that dies | where root's time goes on the model's Zebra program, and the clock read there, so that `-T` returns *not decided* within its bound; the answer of a run the clock does not stop unchanged |
 | [S2.2e.4](s2.2e.4_order_and_table_rows.md) | Two small ones: the order of a program's forms, and two rows of the table | on the user's ruling of Q-M2.24 (2026-11-27), the decision that an answer does not depend on the order of a program's forms, a guarantee, and its row of the determinism page, no test; the two shapes the banked table of refused shapes lacks |
 | [S2.2e.5](s2.2e.5_recordings_follow_the_library.md) | EinAf's recordings follow the library: the digest out of what the model sees | added 2026-11-27 on the user's choice for L-M2.31 (*"2"*): the catalogue a prompt shows carries no digest and the record does; the two recorded runs recorded again with the model, once; the probe line judged again with no model; a replay that survives a library change leaving the catalogue's text alone. EinAf only |
+| [S2.2e.6](s2.2e.6_a_core_only_where_printed.md) | A dead root's core taken only where a question prints it | added 2026-11-27 on the user's word for E-130 (*"E-130 - yes, add S2.2e.6"*): root's core taken by a description, `--no-search` and the surfaces that print a visited node's core, and by no other question; no answer and no printed byte moved; the model's Zebra program answered by `--single` in what its root costs, with no clock and under `-T 5` |
 
 ### Order
 
 S2.2e.1 and S2.2e.2 do not wait for each other; S2.2e.2 is the one P2.3 waits for. S2.2e.3 is independent of
-both. S2.2e.4's first half is the user's ruling of Q-M2.24, written down. S2.2e.5 runs last, its recording when no other
-stage holds the GPU, and the phase's gate after it.
+both. S2.2e.4's first half is the user's ruling of Q-M2.24, written down. S2.2e.6 follows S2.2e.3, whose clock it leaves as it is,
+and comes before S2.2e.5's recording, which runs the bounded call on the model's programs. S2.2e.5 runs last, its
+recording when no other stage holds the GPU, and the phase's gate after it.
 
 **Each stage is a change of Ein and runs Ein's gate**: `./run_tests.sh` on the batch's last commit, the nightly
 where a stage changes what the nightly alone reads, the generated files of the library and its pages re-run with
@@ -67,7 +70,7 @@ the rule that changed. A stage that changes a rule of the calculator runs the ba
 - With clue 15 dropped, the Zebra puzzle answers the same states over `std.slots` as over `std.bijection`, on
   every encoding the corpus has; the full puzzle still answers `Solution` on each.
 - `ein solve --single -T 5` on the model's Zebra program returns within its bound, *not decided*; with no clock it
-  answers as before.
+  answers as before. *Since S2.2e.6*: `--single` takes no core it does not print, and answers within the bound.
 - Every answer of a corpus program that moved is listed in the stage's record with the reason, and no claim is
   re-stated to a wrong answer.
 - Each fix has its decision under `docs/decisions/` where it decides something, and the entry of the evaluation it
