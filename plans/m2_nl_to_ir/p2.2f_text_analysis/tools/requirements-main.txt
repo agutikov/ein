@@ -1,0 +1,17 @@
+# The main venv's packages beside torch (setup.sh installs torch 2.14.1+cu130 first, from the CUDA 13.0 index, and
+# these under constraints-main.txt, the whole venv as S2.2f.1 ended on it).
+amrlib==0.8.1
+unidecode==1.4.0         # amrlib imports it and does not declare it
+cached-property==2.0.1   # amrlib's SPRING imports it and does not declare it
+word2number==1.1         # amrlib's rule-based aligner imports it and does not declare it
+transformers==4.57.6     # below 5: amrlib's SPRING tokenizer subclasses the slow BartTokenizer, which 5 dropped
+penman==1.3.1
+smatch==1.0.4
+spacy==3.8.18
+stanza==1.15.1
+peft==0.22.0             # Stanza's coreference model is a LoRA over XLM-RoBERTa
+wn==1.1.1                # WordNet's data for the senses (Open English WordNet), not NLTK
+sentencepiece==0.2.3     # the T5 tokenizer of the WSD model
+huggingface_hub==0.36.2
+en_core_web_trf @ https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.8.0/en_core_web_trf-3.8.0-py3-none-any.whl
+en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
