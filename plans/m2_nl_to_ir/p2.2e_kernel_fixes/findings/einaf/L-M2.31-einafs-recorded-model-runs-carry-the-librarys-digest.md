@@ -3,8 +3,10 @@
 **Status:** open
 **Found:** by [S2.2e.2](../../s2.2e.2_slots_neighbours.md), 2026-11-27, running EinAf's tests on its change of
 `std.slots` (the first change to `stdlib/` since the fixtures were recorded, 2026-11-26)
-**Owner:** none; the coordinator's and the user's, before the phase's gate (the phase's default 5 has EinAf follow
-in the same batch, and says nothing of how a recording follows)
+**Owner:** [S2.2e.5](../../s2.2e.5_recordings_follow_the_library.md), on the user's choice (2026-11-27), *"2"*, of the
+three ways the coordinator offered: (1) record the runs again with the model after every change of the library;
+(2) take the digest out of what the model sees, into the record, and record once again; (3) let a replay tolerate a
+difference of the digest alone.
 
 ## What
 

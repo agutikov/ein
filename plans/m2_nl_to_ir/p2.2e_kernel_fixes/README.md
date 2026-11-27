@@ -48,11 +48,13 @@ against the same wrong count. And a fix after a split is frozen changes content 
 | [S2.2e.2](s2.2e.2_slots_neighbours.md) | `std.slots`: two neighbours do not share a place | the pruning rules as their page states them; held by an invariance, the under-determined Zebra puzzle answered alike over `std.slots` and over `std.bijection`; a program under `tests/stdlib/slots/` for the case; every corpus answer that moves re-stated, with why |
 | [S2.2e.3](s2.2e.3_clock_and_a_dead_root.md) | The clock, and a root that dies | where root's time goes on the model's Zebra program, and the clock read there, so that `-T` returns *not decided* within its bound; the answer of a run the clock does not stop unchanged |
 | [S2.2e.4](s2.2e.4_order_and_table_rows.md) | Two small ones: the order of a program's forms, and two rows of the table | on the user's ruling of Q-M2.24 (2026-11-27), the decision that an answer does not depend on the order of a program's forms, a guarantee, and its row of the determinism page, no test; the two shapes the banked table of refused shapes lacks |
+| [S2.2e.5](s2.2e.5_recordings_follow_the_library.md) | EinAf's recordings follow the library: the digest out of what the model sees | added 2026-11-27 on the user's choice for L-M2.31 (*"2"*): the catalogue a prompt shows carries no digest and the record does; the two recorded runs recorded again with the model, once; the probe line judged again with no model; a replay that survives a library change leaving the catalogue's text alone. EinAf only |
 
 ### Order
 
 S2.2e.1 and S2.2e.2 do not wait for each other; S2.2e.2 is the one P2.3 waits for. S2.2e.3 is independent of
-both. S2.2e.4's first half is the user's ruling of Q-M2.24, written down.
+both. S2.2e.4's first half is the user's ruling of Q-M2.24, written down. S2.2e.5 runs last, its recording when no other
+stage holds the GPU, and the phase's gate after it.
 
 **Each stage is a change of Ein and runs Ein's gate**: `./run_tests.sh` on the batch's last commit, the nightly
 where a stage changes what the nightly alone reads, the generated files of the library and its pages re-run with
