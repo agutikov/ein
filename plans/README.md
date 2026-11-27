@@ -317,7 +317,7 @@ plans/
 │   ├── p2.2_formalizer/                  Stage B   (6: S2.2.0a and S2.2.1–5, under the user's notes on the steps; closed 2026-11-27, its folder kept, with its report and the analysis against its goals)
 │   ├── p2.2b_guided_thinking/            (3: S2.2b.1–3; planned 2026-11-26 on the user's word, not started)
 │   ├── p2.2c_decoding_and_model_alone/   (3: S2.2c.1–3; a generation that ends, the model alone; planned 2026-11-27 at P2.2's close, not started)
-│   ├── p2.2d_formalizer_corrected/       (6: S2.2d.1–6; the one shot's formalizer corrected; planned 2026-11-27 at P2.2's close, not started)
+│   ├── p2.2d_formalizer_corrected/       (7: S2.2d.1–7, the seventh on the user's question of 2026-11-27; the one shot's formalizer corrected; planned 2026-11-27 at P2.2's close, not started)
 │   ├── p2.2e_kernel_fixes/               (4: S2.2e.1–4; Ein's two bugs and a clock; planned 2026-11-27 at P2.2's close, started the same day)
 │   ├── p2.2f_text_analysis/              (4: S2.2f.1–4; the text analysed by trained networks, AMR first, the check first; planned and started 2026-11-27 on the user's word, in worktrees)
 │   ├── p2.3_benchmark/                   Stage C   (4)

@@ -83,15 +83,18 @@ reads that number as a result.
 | [S2.2d.4](s2.2d.4_check_findings.md) | What the check can see where the kernel is silent | findings of the contract's check for a statement whose relation is not its sentence's words, a rule that reads what it concludes where the answer has several rows, an answer that is a statement read back, a `:why` that names an arrow its declaration lacks; each measured on the recorded programs and the steps by hand, with no model |
 | [S2.2d.5](s2.2d.5_grammars_from_the_program.md) | Grammars rendered from the program | step 3's grammar offers only the mechanism the program can have; an import lists an entry's names together and no declaration takes a name an offered module has; a statement's relation an alternative a sentence; each for the cut that stands, held on the recorded outputs with no model |
 | [S2.2d.6](s2.2d.6_run_again_and_nearest_miss.md) | The prompts again, the run again, and the nearest miss | the prompts' next version (a description is not a new thing; an example with a change over time); the categories of a refused program; the plan's 29 run again, a development number; the model's Zebra program mended one defect at a time by hand, the kernel's word and the check's after each, for S2.4.3; the phase's report |
+| [S2.2d.7](s2.2d.7_first_iteration_and_relaxation.md) | What the first iteration should leave, and how a program is relaxed | the user's question, [Q-M2.44](../open_questions/formalizer/Q-M2.44-what-should-the-first-formalization-leave-too-little-or-too-much.md): the recorded programs' errors classified (omitted, wrong, extra, theory); relaxation by cores with no model; statements as hypotheses under `--maximal`; a statement's confidence measured from its tokens' probabilities and, if run, stated in the model's dialect and stripped by EinAf; no keyword of Ein. Q-M2.44 with its numbers, for the user |
 
 ### Order
 
 S2.2d.1 first: it changes what a program's answer is, which every later stage's runs and the benchmark read.
 S2.2d.2 next, since the cut decides what each step's grammar and prompt hold, and its oracle form is what S2.2d.3
 measures descriptions in. S2.2d.3 and S2.2d.4 need no model to build and do not wait for each other. S2.2d.5
-follows the cut that stands and S2.2d.4's first finding. S2.2d.6 closes the phase.
+follows the cut that stands and S2.2d.4's first finding. S2.2d.7, added 2026-11-27 on the user's question, needs
+no model but for its confidence arm and may run at any time after P2.2's records; its stated-confidence arm, if
+the user wants it, rides on S2.2d.6's run. S2.2d.6 closes the phase.
 
-**Where a stage waits for the user.** S2.2d.1 runs on Q-M2.35's ruling. S2.2d.2 ends on a question, Q-M2.36, and
+**Where a stage waits for the user.** S2.2d.1 runs on Q-M2.35's ruling. S2.2d.7 ends on a question, Q-M2.44. S2.2d.2 ends on a question, Q-M2.36, and
 the stages after it are written to hold under today's cut, which stands until the user rules. The others take the
 defaults their files state.
 

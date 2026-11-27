@@ -70,6 +70,7 @@ about the harness is the second kind.
 | [Q-M2.40](einaf/Q-M2.40-is-the-model-reasons-and-ein-checks-its-answer-an-arm.md) | Is *the model reasons, and Ein checks its answer* an arm? | **the user**; default: no third arm. [S2.2c.3](../p2.2c_decoding_and_model_alone/s2.2c.3_the_tool_probed.md) and [S2.4.6](../p2.4_loop/s2.4.6_ein_as_a_tool.md) bear on it |
 | [Q-M2.41](formalizer/Q-M2.41-is-a-misread-statement-repaired-before-any-theory.md) | Is a misread statement repaired before any theory? | **the user**: the principle is the user's. [S2.4.2](../p2.4_loop/s2.4.2_repair.md) carries it |
 | [Q-M2.42](kernel/Q-M2.42-are-e-104-and-e-105-fixed-before-the-benchmark-is-built.md) | Are E-104 and E-105 fixed before the benchmark is built? | **the user**; the default taken at P2.2's close: [P2.2e](../p2.2e_kernel_fixes/README.md), before P2.3 |
+| [Q-M2.44](formalizer/Q-M2.44-what-should-the-first-formalization-leave-too-little-or-too-much.md) | What should the first formalization leave: too little, or too much? And how does a statement carry its confidence? | **the user**, on [S2.2d.7](../p2.2d_formalizer_corrected/s2.2d.7_first_iteration_and_relaxation.md)'s measurement; default: coverage, uncertain readings as alternatives, relaxation by cores in the order of measured probability, no keyword of Ein |
 
 ### Ruled by the user
 
@@ -120,4 +121,4 @@ same topic, and what is ruled stays in the phase's folder, which M2 keeps.
 | [P2.2e](../p2.2e_kernel_fixes/README.md) | Q-M2.43, raised by S2.2e.1, open ([its index](../p2.2e_kernel_fixes/open_questions/README.md)) |
 | [P2.3](../p2.3_benchmark/README.md) to [P2.10](../p2.10_result_artifact_demo/README.md) | none yet |
 
-**The next free id is Q-M2.44.**
+**The next free id is Q-M2.45.** (Q-M2.43 is P2.2e's, in its folder; Q-M2.50 to Q-M2.59 are reserved for P2.2f while it runs in a worktree.)
