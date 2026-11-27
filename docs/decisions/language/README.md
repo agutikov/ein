@@ -85,3 +85,4 @@ macros, and the shapes the parser and the loader refuse.
 - [Q-M1f.575](Q-M1f.575-open-r-is-a-rules-whole-assert-and-open-f-stands.md) — `(open R)` is a rule’s whole `:assert`, and `(open F)` stands in a conjunction
 - [Q-M1f.593](Q-M1f.593-not-is-a-name-everywhere-but-at-a-forms-head.md) — `not` is a name everywhere but at a form's head
 - [Q-M1f.618](Q-M1f.618-absent-and-open-heading-a-fact-that-is-a-value.md) — `absent` and `open` heading a fact that is a value are names
+- [Q-M2.24](Q-M2.24-an-answer-does-not-depend-on-the-order.md) — An answer does not depend on the order a program's forms are written in

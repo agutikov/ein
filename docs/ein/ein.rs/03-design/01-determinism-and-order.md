@@ -34,6 +34,7 @@ is the problem of fixing every observable order.
 | a `(config …)` flag, a lever, an option that is not a question | `lever_invariance`: R and every line of every mode ([Q-M1e2.30](../../../decisions/answer/Q-M1e2.30-no-configuration-option-lever-or-flag-changes-r.md)) |
 | the import form | `import_invariance`: the answer once prefixes are taken off ([Q-M1f.249](../../../decisions/imports/Q-M1f.249-the-answer-does-not-depend-on-the-import-form.md)) |
 | `.ein` or `.einb` | `einb_cli`: a container's solve is its source's, byte for byte ([Q-M1a.22](../../../decisions/cli/Q-M1a.22-a-containers-solve-is-its-sources-byte-for-byte.md)) |
+| the order a program's forms are written in, in its file and in each module it imports | stated, and held by no test ([Q-M2.24](../../../decisions/language/Q-M2.24-an-answer-does-not-depend-on-the-order.md)): the answer, not what § 1.3 lets move; a run that answers two orders differently is a wrong answer, and one is known, where a rule's `absent` reads what another rule waiting on an `absent` concludes |
 
 ### 1.3 What varies, and why it may
 
@@ -44,6 +45,12 @@ is the problem of fixing every observable order.
 - **A core under another written or agenda order.** A core is an explanation
   ([Q-M1f.6](../../../decisions/answer/Q-M1f.6-a-core-is-an-explanation.md)): it may change when the rules are
   written in another order or the agenda is switched; it does not change with ids, threads or hashes.
+- **What a run says under another written order of the forms**
+  ([Q-M2.24](../../../decisions/language/Q-M2.24-an-answer-does-not-depend-on-the-order.md)): the trace, the event
+  stream and the order rules fire in, and with them a core (above); a listing kept in the written order, root's owed
+  instances among them; and which members of R a question that asks for some and not all meets first (`-n N`, a
+  line's first state), since the obligation tree branches on the owed instance written first among equals
+  ([§ 4.2](#42-the-hypothesis-set-and-the-search)).
 - **A container opened into a populated interner.** A library caller that opens a `.einb` into a `Terms` already
   holding other names gets the same answer and may get other narration
   ([Q-M1a.22](../../../decisions/cli/Q-M1a.22-a-containers-solve-is-its-sources-byte-for-byte.md)); every `ein`
