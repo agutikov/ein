@@ -105,20 +105,27 @@ whose outcome is *invalid* under every question, whose diagnostics are its findi
 [`07-diagnostics.md`](../ein/user/04-reference/07-diagnostics.md#2-errors-and-exit-codes) names, holding the line its
 `.expected` banks. [`einaf/tests/outcomes.rs`](../../einaf/tests/outcomes.rs)'s
 `a_saturation_with_no_fixpoint_is_not_decided_at_the_kernels_bound`: a program whose root has no fixpoint, and one
-whose load's judgement saturates such a root, are *not decided* under every question at the cap and at the clock.
+whose load's judgement saturates such a root, are *not decided* under every question at the cap and at the clock;
+and `a_dead_roots_core_search_is_not_decided_at_the_kernels_clock`: a root that dies on a link several rules derive,
+whose core's search runs far past the clock, is *not decided* under every question at the clock.
 
 ## 4. What the bounds do not stop
 
-The clock is read every $2^{10}$ firings and at each quiescence of a saturation, and the cap counts firings. Work that
-fires nothing between two reads of the clock, or is no saturation, is under neither, and the call returns after it,
-past its clock:
+The clock is read every $2^{10}$ firings and at each quiescence of a saturation, and every few thousand environments
+of a dead node's core search; the cap counts firings. Work that fires nothing between two reads of the clock, or is
+neither a saturation nor a core's search, is under neither, and the call returns after it, past its clock:
 
 | program | what runs past the clock |
 |---|---|
 | a join that never fires: a cycle of five edges asked of a large complete bipartite graph, which has none | the matcher, between two firings |
 | a relation of two places that nothing derives, over a few hundred names, and no hypothesis mechanism | the blind enumerator, building H, a candidate for every pair of names |
 | a term nested a few thousand deep by a rule over a chain, which a query binds | the read-out, rendering the state's facts and the query's rows, in time that grows faster than the square of the depth; the clock is not read there, so a run the clock would have stopped is answered |
-| a root that dies on a link several rules derive, its alternative justifications recorded (no `(config :record-alternative-justifications false)`): a model's Zebra puzzle that names eleven houses for five places and kinds with no member | root's saturation, past its clock: `ein solve` of it under `--single -T 5` returns after 72 s, and in 63 ms with the line; the bounded call's clock, every question's and the load's, returns as late |
+None is a program the call does not return from: it returns late.
 
-None is a program the call does not return from: it returns late. The memory of a call is not bounded by the kernel;
+**A root that dies on a link several rules derive is bounded**: a model's Zebra puzzle that names eleven houses for
+five places and kinds with no member, its alternative justifications recorded (no `(config
+:record-alternative-justifications false)`). Its saturation is short; the search for its core, over every recorded
+derivation of the link, is what runs long, 72 s under `ein solve --single` with no clock and 63 ms with the line, and
+it is taken under every question, a description's core or not. The search reads the clock, so each question of the
+call returns at its clock, *not decided*, with the deadline's diagnostic (§ 3). The memory of a call is not bounded by the kernel;
 the cap on firings bounds a runaway root's.

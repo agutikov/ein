@@ -266,6 +266,31 @@ fn a_saturation_with_no_fixpoint_is_not_decided_at_the_kernels_bound() {
     }
 }
 
+/// **A dead root's core search is under the call's clock**: Ein's
+/// `dead_link.ein`, whose root saturates in milliseconds and dies on a link
+/// several rules derive, every derivation recorded, so that the search for
+/// its core runs far past any clock set here. Under the clock, every question
+/// is *not decided*, with the deadline's diagnostic, and the call returns
+/// about when its clock says.
+#[test]
+fn a_dead_roots_core_search_is_not_decided_at_the_kernels_clock() {
+    let path = ein_corpus::repo_root().join("ein.rs/crates/ein-cli/tests/bounded/dead_link.ein");
+    let clock = Bounds {
+        clock: Some(Duration::from_millis(200)),
+        ..Bounds::default()
+    };
+    let t = std::time::Instant::now();
+    let all: Vec<Feedback> = call(Source::File(&path), &Question::ALL, clock);
+    assert!(t.elapsed() < Duration::from_secs(30), "{:?}", t.elapsed());
+    for f in &all {
+        assert!(f.fault.is_none(), "{:?}", f.fault);
+        for r in f.outcome.as_ref().expect("an outcome") {
+            assert_eq!(r.outcome, Outcome::NotDecided, "{}", r.why);
+        }
+        assert_eq!(f.diagnostics[0].kind, "deadline");
+    }
+}
+
 /// **inconsistent**: R is empty and every node is dead, under `--single`, a
 /// description and `--no-search` alike; a description carries root's core.
 #[test]
