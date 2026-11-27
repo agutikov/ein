@@ -2,8 +2,9 @@
 
 **Status:** open
 **Found:** by [S2.2f.1](../../s2.2f.1_the_check.md), 2026-11-27, in [its table](../../check/README.md#2-the-counts)
-**Owner:** [S2.2f.2](../../s2.2f.2_the_analysis_written.md), which writes what passed; [S2.2f.3](../../s2.2f.3_step1_with_the_analysis.md),
-which measures whether step 1 given it does better
+**Owner:** [S2.2f.3](../../s2.2f.3_step1_with_the_analysis.md), which measures whether step 1 given it does better;
+[S2.2f.2](../../s2.2f.2_the_analysis_written.md) wrote what passed (2026-11-27): the three AMR parsers' graphs and
+spaCy's entities, recorded for the six texts under `einaf/tests/fixtures/analysis/`, in three forms
 
 ## What
 

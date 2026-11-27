@@ -12,8 +12,10 @@ under the same topic; what is ruled stays in the phase's folder.
 
 ## Index
 
-Filed by S2.2f.1, 2026-11-27, from the phase's reserved block (Q-M2.50 to Q-M2.59; the next free is **Q-M2.51**).
+Filed by S2.2f.1 and S2.2f.2, 2026-11-27, from the phase's reserved block (Q-M2.50 to Q-M2.59; the next free is
+**Q-M2.52**).
 
 | id | question | topic | status | default that stands |
 |---|---|---|---|---|
-| [Q-M2.50](formalizer/Q-M2.50-does-q11-reach-the-rule-based-parts-of-the-trained-tools.md) | Does Q11's ruling reach the rule-based parts of the trained tools, and WordNet? | `formalizer` | open | none is a grammar of English; they stay, IBM's learned alignment preferred |
+| [Q-M2.50](formalizer/Q-M2.50-does-q11-reach-the-rule-based-parts-of-the-trained-tools.md) | Does Q11's ruling reach the rule-based parts of the trained tools, and WordNet? | `formalizer` | open | none is a grammar of English; they stay, IBM's learned alignment preferred (S2.2f.2: a form shows a node's words only from a learned aligner) |
+| [Q-M2.51](formalizer/Q-M2.51-does-every-fact-of-the-analysis-quote-its-sentence.md) | Does every fact of the analysis quote its sentence, or a sentence's facts once? | `formalizer` | open | every fact quotes it, as the plan asks |

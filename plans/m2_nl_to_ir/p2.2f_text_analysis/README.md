@@ -12,7 +12,7 @@ Q-M2.50 to Q-M2.59, E-140 to E-149; the milestone's sequence on `master` goes on
 **S2.2f.1 is done (2026-11-27)**: three AMR parsers and two UD parses run here within 4 GB of the card each and are
 right on 50 to 56 of the check's 68 cells, where the model's step 1 was right on 43 at best; they go on, and so does
 the phase, to S2.2f.2 ([the check's report](check/README.md), [the stage's record](s2.2f.1_the_check.md#record)).
-The environment is `build/nlp/` of the main checkout, made by [`tools/setup.sh`](tools/setup.sh).
+**S2.2f.2 is done (2026-11-27)**: the parsers that passed, recorded for the six texts under `einaf/tests/fixtures/analysis/`, are written for step 1 as text (PENMAN, the default, or a node a line) and as Ein facts the kernel loads and draws, and EinAf gives one to step 1 (`--analysis`), its tests replaying them with no parser and no model ([the stage's record](s2.2f.2_the_analysis_written.md#record), [the page](../../../docs/einaf/09-analysis.md)); the phase stops for the user at S2.2f.3, which waits for S2.2c.1. The environment is `build/nlp/` of the main checkout, made by [`tools/setup.sh`](tools/setup.sh).
 **Depends on:** [P2.2](../p2.2_formalizer/README.md), closed: the steps by hand of six texts
 ([`docs/einaf/04-contract.md` § 7](../../../docs/einaf/04-contract.md#7-the-steps-by-hand), `einaf/contract/`), which
 are the reference a reading is checked against, and step 1 with the model, whose failures are what this phase asks
