@@ -1,0 +1,83 @@
+# S2.2f.1's table, a cell a line: a sentence of one of the six texts and a failure class with a case in it.
+# The cells were chosen, and the two model columns judged, before any parser's output was read.
+# ref: what the hand's step 1 (einaf/contract/<text>/step1.ein) writes, the reference.
+# M1: the model's step 1 in S2.2.2's probe (T2.2.2.8: qwen3.5:4b, thinking off, no grammar, step1.off.<text>).
+# M2: the model's step 1 in S2.2.4's steps (runs/steps/<text>/step1.out.ein, under step 1's grammar; bob1 is apples' text;
+#     together was not among S2.2.4's texts: n/a).
+# Tools: xfm and spring (amrlib's two parse models), ibm (IBM's transition parser), stanza (its UD parse and entities),
+#     spacy (en_core_web_trf: UPOS, its own dependency scheme, entities), coref (Stanza's coreference across the text),
+#     wsd (WordNet senses chosen by a trained T5, with the sense's hypernyms).
+# A declaration's labels carry the kind of its argument places, as a membership does.
+# A verdict: R right, W wrong, N not carried (the analysis says nothing of it, or a kind that is no kind, `Thing`),
+#     n/a no run. A model's verdict `W|R` is wrong as the class defines it and right on the reading alone (the fault
+#     is Ein's writing, e.g. a number written as a name). A tool's `-`: its layer does not speak to the class
+#     (coref and wsd outside theirs), counted as N.
+id	text	s	class	ref	M1	M2	xfm	spring	ibm	stanza	spacy	coref	wsd	note
+a1	apples	1	number	(has Bob (n z 5) Apple Start)	W	R	R	R	R	R	R	-	-	M1: (has Bob apples), 5 a membership (instance 5 Number), out of its fact. M2: (has Bob (n z 5) Apple).
+a2	apples	1	kind	Bob a person; the five are apples	R	R	R	R	R	R	R	-	W	M1: (person Bob), apples the thing had. M2: Apple, Bob a Person by the declaration's label. WSD: Bob a former British monetary unit.
+a3	apples	2	number	(gave Bob (n z 2) Apple Alice …)	W	R	R	R	R	R	R	-	-	M1: (gave Bob Alice apples), 2 a membership. M2: (gave Bob (n z 2) Alice).
+a4	apples	2	coreference	He is Bob	R	R	N	N	N	N	N	R	-	Tools: every AMR keeps (h / he); XFM given the whole text still writes he. Stanza's coreference: He -> Bob.
+a5	apples	2	kind	the two are apples (elided); Alice a person	R	N	N	N	N	N	N	-	N	M1: apples in the fact, (person Alice). M2: (gave Bob (n z 2) Alice), the 2's kind dropped. Tools: AMR (t / thing :quant 2), IBM a bare 2; XFM given the whole text writes (a2 / apple :quant 2). WSD: Alice not in WordNet.
+a6	apples	3	question	Bob's count of apples, after the giving	R	R	R	R	R	R	R	-	-	Both ask Bob's count (M1 over `amount`, no fact of it). Neither has a moment: time is none of the classes (L-M2.18's moment left out).
+m1	more	1	number	(has Bob (n z 5) Apple Now)	W|R	R	R	R	R	R	R	-	-	M1: (has Bob apples 5), the value in its fact, a name.
+m2	more	1	kind	Bob a person; the five are apples	R	R	R	R	R	R	R	-	W	WSD: Bob a monetary unit.
+m3	more	2	number	(has Alice (n (n z 1) 2) Apple Now)	W|R	W|R	R	R	R	R	R	-	-	M1: (has Alice apples 12), a name. M2: (has Alice (n z 12) Apple), 12 as one digit, a numeral no digit table has.
+m4	more	2	kind	Alice a person; the twelve are apples	R	R	R	R	R	R	R	-	N	
+m5	more	3	question	two asks: who has more, and the difference	R	W	W	W	R	R	R	-	-	M1: (and (more ?who apples ?diff) (diff-of 5 12 ?diff)), who and by how many. M2: (and (has ?who-more (n ?diff) Apple) (gt (n ?who-more 1) (n ?who-less 1))): the difference read as a count of apples, the people put inside numerals. XFM: and(have-03 :ARG0 amr-unknown :ARG1 apple :mod more; have-quant-91 :ARG2 amr-unknown :ARG3 equal): the second ask an amount 'equal', not the difference (judgement). SPRING: no unknown for 'how many'. IBM: apple :quant more :quant amr-unknown, both asks. Stanza, spaCy: 'by how many' kept in the parse, attached to the verb or the noun (judged right).
+m6	more	3	order	more … than: who has more than whom	N	W	N	N	N	N	N	-	-	M1: (more ?who apples ?diff), no one it is more than. M2: gt over numerals made of the people's names. Tools: 'more apples', no one it is more than (as M1).
+s1	seating	1	kind	Ann, Bob, Cy persons; First, Middle, Third chairs	R	W	R	R	R	R	R	-	W	M1: the people (person …), the chairs Place by sits-in's label (a kind apart from the people's; judged right). M2: (instance Ann Chair) … beside (instance First Chair): people as chairs (L-M2.18). WSD: Bob a racing sled; Ann, Cy not in WordNet.
+s2	seating	1	number	three chairs	N	W	R	R	R	R	R	-	-	M1: no fact of the chairs, three places used. M2: six members of Chair, the three people among them.
+s3	seating	1	order	a row: the chairs by their places, first, middle, third	R	R	R	R	R	R	R	-	-	M1: First, Second, Third (relations first/second/third declared). M2: First, Middle, Third. Tools: (r / row :consist-of (c / chair :quant 3)); the places are sentences 3 and 4's (judged right, as the models').
+s4	seating	2	order	(sits-next-to Ann Bob)	N	W	R	W	R	R	R	-	-	M1: the sentence not stated (three placements in its place). M2: (sits Ann Bob), next to dropped. SPRING: (sit-01 :ARG2 (next-to :op1 Bob)), Ann dropped.
+s5	seating	2	unstated	nothing but Ann next to Bob	W	R	R	R	R	R	R	-	-	M1: (sits-in Ann First) (sits-in Bob Second) (sits-in Cy Third), each quoting this sentence.
+s6	seating	3	negation	(not (sits-in Cy First))	R	W	R	R	R	R	R	-	-	M2: (sits Cy First) (L-M2.18).
+s7	seating	3	order	the first chair: First	R	R	R	R	R	R	R	-	-	
+s8	seating	4	negation	(not (sits-in Bob Middle))	R	W	R	R	R	R	R	-	-	M2: (sits Bob Middle) (L-M2.18).
+s9	seating	4	order	the middle chair: Middle	R	R	R	R	R	R	R	-	-	M1: Second, the middle of three (judged right: the place, named by its rank).
+s10	seating	5	question	(sits-in ?who First)	R	R	R	R	R	R	R	-	-	
+t1	together	1	number	(has Bob (n z 5) Apple Start)	W	n/a	R	R	R	R	R	-	-	M1: (has Bob apples), no number anywhere.
+t2	together	1	kind	Bob a person; the five are apples	R	n/a	R	R	R	R	R	-	W	
+t3	together	2	number	(gave Bob (n z 2) Apple Alice …)	W	n/a	R	R	R	R	R	-	-	M1: (gave Bob Alice apples).
+t4	together	2	coreference	He is Bob	R	n/a	N	N	N	N	N	R	-	
+t5	together	2	kind	the two are apples (elided); Alice a person	R	n/a	N	N	N	N	N	-	N	
+t6	together	3	question	the count Bob and Alice have together, after	W	n/a	R	R	R	R	R	-	-	M1: (total-apples ?who ?amount): asks a who the question does not ask.
+t7	together	3	coreference	they are Bob and Alice	N	n/a	N	N	N	N	N	N	-	M1: they left an unknown, ?who. Tools: they unresolved; Stanza's coreference gives they a chain of its own.
+y1	youngest	1	order	(older Ann Bob)	R	R	R	R	R	R	R	-	-	M2: (is-older-than Ann Bob).
+y2	youngest	1	kind	Ann, Bob persons	R	R	R	R	R	R	R	-	W	By the declarations' labels, Person; neither writes the hand's memberships (S2.2.2's record counts them missing). WSD: Bob a monetary unit.
+y3	youngest	2	order	(older Bob Cy)	R	R	R	R	R	R	R	-	-	
+y4	youngest	2	kind	Cy a person	R	R	R	R	R	R	R	-	N	As y2.
+y5	youngest	3	question	(youngest ?who)	R	R	R	R	R	R	R	-	-	M2: (is-youngest ?who).
+z1	zebra	1	number	five houses: five things of kind House	W	R	R	R	R	R	R	-	-	M1: (five (count 5)), the number a relation and a count of nothing. M2: House1 … House5.
+z2	zebra	1	kind	the five are houses	N	R	R	R	R	R	R	-	R	M1: (relation house Place) declared, no house.
+z3	zebra	2	kind	the Englishman a man (of a nationality); red a colour, of the house	R	W	R	R	R	R	R	-	R	M1: (instance Englishman person), (instance red color). M2: RedHouse a House: a description made a thing (L-M2.24's first defect).
+z4	zebra	3	kind	the Spaniard a man; the dog a pet	R	N	R	R	R	R	N	-	R	M1: person, animal. M2: Dog a Thing (no kind; L-M2.24's third defect). spaCy: Spaniard a PROPN with no entity type.
+z5	zebra	4	voice	coffee is what is drunk, in the green house	W	W	R	R	W	W	W	-	-	M1: (drinks Coffee green), M2: (drinks Coffee GreenHouse): coffee the drinker. IBM: (drunk :domain (person :name Coffee) :location (house :name Green House)); Stanza, spaCy: drunk an adjective, coffee its subject (intoxicated).
+z6	zebra	4	kind	coffee a drink; green a colour, of the house	R	W	R	R	W	R	R	-	R	M2: Coffee a Thing, GreenHouse a House. IBM: Coffee a person, Green House a named house.
+z7	zebra	5	kind	the Ukrainian a man; tea a drink	R	N	R	R	R	W	R	-	N	M2: Tea a Thing. Stanza: a noun phrase with no verb (Ukrainian ADJ, drinks NOUN compound, tea root). WSD: Ukrainian the adjective (of Ukraine).
+z8	zebra	6	order	green immediately right of ivory, in that order	W	R	R	R	R	R	R	-	-	M1: (right-of green ivory), its declaration's :why "{?4} is immediately to the right of {?3}": reversed by its own text (judgement). SPRING: right-04 (PropBank: be located next to the right side), :ARG1 green, :ARG2 ivory. XFM, IBM: be-located-at-91 / relative-position :direction right.
+z9	zebra	6	kind	green, ivory colours, of houses	R	W	R	W	R	R	R	-	N	M2: GreenHouse, IvoryHouse Houses. SPRING: green-03 (PropBank: compatible with a healthy environment). WSD: ivory not in WordNet as an adjective.
+z10	zebra	7	name	Old Gold one name	W	R	W	W	W	R	R	-	-	M1: (owns Old Gold snails), two arguments. M2: OldGold. XFM: (gold :mod old); SPRING: smoke-02 :ARG1 (gold :mod old); IBM: smoke-02 :ARG1 gold, :rel Old. Stanza: ORG span Old Gold; spaCy: PRODUCT span.
+z11	zebra	7	kind	the smoker a man, Old Gold a cigarette, snails a pet	W	N	W	W	W	W	R	-	W	M1: (instance Old Gold smoker), a fact of three places. M2: OldGold, Snails Things. Stanza: Old Gold an ORG (judged wrong, as a company is). WSD: Gold coins made of gold.
+z12	zebra	8	voice	Kools are what is smoked, in the yellow house	W	W	R	R	R	R	R	-	-	M1: (smokes Kools yellow), M2: (smokes Kools YellowHouse): Kools the smoker. IBM: smoke-01 (PropBank: emit smoke, inhaling), not smoke-02 (smoke cigarettes); the roles right.
+z13	zebra	8	kind	Kools a cigarette; yellow a colour, of the house	W	W	N	R	W	N	N	-	N	M1: (instance Kools smoker). M2: Kools a Thing, YellowHouse a House. XFM: (k / kool), the word as its own concept (no kind). SPRING: (product :name Kools). IBM: (product :name Kool-Aid), a drink's brand. Stanza, spaCy: no entity. WSD: not in WordNet.
+z14	zebra	9	voice	milk is what is drunk, in the middle house	W	W	W	R	W	W	W	-	-	M1: (drinks Milk middle), M2: (drinks Milk MiddleHouse). XFM: (drink-01 :ARG0 milk), milk the drinker. IBM: (drunk :domain milk-02), milk-02 'exploit'. Stanza, spaCy: drunk an adjective.
+z15	zebra	9	order	the middle house: the middle place of the five	R	W	R	R	R	R	R	-	-	M1: middle. M2: MiddleHouse, a house beside the five (L-M2.24's first defect).
+z16	zebra	9	kind	milk a drink; the middle house a house	W	N	R	R	W	R	R	-	R	M1: (instance middle number). M2: Milk a Thing. IBM: milk-02. WSD: milk a dairy product, food (judged right).
+z17	zebra	10	order	the first house: the first place	R	R	R	R	R	R	R	-	-	M1: first. M2: House1.
+z18	zebra	10	kind	the Norwegian a man; the first house a house	W	R	R	R	R	R	R	-	N	M1: (instance first number). WSD: Norwegian the adjective.
+z19	zebra	11	coreference	who is the man; the man with the fox another man	R	W	R	R	R	R	R	R	-	M1: (next-to Chesterfields fox), each man by what he has. M2: (lives-in ChesterfieldsHouse FoxOwner): the first man made a house. Tools: who the man (AMR's :ARG0-of, UD's acl:relcl); the man with the fox a second man. Stanza's UD attaches the fox to next, not to the man (outside this cell). Coreference: one mention each.
+z20	zebra	11	order	the two men's houses next to each other	R	W	R	R	R	R	R	-	-	M2: lives-in, next to dropped (L-M2.24's fourth defect). IBM: (house :location-of (next-to :op1 man)), the inverse role on a symmetric relation (judged right).
+z21	zebra	11	kind	Chesterfields a cigarette (or its smoker); the fox a pet	R	N	W	W	W	W	R	-	W	M1: (instance Chesterfields smoker), its name standing for the man as it does in its fact (judged right); fox an animal. M2: Things. XFM: Chesterfield a road; SPRING: smoke-02 :location (road :name Chesterfields); IBM: a local-region; Stanza: a PERSON; spaCy: a PRODUCT. WSD: Chesterfield the statesman, and the fox Charles James Fox, the statesman.
+z22	zebra	12	voice	Kools are what is smoked; the horse what is kept	R	W	R	R	R	R	R	-	-	M1: (next-to Kools horse), no voice to get wrong (judged right). M2: (smokes Kools HorseKeeperHouse): Kools the smoker. IBM: smoke-01 again.
+z23	zebra	12	order	the two houses next to each other	R	W	R	R	R	R	R	-	-	M1: next-to. M2: next to dropped.
+z24	zebra	12	coreference	where is the house; the horse's house	R	R	R	R	W	R	R	R	-	M2: HorseKeeperHouse, the right house under a name of its own. IBM: keep-01 placed on the house where Kools are smoked, not on the house next to it.
+z25	zebra	12	kind	Kools a cigarette; the horse a pet	W	N	N	R	W	N	N	-	N	M1: (instance Kools smoker). Kools: as z13.
+z26	zebra	13	name	Lucky Strike one name; orange juice one name	W	R	R	R	R	R	R	-	-	M1: (drinks Lucky Strike orange). M2: LuckyStrike, OrangeJuice.
+z27	zebra	13	kind	the smoker a man, Lucky Strike a cigarette; orange juice a drink	W	N	W	R	W	R	R	-	W	M1: (instance Lucky Strike smoker), three places; (instance orange drink). XFM, IBM: Lucky Strike a company (judged wrong: the brand, nothing smoked by XFM; IBM's man smokes the company). SPRING: a product; Stanza, spaCy: a PRODUCT. WSD: Strike a labour strike.
+z28	zebra	14	kind	the Japanese a man; Parliaments cigarettes	W	N	W	W	W	W	W	-	W	M1: (instance Parliaments smoker), the thing smoked a smoker. AMR: (parliament), the legislature; Stanza, spaCy: Parliaments an ORG; WSD: a legislative assembly.
+z29	zebra	15	order	the Norwegian next to the blue house	R	W	R	R	R	R	R	-	-	M1: (next-to Norwegian blue). M2: (lives-in Norwegian BlueHouse), next to dropped.
+z30	zebra	15	kind	blue a colour, of the house	R	W	R	R	R	R	R	-	R	M2: BlueHouse a House.
+z31	zebra	16	question	who drinks water	R	R	R	R	R	R	R	-	-	
+z32	zebra	16	kind	water a drink	R	N	R	R	R	R	R	-	R	WSD: water the compound H2O (the liquid; its hypernyms say compound, not drink; judged right as the noun's concept).
+z33	zebra	17	question	who owns the zebra, another unknown	R	W	R	R	R	R	R	-	-	M1: a query of its own. M2: the same ?who as water's (L-M2.21).
+z34	zebra	17	kind	the zebra a pet	R	N	R	R	R	R	R	-	R	

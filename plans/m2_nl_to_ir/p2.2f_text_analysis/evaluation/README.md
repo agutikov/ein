@@ -10,4 +10,5 @@ phase's folder.
 
 ## Index
 
-None yet: the phase is planned and not started.
+None filed. S2.2f.1 (2026-11-27) wrote and ran no Ein program: what it found is of the tools and the host, in [the
+phase's findings](../findings/README.md). The block E-140 to E-149 is unused.

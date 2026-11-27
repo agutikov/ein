@@ -9,6 +9,10 @@ S2.2f.2 run; **S2.2f.3 waits** for [S2.2c.1](../p2.2c_decoding_and_model_alone/s
 whose phase is not started, so the phase stops there for the user, or at S2.2f.1 if no tool passes the check.
 **Ids reserved for it while it runs beside P2.2e**, so that two branches never take one id: L-M2.40 to L-M2.49,
 Q-M2.50 to Q-M2.59, E-140 to E-149; the milestone's sequence on `master` goes on below them.
+**S2.2f.1 is done (2026-11-27)**: three AMR parsers and two UD parses run here within 4 GB of the card each and are
+right on 50 to 56 of the check's 68 cells, where the model's step 1 was right on 43 at best; they go on, and so does
+the phase, to S2.2f.2 ([the check's report](check/README.md), [the stage's record](s2.2f.1_the_check.md#record)).
+The environment is `build/nlp/` of the main checkout, made by [`tools/setup.sh`](tools/setup.sh).
 **Depends on:** [P2.2](../p2.2_formalizer/README.md), closed: the steps by hand of six texts
 ([`docs/einaf/04-contract.md` § 7](../../../docs/einaf/04-contract.md#7-the-steps-by-hand), `einaf/contract/`), which
 are the reference a reading is checked against, and step 1 with the model, whose failures are what this phase asks

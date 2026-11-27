@@ -11,6 +11,7 @@ the model's folder and the hash of its weights, the device and torch's peak of r
 import hashlib
 import json
 import os
+import re
 import sys
 import time
 
@@ -58,10 +59,11 @@ def main():
             g = add_lemmas(graph_str, snt_key="snt")
             al = RBWAligner.from_penman_w_json(g)
             pg = al.get_penman_graph()
-            n_nodes = len(pg.instances())
-            aligned_nodes = {a for a in (al.alignments or []) if a is not None}
             text = penman.encode(pg, indent=6)
-            return text, n_nodes, len(aligned_nodes)
+            body = "\n".join(ln for ln in text.splitlines() if not ln.startswith("#"))
+            concepts = re.findall(r"\(\s*\S+\s*/\s*[^\s()~]+(~e\.[0-9,]+)?", body)
+            # a concept node is aligned where the encoded graph carries a ~e.N after its concept
+            return text, len(concepts), sum(1 for a in concepts if a)
         except Exception as e:  # noqa: BLE001
             return graph_str + f"\n# alignment failed: {type(e).__name__}: {e}", None, None
 
