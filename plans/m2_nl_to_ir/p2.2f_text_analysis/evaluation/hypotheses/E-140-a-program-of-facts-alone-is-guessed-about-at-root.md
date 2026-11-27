@@ -1,10 +1,13 @@
 # E-140 — A program of facts alone is guessed about at root
 
-**Kind:** weakness
-**Status:** open
+**Kind:** weakness, as filed; **expected behaviour**, the user's ruling
+**Status:** closed by the user's ruling, 2026-11-27: Ein works as designed, and a program that is data says
+`(solve :no-search)`, as EinAf's facts form does
 **Filed:** by [S2.2f.2](../../s2.2f.2_the_analysis_written.md), 2026-11-27, on `dd3910aa` with the stage's
 `einaf analysis`
 **Owner:** none; EinAf's facts form states `(solve :no-search)`, which takes the cost away
+
+**Ruled by the user, 2026-11-27:** *"E-140, a program made only of facts gets 84,309 guessing candidates at root unless it ends with (solve :no-search) - this is expected behaviour; E-141, ein render kb draws every one of those candidates - also expected behaviour, maybe have to print warning and add limit and flag to change it; E-143, and and or can never be names in Ein - also expected behaviour"*.
 
 ## What
 

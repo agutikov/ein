@@ -1,10 +1,18 @@
 # E-141 — `ein render kb` draws every candidate root holds
 
-**Kind:** weakness
-**Status:** open
+**Kind:** weakness, as filed; **expected behaviour**, the user's ruling, with a feature the user proposes, *maybe*
+**Status:** open, as the user's proposal only: the drawing of every candidate is as designed; a warning, a limit and
+a flag that changes it are proposed, not decided
 **Filed:** by [S2.2f.2](../../s2.2f.2_the_analysis_written.md), 2026-11-27, on `dd3910aa` with the stage's
 `einaf analysis`
-**Owner:** none
+**Owner:** none; the proposal is the iteration of Ein's to weigh with the user, and no stage of M2 builds it
+
+**Ruled by the user, 2026-11-27:** *"E-140, a program made only of facts gets 84,309 guessing candidates at root unless it ends with (solve :no-search) - this is expected behaviour; E-141, ein render kb draws every one of those candidates - also expected behaviour, maybe have to print warning and add limit and flag to change it; E-143, and and or can never be names in Ein - also expected behaviour"*.
+
+**The proposal, as the coordinator reads it** (the user may correct it): `ein render kb` prints a warning where the
+drawing passes a limit, draws to the limit, and a flag lifts the limit. Not designed here: what the limit counts
+(arrows, candidates, bytes), what is left out at it (H first, which is what grew here), and whether it is the same
+limit for every view.
 
 ## What
 
