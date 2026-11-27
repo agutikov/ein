@@ -1,0 +1,4 @@
+# IBM's transition-based AMR parser's venv (Python 3.8) beside torch 1.13.1+cu117 and torch-scatter, which setup.sh
+# installs from their own indexes; these under constraints-ibm.txt, the whole venv as S2.2f.1 ended on it.
+transition-neural-parser==0.5.4   # pins torch==1.13.1, numpy<=1.23.5, fairseq==0.10.2
+fairseq==0.10.2
