@@ -6,7 +6,7 @@
 2026-11-27; filed at the phase's close the same day
 **Owner:** [S2.2d.3](../../p2.2d_formalizer_corrected/s2.2d.3_entries_described.md), which describes an entry
 for its use and reads a described module from a directory alike;
-[Q-M2.37](../../open_questions/kernel/Q-M2.37-where-do-a-library-s-descriptions-of-its-rules-live.md), the user's
+[Q-M2.37](../../p2.2g_names_across_an_import/open_questions/kernel/Q-M2.37-where-do-a-library-s-descriptions-of-its-rules-live.md), the user's
 
 ## What
 

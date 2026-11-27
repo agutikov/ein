@@ -45,7 +45,7 @@ with the seven the analysis of that phase held and no ledger had (L-M2.24 to L-M
 | [L-M2.27](einaf/L-M2.27-a-record-s-kernel-commit-is-null.md) | A record's `kernel.commit` is `null` | `einaf` | open | [S2.5.1](../p2.5_harness/s2.5.1_experiment_record.md) |
 | [L-M2.28](model/L-M2.28-the-prompts-first-example-is-the-zebra-puzzle-s-theory-in-miniature.md) | The prompts' first example is the Zebra puzzle's theory in miniature | `model` | open | [S2.3.4](../p2.3_benchmark/s2.3.4_splits.md); [S2.2d.6](../p2.2d_formalizer_corrected/s2.2d.6_run_again_and_nearest_miss.md) |
 | [L-M2.29](model/L-M2.29-the-model-alone-solves-the-zebra-puzzle-in-its-thinking-and-names-it.md) | The model alone solves the Zebra puzzle in its thinking, names it, and prints no answer | `model` | open | [S2.2c.2](../p2.2c_decoding_and_model_alone/s2.2c.2_the_model_alone.md); [Q-M2.39](../open_questions/milestone/Q-M2.39-what-is-the-minimal-goal-s-instance-if-the-model-alone-solves-the-zebra-text.md) |
-| [L-M2.30](model/L-M2.30-modules-shown-with-no-description-were-imported-by-no-run.md) | Modules shown with no description were imported by no run | `model` | open | [S2.2d.3](../p2.2d_formalizer_corrected/s2.2d.3_entries_described.md); [Q-M2.37](../open_questions/kernel/Q-M2.37-where-do-a-library-s-descriptions-of-its-rules-live.md) |
+| [L-M2.30](model/L-M2.30-modules-shown-with-no-description-were-imported-by-no-run.md) | Modules shown with no description were imported by no run | `model` | open | [S2.2d.3](../p2.2d_formalizer_corrected/s2.2d.3_entries_described.md); [Q-M2.37](../p2.2g_names_across_an_import/open_questions/kernel/Q-M2.37-where-do-a-library-s-descriptions-of-its-rules-live.md) |
 
 ## In a phase's folder
 

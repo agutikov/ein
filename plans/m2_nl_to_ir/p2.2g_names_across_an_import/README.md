@@ -8,7 +8,10 @@ import `m.relation` - create a new phase for this question"*. **Not started**: n
 until the user says so. **Widened the same day** by the user's generic questions, filed as
 [Q-M2.45](open_questions/kernel/Q-M2.45-what-is-a-module-its-names-the-order-imports-make-and-what-is-public.md):
 *"every module has it's atoms, facts and rules; modules form a lattice with import (are they?); what and where we
-want to be feasible/exposed/public and what hidden/private"*.
+want to be feasible/exposed/public and what hidden/private"*. **[Q-M2.37](open_questions/kernel/Q-M2.37-where-do-a-library-s-descriptions-of-its-rules-live.md)
+moved in the same day**, where a library's descriptions of its rules live, on the user's word (*"maybe worth move it into plans/m2_nl_to_ir/p2.2g_names_across_an_import ?"*, and *"Ok"* to the split the coordinator proposed):
+a module's descriptions are part of its public face. The work of writing them stays in P2.2d's
+[S2.2d.3](../p2.2d_formalizer_corrected/s2.2d.3_entries_described.md).
 **Depends on:** [S2.2e.1](../p2.2e_kernel_fixes/s2.2e.1_declared_again_under_an_import.md), which closed E-104 and
 whose probes, [`a-modules-relation/`](../p2.2e_kernel_fixes/probes/a-modules-relation/), are where this starts.
 **Changes:** Ein (`ein.rs/`, `stdlib/`, `docs/ein/`, `docs/decisions/`, the corpus), **and possibly what an import
@@ -66,6 +69,9 @@ Three decisions hold to that, each pinned by a test:
   module-scoped too, or not.
 - **Q-M2.43's cases**, a program's declaration of a relation it lists, aliases or names fully, follow from the
   three above.
+- **A module's descriptions** ([Q-M2.37](open_questions/kernel/Q-M2.37-where-do-a-library-s-descriptions-of-its-rules-live.md)):
+  what a selecting fact is for and what its arguments need, said where whoever selects reads it and something keeps
+  it true. Today they are EinAf's catalogue, by hand. What is public decides what needs describing.
 
 **The user's generic questions**, filed as
 [Q-M2.45](open_questions/kernel/Q-M2.45-what-is-a-module-its-names-the-order-imports-make-and-what-is-public.md),
@@ -87,8 +93,8 @@ The starting point, in Q-M2.45's file, is what the decisions in force say:
 | ID | title | ends with |
 |---|---|---|
 | [S2.2g.1](s2.2g.1_every_name_a_module_writes.md) | Every name a module writes, today | a table: each kind of name a module writes against each import shape, what the loaded program holds, which decision says so, which test holds it; the order imports make, as the loader builds it; what of a module a program may write, state and see, today; and, counted by a script, the corpus programs and library modules a module-scoped constant or declarator, or a hidden name, would read otherwise. No change to Ein |
-| [S2.2g.2](s2.2g.2_the_users_reading_worked_out.md) | The user's reading, worked out | the user's reading written as a page, for Q-M2.45's three questions (what a module owns, the order, public and private) and Q-M2.43's cases; for each, the options, today's among them, each worked on Q-M2.43's probes and on a library program, with what loads, what each query answers, what the kernel would read, and which decisions it supersedes; the coordinator's recommendation; **stops for the user's ruling** |
-| [S2.2g.3](s2.2g.3_the_ruling_made_true.md) | The ruling made true | the decisions under `docs/decisions/`, the loader, the tests and the pages; every corpus answer that moves, with the reason; EinAf following; the gate (and the nightly). Runs only after the ruling, and only if it changes something |
+| [S2.2g.2](s2.2g.2_the_users_reading_worked_out.md) | The user's reading, worked out | the user's reading written as a page, for Q-M2.45's three questions (what a module owns, the order, public and private), Q-M2.43's cases and Q-M2.37's (where a module's descriptions live); for each, the options, today's among them, each worked on Q-M2.43's probes and on a library program, with what loads, what each query answers, what the kernel would read, and which decisions it supersedes; the coordinator's recommendation; **stops for the user's ruling** |
+| [S2.2g.3](s2.2g.3_the_ruling_made_true.md) | The ruling made true | the decisions under `docs/decisions/`, the loader, the tests and the pages; every corpus answer that moves, with the reason; EinAf following; where the ruling puts a module's descriptions in the library, S2.2d.3's moved there from EinAf's catalogue and held by the gate; the gate (and the nightly). Runs only after the ruling, and only if it changes something |
 
 ### Order
 
@@ -122,7 +128,7 @@ unless S2.2g.1 finds that P2.3's programs would read otherwise.
 
 Each is the plan's, recorded so the user can correct it; none is a ruling.
 
-1. **Q-M2.43 moves here whole**, and Q-M2.45 joins it, each with its default standing: nothing changes until the
+1. **Q-M2.43 moves here whole**, and Q-M2.45 and Q-M2.37 join it, each with its default standing: nothing changes until the
    user rules.
 2. **A phase of its own, outside the order before P2.3**, unless S2.2g.1 finds otherwise.
 3. **Today's reading is one of S2.2g.2's options**, so that the ruling can keep it.

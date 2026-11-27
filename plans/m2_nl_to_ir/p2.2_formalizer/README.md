@@ -92,7 +92,7 @@ A proposal stays a proposal: a stage that carries one says what it waits for.
 | 23 | where the model stops solving | [P2.7](../p2.7_failure_scaling_generalization/README.md)'s scaling, on [S2.3.2](../p2.3_benchmark/s2.3.2_generators.md)'s generator |
 | 24 | the minimal goal's instance | [Q-M2.39](../open_questions/milestone/Q-M2.39-what-is-the-minimal-goal-s-instance-if-the-model-alone-solves-the-zebra-text.md) |
 | 25 | the cut of the steps, measured | [S2.2d.2](../p2.2d_formalizer_corrected/s2.2d.2_the_cut.md); [Q-M2.36](../open_questions/formalizer/Q-M2.36-how-are-the-three-steps-cut.md) |
-| 26 | a rule described for its use, by the library | [S2.2d.3](../p2.2d_formalizer_corrected/s2.2d.3_entries_described.md); [Q-M2.37](../open_questions/kernel/Q-M2.37-where-do-a-library-s-descriptions-of-its-rules-live.md); [E-128](../evaluation/stdlib/E-128-a-library-cannot-say-what-a-selecting-fact-is-for-or-what-it-needs.md) |
+| 26 | a rule described for its use, by the library | [S2.2d.3](../p2.2d_formalizer_corrected/s2.2d.3_entries_described.md); [Q-M2.37](../p2.2g_names_across_an_import/open_questions/kernel/Q-M2.37-where-do-a-library-s-descriptions-of-its-rules-live.md); [E-128](../evaluation/stdlib/E-128-a-library-cannot-say-what-a-selecting-fact-is-for-or-what-it-needs.md) |
 
 ## Goal
 

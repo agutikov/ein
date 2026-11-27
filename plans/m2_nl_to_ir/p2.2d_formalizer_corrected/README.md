@@ -18,7 +18,7 @@ questions are dealt to the steps as they are cut.
 4 and 26 as one.
 **Waits on the user for:** [Q-M2.35](../open_questions/formalizer/Q-M2.35-is-there-an-answer-query-for-each-question-of-the-text.md)
 (S2.2d.1), [Q-M2.36](../open_questions/formalizer/Q-M2.36-how-are-the-three-steps-cut.md) (ruled on S2.2d.2's
-measurement), [Q-M2.37](../open_questions/kernel/Q-M2.37-where-do-a-library-s-descriptions-of-its-rules-live.md)
+measurement), [Q-M2.37](../p2.2g_names_across_an_import/open_questions/kernel/Q-M2.37-where-do-a-library-s-descriptions-of-its-rules-live.md)
 (S2.2d.3 runs under its default), [Q-M2.33](../open_questions/answer/Q-M2.33-is-a-class-with-several-rows-an-answer-of-several-values-or-the-undetermined-text.md)
 and [Q-M2.38](../open_questions/formalizer/Q-M2.38-is-a-description-abbreviated-to-its-word-or-written-as-a-term.md).
 

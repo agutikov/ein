@@ -1,9 +1,13 @@
 # Q-M2.37 — Where do a library's descriptions of its rules live?
 
-**Status:** open
+**Status:** open; **P2.2g's since 2026-11-27**, on the user's word, *"maybe worth move it into plans/m2_nl_to_ir/p2.2g_names_across_an_import ?"*, and *"Ok"* to the split the coordinator proposed: the question moves to [P2.2g](../../README.md), beside
+[Q-M2.45](Q-M2.45-what-is-a-module-its-names-the-order-imports-make-and-what-is-public.md) (what of a module is
+public), since a module's descriptions are part of its public face; the work stays in
+[S2.2d.3](../../../p2.2d_formalizer_corrected/s2.2d.3_entries_described.md), which writes the descriptions under
+this question's default, EinAf's tree, in a layout a library can take over
 
 **Raised 2026-11-27 by the user**, written up in
-[the analysis of P2.2, § 12](../../p2.2_formalizer/report/ANALYSIS.md#12-what-a-library-says-of-its-rules-to-whoever-selects-them),
+[the analysis of P2.2, § 12](../../../p2.2_formalizer/report/ANALYSIS.md#12-what-a-library-says-of-its-rules-to-whoever-selects-them),
 and filed at the phase's close the same day. The user's words:
 
 > Probably stdlib, or other lib the LLM can import, should carry NL description/documentation of existing rules
@@ -17,8 +21,8 @@ and filed at the phase's close the same day. The user's words:
 **The question.** A selector is told today what a rule *derives*: the rule's `:why`, a sentence of one firing; the
 reference page; and EinAf's catalogue, by hand. None says what a selecting fact is *for* or what its arguments
 need, and a library that is not the standard one has no description at all
-([E-128](../../evaluation/stdlib/E-128-a-library-cannot-say-what-a-selecting-fact-is-for-or-what-it-needs.md),
-[L-M2.30](../../findings/model/L-M2.30-modules-shown-with-no-description-were-imported-by-no-run.md)). Where does a
+([E-128](../../../evaluation/stdlib/E-128-a-library-cannot-say-what-a-selecting-fact-is-for-or-what-it-needs.md),
+[L-M2.30](../../../findings/model/L-M2.30-modules-shown-with-no-description-were-imported-by-no-run.md)). Where does a
 description of a rule for its use live, so that whoever selects reads it and something keeps it true?
 
 | the place | what it takes | what it costs |
@@ -32,10 +36,10 @@ description of a rule for its use live, so that whoever selects reads it and som
 library shown by its forms.
 
 **The proposal**: the third, with the first's words where they serve; the fourth written into the evaluation for
-the iteration of Ein that follows. Until the user rules, [S2.2d.3](../../p2.2d_formalizer_corrected/s2.2d.3_entries_described.md)
+the iteration of Ein that follows. Until the user rules, [S2.2d.3](../../../p2.2d_formalizer_corrected/s2.2d.3_entries_described.md)
 writes the descriptions in EinAf's own tree, where they are today, in a layout a library could take over.
 
 **What bears on it.** It is Ein's to settle and not EinAf's: the library is Ein's
-([Q-M2.16](Q-M2.16-what-of-the-kernel-may-change-inside-m2.md) lets a library change that leaves the syntax and the
-semantics as they are). [Q-M2.23](Q-M2.23-does-the-library-grow-a-reading-of-a-literal-vocabulary.md): for `top` and
+([Q-M2.16](../../../open_questions/kernel/Q-M2.16-what-of-the-kernel-may-change-inside-m2.md) lets a library change that leaves the syntax and the
+semantics as they are). [Q-M2.23](../../../open_questions/kernel/Q-M2.23-does-the-library-grow-a-reading-of-a-literal-vocabulary.md): for `top` and
 `meet` a description is the lesser repair, and one selecting fact a verb the greater.

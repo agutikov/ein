@@ -4,7 +4,7 @@
 **Status:** open
 **Filed:** at P2.2's close, 2026-11-27, from [the analysis of the phase, § 12](../../p2.2_formalizer/report/ANALYSIS.md#12-what-a-library-says-of-its-rules-to-whoever-selects-them),
 on the user's note of the same day
-**Owner:** the user, [Q-M2.37](../../open_questions/kernel/Q-M2.37-where-do-a-library-s-descriptions-of-its-rules-live.md);
+**Owner:** the user, [Q-M2.37](../../p2.2g_names_across_an_import/open_questions/kernel/Q-M2.37-where-do-a-library-s-descriptions-of-its-rules-live.md);
 EinAf's catalogue meanwhile ([S2.2d.3](../../p2.2d_formalizer_corrected/s2.2d.3_entries_described.md));
 [E-27](E-27-no-one-catalogue-says-how-each-library-property-is-spelled.md) is its neighbour, the spelling where
 this is the meaning
