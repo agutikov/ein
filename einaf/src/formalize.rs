@@ -236,6 +236,12 @@ pub struct StepRun {
     /// The template's file and its digest.
     pub template: String,
     pub template_sha256: String,
+    /// **The library the call's prompt was cut from**, `sha256:` of its
+    /// manifest (`ein --version`'s `stdlib` line), beside the prompt's
+    /// version: the record's, and no part of the prompt
+    /// ([`Catalogue::text`]). `null` where the manifest could not be read.
+    #[serde(default)]
+    pub stdlib: Option<String>,
     /// The rendered prompt's digest: the system message, a line, the user
     /// message.
     pub prompt_sha256: String,
@@ -335,6 +341,14 @@ pub struct Run {
     /// The excerpt's and the catalogue's digests, and the catalogue's size.
     pub excerpt_sha256: String,
     pub catalogue_sha256: String,
+    /// **The library the run was made against**, `sha256:` of its manifest
+    /// (`ein --version`'s `stdlib` line): the library the catalogue was read
+    /// from and every program judged against. The record's, and no part of
+    /// any prompt, so a run replays under a library that leaves the
+    /// catalogue's text as it was. `null` where the manifest could not be
+    /// read.
+    #[serde(default)]
+    pub stdlib: Option<String>,
     /// Every program a prompt quoted, from the package's root.
     pub quoted: Vec<String>,
     /// The directory of modules given beside the library, as given; `null`
@@ -618,6 +632,7 @@ pub fn run_with(
         answer_line_sha256: input.answer_line.template.sha256(),
         excerpt_sha256: prompts::EXCERPT.sha256(),
         catalogue_sha256: sha256_hex(shared.catalogue_text.as_bytes()),
+        stdlib: shared.catalogue.manifest.clone(),
         quoted,
         module_dir,
         steps: Vec::new(),
@@ -682,6 +697,7 @@ fn call(
         step: step.to_string(),
         template: template.file.to_string(),
         template_sha256: template.sha256(),
+        stdlib: shared.catalogue.manifest.clone(),
         prompt_sha256: sha256_hex(format!("{}\n{}", shared.system, user).as_bytes()),
         grammar_sha256: grammar_sha,
         digest: request.digest(),

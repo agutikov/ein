@@ -9,13 +9,13 @@
 //! rules that root fires or owes once it is selected, the writer of H the
 //! kernel reports, and the answer. The text a prompt shows is cut from the
 //! entry programs ([`Catalogue::text`]), so the model is shown what the
-//! kernel ran; EinAf's test `einaf/tests/catalogue.rs` holds every entry to
-//! what it states.
+//! kernel ran, and no digest of the library, which is the record's; EinAf's
+//! test `einaf/tests/catalogue.rs` holds every entry to what it states.
 //!
 //! **Its generated part** is [`generated`]: every module of the library the
 //! kernel resolves, each rule with its parameters, its own `:why` and what it
 //! concludes, read off the module's parse; the library's manifest digest
-//! stands at its top.
+//! stands at its top (`einaf catalogue --generated`, which no prompt shows).
 //!
 //! **It holds the library's modules and no family's own.** The whole
 //! catalogue has every entry; the minimal one ([`Size::Minimal`]) the
@@ -434,7 +434,9 @@ impl Size {
 pub struct Catalogue {
     pub size: Size,
     pub entries: Vec<Entry>,
-    /// `sha256:` of the library's manifest, `ein --version`'s `stdlib` line.
+    /// `sha256:` of the library's manifest, `ein --version`'s `stdlib` line:
+    /// the library the entries were read from, which a run's record keeps
+    /// and no prompt shows.
     pub manifest: Option<String>,
     /// The modules of a directory given beside the library; `None` in the
     /// main arms.
@@ -687,22 +689,27 @@ impl Catalogue {
         self.given.as_ref().map(|g| g.dir.as_path())
     }
 
-    /// **The catalogue as a prompt shows it**: the library's digest, how a
-    /// theory is selected, then each group's entries, each with its meaning,
-    /// its rule's own `:why`, what it gives the hypothesis mechanism, the
-    /// kernel's answer, and the entry program.
+    /// **The catalogue as a prompt shows it**: how a theory is selected,
+    /// then each group's entries, each with its meaning, its rule's own
+    /// `:why`, what it gives the hypothesis mechanism, the kernel's answer,
+    /// and the entry program.
+    ///
+    /// **It names no digest of the library**: the digest is no help to a
+    /// model, and it is the record's, beside the prompt's version (a run's
+    /// and each call's `stdlib`, [`crate::formalize::Run`]). So a recorded
+    /// run replays under any library that leaves this text as it was, and a
+    /// change to the library moves a recording only where it moves what the
+    /// model was shown.
     pub fn text(&self) -> String {
         let generated = generated();
         let mut s = String::new();
         s.push_str("# The catalogue: the theories of the standard library\n\n");
-        s.push_str(&format!(
-            "The library is {}. A program selects a theory by importing its module, listing after :symbols every \
-             short name of the module the program writes, and writing the facts that select the theory over its own \
-             relations, exactly as the entry writes them. A name the program writes and the import does not list is \
-             the program's own, and a fact of it selects nothing, in silence. Each entry is a program the kernel ran, \
-             with its answer.\n",
-            self.manifest.as_deref().unwrap_or("the library")
-        ));
+        s.push_str(
+            "A program selects a theory by importing its module, listing after :symbols every short name of the \
+             module the program writes, and writing the facts that select the theory over its own relations, exactly \
+             as the entry writes them. A name the program writes and the import does not list is the program's own, \
+             and a fact of it selects nothing, in silence. Each entry is a program the kernel ran, with its answer.\n",
+        );
         for (module, words) in GROUPS {
             let entries: Vec<&Entry> = self
                 .entries

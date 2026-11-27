@@ -287,6 +287,9 @@ pub struct ConfigOf {
     pub model: Option<serde_json::Value>,
     pub excerpt_sha256: String,
     pub catalogue_sha256: String,
+    /// The library the run was made against, `sha256:` of its manifest: the
+    /// run's `stdlib`, which no prompt shows.
+    pub stdlib: Option<String>,
     /// Each template the run rendered, and its digest.
     pub templates: Vec<(String, String)>,
     pub quoted: Vec<String>,
@@ -327,6 +330,7 @@ pub fn config_of(ft: &FromText, config: &Config, calls: &[Recorded]) -> ConfigOf
         model,
         excerpt_sha256: r.excerpt_sha256.clone(),
         catalogue_sha256: r.catalogue_sha256.clone(),
+        stdlib: r.stdlib.clone(),
         templates,
         quoted: r.quoted.clone(),
     }

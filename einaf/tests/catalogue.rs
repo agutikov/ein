@@ -4,8 +4,8 @@
 //! rules root fires or owes, the writer of H, the outcome under `--single`
 //! and the answer query's lines; every selecting fact of it active by the
 //! contract's check; the rule whose words the prompt quotes present in the
-//! generated part; and the catalogue the grammars are rendered on narrower
-//! than the library's.
+//! generated part; the text with no digest of the library; and the catalogue
+//! the grammars are rendered on narrower than the library's.
 
 use std::collections::BTreeSet;
 use std::time::Duration;
@@ -125,7 +125,18 @@ fn the_catalogue_s_text_is_cut_from_the_entry_programs() {
             e.id
         );
     }
-    assert!(whole.manifest.as_deref().is_some_and(|m| text.contains(m)));
+    // The library's digest is the record's, and no prompt shows it: a
+    // change to the library moves what the model is shown only where it
+    // moves the own words of a rule the text quotes.
+    let manifest = whole.manifest.as_deref().expect("the library's digest");
+    assert!(
+        !text.contains(manifest),
+        "the catalogue's text shows the library's digest"
+    );
+    assert!(
+        !text.contains("sha256:"),
+        "the catalogue's text shows a digest"
+    );
     assert!(minimal.entries.iter().all(|e| e.minimal()));
     assert!(minimal.entries.len() < whole.entries.len());
     assert!(minimal.text().len() < text.len());

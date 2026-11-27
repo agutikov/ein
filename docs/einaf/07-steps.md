@@ -37,14 +37,18 @@ selected, the writer of H the kernel reports, the outcome under `--single` and t
 | `std.contradiction` | the import alone: a fact beside its stored negation is a contradiction |
 | the calculator | the requests `(add X Y)`, `(sub X Y)`, `(mul X Y)`, `(div X Y)`, `(cmp X Y)`, each stated by a rule and read back from its result fact, over `std.math.decimal-arith`, `std.math.decimal` and `std.math.arith` |
 
-**The text a prompt shows** (`Catalogue::text`) is the library's manifest digest, how a theory is selected, and
-each entry: its selection, its meaning, its rule's own `:why` where a rule says it, what it gives the hypothesis
-mechanism, the kernel's answer, and the entry program less its header, so that the model is shown text the kernel
-ran. **The minimal catalogue** is the closure of `std.algebra`, its entries and the contradiction's.
+**The text a prompt shows** (`Catalogue::text`) is how a theory is selected, and each entry: its selection, its
+meaning, its rule's own `:why` where a rule says it, what it gives the hypothesis mechanism, the kernel's answer, and
+the entry program less its header, so that the model is shown text the kernel ran. **It shows no digest of the
+library**: a digest is no help to a model, and the library a run was made against is the record's (§ 5). So of a
+change to the library, a prompt sees only what moves this text, the own words of a rule an entry quotes, and a
+recorded run replays under any library that leaves the text as it was. **The minimal catalogue** is the closure of
+`std.algebra`, its entries and the contradiction's.
 
 **Its generated part** (`catalogue::generated`) is every module the kernel resolves, each rule with its parameters,
-its own `:why` and what it concludes, read off the module's parse, the manifest digest at its top; the check reads
-from it which rule is a check, and the test holds each entry's quoted rule to it.
+its own `:why` and what it concludes, read off the module's parse, the manifest digest at its top (`einaf catalogue
+--generated`, which no prompt shows); the check reads from it which rule is a check, and the test holds each entry's
+quoted rule to it.
 
 **The catalogue a step's grammar is rendered on** is narrower than the library's
 ([the grammars § 3](06-grammars.md#3-a-grammar-a-step)): the modules the entries import, each with the names the
@@ -153,12 +157,14 @@ one that names a misspelling.
 | file | what |
 |---|---|
 | `calls.jsonl` | every call, `einaf-generation/1`, a line a call: the request whole and the generation or the failure ([the model's runtime § 9](05-model.md#9-replay)) |
-| `run.json` | the run, `einaf-steps/1`: the options; the digests of the text, the answer line, the excerpt and the catalogue; every program a prompt quoted; each step's template and its digest, the rendered prompt's digest, the grammar's, the request's, the tokens, what it wrote, its parse, its markers, its program, and its judgement (each feedback object, the writer of H and root's firings counted, the check's findings and the mechanism); where the run stopped; the complete program, its judgement and its categories; what step 2 changed of step 1's ontology |
+| `run.json` | the run, `einaf-steps/1`: the options; the digests of the text, the answer line, the excerpt and the catalogue; `stdlib`, the library's manifest digest, the library the run was made against, which no prompt shows; every program a prompt quoted; each step's template and its digest, the library's digest beside them, the rendered prompt's digest, the grammar's, the request's, the tokens, what it wrote, its parse, its markers, its program, and its judgement (each feedback object, the writer of H and root's firings counted, the check's findings and the mechanism); where the run stopped; the complete program, its judgement and its categories; what step 2 changed of step 1's ontology |
 | `stepN.out.ein` | what each step wrote |
 | `program.ein` | the complete program |
 
 **A run replays**: `--replay DIR/calls.jsonl` answers each request from the record by its digest, needs no model,
-and gives the run it recorded; a template edited since is a request no record answers.
+and gives the run it recorded; a template edited since is a request no record answers, and so is a library whose
+change moves the catalogue's text. A change to the library that leaves the text alone replays, the record of the
+replay naming the library it was replayed against.
 
 ## 6. The commands
 
@@ -184,7 +190,7 @@ In EinAf's gate step, with no model:
 | test | what it holds |
 |---|---|
 | [`catalogue.rs`](../../einaf/tests/catalogue.rs) `every_entry_is_run_by_the_kernel_and_shows_its_stated_effect` | each entry program through the bounded call and `einaf::kernel::root`: its outcome and answer, the writer of H, the rules root fires or owes, every selection active by the check |
-| `catalogue.rs`, the rest | the text cut from the entry programs; the minimal catalogue; the grammars' catalogue narrower than the library's; the generated part |
+| `catalogue.rs`, the rest | the text cut from the entry programs, with no digest of the library; the minimal catalogue; the grammars' catalogue narrower than the library's; the generated part |
 | [`steps.rs`](../../einaf/tests/steps.rs) `the_examples_answer_as_their_texts_ask_under_their_steps_grammars` | each example's program answered by the kernel; each step of it accepted by its step's grammar |
 | `steps.rs` `the_steps_by_hand_replay_through_the_steps_as_one_generation_a_step` | [the contract § 7](04-contract.md#7-the-steps-by-hand)'s texts through a run, a generation a step: the writer of H of each step, root at each step before the last, the answer, the program the hand's, the categories, and the check's findings |
 | `steps.rs` `each_hand_written_step_is_accepted_by_the_grammar_a_run_renders` | each part of the steps by hand under its step's grammar, rendered on the catalogue's entries |

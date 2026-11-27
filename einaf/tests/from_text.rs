@@ -5,7 +5,9 @@
 //! each of the three forms of an import, with no numeral left a term; the
 //! reference word problem over the calculator scored right; the Zebra
 //! puzzle's steps by hand through the one shot to its answer; and a recorded
-//! run of the model, slim, replayed step by step to its program and answer.
+//! run of the model, slim, replayed step by step to its program and answer,
+//! and replayed again under a library whose digest moved and whose catalogue
+//! did not.
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -17,7 +19,7 @@ use einaf::from_text::{self, Config, FromText};
 use einaf::kernel::{self, Bounds, Part, Question, Source};
 
 use einaf::model::replay::Replay;
-use einaf::model::{Failure, Generation, Recorded, Request, Runtime};
+use einaf::model::{Failure, Generation, Recorded, Request, Runtime, sha256_hex};
 use einaf::prompts;
 
 fn package() -> PathBuf {
@@ -591,6 +593,163 @@ fn a_recorded_run_of_the_model_replays_step_by_step_from_its_slim_record() {
         seen += 1;
     }
     assert!(seen > 0, "no recorded run under {}", dir.display());
+}
+
+/// **A recorded run replays under a library whose digest moved and whose
+/// catalogue did not**: a copy of the library with a comment added to a
+/// module no entry of the catalogue imports or quotes, its manifest written
+/// again, so that its digest moves and the text a prompt shows does not.
+/// Under the copy (`$EIN_STDLIB`), `einaf catalogue` prints what it prints
+/// under the checkout's library, and each recorded run of the model, slim,
+/// replays through `einaf from-text --replay` to its program, its sidecar
+/// and its answer, every request finding its call; its record names the
+/// copy's digest, the library it was replayed against.
+#[test]
+fn a_recorded_run_replays_under_a_library_whose_digest_moved_and_whose_catalogue_did_not() {
+    let scratch = Scratch::new("library");
+    let checkout = ein_corpus::repo_root().join("stdlib");
+    let library = scratch.0.join("stdlib");
+    copy_dir(&checkout, &library);
+
+    // A comment added to a module no entry imports, its manifest line
+    // written again.
+    let module = "math/gcd.ein";
+    let path = library.join(module);
+    let mut text = std::fs::read_to_string(&path).expect("the module");
+    text.push_str(";; A comment the test adds: the module's forms are as they were.\n");
+    std::fs::write(&path, &text).expect("the module, changed");
+    let sha = sha256_hex(text.as_bytes());
+    let line = format!(
+        "{}  {module}",
+        sha.strip_prefix("sha256:").expect("a digest")
+    );
+    let manifest_path = library.join("MANIFEST.sha256");
+    let before = std::fs::read_to_string(&manifest_path).expect("the manifest");
+    let manifest: String = before
+        .lines()
+        .map(|l| {
+            if l.ends_with(&format!("  {module}")) {
+                format!("{line}\n")
+            } else {
+                format!("{l}\n")
+            }
+        })
+        .collect();
+    assert!(
+        manifest.contains(&line),
+        "{module} has no line in the manifest"
+    );
+    std::fs::write(&manifest_path, &manifest).expect("the manifest, written again");
+    let digest = sha256_hex(manifest.as_bytes());
+    assert_ne!(
+        digest,
+        sha256_hex(before.as_bytes()),
+        "the copy's digest is the checkout's"
+    );
+
+    let einaf = |stdlib: Option<&Path>, args: &[&std::ffi::OsStr]| {
+        let mut c = Command::new(env!("CARGO_BIN_EXE_einaf"));
+        c.args(args).current_dir(ein_corpus::repo_root());
+        match stdlib {
+            Some(d) => c.env("EIN_STDLIB", d),
+            None => c.env_remove("EIN_STDLIB"),
+        };
+        let out = c.output().expect("einaf runs");
+        let stdout = String::from_utf8(out.stdout).expect("UTF-8");
+        let stderr = String::from_utf8(out.stderr).expect("UTF-8");
+        assert_eq!(out.status.code(), Some(0), "einaf {args:?}:\n{stderr}");
+        stdout
+    };
+    let catalogue = [std::ffi::OsStr::new("catalogue")];
+    assert_eq!(
+        einaf(Some(&library), &catalogue),
+        einaf(None, &catalogue),
+        "the catalogue's text moved with the library's digest"
+    );
+    let generated = einaf(
+        Some(&library),
+        &[
+            std::ffi::OsStr::new("catalogue"),
+            std::ffi::OsStr::new("--generated"),
+        ],
+    );
+    assert!(
+        generated.contains(&format!("manifest {digest}\n")),
+        "einaf read another library than the copy:\n{}",
+        generated.lines().take(4).collect::<Vec<_>>().join("\n")
+    );
+
+    let dir = package().join("tests/fixtures/from_text");
+    let mut seen = 0;
+    for entry in std::fs::read_dir(&dir).expect("the fixtures") {
+        let path = entry.expect("an entry").path();
+        if !path.join("generations.jsonl").exists() {
+            continue;
+        }
+        let id = path.file_name().unwrap().to_string_lossy().into_owned();
+        let rel = |n: &str| {
+            std::fs::read_to_string(path.join(n))
+                .unwrap_or_else(|e| panic!("{}/{n}: {e}", path.display()))
+        };
+        let record = scratch.0.join(&id);
+        let mut args: Vec<std::ffi::OsString> = vec![
+            "from-text".into(),
+            path.join("text.txt").into(),
+            "--id".into(),
+            id.clone().into(),
+            "-T".into(),
+            "120".into(),
+            "--replay".into(),
+            path.join("generations.jsonl").into(),
+            "--record".into(),
+            record.clone().into(),
+        ];
+        args.extend(rel("args").split_whitespace().map(Into::into));
+        let args: Vec<&std::ffi::OsStr> = args.iter().map(|a| a.as_os_str()).collect();
+        let stdout = einaf(Some(&library), &args);
+        let again: FromText = serde_json::from_str(
+            &std::fs::read_to_string(record.join("run.json")).expect("run.json"),
+        )
+        .expect("a run");
+        for s in &again.run.steps {
+            assert_eq!(
+                s.failure, None,
+                "{id}: step {}'s request found no call under the copy",
+                s.step
+            );
+            assert_eq!(s.stdlib.as_deref(), Some(digest.as_str()), "{id}");
+        }
+        assert_eq!(
+            again.run.stdlib.as_deref(),
+            Some(digest.as_str()),
+            "{id}: the record names the library it was replayed against"
+        );
+        assert_eq!(
+            again.run.program.as_deref(),
+            Some(rel("program.ein").as_str()),
+            "{id}"
+        );
+        let recorded: from_text::Sidecar =
+            serde_json::from_str(&rel("program.sidecar.json")).expect("a sidecar");
+        assert_eq!(from_text::sidecar(&again.run), recorded, "{id}");
+        assert_eq!(stdout, rel("answer.txt"), "{id}");
+        seen += 1;
+    }
+    assert!(seen > 0, "no recorded run under {}", dir.display());
+}
+
+/// Copy a directory's files, at every depth.
+fn copy_dir(from: &Path, to: &Path) {
+    std::fs::create_dir_all(to).expect("a directory");
+    for e in std::fs::read_dir(from).expect("a directory") {
+        let p = e.expect("an entry").path();
+        let target = to.join(p.file_name().expect("a name"));
+        if p.is_dir() {
+            copy_dir(&p, &target);
+        } else {
+            std::fs::copy(&p, &target).expect("a file copied");
+        }
+    }
 }
 
 /// The recorded run's options are the default's: the one shot replays it as

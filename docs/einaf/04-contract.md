@@ -273,8 +273,8 @@ this page it implements ([the steps § 2](07-steps.md#2-the-prompts)); the tool'
    its length in the model's own tokens recorded.
 2. **The catalogue of the library**: for each theory of `std.*` a program may select, the module, the import line
    with the names it lists, the facts that activate it with their arguments, the facts it needs beside them, what it
-   gives the hypothesis mechanism, and a line of meaning from the rule's own `:why`; the library's manifest digest at
-   its top. Each entry is a program the kernel runs. **It holds the library's modules and no family's own**: a
+   gives the hypothesis mechanism, and a line of meaning from the rule's own `:why`; no digest of the library, which
+   is the record's (§ 6). Each entry is a program the kernel runs. **It holds the library's modules and no family's own**: a
    family's module is its canonical program's, so that where the library has no theory the model's synthesis is
    what is measured; offering one is the widest condition of the library ablation.
 3. **Examples: a text beside its program.** The sixteen word problems, each under its text as a comment, each stated
@@ -307,7 +307,7 @@ yet.
 | model, model version | the file's SHA-256 and what its header says of it, the binding and its llama.cpp | each call's envelope ([the model's runtime § 4](05-model.md#4-the-envelope)) |
 | system prompt hash, formalization prompt hash | the hash of each rendered prompt, one a call, and of each template it was rendered from | a run's `steps[].prompt_sha256` and `template_sha256` |
 | Ein specification version | the hash of the excerpt, and the commit it was cut at | a run's `excerpt_sha256`; the commit: nothing yet |
-| stdlib version | the hash of the catalogue, and the library's manifest digest, `ein --version`'s `stdlib` line | a run's `catalogue_sha256`; the manifest digest is the feedback object's `kernel.stdlib` and the catalogue's first line |
+| stdlib version | the hash of the catalogue, and the library's manifest digest, `ein --version`'s `stdlib` line | a run's `catalogue_sha256`; the manifest digest is a run's `stdlib`, each step's beside its template's, and the feedback object's `kernel.stdlib`, and no prompt shows it |
 | generation parameters | the sampler chain in order, the seed, the context, thinking on or off, the grammar's hash and where it began | each call's envelope, and a run's `steps[].grammar_sha256` |
 | *beyond B4* | the kernel's commit, read from git; the program, and each step's program with its judgement at root; the categories, with the step of each form; the writer of H the kernel reported; the feedback object | the kernel's version is `kernel.version`, its commit `kernel.commit`, which the record sets; a run's `steps[].program` and `steps[].judged`, its `program`, `complete` and `categories`; the writer of H is [`einaf::kernel::root`](../../einaf/src/kernel/root.rs)'s, `judged.root.writer` |
 

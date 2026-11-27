@@ -124,7 +124,7 @@ kernel's and is not formatted.
 
 | file | what |
 |---|---|
-| `config.json` | `einaf-from-text-config/1`: the text's and the answer line's digests, the options, the module directory, the bounds, the questions asked, the kernel, the model, its runtime and context, the chat template and the sampler from the first call's envelope, the excerpt's and the catalogue's digests, each template and its digest, every program a prompt quoted |
+| `config.json` | `einaf-from-text-config/1`: the text's and the answer line's digests, the options, the module directory, the bounds, the questions asked, the kernel, the model, its runtime and context, the chat template and the sampler from the first call's envelope, the excerpt's and the catalogue's digests, `stdlib`, the library's manifest digest, which no prompt shows, each template and its digest, every program a prompt quoted |
 | `generations.jsonl` | every call **slim**, `einaf-call/1` (`einaf::model::Slim`): the request's digest, and the generation, its envelope whole and the answer as the model wrote it, the generated tokens' ids replaced by their digest (`tokens_sha256`); or the failure. **No request body**: replay renders the request again from the versioned prompts and finds the call by its digest |
 | `program.ein` | the complete program, as assembled |
 | `program.sidecar.json` | `einaf-sidecar/1`: each form's category with the step that wrote it, the check's findings of each step's program and the complete one's, the writer of H at each, and what step 2 changed of step 1's ontology |
@@ -135,7 +135,9 @@ kernel's and is not formatted.
 
 **A record replays**: `--replay DIR/generations.jsonl` with the run's text and options gives the same calls, each
 step's program, the same complete program and the same answer, with no model. A prompt edited since is a request no
-call answers.
+call answers. **The library's digest is the record's and no prompt's** ([the steps § 1](07-steps.md#1-the-catalogue)),
+so a record replays under any library that leaves the catalogue's text as it was, `$EIN_STDLIB` naming it, and the
+record of the replay names that library.
 
 ## 5. The command
 
@@ -175,5 +177,6 @@ In EinAf's gate step, with no model:
 | `from_text.rs` `the_word_problems_print_no_numeral_as_a_term_under_every_import_form` | the sixteen word problems' own programs under each of the three forms of an import: every numeral its digits, every quantity in its words, every line filled again the kernel's |
 | `from_text.rs` `the_zebra_puzzles_steps_by_hand_go_through_the_one_shot_to_its_answer` | the Zebra puzzle's steps by hand, a generation a step, through the one shot: each step at root, the answer *The Norwegian drinks water. The Japanese owns the zebra.*, scored right; the library's rules root fired |
 | `from_text.rs` `a_recorded_run_of_the_model_replays_step_by_step_from_its_slim_record` | the recorded runs of the model under [`einaf/tests/fixtures/from_text/`](../../einaf/tests/fixtures/from_text/), slim, replayed: each step's program, the complete program and the answer printed |
+| `from_text.rs` `a_recorded_run_replays_under_a_library_whose_digest_moved_and_whose_catalogue_did_not` | a copy of the library with a comment added to a module no entry imports and its manifest written again: under it (`$EIN_STDLIB`) `einaf catalogue` prints what it prints under the checkout's library, and each recorded run replays through `einaf from-text --replay` to its program, its sidecar and its answer, its record naming the copy's digest |
 | `from_text.rs` `a_directory_of_modules_is_shown_offered_to_the_grammars_and_loaded` | `--module-dir`: the modules and no problem shown by their forms, offered to step 2's grammar, and loaded |
 | [`corpus.rs`](../../einaf/tests/corpus.rs) `the_answer_line_with_no_formatter_is_the_kernels_byte_for_byte` | on every corpus program that is not `slow`, under every question, every row of every query with a `:goal-text` filled again with no formatter is the kernel's line |
