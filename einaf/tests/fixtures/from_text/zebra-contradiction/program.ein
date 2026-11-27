@@ -42,11 +42,12 @@
 (relation lives-in-next-to Person Person :why "a {?3} lives next to a {?4}")
 (relation smokes-next-to Smoke Smoke :why "a {?3} is smoked next to a {?4}")
 (relation house-and-color House Color :why "a {?3} and a {?4}")
+(relation house-and-thing House Thing :why "a {?3} and a {?4}")
 (relation house-and-smoke House Smoke :why "a {?3} and a {?4}")
 (relation house-and-drink House Drink :why "a {?3} and a {?4}")
-(relation house-and-thing House Thing :why "a {?3} and a {?4}")
 (relation house-and-person House Person :why "a {?3} and a {?4}")
-(relation house-and-house House House :why "a {?3} and a {?4}")
+(relation house-and-zebra House Zebra :why "a {?3} and a {?4}")
+(relation house-and-water House Water :why "a {?3} and a {?4}")
 
 ;; The kinds, and their place.
 (type Attribute T)
@@ -56,6 +57,8 @@
 (type Drink Attribute)
 (type Smoke Attribute)
 (type Thing Attribute)
+(type Zebra Thing)
+(type Water Drink)
 
 ;; What kind of thing each name is: step 1's memberships.
 (instance House1 House :source "There are five houses.")
@@ -92,12 +95,12 @@
 (instance Zebra Thing :source "Who owns the zebra?")
 
 ;; The row the text speaks of and never states.
-(is-immediately-to-the-right-of First Second)
-(is-immediately-to-the-right-of Second Third)
-(is-immediately-to-the-right-of Third Fourth)
-(is-immediately-to-the-right-of Fourth Fifth)
+(is-immediately-to-the-right-of First House2)
+(is-immediately-to-the-right-of House2 House3)
+(is-immediately-to-the-right-of House3 House4)
+(is-immediately-to-the-right-of House4 House5)
 
-;; The theory: algebra and slots for the houses and attributes.
+;; The theory: things in places, from the library.
 (import std.algebra :symbols (symmetric includes converse top meet))
 (import std.slots)
 
@@ -106,20 +109,22 @@
 (includes owns house-and-thing)
 (includes drinks house-and-drink)
 (includes smokes house-and-smoke)
-(includes is-immediately-to-the-right-of house-and-house)
+(includes is-immediately-to-the-right-of house-and-color)
 (includes smokes-next-to smokes-next-to)
-(includes lives-in-next-to lives-in-next-to)
+(includes lives-in-next-to house-and-person)
 
 (symmetric house-and-color)
+(symmetric house-and-thing)
 (symmetric house-and-smoke)
 (symmetric house-and-drink)
-(symmetric house-and-thing)
 (symmetric house-and-person)
-(symmetric house-and-house)
+(symmetric house-and-zebra)
+(symmetric house-and-water)
 
-(symmetric is-immediately-to-the-right-of)
+(symmetric smokes-next-to)
 
-;; The classes of house-and-person are the houses, each holding one value of every kind.
+;; The classes of house-and-person are the houses, each holding one value of every kind,
+;; and a house names its class; its obligations write the hypotheses.
 (slot-partition house-and-person instance type Attribute House)
 (slot-spatial house-and-person is-immediately-to-the-right-of instance House)
 (slot-spatial house-and-person smokes-next-to instance House)
@@ -127,19 +132,32 @@
 
 ;; ---- step 3: the rest of the theory and the hypothesis mechanism
 
-;; The read-back that makes the answer query answerable.
-;; A person drinks the drink they share, owns the thing they share,
-;; smokes the smoke they share, lives in the house they share.
-(top house-and-person instance Person House)
-(top house-and-color instance House Color)
-(top house-and-smoke instance House Smoke)
-(top house-and-drink instance House Drink)
-(top house-and-thing instance House Thing)
-(top house-and-house instance House House)
+;; The read-back that makes the answer query answerable. Where a value is,
+;; in the verb of its kind: a person drinks the drink they share, owns the
+;; thing they share, smokes the smoke they share, lives in the house they
+;; share, and lives next to the person they share.
+(top  house-and-drink instance Drink Person)
+(meet house-and-drink instance Drink)
+(top  house-and-thing instance Thing Person)
+(meet house-and-thing instance Thing)
+(top  house-and-smoke instance Smoke Person)
+(meet house-and-smoke instance Smoke)
+(top  house-and-person instance Person House)
+(meet house-and-person instance Person)
+(top  house-and-color instance Color House)
+(meet house-and-color instance Color)
+(top  house-and-zebra instance Zebra House)
+(meet house-and-zebra instance Zebra)
+(top  house-and-water instance Water House)
+(meet house-and-water instance Water)
 
-;; A verb and its passive are converses.
+;; A verb and its passive are converses, and a verb of a person goes through
+;; the house the person lives in: a person smokes what is smoked in their
+;; house, drinks what is drunk in their house, owns what they own in their
+;; house, lives in the house they share, and lives next to the person they
+;; share.
 (converse smokes-next-to smokes-next-to)
 (converse lives-in-next-to lives-in-next-to)
+(converse is-immediately-to-the-right-of is-immediately-to-the-right-of)
 
 ;; The hypothesis mechanism: the obligations of the theory step 2 selected.
-(solve :no-search)

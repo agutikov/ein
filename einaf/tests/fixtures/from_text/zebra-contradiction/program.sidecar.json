@@ -188,6 +188,12 @@
       "judged": "generated-relation"
     },
     {
+      "canonical": "(relation house-and-thing House Thing :why \"a {?3} and a {?4}\")",
+      "category": "generated-relation",
+      "step": 2,
+      "judged": "generated-relation"
+    },
+    {
       "canonical": "(relation house-and-smoke House Smoke :why \"a {?3} and a {?4}\")",
       "category": "generated-relation",
       "step": 2,
@@ -200,19 +206,19 @@
       "judged": "generated-relation"
     },
     {
-      "canonical": "(relation house-and-thing House Thing :why \"a {?3} and a {?4}\")",
-      "category": "generated-relation",
-      "step": 2,
-      "judged": "generated-relation"
-    },
-    {
       "canonical": "(relation house-and-person House Person :why \"a {?3} and a {?4}\")",
       "category": "generated-relation",
       "step": 2,
       "judged": "generated-relation"
     },
     {
-      "canonical": "(relation house-and-house House House :why \"a {?3} and a {?4}\")",
+      "canonical": "(relation house-and-zebra House Zebra :why \"a {?3} and a {?4}\")",
+      "category": "generated-relation",
+      "step": 2,
+      "judged": "generated-relation"
+    },
+    {
+      "canonical": "(relation house-and-water House Water :why \"a {?3} and a {?4}\")",
       "category": "generated-relation",
       "step": 2,
       "judged": "generated-relation"
@@ -255,6 +261,18 @@
     },
     {
       "canonical": "(type Thing Attribute)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(type Zebra Thing)",
+      "category": "generated-assumption",
+      "step": 2,
+      "judged": "generated-assumption"
+    },
+    {
+      "canonical": "(type Water Drink)",
       "category": "generated-assumption",
       "step": 2,
       "judged": "generated-assumption"
@@ -452,25 +470,25 @@
       "judged": null
     },
     {
-      "canonical": "(is-immediately-to-the-right-of First Second)",
+      "canonical": "(is-immediately-to-the-right-of First House2)",
       "category": "generated-assumption",
       "step": 2,
       "judged": "generated-assumption"
     },
     {
-      "canonical": "(is-immediately-to-the-right-of Second Third)",
+      "canonical": "(is-immediately-to-the-right-of House2 House3)",
       "category": "generated-assumption",
       "step": 2,
       "judged": "generated-assumption"
     },
     {
-      "canonical": "(is-immediately-to-the-right-of Third Fourth)",
+      "canonical": "(is-immediately-to-the-right-of House3 House4)",
       "category": "generated-assumption",
       "step": 2,
       "judged": "generated-assumption"
     },
     {
-      "canonical": "(is-immediately-to-the-right-of Fourth Fifth)",
+      "canonical": "(is-immediately-to-the-right-of House4 House5)",
       "category": "generated-assumption",
       "step": 2,
       "judged": "generated-assumption"
@@ -512,7 +530,7 @@
       "judged": null
     },
     {
-      "canonical": "(includes is-immediately-to-the-right-of house-and-house)",
+      "canonical": "(includes is-immediately-to-the-right-of house-and-color)",
       "category": "generic-theory",
       "step": 2,
       "judged": null
@@ -524,13 +542,19 @@
       "judged": null
     },
     {
-      "canonical": "(includes lives-in-next-to lives-in-next-to)",
+      "canonical": "(includes lives-in-next-to house-and-person)",
       "category": "generic-theory",
       "step": 2,
       "judged": null
     },
     {
       "canonical": "(symmetric house-and-color)",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(symmetric house-and-thing)",
       "category": "generic-theory",
       "step": 2,
       "judged": null
@@ -548,25 +572,25 @@
       "judged": null
     },
     {
-      "canonical": "(symmetric house-and-thing)",
-      "category": "generic-theory",
-      "step": 2,
-      "judged": null
-    },
-    {
       "canonical": "(symmetric house-and-person)",
       "category": "generic-theory",
       "step": 2,
       "judged": null
     },
     {
-      "canonical": "(symmetric house-and-house)",
+      "canonical": "(symmetric house-and-zebra)",
       "category": "generic-theory",
       "step": 2,
       "judged": null
     },
     {
-      "canonical": "(symmetric is-immediately-to-the-right-of)",
+      "canonical": "(symmetric house-and-water)",
+      "category": "generic-theory",
+      "step": 2,
+      "judged": null
+    },
+    {
+      "canonical": "(symmetric smokes-next-to)",
       "category": "generic-theory",
       "step": 2,
       "judged": null
@@ -596,37 +620,85 @@
       "judged": null
     },
     {
+      "canonical": "(top house-and-drink instance Drink Person)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(meet house-and-drink instance Drink)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(top house-and-thing instance Thing Person)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(meet house-and-thing instance Thing)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(top house-and-smoke instance Smoke Person)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(meet house-and-smoke instance Smoke)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
       "canonical": "(top house-and-person instance Person House)",
       "category": "generic-theory",
       "step": 3,
       "judged": null
     },
     {
-      "canonical": "(top house-and-color instance House Color)",
+      "canonical": "(meet house-and-person instance Person)",
       "category": "generic-theory",
       "step": 3,
       "judged": null
     },
     {
-      "canonical": "(top house-and-smoke instance House Smoke)",
+      "canonical": "(top house-and-color instance Color House)",
       "category": "generic-theory",
       "step": 3,
       "judged": null
     },
     {
-      "canonical": "(top house-and-drink instance House Drink)",
+      "canonical": "(meet house-and-color instance Color)",
       "category": "generic-theory",
       "step": 3,
       "judged": null
     },
     {
-      "canonical": "(top house-and-thing instance House Thing)",
+      "canonical": "(top house-and-zebra instance Zebra House)",
       "category": "generic-theory",
       "step": 3,
       "judged": null
     },
     {
-      "canonical": "(top house-and-house instance House House)",
+      "canonical": "(meet house-and-zebra instance Zebra)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(top house-and-water instance Water House)",
+      "category": "generic-theory",
+      "step": 3,
+      "judged": null
+    },
+    {
+      "canonical": "(meet house-and-water instance Water)",
       "category": "generic-theory",
       "step": 3,
       "judged": null
@@ -644,8 +716,8 @@
       "judged": null
     },
     {
-      "canonical": "(solve :no-search)",
-      "category": "frame",
+      "canonical": "(converse is-immediately-to-the-right-of is-immediately-to-the-right-of)",
+      "category": "generic-theory",
       "step": 3,
       "judged": null
     }
@@ -678,13 +750,61 @@
           "message": "root's saturation names no firing of includes with these arguments and no owe of it"
         },
         {
-          "kind": "mechanism-not-the-one-stated",
-          "from_step": 3,
-          "form": null,
-          "message": "the program states no-search and obligations, and the writer of H is no-search"
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(meet house-and-color instance Color)",
+          "message": "root's saturation names no firing of meet with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(meet house-and-drink instance Drink)",
+          "message": "root's saturation names no firing of meet with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(meet house-and-person instance Person)",
+          "message": "root's saturation names no firing of meet with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(meet house-and-smoke instance Smoke)",
+          "message": "root's saturation names no firing of meet with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(meet house-and-thing instance Thing)",
+          "message": "root's saturation names no firing of meet with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(meet house-and-water instance Water)",
+          "message": "root's saturation names no firing of meet with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(meet house-and-zebra instance Zebra)",
+          "message": "root's saturation names no firing of meet with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(top house-and-water instance Water House)",
+          "message": "root's saturation names no firing of top with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(top house-and-zebra instance Zebra House)",
+          "message": "root's saturation names no firing of top with these arguments and no owe of it"
         }
       ],
-      "writer": "no-search"
+      "writer": "obligations"
     },
     {
       "step": "complete",
@@ -696,13 +816,61 @@
           "message": "root's saturation names no firing of includes with these arguments and no owe of it"
         },
         {
-          "kind": "mechanism-not-the-one-stated",
-          "from_step": 3,
-          "form": null,
-          "message": "the program states no-search and obligations, and the writer of H is no-search"
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(meet house-and-color instance Color)",
+          "message": "root's saturation names no firing of meet with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(meet house-and-drink instance Drink)",
+          "message": "root's saturation names no firing of meet with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(meet house-and-person instance Person)",
+          "message": "root's saturation names no firing of meet with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(meet house-and-smoke instance Smoke)",
+          "message": "root's saturation names no firing of meet with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(meet house-and-thing instance Thing)",
+          "message": "root's saturation names no firing of meet with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(meet house-and-water instance Water)",
+          "message": "root's saturation names no firing of meet with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(meet house-and-zebra instance Zebra)",
+          "message": "root's saturation names no firing of meet with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(top house-and-water instance Water House)",
+          "message": "root's saturation names no firing of top with these arguments and no owe of it"
+        },
+        {
+          "kind": "selection-inactive",
+          "from_step": 2,
+          "form": "(top house-and-zebra instance Zebra House)",
+          "message": "root's saturation names no firing of top with these arguments and no owe of it"
         }
       ],
-      "writer": "no-search"
+      "writer": "obligations"
     }
   ],
   "ontology_change": {
@@ -714,16 +882,17 @@
       "(instance House3 House :source \"There are five houses.\")",
       "(instance House4 House :source \"There are five houses.\")",
       "(instance House5 House :source \"There are five houses.\")",
-      "(is-immediately-to-the-right-of First Second)",
-      "(is-immediately-to-the-right-of Fourth Fifth)",
-      "(is-immediately-to-the-right-of Second Third)",
-      "(is-immediately-to-the-right-of Third Fourth)",
+      "(is-immediately-to-the-right-of First House2)",
+      "(is-immediately-to-the-right-of House2 House3)",
+      "(is-immediately-to-the-right-of House3 House4)",
+      "(is-immediately-to-the-right-of House4 House5)",
       "(relation house-and-color House Color :why \"a {?3} and a {?4}\")",
       "(relation house-and-drink House Drink :why \"a {?3} and a {?4}\")",
-      "(relation house-and-house House House :why \"a {?3} and a {?4}\")",
       "(relation house-and-person House Person :why \"a {?3} and a {?4}\")",
       "(relation house-and-smoke House Smoke :why \"a {?3} and a {?4}\")",
       "(relation house-and-thing House Thing :why \"a {?3} and a {?4}\")",
+      "(relation house-and-water House Water :why \"a {?3} and a {?4}\")",
+      "(relation house-and-zebra House Zebra :why \"a {?3} and a {?4}\")",
       "(relation type T T :why \"{?3} is a kind of {?4}\")",
       "(type Attribute T)",
       "(type Color Attribute)",
@@ -731,7 +900,9 @@
       "(type House Attribute)",
       "(type Person Attribute)",
       "(type Smoke Attribute)",
-      "(type Thing Attribute)"
+      "(type Thing Attribute)",
+      "(type Water Drink)",
+      "(type Zebra Thing)"
     ],
     "redeclared": []
   }

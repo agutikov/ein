@@ -78,7 +78,8 @@ no answer. **This is the one place the answer is not the program's own output**:
 from.
 
 **A sentence is printed per row.** One class whose rows are several prints each row: a program whose rule reads what
-it concludes may give one value a row a pass, and the answer states each (`bob1`'s *Bob has 1 / 3 / 5 apples*).
+it concludes may give one value a row a pass, and the answer states each (a program for `bob1`'s text whose rule
+asks the difference of what it concluded prints *Bob has 1 / 3 / 5 apples*).
 
 **A stand-in reader of the answer's comparison** (`einaf::answer::score`, `--gold-answer`): whether the answer
 states the values a gold short answer binds. The gold is `@undetermined` or `@contradiction`, the fixed text of that
@@ -160,11 +161,13 @@ error exits 2, a model that does not load or a record not written 1.
 
 <!-- output -->
 ```text
-$ einaf from-text bob1.txt --answer-line word --replay generations.jsonl
-Bob has 1 apples.
-Bob has 3 apples.
+$ einaf from-text einaf/tests/fixtures/steps/bob1/text.txt --answer-line word \
+    --replay einaf/tests/fixtures/steps/bob1/calls.jsonl
 Bob has 5 apples.
 ```
+
+The record replayed is a run of `einaf steps run` on the same text, whose requests are the one shot's request for
+request; its program has no rule that asks the difference, so the stated *5* is the one row.
 
 ## 6. Held by
 
