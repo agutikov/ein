@@ -48,7 +48,7 @@ binary is built; *after* is today's binary, run here.
 this run, on AC power, the GPU free ([`out/RUN.txt`](out/RUN.txt)). The timed runs are pinned to one P-core thread by
 `utils/bench_env.sh --cores PT:1`, whose fingerprint is each run's stderr.
 
-**The gate:** green on `3deda3d6`, the phase's last commit: `./run_tests.sh` exited 0, every static check, then Ein's and EinAf's tests, 1 536 passed and 0 failed, run 15:17 to 15:47 on AC. Since `3deda3d6` only plans have changed, this page and its script among them.
+**The gate:** green on `3deda3d6`, the phase's last commit: `./run_tests.sh` exited 0, every static check, then Ein's and EinAf's tests, 1 536 passed and 0 failed, run 15:17 to 15:47 on AC. Since `3deda3d6` only plans have changed, this page and its script among them. **The nightly:** green on `45c5cbd5`, whose code is `3deda3d6`'s: `./run_tests.sh --nightly` exited 0, run 16:12 to 17:06 on AC: every deep-corpus step and shard (the slow entries, the heavy dumps, every invariance on every program), the twelve shards of the library's mutants (each `--check` holding the survivors to the banked set), the parser's fuzzer at both seeds and the bench smoke.
 
 **Contents**: [1 What the phase built](#1-what-the-phase-built) ·
 [2 Commands to try](#2-commands-to-try-with-their-real-outputs) · [3 Examples, worked](#3-examples-worked) ·
@@ -1213,7 +1213,7 @@ module-dir condition, which now loads, has a dead root (*inconsistent*, its own 
 
 ## 9. What is left
 
-- **The nightly**, after this report, the coordinator's; the gate is green on the phase's last commit (the header).
+- **The nightly** ran after this report and is green (the header).
 - **Closing the phase**, when the user says so: by the ledgers' rules, E-129 and E-132 and the findings
   L-M2.32 and L-M2.33 move to the milestone's `evaluation/` and `findings/`; E-130, E-131, L-M2.31 and the stages'
   records stay in the folder, which M2 keeps.

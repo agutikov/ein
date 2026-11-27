@@ -48,9 +48,9 @@ S2.2e.2's); S2.2e.3 to S2.2e.7 moved none. [The acceptance](#acceptance), item b
 
 **The gate** is green on the phase's last code commit's tree, `3deda3d6`: `./run_tests.sh` exited 0, every static
 check, then Ein's and EinAf's tests, 1 536 passed and none failed. **The nightly** (`./run_tests.sh --nightly`, since
-the library and the engine changed) was running at the close; its result is the line below.
+the library and the engine changed) ran after the report:
 
-- The nightly: running.
+- **The nightly**: green on `45c5cbd5`, whose code is `3deda3d6`'s: `./run_tests.sh --nightly` exited 0, run 16:12 to 17:06 on AC: every deep-corpus step and shard (the slow entries, the heavy dumps, every invariance on every program), the twelve shards of the library's mutants (each `--check` holding the survivors to the banked set), the parser's fuzzer at both seeds and the bench smoke.
 
 **What the close moved**, by the ledgers' rule (what is open to the milestone, what is closed kept here):
 
