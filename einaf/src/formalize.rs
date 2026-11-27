@@ -31,6 +31,7 @@ use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
 
+use crate::analysis::{self, AnalysisOf};
 use crate::catalogue::{self, Catalogue, Generated};
 use crate::check::{self, Checked, Step1};
 use crate::contract::{self, Row};
@@ -366,6 +367,11 @@ pub struct Run {
     /// wrote it.
     pub categories: Vec<Row>,
     pub ontology_change: Option<OntologyChange>,
+    /// **The analysis step 1 was given** ([`crate::analysis`]): the file and
+    /// its digest, the parser, the form, the digests of what the prompt
+    /// held. Absent from a run given none, whose record is as it was.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub analysis: Option<AnalysisOf>,
 }
 
 /// **Split step 1's output** into its statements, everything before its
@@ -497,6 +503,8 @@ pub fn markers(text: &str) -> Vec<String> {
 /// What the requests of a run share.
 struct Shared<'a> {
     input: &'a Input,
+    /// The analysis step 1 is given, where one is.
+    analysis: Option<&'a analysis::Given>,
     options: Options,
     catalogue: Catalogue,
     generated: Generated,
@@ -603,6 +611,27 @@ pub fn run_with(
     catalogue: Catalogue,
     calls: &mut Vec<Recorded>,
 ) -> Run {
+    run_given(runtime, input, options, catalogue, None, calls)
+        .expect("a run given no analysis is never refused")
+}
+
+/// **Run the formalization of `input`, step 1 given `analysis`**
+/// ([`crate::analysis`]): its form, rendered through its template, after
+/// the text in step 1's prompt (`steps/step1-analysis.v1.md`), and its record
+/// in the run's. Given none, the run is [`run_with`]'s, request for request.
+/// An analysis of other sentences than the text's, or one given to the whole
+/// program in one call, which has no step 1, is refused before any call.
+pub fn run_given(
+    runtime: &mut dyn Runtime,
+    input: &Input,
+    options: Options,
+    catalogue: Catalogue,
+    analysis: Option<&analysis::Given>,
+    calls: &mut Vec<Recorded>,
+) -> Result<Run, String> {
+    if let Some(a) = analysis {
+        fits(a, &input.text, options)?;
+    }
     let catalogue_text = catalogue.text();
     let module_dir = catalogue.base_dir().map(|d| d.display().to_string());
     let excerpt = prompts::EXCERPT.text.to_string();
@@ -610,6 +639,7 @@ pub fn run_with(
         render(&prompts::SYSTEM, &[("excerpt", excerpt)]).expect("the system message renders");
     let shared = Shared {
         input,
+        analysis,
         options,
         generated: catalogue::generated(),
         catalogue_text,
@@ -641,6 +671,7 @@ pub fn run_with(
         complete: None,
         categories: Vec::new(),
         ontology_change: None,
+        analysis: analysis.map(analysis::Given::record),
     };
     let text = input.text.trim_end().to_string();
     match options.mode {
@@ -661,7 +692,19 @@ pub fn run_with(
             calls,
         ),
     }
-    run
+    Ok(run)
+}
+
+/// **Whether an analysis fits a run**: it is of the text's sentences, and
+/// the run has a step 1 to give it to.
+pub fn fits(analysis: &analysis::Given, text: &str, options: Options) -> Result<(), String> {
+    if options.mode == Mode::Whole {
+        return Err(
+            "an analysis is given to step 1, and the whole program in one call has none"
+                .to_string(),
+        );
+    }
+    analysis.is_of(text)
 }
 
 /// One call: render, ask, read the fenced block, parse.
@@ -781,24 +824,28 @@ fn run_steps(
     };
     let id = &shared.input.id;
 
-    // Step 1.
-    let user = render(
-        &prompts::STEP1,
-        &[
-            (
-                "examples",
-                prompts::examples_block(&prompts::EXAMPLES, Shown::UpTo(1)),
-            ),
-            ("text", text.to_string()),
-            ("answer_line", answer_line.to_string()),
-        ],
-    )
-    .expect("step 1's prompt renders");
+    // Step 1, given the analysis where there is one.
+    let mut slots = vec![
+        (
+            "examples",
+            prompts::examples_block(&prompts::EXAMPLES, Shown::UpTo(1)),
+        ),
+        ("text", text.to_string()),
+        ("answer_line", answer_line.to_string()),
+    ];
+    let template1 = match shared.analysis {
+        Some(a) => {
+            slots.push(("analysis", a.block().trim_end().to_string()));
+            &prompts::STEP1_ANALYSIS
+        }
+        None => &prompts::STEP1,
+    };
+    let user = render(template1, &slots).expect("step 1's prompt renders");
     let mut s1 = call(
         runtime,
         shared,
         "1",
-        &prompts::STEP1,
+        template1,
         user,
         rendered(Step::One, None),
         false,

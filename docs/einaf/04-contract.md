@@ -288,7 +288,9 @@ this page it implements ([the steps § 2](07-steps.md#2-the-prompts)); the tool'
    of the validation or test split**: every program a prompt quotes is listed in the record, and a check holds every
    prompt's examples to the split file once there is one.
 4. **The problem statement**, with what its instance says of the task: its family's answer line, given to every arm
-   in the same words, and for an external item what its adapter tells the formalizer.
+   in the same words, and for an external item what its adapter tells the formalizer. In an arm that gives one,
+   step 1 is given **an analysis of the text** by trained parsers after it, a form of a recorded file
+   ([the text's analysis](09-analysis.md)); no main arm gives one.
 5. **Prior diagnostics, if iterative**: the feedback object ([the feedback object](03-feedback.md)) rendered at the
    run's level of the feedback ladder, and, when repairing, the current program. Absent in one shot.
 
@@ -309,6 +311,7 @@ yet.
 | Ein specification version | the hash of the excerpt, and the commit it was cut at | a run's `excerpt_sha256`; the commit: nothing yet |
 | stdlib version | the hash of the catalogue, and the library's manifest digest, `ein --version`'s `stdlib` line | a run's `catalogue_sha256`; the manifest digest is a run's `stdlib`, each step's beside its template's, and the feedback object's `kernel.stdlib`, and no prompt shows it |
 | generation parameters | the sampler chain in order, the seed, the context, thinking on or off, the grammar's hash and where it began | each call's envelope, and a run's `steps[].grammar_sha256` |
+| *beyond B4*: the analysis | the file step 1 was given, its digest, the parser's tool and model, the form, the digests of its template and of the block the prompt held | a run's `analysis` ([the text's analysis § 5](09-analysis.md#5-the-record)), absent where none was given |
 | *beyond B4* | the kernel's commit, read from git; the program, and each step's program with its judgement at root; the categories, with the step of each form; the writer of H the kernel reported; the feedback object | the kernel's version is `kernel.version`, its commit `kernel.commit`, which the record sets; a run's `steps[].program` and `steps[].judged`, its `program`, `complete` and `categories`; the writer of H is [`einaf::kernel::root`](../../einaf/src/kernel/root.rs)'s, `judged.root.writer` |
 
 ## 7. The steps by hand

@@ -1,0 +1,20 @@
+;; The vocabulary of a text's analysis written as Ein facts: each sentence's
+;; AMR graph, a node a fact with its concept, a role between two nodes a
+;; fact, a name, a negation; and the named entities beside it. Every fact
+;; quotes the sentence it was read from as its :source.
+(relation amr-top Sentence Node
+  :why "the meaning of a {?3} is its AMR graph, whose top is a {?4}")
+(relation amr-node Sentence Node Concept
+  :why "a {?4} of the AMR graph of a {?3} is an instance of a {?5}")
+(relation amr-role Node Role Node
+  :why "a {?3} has a {?4} that is a {?5}")
+(relation amr-const Node Role Value
+  :why "a {?3} has a {?4} whose value is a {?5}")
+(relation amr-name Node Words
+  :why "a name {?3} is the {?4}, its words joined by _")
+(relation amr-negative Node
+  :why "a {?3} is negated: its polarity is -")
+(relation amr-word Node Word
+  :why "a {?3} was read from the {?4} of the sentence")
+(relation named-entity Sentence Words Type
+  :why "in a {?3} the {?4}, joined by _, name an entity of a {?5}")

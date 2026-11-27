@@ -1,0 +1,247 @@
+{
+ "schema": "einaf-analysis/1",
+ "text": "apples",
+ "text_sha256": "sha256:4dddcbd923da2e550ab1c26320845ca824da6ca6fcc06eafb434dfc9cc7764b7",
+ "sentences": [
+  "Bob has 5 apples.",
+  "He gave 2 to Alice.",
+  "How many apples does Bob have?"
+ ],
+ "amr": [
+  {
+   "parser": "spring",
+   "tool": {
+    "name": "amrlib",
+    "version": "0.8.1",
+    "model": "parse_spring-v0_1_0",
+    "model_sha256": "sha256:f0dc114581411eda0051d0940156935b0102d488d1794459821578f9151f75cb",
+    "decoding": "beam search, num_beams=4, batch_size=1",
+    "versions": {
+     "torch": "2.14.1+cu130",
+     "cuda": "13.0",
+     "transformers": "4.57.6",
+     "penman": "1.3.1",
+     "amrlib": "0.8.1"
+    },
+    "compat": {
+     "generation_config": "return_dict_in_generate and output_attentions set False"
+    }
+   },
+   "aligner": {
+    "name": "amrlib's RBW aligner",
+    "kind": "rule-based",
+    "markers": "~e.N, N a token's index from 0"
+   },
+   "graphs": [
+    {
+     "n": 1,
+     "tokens": [
+      "Bob",
+      "has",
+      "5",
+      "apples",
+      "."
+     ],
+     "penman": "(z1 / have-03~e.1\n      :ARG0 (z2 / person\n            :name (z3 / name\n                  :op1 \"Bob\"~e.0))\n      :ARG1 (z4 / apple~e.3\n            :quant 5~e.2))"
+    },
+    {
+     "n": 2,
+     "tokens": [
+      "He",
+      "gave",
+      "2",
+      "to",
+      "Alice",
+      "."
+     ],
+     "penman": "(z1 / give-01~e.1\n      :ARG0 (z2 / he~e.0)\n      :ARG1 (z3 / thing\n            :quant 2~e.2)\n      :ARG2 (z4 / person\n            :name (z5 / name\n                  :op1 \"Alice\"~e.4)))"
+    },
+    {
+     "n": 3,
+     "tokens": [
+      "How",
+      "many",
+      "apples",
+      "does",
+      "Bob",
+      "have",
+      "?"
+     ],
+     "penman": "(z1 / have-03~e.5\n      :ARG0 (z2 / person\n            :name (z3 / name\n                  :op1 \"Bob\"~e.4))\n      :ARG1 (z4 / apple~e.2\n            :quant (z5 / amr-unknown)))"
+    }
+   ]
+  },
+  {
+   "parser": "xfm",
+   "tool": {
+    "name": "amrlib",
+    "version": "0.8.1",
+    "model": "parse_xfm_bart_large-v0_1_0",
+    "model_sha256": "sha256:d9bdcde696e63224ba56853469689d2e22e64c324eedee6e48348e806eedd45b",
+    "decoding": "beam search, num_beams=4, batch_size=1",
+    "versions": {
+     "torch": "2.14.1+cu130",
+     "cuda": "13.0",
+     "transformers": "4.57.6",
+     "penman": "1.3.1",
+     "amrlib": "0.8.1"
+    },
+    "compat": {}
+   },
+   "aligner": {
+    "name": "amrlib's RBW aligner",
+    "kind": "rule-based",
+    "markers": "~e.N, N a token's index from 0"
+   },
+   "graphs": [
+    {
+     "n": 1,
+     "tokens": [
+      "Bob",
+      "has",
+      "5",
+      "apples",
+      "."
+     ],
+     "penman": "(h / have-03~e.1\n      :ARG0 (p / person\n            :name (n / name\n                  :op1 \"Bob\"~e.0))\n      :ARG1 (a / apple~e.3\n            :quant 5~e.2))"
+    },
+    {
+     "n": 2,
+     "tokens": [
+      "He",
+      "gave",
+      "2",
+      "to",
+      "Alice",
+      "."
+     ],
+     "penman": "(g / give-01~e.1\n      :ARG0 (h / he~e.0)\n      :ARG1 (t / thing\n            :quant 2~e.2)\n      :ARG2 (p / person\n            :name (n / name\n                  :op1 \"Alice\"~e.4)))"
+    },
+    {
+     "n": 3,
+     "tokens": [
+      "How",
+      "many",
+      "apples",
+      "does",
+      "Bob",
+      "have",
+      "?"
+     ],
+     "penman": "(h / have-03~e.5\n      :ARG0 (p / person\n            :name (n / name\n                  :op1 \"Bob\"~e.4))\n      :ARG1 (a / apple~e.2\n            :quant (a2 / amr-unknown)))"
+    }
+   ]
+  },
+  {
+   "parser": "ibm",
+   "tool": {
+    "name": "transition-neural-parser",
+    "version": "0.5.4",
+    "model": "AMR3-structbart-L",
+    "model_sha256": "sha256:c4b47b578eb067d61e7d560f2431453ae2beb13aafe5debc13cad5d54600896b",
+    "beside": {
+     "fairseq bart.large model.pt": "sha256:d2438f464efad05c927f2c9e38a8a8358e368c4d9bfa9cbc764d70b05996f1ea"
+    },
+    "decoding": "the parser's default, beam 1",
+    "versions": {
+     "torch": "1.13.1+cu117",
+     "cuda": "11.7",
+     "fairseq": "0.10.2",
+     "penman": "1.3.1",
+     "python": "3.8.20"
+    }
+   },
+   "aligner": {
+    "name": "the parser's own alignment",
+    "kind": "learned",
+    "markers": "~N, N a token's index from 0"
+   },
+   "graphs": [
+    {
+     "n": 1,
+     "tokens": [
+      "Bob",
+      "has",
+      "5",
+      "apples",
+      "."
+     ],
+     "penman": "(h / have-03~1\n    :ARG0 (p / person~0\n        :name (n / name~0\n            :op1 \"Bob\"~0))\n    :ARG1 (a / apple~3\n        :quant 5~2))"
+    },
+    {
+     "n": 2,
+     "tokens": [
+      "He",
+      "gave",
+      "2",
+      "to",
+      "Alice",
+      "."
+     ],
+     "penman": "(g / give-01~1\n    :ARG0 (h / he~0)\n    :ARG1 2~2\n    :ARG2 (p / person~4\n        :name (n / name~4\n            :op1 \"Alice\"~4)))"
+    },
+    {
+     "n": 3,
+     "tokens": [
+      "How",
+      "many",
+      "apples",
+      "does",
+      "Bob",
+      "have",
+      "?"
+     ],
+     "penman": "(h / have-03~5\n    :ARG0 (p / person~4\n        :name (n / name~4\n            :op1 \"Bob\"~4))\n    :ARG1 (a2 / apple~2\n        :quant (a / amr-unknown~0)))"
+    }
+   ]
+  }
+ ],
+ "entities": {
+  "tool": {
+   "name": "spacy",
+   "version": "3.8.18",
+   "model": "en_core_web_trf 3.8.0",
+   "pipeline": [
+    "transformer",
+    "tagger",
+    "parser",
+    "attribute_ruler",
+    "lemmatizer",
+    "ner"
+   ],
+   "device": "cpu",
+   "versions": {
+    "spacy": "3.8.18",
+    "torch": "2.14.1+cu130"
+   }
+  },
+  "sentences": [
+   [
+    {
+     "text": "Bob",
+     "label": "PERSON"
+    },
+    {
+     "text": "5",
+     "label": "CARDINAL"
+    }
+   ],
+   [
+    {
+     "text": "2",
+     "label": "CARDINAL"
+    },
+    {
+     "text": "Alice",
+     "label": "PERSON"
+    }
+   ],
+   [
+    {
+     "text": "Bob",
+     "label": "PERSON"
+    }
+   ]
+  ]
+ }
+}

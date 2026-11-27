@@ -15,6 +15,7 @@ use einaf::kernel::{self, Bounds, Source};
 use einaf::model::Recorded;
 use einaf::prompts;
 
+use crate::analysis_cmd::{self, AnalysisArgs};
 use crate::model_cmd::{Opened, RuntimeArgs};
 use crate::usage_error;
 
@@ -30,12 +31,18 @@ pub fn steps(args: &[String]) -> ExitCode {
 /// `einaf steps run TEXT --out DIR RUNTIME [options]`.
 fn steps_run(args: &[String]) -> ExitCode {
     let mut rt = RuntimeArgs::new();
+    let mut analysis = AnalysisArgs::new();
     let mut options = Options::default();
     let (mut text, mut out, mut id) = (None::<PathBuf>, None::<PathBuf>, None::<String>);
     let mut line = "generic".to_string();
     let mut it = args.iter();
     while let Some(a) = it.next() {
         match rt.take(a, &mut it) {
+            Ok(true) => continue,
+            Ok(false) => {}
+            Err(e) => return usage_error(&e),
+        }
+        match analysis.take(a, &mut it) {
             Ok(true) => continue,
             Ok(false) => {}
             Err(e) => return usage_error(&e),
@@ -94,6 +101,15 @@ fn steps_run(args: &[String]) -> ExitCode {
             .map(|s| s.to_string_lossy().into_owned())
             .unwrap_or_else(|| "text".to_string())
     });
+    let analysis = match analysis.open() {
+        Ok(a) => a,
+        Err(e) => return usage_error(&e),
+    };
+    if let Some(a) = &analysis
+        && let Err(e) = formalize::fits(a, &text, options)
+    {
+        return usage_error(&e);
+    }
     let mut runtime = match rt.open() {
         Ok(r) => r,
         Err(Opened::Failed(f)) => {
@@ -108,7 +124,17 @@ fn steps_run(args: &[String]) -> ExitCode {
         answer_line,
     };
     let mut calls: Vec<Recorded> = Vec::new();
-    let run = formalize::run(runtime.as_mut(), &input, options, &mut calls);
+    let run = match formalize::run_given(
+        runtime.as_mut(),
+        &input,
+        options,
+        Catalogue::new(options.catalogue),
+        analysis.as_ref(),
+        &mut calls,
+    ) {
+        Ok(r) => r,
+        Err(e) => return usage_error(&e),
+    };
     if let Err(e) = write_run(&out, &run, &calls) {
         eprintln!("error: {}: {e}", out.display());
         return ExitCode::from(1);
@@ -152,6 +178,9 @@ pub fn summary(run: &Run) -> String {
         if run.options.grammar { "on" } else { "off" },
         run.options.catalogue.word()
     );
+    if let Some(a) = &run.analysis {
+        s.push_str(&format!("  {}\n", analysis_cmd::line(a)));
+    }
     for st in &run.steps {
         let parsed = match &st.parsed {
             Some(p) if p.forms.is_some() => format!("{} forms", p.forms.unwrap_or(0)),

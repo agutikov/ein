@@ -13,12 +13,14 @@ use einaf::from_text::{self, Config, FromText};
 use einaf::model::Recorded;
 use einaf::prompts;
 
+use crate::analysis_cmd::{self, AnalysisArgs};
 use crate::model_cmd::{Opened, RuntimeArgs};
 use crate::usage_error;
 
 /// `einaf from-text TEXT RUNTIME [options]`.
 pub fn from_text(args: &[String]) -> ExitCode {
     let mut rt = RuntimeArgs::new();
+    let mut analysis = AnalysisArgs::new();
     let mut config = Config::default();
     let (mut text, mut id) = (None::<PathBuf>, None::<String>);
     let (mut out, mut explain, mut record) = (None::<PathBuf>, None::<PathBuf>, None::<PathBuf>);
@@ -27,6 +29,11 @@ pub fn from_text(args: &[String]) -> ExitCode {
     let mut it = args.iter();
     while let Some(a) = it.next() {
         match rt.take(a, &mut it) {
+            Ok(true) => continue,
+            Ok(false) => {}
+            Err(e) => return usage_error(&e),
+        }
+        match analysis.take(a, &mut it) {
             Ok(true) => continue,
             Ok(false) => {}
             Err(e) => return usage_error(&e),
@@ -100,6 +107,15 @@ pub fn from_text(args: &[String]) -> ExitCode {
             .map(|s| s.to_string_lossy().into_owned())
             .unwrap_or_else(|| "text".to_string())
     });
+    config.analysis = match analysis.open() {
+        Ok(a) => a,
+        Err(e) => return usage_error(&e),
+    };
+    if let Some(a) = &config.analysis
+        && let Err(e) = einaf::formalize::fits(a, &text, config.options)
+    {
+        return usage_error(&e);
+    }
     let mut runtime = match rt.open() {
         Ok(r) => r,
         Err(Opened::Failed(f)) => {
@@ -160,6 +176,9 @@ pub fn from_text(args: &[String]) -> ExitCode {
 pub fn progress(ft: &FromText) -> String {
     let run = &ft.run;
     let mut s = String::new();
+    if let Some(a) = &run.analysis {
+        s.push_str(&format!("{}\n", analysis_cmd::line(a)));
+    }
     for st in &run.steps {
         let parsed = match &st.parsed {
             Some(p) if p.forms.is_some() => format!("{} forms", p.forms.unwrap_or(0)),

@@ -2,7 +2,11 @@
 
 **Status:** open
 **Found:** by [S2.2f.1](../../s2.2f.1_the_check.md), 2026-11-27
-**Owner:** [S2.2f.2](../../s2.2f.2_the_analysis_written.md), which decides what the analysis says of a pronoun
+**Owner:** [S2.2f.3](../../s2.2f.3_step1_with_the_analysis.md), which reads whether step 1 still resolves a pronoun
+given an analysis that does not. [S2.2f.2](../../s2.2f.2_the_analysis_written.md) decided what the analysis says of
+one (2026-11-27): **what the sentence's parser wrote, and nothing more**. `he` and `they` stay the parser's nodes
+(`(z2 / he)`, `(amr-node S2 s2-z2 he)`), no resolver's chain is written beside them (the resolver tied the model,
+S2.2f.1's verdict), and the analysis is given a sentence a graph, never the text whole.
 
 ## What
 

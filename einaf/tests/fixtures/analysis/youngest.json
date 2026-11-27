@@ -1,0 +1,239 @@
+{
+ "schema": "einaf-analysis/1",
+ "text": "youngest",
+ "text_sha256": "sha256:576505d3032e1ca9a78bd872b201087ceb08a0d9737590c561961e7484352159",
+ "sentences": [
+  "Ann is older than Bob.",
+  "Bob is older than Cy.",
+  "Who is the youngest?"
+ ],
+ "amr": [
+  {
+   "parser": "spring",
+   "tool": {
+    "name": "amrlib",
+    "version": "0.8.1",
+    "model": "parse_spring-v0_1_0",
+    "model_sha256": "sha256:f0dc114581411eda0051d0940156935b0102d488d1794459821578f9151f75cb",
+    "decoding": "beam search, num_beams=4, batch_size=1",
+    "versions": {
+     "torch": "2.14.1+cu130",
+     "cuda": "13.0",
+     "transformers": "4.57.6",
+     "penman": "1.3.1",
+     "amrlib": "0.8.1"
+    },
+    "compat": {
+     "generation_config": "return_dict_in_generate and output_attentions set False"
+    }
+   },
+   "aligner": {
+    "name": "amrlib's RBW aligner",
+    "kind": "rule-based",
+    "markers": "~e.N, N a token's index from 0"
+   },
+   "graphs": [
+    {
+     "n": 1,
+     "tokens": [
+      "Ann",
+      "is",
+      "older",
+      "than",
+      "Bob",
+      "."
+     ],
+     "penman": "(z1 / have-degree-91\n      :ARG1 (z2 / person\n            :name (z3 / name\n                  :op1 \"Ann\"~e.0))\n      :ARG2 (z4 / old~e.2)\n      :ARG3 (z5 / more)\n      :ARG4 (z6 / person\n            :name (z7 / name\n                  :op1 \"Bob\"~e.4)))"
+    },
+    {
+     "n": 2,
+     "tokens": [
+      "Bob",
+      "is",
+      "older",
+      "than",
+      "Cy",
+      "."
+     ],
+     "penman": "(z1 / have-degree-91\n      :ARG1 (z2 / person\n            :name (z3 / name\n                  :op1 \"Bob\"~e.0))\n      :ARG2 (z4 / old~e.2)\n      :ARG3 (z5 / more)\n      :ARG4 (z6 / person\n            :name (z7 / name\n                  :op1 \"Cy\"~e.4)))"
+    },
+    {
+     "n": 3,
+     "tokens": [
+      "Who",
+      "is",
+      "the",
+      "youngest",
+      "?"
+     ],
+     "penman": "(z1 / have-degree-91\n      :ARG1 (z2 / amr-unknown)\n      :ARG2 (z3 / young~e.3)\n      :ARG3 (z4 / most))"
+    }
+   ]
+  },
+  {
+   "parser": "xfm",
+   "tool": {
+    "name": "amrlib",
+    "version": "0.8.1",
+    "model": "parse_xfm_bart_large-v0_1_0",
+    "model_sha256": "sha256:d9bdcde696e63224ba56853469689d2e22e64c324eedee6e48348e806eedd45b",
+    "decoding": "beam search, num_beams=4, batch_size=1",
+    "versions": {
+     "torch": "2.14.1+cu130",
+     "cuda": "13.0",
+     "transformers": "4.57.6",
+     "penman": "1.3.1",
+     "amrlib": "0.8.1"
+    },
+    "compat": {}
+   },
+   "aligner": {
+    "name": "amrlib's RBW aligner",
+    "kind": "rule-based",
+    "markers": "~e.N, N a token's index from 0"
+   },
+   "graphs": [
+    {
+     "n": 1,
+     "tokens": [
+      "Ann",
+      "is",
+      "older",
+      "than",
+      "Bob",
+      "."
+     ],
+     "penman": "(h / have-degree-91\n      :ARG1 (p / person\n            :name (n / name\n                  :op1 \"Ann\"~e.0))\n      :ARG2 (o / old~e.2)\n      :ARG3 (m / more)\n      :ARG4 (p2 / person\n            :name (n2 / name\n                  :op1 \"Bob\"~e.4)))"
+    },
+    {
+     "n": 2,
+     "tokens": [
+      "Bob",
+      "is",
+      "older",
+      "than",
+      "Cy",
+      "."
+     ],
+     "penman": "(h / have-degree-91\n      :ARG1 (p / person\n            :name (n / name\n                  :op1 \"Bob\"~e.0))\n      :ARG2 (o / old~e.2)\n      :ARG3 (m / more)\n      :ARG4 (p2 / person\n            :name (n2 / name\n                  :op1 \"Cy\"~e.4)))"
+    },
+    {
+     "n": 3,
+     "tokens": [
+      "Who",
+      "is",
+      "the",
+      "youngest",
+      "?"
+     ],
+     "penman": "(h / have-degree-91\n      :ARG1 (a / amr-unknown)\n      :ARG2 (y / young~e.3)\n      :ARG3 (m / most))"
+    }
+   ]
+  },
+  {
+   "parser": "ibm",
+   "tool": {
+    "name": "transition-neural-parser",
+    "version": "0.5.4",
+    "model": "AMR3-structbart-L",
+    "model_sha256": "sha256:c4b47b578eb067d61e7d560f2431453ae2beb13aafe5debc13cad5d54600896b",
+    "beside": {
+     "fairseq bart.large model.pt": "sha256:d2438f464efad05c927f2c9e38a8a8358e368c4d9bfa9cbc764d70b05996f1ea"
+    },
+    "decoding": "the parser's default, beam 1",
+    "versions": {
+     "torch": "1.13.1+cu117",
+     "cuda": "11.7",
+     "fairseq": "0.10.2",
+     "penman": "1.3.1",
+     "python": "3.8.20"
+    }
+   },
+   "aligner": {
+    "name": "the parser's own alignment",
+    "kind": "learned",
+    "markers": "~N, N a token's index from 0"
+   },
+   "graphs": [
+    {
+     "n": 1,
+     "tokens": [
+      "Ann",
+      "is",
+      "older",
+      "than",
+      "Bob",
+      "."
+     ],
+     "penman": "(h / have-degree-91~2\n    :ARG1 (p / person~0\n        :name (n / name~0\n            :op1 \"Ann\"~0))\n    :ARG2 (o / old~2)\n    :ARG3 (m / more~2)\n    :ARG4 (p2 / person~4\n        :name (n2 / name~4\n            :op1 \"Bob\"~4)))"
+    },
+    {
+     "n": 2,
+     "tokens": [
+      "Bob",
+      "is",
+      "older",
+      "than",
+      "Cy",
+      "."
+     ],
+     "penman": "(h / have-degree-91~2\n    :ARG1 (p / person~0\n        :name (n / name~0\n            :op1 \"Bob\"~0))\n    :ARG2 (o / old~2)\n    :ARG3 (m / more~2)\n    :ARG4 (p2 / person~4\n        :name (n2 / name~4\n            :op1 \"Cy\"~4)))"
+    },
+    {
+     "n": 3,
+     "tokens": [
+      "Who",
+      "is",
+      "the",
+      "youngest",
+      "?"
+     ],
+     "penman": "(h / have-degree-91~3\n    :ARG1 (a / amr-unknown~0)\n    :ARG2 (y / young~3)\n    :ARG3 (m / most~3))"
+    }
+   ]
+  }
+ ],
+ "entities": {
+  "tool": {
+   "name": "spacy",
+   "version": "3.8.18",
+   "model": "en_core_web_trf 3.8.0",
+   "pipeline": [
+    "transformer",
+    "tagger",
+    "parser",
+    "attribute_ruler",
+    "lemmatizer",
+    "ner"
+   ],
+   "device": "cpu",
+   "versions": {
+    "spacy": "3.8.18",
+    "torch": "2.14.1+cu130"
+   }
+  },
+  "sentences": [
+   [
+    {
+     "text": "Ann",
+     "label": "PERSON"
+    },
+    {
+     "text": "Bob",
+     "label": "PERSON"
+    }
+   ],
+   [
+    {
+     "text": "Bob",
+     "label": "PERSON"
+    },
+    {
+     "text": "Cy",
+     "label": "PERSON"
+    }
+   ],
+   []
+  ]
+ }
+}

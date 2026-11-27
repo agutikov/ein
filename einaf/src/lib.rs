@@ -19,8 +19,11 @@
 //! grammar, each output read through [`kernel`]. [`grammar`] is the
 //! filter's mechanism: the whole grammar of Ein as GBNF, generated from
 //! Ein's two grammar files, a grammar a step of the formalization, and
-//! EinAf's acceptor and sampler of a grammar.
+//! EinAf's acceptor and sampler of a grammar. [`analysis`] reads a text's
+//! analysis by trained parsers from a recorded file and writes it for step
+//! 1's prompt, as text or as Ein facts.
 
+pub mod analysis;
 pub mod answer;
 pub mod catalogue;
 pub mod check;
