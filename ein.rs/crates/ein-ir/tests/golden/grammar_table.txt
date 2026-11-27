@@ -2392,3 +2392,13 @@
   repair: Insert `:over`, Delete `:ein`
   repair: Delete `:ein`, Delete `inconsistent`
 
+## 352. a block comment glued after a string (was: —)
+    (relation t T :why "t"#|c|#)
+<row>:1:20: unexpected `"t"#|c|#`: a string glued to what follows
+  repair: Insert a string, Delete `"t"#|c|#`
+
+## 353. a form's closing paren after a line comment (was: —)
+    (relation p T) (p a ;c)
+<row>:1:24: unexpected end of input
+  repair: Insert `)`
+

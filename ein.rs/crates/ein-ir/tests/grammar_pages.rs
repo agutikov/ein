@@ -40,9 +40,11 @@
 //!   outside a string and a comment; `absent` as a fact's, a value's and a
 //!   conclusion's relation, `false` with an argument, and `(eq …)` as a
 //!   value, each in every place the grammar takes the refusal; `:no-search`
-//!   on a query or with a value; and what a rule may not conclude, a disjunction, whole or
+//!   on a query or with a value; what a rule may not conclude, a disjunction, whole or
 //!   inside an `(and …)` at any depth, and a connective as a conclusion's
-//!   argument or under its `not`.
+//!   argument or under its `not`; and where a token ends at a comment, a
+//!   block comment glued after a string and a form's closing paren after a
+//!   line comment on its line.
 
 use std::fmt::Write as _;
 use std::str::FromStr as _;
@@ -2811,6 +2813,21 @@ const TABLE: &[Row] = &[
         "a keyword of another form",
         &[],
         "(query :goal (p ?x) :ein inconsistent)",
+    ),
+    // ── Where a token ends, at a comment: a string's tail takes a `#`, so a
+    // block comment glued after a string is the string's, one `BADTEXT`;
+    // and a line comment runs to the end of its line, so a paren written
+    // after a `;` on that line is the comment's, and the form is not
+    // closed ──
+    row(
+        "a block comment glued after a string",
+        &[],
+        "(relation t T :why \"t\"#|c|#)",
+    ),
+    row(
+        "a form's closing paren after a line comment",
+        &[],
+        "(relation p T) (p a ;c)",
     ),
 ];
 
