@@ -21,7 +21,10 @@ not say is that the question was of one value and the state holds three: no line
 
 S2.2.4's record, [`../../steps/`](../../p2.2_formalizer/steps/README.md), the condition `steps`: `bob1` (three rows: 5, 3, 1),
 `bystander` (five: Carol's 9, 7, 5, 3, 1, the rule's `?t` reading the kind as a moment), `before` (three), each
-`--single` *one*; `einaf/tests/fixtures/steps/bob1/`, the first, replayed in EinAf's gate step.
+`--single` *one*. `einaf/tests/fixtures/steps/bob1/` held the first until
+[S2.2e.5](../../p2.2e_kernel_fixes/s2.2e.5_recordings_follow_the_library.md) recorded it again (2026-11-27), under
+the prompts with no digest of the library: the model's step 3 then wrote no rule that asks the difference, and the
+fixture answers one row, *Bob has (n z 5) apples.*; S2.2.4's record keeps the three rows.
 
 ## What it costs the application
 
